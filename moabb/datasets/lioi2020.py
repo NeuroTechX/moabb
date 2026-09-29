@@ -1,19 +1,16 @@
-"""Lioi-Perronnet 2020 EEG-fMRI motor imagery neurofeedback dataset (XP2).
+"""Lioi 2020 EEG-fMRI motor imagery neurofeedback dataset (XP2, OpenNeuro ds002338)."""
 
-Lioi, Cury, Perronnet, Mano, Bannier, Lecuyer, Barillot (2020), Scientific Data.
-DOI: 10.1038/s41597-020-0498-3
-Data DOI: 10.18112/openneuro.ds002338.v2.0.1 (OpenNeuro ds002338)
-"""
-
-import json
 import logging
 from pathlib import Path
 
 import mne_bids
-import numpy as np
 import requests
 
-from ._openneuro_mirror import OpenNeuroMirrorMixin
+from ._openneuro_mirror import (
+    OpenNeuroMirrorMixin,
+    relabel_annotations,
+    write_dataset_description,
+)
 from .base import BaseBIDSDataset
 from .download import get_dataset_path
 from .metadata.schema import (
@@ -33,45 +30,32 @@ from .utils import stim_channels_with_selected_ids
 
 log = logging.getLogger(__name__)
 
-# OpenNeuro dataset ID.
-_OPENNEURO_ID = "ds002338"
+_S3_BASE = "https://s3.amazonaws.com/openneuro.org/ds002338"
 
-# S3 base URL for direct download (no auth needed for OpenNeuro).
-_S3_BASE = f"https://s3.amazonaws.com/openneuro.org/{_OPENNEURO_ID}"
-
-# The 17 XP2 subjects (non-contiguous IDs on OpenNeuro), index 1..17.
+# The 17 XP2 subjects (non-contiguous OpenNeuro IDs) and the 2D-NF group;
+# every other subject ran 1D neurofeedback.
 # fmt: off
 _SUBJECT_IDS = [
     "xp201", "xp202", "xp203", "xp204", "xp205", "xp206", "xp207",
     "xp210", "xp211", "xp213", "xp216", "xp217", "xp218", "xp219",
     "xp220", "xp221", "xp222",
 ]
+_SUBJECTS_2DNF = {
+    "xp204", "xp205", "xp207", "xp210", "xp213", "xp216", "xp217", "xp221",
+}
 # fmt: on
 
-# Neurofeedback task per subject (1-dimensional vs 2-dimensional NF).
-# All subjects additionally have MIpre and MIpost pure-MI runs.
-_SUBJECT_NF = {
-    "xp201": "1dNF",
-    "xp202": "1dNF",
-    "xp203": "1dNF",
-    "xp206": "1dNF",
-    "xp211": "1dNF",
-    "xp218": "1dNF",
-    "xp219": "1dNF",
-    "xp220": "1dNF",
-    "xp222": "1dNF",
-    "xp204": "2dNF",
-    "xp205": "2dNF",
-    "xp207": "2dNF",
-    "xp210": "2dNF",
-    "xp213": "2dNF",
-    "xp216": "2dNF",
-    "xp217": "2dNF",
-    "xp221": "2dNF",
-}
-
-# 63 EEG channels from the BrainProducts BrainCap MR (Ch32=ECG is dropped
-# from this list and handled as an auxiliary channel).
+# Shared with the sibling XP1 loader (LioiXP1, same team, cap and protocol).
+_AUTHORS = [
+    "Giulia Lioi",
+    "Claire Cury",
+    "Lorraine Perronnet",
+    "Marsel Mano",
+    "Elise Bannier",
+    "Anatole Lecuyer",
+    "Christian Barillot",
+]
+# 63 EEG channels of the BrainCap MR (Ch32 = ECG is typed separately).
 # fmt: off
 _CH_NAMES = [
     "Fp1", "Fp2", "F3", "F4", "C3", "C4", "P3", "P4", "O1", "O2",
@@ -84,14 +68,11 @@ _CH_NAMES = [
 ]
 # fmt: on
 
-# events.tsv trial_type -> MOABB class label.
-# Both the pure-MI ("Task-MI") and the neurofeedback ("Task-NF") blocks are the
-# same kinesthetic right-hand motor imagery; "Rest" is the baseline block.
+# Pure-MI ("Task-MI") and neurofeedback ("Task-NF") blocks are the same
+# right-hand motor imagery; "Rest" is the baseline block.
 _TRIALTYPE_TO_LABEL = {"Task-MI": "right_hand", "Task-NF": "right_hand", "Rest": "rest"}
 
-# Ordered per-subject runs: MIpre, 3 neurofeedback runs, MIpost.
-# Each entry is (task_template, run_entity_or_None, run_key). "{nf}" is filled
-# with the subject's neurofeedback task (1dNF or 2dNF).
+# Per-subject runs as (task, run entity, run key); "{nf}" is 1dNF or 2dNF.
 _RUN_PLAN = [
     ("MIpre", None, "0MIpre"),
     ("{nf}", "01", "1NF01"),
@@ -100,61 +81,22 @@ _RUN_PLAN = [
     ("MIpost", None, "4MIpost"),
 ]
 
-_DATASET_DESCRIPTION = {
-    "Name": (
-        "A multi-modal human neuroimaging dataset for data integration: "
-        "simultaneous EEG and fMRI acquisition during a motor imagery "
-        "neurofeedback task: XP2"
-    ),
-    "BIDSVersion": "1.2.0",
-    "License": "CC0",
-    "Authors": [
-        "Giulia Lioi",
-        "Claire Cury",
-        "Lorraine Perronnet",
-        "Marsel Mano",
-        "Elise Bannier",
-        "Anatole Lecuyer",
-        "Christian Barillot",
-    ],
-    "DatasetDOI": "10.18112/openneuro.ds002338.v2.0.1",
-}
-
 
 class Lioi2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
     """Right-hand motor imagery EEG-fMRI neurofeedback dataset (XP2) [1]_.
 
-    EEG recorded simultaneously with fMRI (only the EEG is exposed here) from
-    17 healthy subjects performing kinesthetic motor imagery of their right
-    hand, from the study on bimodal EEG-fMRI neurofeedback [2]_ (OpenNeuro
-    ``ds002338``, experiment XP2).
-
-    The paradigm is a block design alternating 20 s ``Rest`` and 20 s
-    right-hand motor-imagery blocks. Each subject has five continuous EEG
-    runs:
-
-    - ``MIpre``   : motor imagery without feedback (before NF training)
-    - three neurofeedback runs (``1dNF`` or ``2dNF`` depending on subject)
-    - ``MIpost``  : motor imagery without feedback (after NF training)
-
-    The mental task is identical across all runs (right-hand kinesthetic MI),
-    so both the ``Task-MI`` and ``Task-NF`` blocks are mapped to the
-    ``right_hand`` class and the ``Rest`` blocks to the ``rest`` class,
-    yielding a 2-class (motor imagery vs. rest) problem.
-
-    EEG was acquired with a 64-channel BrainProducts BrainCap MR (63 EEG + 1
-    ECG) referenced to FCz at 5000 Hz inside the MR scanner. The ECG channel
-    is dropped by default.
-
-    The data are hosted on OpenNeuro in BIDS BrainVision format and downloaded
-    directly from the OpenNeuro S3 mirror.
+    EEG recorded inside an MR scanner (fMRI is not loaded) from 17 healthy
+    subjects in 20 s rest / right-hand kinesthetic MI blocks [2]_. Each subject
+    has five runs: ``MIpre``, three neurofeedback runs (``1dNF`` or ``2dNF``)
+    and ``MIpost``. ``Task-MI`` and ``Task-NF`` blocks both map to
+    ``right_hand`` and ``Rest`` to ``rest``. The ECG channel is typed ``ecg``
+    and dropped unless ``return_all_modalities=True``. Ragged rows in the
+    released ``events.tsv`` files are normalised before mne-bids reads them.
 
     Parameters
     ----------
     imagery_only : bool
-        If True, expose only the two pure motor-imagery runs (``MIpre`` and
-        ``MIpost``) that are identical across all subjects. If False
-        (default), also expose the three neurofeedback runs.
+        If True, expose only the ``MIpre`` and ``MIpost`` runs (no feedback).
 
     References
     ----------
@@ -205,15 +147,7 @@ class Lioi2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
         ),
         documentation=DocumentationMetadata(
             doi="10.1038/s41597-020-0498-3",
-            investigators=[
-                "Giulia Lioi",
-                "Claire Cury",
-                "Lorraine Perronnet",
-                "Marsel Mano",
-                "Elise Bannier",
-                "Anatole Lecuyer",
-                "Christian Barillot",
-            ],
+            investigators=list(_AUTHORS),
             institution="Univ Rennes, Inria, CNRS, Inserm, IRISA",
             country="FR",
             data_url="https://openneuro.org/datasets/ds002338",
@@ -276,7 +210,7 @@ class Lioi2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
 
     def _run_plan(self, subject):
         """Return the (task, run_entity, run_key) plan for a subject."""
-        nf = _SUBJECT_NF[self._sid(subject)]
+        nf = "2dNF" if self._sid(subject) in _SUBJECTS_2DNF else "1dNF"
         plan = [(task.format(nf=nf), run, key) for task, run, key in _RUN_PLAN]
         if self.imagery_only:
             plan = [entry for entry in plan if "NF" not in entry[2]]
@@ -290,16 +224,12 @@ class Lioi2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
 
     @staticmethod
     def _sanitize_events_tsv(events_path):
-        """Normalize a BIDS ``events.tsv`` so every row has the header's number
-        of tab-separated columns.
+        """Rewrite ``events.tsv`` so every row has the header's column count.
 
-        Some of the OpenNeuro ``task-MIpre`` / ``task-MIpost`` events files carry
-        rows with a spurious trailing tab (an empty 5th field). mne-bids reads
-        events with ``numpy.loadtxt``, which then raises "the number of columns
-        changed from 4 to 5". This rewrites the file (idempotently) with a fixed
-        column count and without blank lines, leaving the onset/duration/
-        trial_type/stim_file values untouched. Runs offline on the already
-        downloaded file.
+        Some ``task-MIpre``/``task-MIpost`` files carry a spurious trailing tab,
+        which makes mne-bids' ``numpy.loadtxt`` reader fail. Extra fields are
+        dropped, missing ones padded with ``n/a`` and blank lines removed; the
+        rewrite is idempotent and runs on the already downloaded file.
         """
         events_path = Path(events_path)
         if not events_path.exists():
@@ -311,12 +241,8 @@ class Lioi2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
         ncol = len(lines[0].split("\t"))
         fixed = []
         for line in lines:
-            fields = line.split("\t")
-            if len(fields) > ncol:
-                fields = fields[:ncol]  # drop spurious trailing empty column(s)
-            elif len(fields) < ncol:
-                fields += ["n/a"] * (ncol - len(fields))
-            fixed.append("\t".join(fields))
+            fields = line.split("\t")[:ncol]
+            fixed.append("\t".join(fields + ["n/a"] * (ncol - len(fields))))
         new = "\n".join(fixed) + "\n"
         if new != original:
             events_path.write_text(new, encoding="utf-8")
@@ -324,17 +250,12 @@ class Lioi2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
     def _get_single_subject_data(self, subject):
         """Load BrainVision runs and map block labels to MI-vs-rest classes."""
         bids_paths = self.bids_paths(subject)
-
-        # Normalize each run's (task-level) events.tsv before mne-bids reads it,
-        # so ragged rows do not break its numpy.loadtxt-based TSV reader.
         for bids_path in bids_paths:
             self._sanitize_events_tsv(
                 Path(bids_path.root) / f"task-{bids_path.task}_events.tsv"
             )
 
-        # Map each (task, run) BIDS entity pair to our descriptive run key.
         key_by_entity = {(task, run): key for task, run, key in self._run_plan(subject)}
-
         result = {}
         for bids_path in bids_paths:
             key = key_by_entity.get((bids_path.task, bids_path.run))
@@ -344,26 +265,15 @@ class Lioi2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
                 bids_path, extra_params=self._get_read_extra_params(subject)
             )
             raw.load_data()
-
-            # ECG is the only non-EEG sensor; type it and (optionally) drop it.
             if "ECG" in raw.ch_names:
                 raw.set_channel_types({"ECG": "ecg"})
-
-            # Remap block trial_types to our class labels.
-            desc = raw.annotations.description.astype(np.dtype("<U32"))
-            for trial_type, label in _TRIALTYPE_TO_LABEL.items():
-                desc[desc == trial_type] = label
-            raw.annotations.description = desc
-
+            relabel_annotations(raw, _TRIALTYPE_TO_LABEL)
             raw.set_montage("standard_1005", on_missing="ignore", verbose=False)
-
             if not self.return_all_modalities:
                 raw.pick("eeg")
-
             result.setdefault("0", {})[key] = stim_channels_with_selected_ids(
                 raw, self.event_id
             )
-
         return result
 
     def _download_subject(self, subject, path, force_update, update_path, verbose):
@@ -373,12 +283,17 @@ class Lioi2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
             return mirror_root
 
         sid = self._sid(subject)
-
-        bids_root = Path(get_dataset_path("Lioi2020", path))
-        bids_root = bids_root / "MNE-lioi2020-data"
+        bids_root = Path(get_dataset_path("Lioi2020", path)) / "MNE-lioi2020-data"
         bids_root.mkdir(parents=True, exist_ok=True)
-
-        self._ensure_dataset_description(bids_root)
+        write_dataset_description(
+            bids_root,
+            "A multi-modal human neuroimaging dataset for data integration: "
+            "simultaneous EEG and fMRI acquisition during a motor imagery "
+            "neurofeedback task: XP2",
+            "1.2.0",
+            "10.18112/openneuro.ds002338.v2.0.1",
+            _AUTHORS,
+        )
 
         subj_dir = bids_root / f"sub-{sid}" / "eeg"
         for task, run, _ in self._run_plan(subject):
@@ -410,10 +325,3 @@ class Lioi2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
         with open(local_path, "wb") as fout:
             for chunk in resp.iter_content(chunk_size=8192):
                 fout.write(chunk)
-
-    @staticmethod
-    def _ensure_dataset_description(bids_root):
-        dd_path = Path(bids_root) / "dataset_description.json"
-        if not dd_path.exists():
-            with open(dd_path, "w") as f:
-                json.dump(_DATASET_DESCRIPTION, f, indent=2)

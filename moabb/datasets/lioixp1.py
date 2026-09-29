@@ -1,17 +1,4 @@
-"""XP1 simultaneous EEG-fMRI motor imagery / neurofeedback dataset (Lioi et al.).
-
-Right-hand kinaesthetic motor imagery vs rest, 20 s block design, EEG recorded
-inside an MR scanner. Only the EEG modality is exposed here (the fMRI NIfTI
-volumes are ignored).
-
-OpenNeuro: ds002336 (XP1). Sibling dataset XP2 is ds002338.
-
-Data descriptor:
-    Lioi, G., Cury, C., Perronnet, L., Mano, M., Bannier, E., Lecuyer, A.,
-    & Barillot, C. (2019). Simultaneous MRI-EEG during a motor imagery
-    neurofeedback task: an open access brain imaging dataset for multi-modal
-    data integration. bioRxiv 862375. https://doi.org/10.1101/862375
-"""
+"""Lioi XP1 EEG-fMRI motor imagery / neurofeedback dataset (OpenNeuro ds002336)."""
 
 import logging
 from pathlib import Path
@@ -20,8 +7,9 @@ import mne
 from mne.channels import make_standard_montage
 
 from moabb.datasets import download as dl
-from moabb.datasets._openneuro_mirror import OpenNeuroMirrorMixin
+from moabb.datasets._openneuro_mirror import OpenNeuroMirrorMixin, relabel_annotations
 from moabb.datasets.base import BaseDataset
+from moabb.datasets.lioi2020 import _AUTHORS, _CH_NAMES
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
     AuxiliaryChannelsMetadata,
@@ -38,65 +26,28 @@ from moabb.datasets.utils import stim_channels_with_selected_ids
 
 log = logging.getLogger(__name__)
 
-# OpenNeuro dataset id and public S3 mirror (no auth required).
-_OPENNEURO_ID = "ds002336"
-_S3_BASE = f"https://s3.amazonaws.com/openneuro.org/{_OPENNEURO_ID}"
+_S3_BASE = "https://s3.amazonaws.com/openneuro.org/ds002336"
 
-# Motor-imagery-vs-rest task runs, in acquisition order. Each run alternates
-# 20 s rest / 20 s right-hand kinaesthetic MI blocks. The ``task-motorloc``
-# run is a motor-execution localizer (marker ``S  1``) and is intentionally
-# excluded to keep the paradigm pure imagery. MIpre/MIpost are absent for a
-# few subjects; runs are added only when the files actually exist.
+# Motor-imagery-vs-rest runs in acquisition order; the ``task-motorloc``
+# motor-execution localizer is excluded. MIpre/MIpost are absent for sub 1.
 _TASKS = ["MIpre", "eegNF", "fmriNF", "eegfmriNF", "MIpost"]
 
-# BrainVision annotation markers relevant to the MI paradigm:
-#   "Stimulus/S 99" -> rest block onset
-#   "Stimulus/S  2" -> task (right-hand MI) block onset
-# (R128 = fMRI gradient volume marker, dropped by not matching event_id.)
+# BrainVision block markers; R128 (fMRI volume) and the rest never match event_id.
 _MARKER_TO_LABEL = {"Stimulus/S 99": "rest", "Stimulus/S  2": "right_hand"}
 
 _EVENTS = {"rest": 1, "right_hand": 2}
-
-# 63 EEG channels (channel 32 in the recording is ECG). FCz is the reference
-# and AFz the ground, so neither appears among the recorded EEG channels.
-# fmt: off
-_EEG_CHANNELS = [
-    "Fp1", "Fp2", "F3", "F4", "C3", "C4", "P3", "P4", "O1", "O2",
-    "F7", "F8", "T7", "T8", "P7", "P8", "Fz", "Cz", "Pz", "Oz",
-    "FC1", "FC2", "CP1", "CP2", "FC5", "FC6", "CP5", "CP6", "TP9", "TP10",
-    "POz", "F1", "F2", "C1", "C2", "P1", "P2", "AF3", "AF4", "FC3",
-    "FC4", "CP3", "CP4", "PO3", "PO4", "F5", "F6", "C5", "C6", "P5",
-    "P6", "AF7", "AF8", "FT7", "FT8", "TP7", "TP8", "PO7", "PO8", "FT9",
-    "FT10", "Fpz", "CPz",
-]
-# fmt: on
 
 
 class LioiXP1(OpenNeuroMirrorMixin, BaseDataset):
     """XP1 simultaneous EEG-fMRI motor imagery / neurofeedback dataset [1]_ [2]_.
 
-    Ten healthy subjects performed right-hand kinaesthetic motor imagery inside
-    an MR scanner during a 20 s block design alternating rest and task. Data
-    were acquired with a 64-channel MR-compatible Brain Products system sampled
-    at 5 kHz (channel 32 is ECG; the 63 remaining channels are EEG), reference
-    FCz, ground AFz.
-
-    The protocol comprised six EEG-fMRI runs. This loader exposes the five
-    motor-imagery runs that share the rest / right-hand-MI marker structure:
-
-    - ``MIpre``    : MI without neurofeedback, 5 blocks (absent for sub 1)
-    - ``eegNF``    : unimodal EEG neurofeedback, 10 blocks
-    - ``fmriNF``   : unimodal fMRI neurofeedback, 10 blocks
-    - ``eegfmriNF``: bimodal EEG-fMRI neurofeedback, 10 blocks
-    - ``MIpost``   : MI without neurofeedback, 5 blocks (absent for sub 1)
-
-    Each is returned as a separate run within a single session. The
-    motor-execution localizer run (``task-motorloc``) is excluded. Only the EEG
-    modality is loaded; the simultaneously acquired fMRI is ignored. The EEG
-    still contains MR gradient and ballistocardiogram artifacts (it is delivered
-    raw, unprocessed).
-
-    Two classes are exposed: ``right_hand`` (MI task block) and ``rest``.
+    Ten healthy subjects performed right-hand kinaesthetic motor imagery
+    inside an MR scanner in 20 s rest / task blocks. Five runs are exposed as
+    runs of one session: ``MIpre`` and ``MIpost`` (no feedback, absent for
+    subject 1), ``eegNF``, ``fmriNF`` and ``eegfmriNF`` (neurofeedback); the
+    ``task-motorloc`` motor-execution localizer is excluded. Only the EEG is
+    loaded (fMRI ignored); it is raw and still contains MR gradient and
+    ballistocardiogram artifacts. Channel ``ECG`` is typed ``ecg``.
 
     References
     ----------
@@ -112,6 +63,7 @@ class LioiXP1(OpenNeuroMirrorMixin, BaseDataset):
     """
 
     nemar_id = "on002336"
+    nemar_subject_template = "xp1{subject:02d}"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=5000.0,
@@ -121,7 +73,7 @@ class LioiXP1(OpenNeuroMirrorMixin, BaseDataset):
             reference="FCz",
             ground="AFz",
             line_freq=50.0,
-            sensors=list(_EEG_CHANNELS),
+            sensors=list(_CH_NAMES),
             auxiliary_channels=AuxiliaryChannelsMetadata(other_physiological=["ecg"]),
         ),
         participants=ParticipantMetadata(
@@ -132,18 +84,7 @@ class LioiXP1(OpenNeuroMirrorMixin, BaseDataset):
             age_max=39.0,
             species="human",
             ages=[25, 27, 25, 31, 39, 36, 19, 29, 27, 26],
-            sexes=[
-                "male",
-                "male",
-                "male",
-                "male",
-                "male",
-                "female",
-                "male",
-                "male",
-                "female",
-                "male",
-            ],
+            sexes=["male"] * 5 + ["female"] + ["male"] * 2 + ["female", "male"],
         ),
         experiment=ExperimentMetadata(
             events=dict(_EVENTS),
@@ -167,15 +108,7 @@ class LioiXP1(OpenNeuroMirrorMixin, BaseDataset):
         documentation=DocumentationMetadata(
             doi="10.1101/862375",
             related_paper_dois=["10.3389/fnhum.2017.00193"],
-            investigators=[
-                "Giulia Lioi",
-                "Claire Cury",
-                "Lorraine Perronnet",
-                "Marsel Mano",
-                "Elise Bannier",
-                "Anatole Lecuyer",
-                "Christian Barillot",
-            ],
+            investigators=list(_AUTHORS),
             institution="Inria Rennes / University of Rennes",
             country="FR",
             data_url="https://openneuro.org/datasets/ds002336",
@@ -203,9 +136,6 @@ class LioiXP1(OpenNeuroMirrorMixin, BaseDataset):
         data_processed=False,
     )
 
-    def _nemar_subject(self, subject):
-        return self._subject_id(subject)
-
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             subjects=list(range(1, 11)),
@@ -220,77 +150,54 @@ class LioiXP1(OpenNeuroMirrorMixin, BaseDataset):
             return_all_modalities=return_all_modalities,
         )
 
-    def _subject_id(self, subject):
-        """Map integer subject 1..10 to the BIDS label ``xp10N``/``xp110``."""
-        return f"xp{100 + subject}"
-
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
         mirror_root = self._mirror_root(subject, path, force_update, update_path, verbose)
+        sub = f"sub-{self._nemar_subject(subject)}"
+        stems = [f"{sub}/eeg/{sub}_task-{task}_eeg" for task in _TASKS]
         if mirror_root is not None:
-            sub = f"sub-{self._subject_id(subject)}"
-            return [
-                str(candidate)
-                for task in _TASKS
-                if (
-                    candidate := Path(mirror_root)
-                    / sub
-                    / "eeg"
-                    / f"{sub}_task-{task}_eeg.vhdr"
-                ).is_file()
-            ]
-        if subject not in self.subject_list:
-            raise ValueError("Invalid subject number")
+            vhdrs = [Path(mirror_root) / f"{stem}.vhdr" for stem in stems]
+            return [str(vhdr) for vhdr in vhdrs if vhdr.is_file()]
 
-        sub = self._subject_id(subject)
         paths = []
-        for task in _TASKS:
-            base = f"{_S3_BASE}/sub-{sub}/eeg/sub-{sub}_task-{task}_eeg"
-            # The .vhdr references its .eeg/.vmrk siblings by basename, so all
-            # three must be fetched into the same local directory.
-            for ext in (".eeg", ".vmrk", ".vhdr"):
-                try:
-                    local = dl.data_dl(
-                        f"{base}{ext}", self.code, path=path, force_update=force_update
-                    )
-                except Exception as exc:  # noqa: BLE001
-                    # MIpre/MIpost are missing for some subjects (HTTP 404).
-                    if ext == ".eeg":
-                        log.info("Skipping absent run %s for sub-%s (%s)", task, sub, exc)
-                        break
-                    raise
-                if ext == ".vhdr":
-                    paths.append(local)
+        for stem in stems:
+            # The .vhdr references its .eeg/.vmrk siblings by basename.
+            try:
+                dl.data_dl(
+                    f"{_S3_BASE}/{stem}.eeg",
+                    self.code,
+                    path=path,
+                    force_update=force_update,
+                )
+            except Exception as exc:  # noqa: BLE001
+                # MIpre/MIpost are missing for some subjects (HTTP 404).
+                log.info("Skipping absent run %s (%s)", stem, exc)
+                continue
+            for ext in (".vmrk", ".vhdr"):
+                local = dl.data_dl(
+                    f"{_S3_BASE}/{stem}{ext}",
+                    self.code,
+                    path=path,
+                    force_update=force_update,
+                )
+            paths.append(local)
         return paths
 
     def _get_single_subject_data(self, subject):
         vhdr_paths = self.data_path(subject)
-
         runs = {}
         for idx, task in enumerate(_TASKS):
             match = [p for p in vhdr_paths if f"task-{task}_eeg.vhdr" in p]
             if not match:
                 continue
             raw = mne.io.read_raw_brainvision(match[0], preload=True, verbose=False)
-
-            # Channel 32 is ECG; label it so it is not treated as EEG.
             if "ECG" in raw.ch_names:
                 raw.set_channel_types({"ECG": "ecg"})
-
-            # Remap BrainVision markers to class labels; unmatched markers
-            # (R128 gradient, New Segment, S 1 localizer) are left untouched
-            # and simply do not match event_id.
-            desc = raw.annotations.description.astype("<U16")
-            for marker, label in _MARKER_TO_LABEL.items():
-                desc[desc == marker] = label
-            raw.annotations.description = desc
-
+            relabel_annotations(raw, _MARKER_TO_LABEL)
             with mne.utils.use_log_level("error"):
                 raw.set_montage(
                     make_standard_montage("standard_1005"), on_missing="ignore"
                 )
-
             runs[f"{idx}{task}"] = stim_channels_with_selected_ids(raw, self.event_id)
-
         return {"0": runs}

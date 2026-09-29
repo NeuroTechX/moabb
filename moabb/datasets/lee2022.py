@@ -24,11 +24,7 @@ from moabb.datasets.metadata.schema import (
 from moabb.datasets.utils import stim_channels_with_selected_ids
 
 
-# OpenNeuro dataset ID and S3 base URL (CC0, no authentication required).
-_OPENNEURO_ID = "ds004022"
-_S3_BASE = f"https://s3.amazonaws.com/openneuro.org/{_OPENNEURO_ID}"
-
-# Number of runs per subject (BIDS ``run-1``/``run-2``/``run-3``).
+_S3_BASE = "https://s3.amazonaws.com/openneuro.org/ds004022"
 _N_RUNS = 3
 
 # 18 EEG channels (BrainVision actiCAP slim, extended 10% system).
@@ -40,12 +36,8 @@ _CH_NAMES = [
 ]
 # fmt: on
 
-# The four MI classes. In each trial the class is signalled by one of the
-# BrainVision cue markers ``S  3``-``S  6`` (10 per run each); the generic
-# imagery-onset marker ``S  8`` follows ~7.4 s later (4 s visual cue + 3 s
-# ready). We relabel that imagery onset with the trial class and epoch the 5 s
-# imagery window. The cue-code -> task mapping follows the paper's canonical
-# order (reaching, grasping, lifting, twisting).
+# Each trial has one class cue ``S  3``-``S  6`` (paper's task order), then the
+# generic imagery-onset marker ``S  8`` ~7.4 s later (4 s cue + 3 s ready).
 _CUE_TO_LABEL = {
     "S  3": "reaching",
     "S  4": "grasping",
@@ -60,36 +52,18 @@ _EVENTS = {"reaching": 1, "grasping": 2, "lifting": 3, "twisting": 4}
 class Lee2022(OpenNeuroMirrorMixin, BaseDataset):
     """Upper-limb motor imagery dataset from Lee et al. 2022 (ds004022).
 
-    .. admonition:: Dataset summary
-
-        =========  =======  =======  ==========  =================  ============  ===============  ===========
-        Name         #Subj    #Chan    #Classes    #Trials / class     Trials len    Sampling rate      #Sessions
-        =========  =======  =======  ==========  =================  ============  ===============  ===========
-        Lee2022          7       18           4                 30             5s            500Hz            1
-        =========  =======  =======  ==========  =================  ============  ===============  ===========
-
-    Multimodal EEG (and fNIRS) acquired during motor imagery of four
-    right-upper-limb movements in patients with orthopedic impairment [1]_.
-
-    Seven participants performed visually cued motor imagery of four
-    right-upper-limb movements -- **reaching**, **grasping**, **lifting** and
-    **twisting** -- across three runs of 40 trials each (four tasks in random
-    order, 10 trials per task per run). Each trial started with a 3 s fixation
-    cross, then a 4 s visual cue, then a 3 s ready state (gray screen), followed
-    by 5 s of imagined movement.
-
-    EEG was recorded with a BrainVision actiCHamp amplifier and an actiCAP slim
-    cap at 500 Hz over 18 channels (reference FCz, ground Fpz). The imagery
-    period is epoched from the imagery-onset marker, relabelled by trial class.
-
-    The dataset is hosted on OpenNeuro (ds004022) in BIDS/EEGLAB ``.set``
-    format. An fNIRS modality is present in the archive but is not loaded here.
+    Seven patients with orthopedic impairment performed visually cued motor
+    imagery of four right-upper-limb movements (**reaching**, **grasping**,
+    **lifting**, **twisting**), 3 runs x 40 trials, each trial 3 s fixation,
+    4 s cue, 3 s ready and 5 s imagery [1]_. The EEGLAB ``.set`` recordings
+    are loaded; the fNIRS modality in the archive is not.
 
     Notes
     -----
-    Trial labels are stored in the EEGLAB event structure (no ``events.tsv``).
-    The cue-code to movement mapping follows the paper's canonical task order
-    (reaching, grasping, lifting, twisting).
+    Trial labels live in the EEGLAB event structure (no ``events.tsv``). Each
+    ``S  8`` imagery-onset marker is relabelled with the preceding class cue
+    and the 5 s imagery window is epoched from it. EEGLAB channel names are
+    stripped of their whitespace padding.
 
     .. versionadded:: 1.2.0
 
@@ -207,75 +181,45 @@ class Lee2022(OpenNeuroMirrorMixin, BaseDataset):
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
-        """Download the ``.set``/``.fdt`` EEG files for a subject's three runs.
-
-        Returns a list of the local ``.set`` file paths (one per run).
-        """
+        """Return the local ``.set`` path of each of the subject's three runs."""
         mirror_root = self._mirror_root(subject, path, force_update, update_path, verbose)
+        sub = f"sub-{subject:02d}"
+        stems = [
+            f"{sub}/eeg/{sub}_task-motorimagery_run-{run}_eeg"
+            for run in range(1, _N_RUNS + 1)
+        ]
         if mirror_root is not None:
-            sub = f"sub-{subject:02d}"
-            return [
-                str(
-                    Path(mirror_root)
-                    / sub
-                    / "eeg"
-                    / f"{sub}_task-motorimagery_run-{run}_eeg.set"
-                )
-                for run in range(1, _N_RUNS + 1)
-            ]
-        if subject not in self.subject_list:
-            raise ValueError("Invalid subject number")
-
-        subj = f"sub-{subject:02d}"
+            return [str(Path(mirror_root) / f"{stem}.set") for stem in stems]
         set_paths = []
-        for run in range(1, _N_RUNS + 1):
-            base = f"{subj}/eeg/{subj}_task-motorimagery_run-{run}_eeg"
+        for stem in stems:
             # The .set references the .fdt by name -> both must be co-located.
-            dl.data_dl(
-                f"{_S3_BASE}/{base}.fdt",
-                self.code,
-                path=path,
-                force_update=force_update,
-                verbose=verbose,
-            )
-            set_path = dl.data_dl(
-                f"{_S3_BASE}/{base}.set",
-                self.code,
-                path=path,
-                force_update=force_update,
-                verbose=verbose,
-            )
-            set_paths.append(set_path)
+            for ext in (".fdt", ".set"):
+                local = dl.data_dl(
+                    f"{_S3_BASE}/{stem}{ext}",
+                    self.code,
+                    path=path,
+                    force_update=force_update,
+                    verbose=verbose,
+                )
+            set_paths.append(local)
         return set_paths
 
     def _get_single_subject_data(self, subject):
         """Return ``{'0': {'0': raw, '1': raw, '2': raw}}`` for one subject."""
-        set_paths = self.data_path(subject)
-
         runs = {}
-        for run_idx, set_path in enumerate(set_paths):
+        for run_idx, set_path in enumerate(self.data_path(subject)):
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
                 raw = mne.io.read_raw_eeglab(set_path, preload=True, verbose=False)
-
-            # EEGLAB channel names carry trailing whitespace padding.
             raw.rename_channels({name: name.strip() for name in raw.ch_names})
-
             raw.set_annotations(self._imagery_annotations(raw.annotations))
             raw.set_montage("standard_1020", match_case=False, on_missing="ignore")
-
             runs[str(run_idx)] = stim_channels_with_selected_ids(raw, self.event_id)
-
         return {"0": runs}
 
     @staticmethod
     def _imagery_annotations(annotations):
-        """Relabel imagery-onset markers with the preceding trial's class.
-
-        Each trial carries a class cue (``S  3``-``S  6``) followed by the
-        generic imagery-onset marker (``S  8``). We emit one annotation per
-        trial at the imagery onset, described by the class label.
-        """
+        """One annotation per trial at the ``S  8`` onset, labelled by its cue."""
         order = np.argsort(annotations.onset)
         current = None
         onsets, labels = [], []

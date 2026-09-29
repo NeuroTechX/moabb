@@ -1,11 +1,4 @@
-"""High-density scalp EEG SMR-BMI motor imagery dataset (Iwama 2023, Dataset 1).
-
-Iwama, S., Morishige, M., Kodama, M. et al. High-density scalp
-electroencephalogram dataset during sensorimotor rhythm-based
-brain-computer interfacing. Sci Data 10, 385 (2023).
-DOI: 10.1038/s41597-023-02260-6
-Data DOI: 10.18112/openneuro.ds004444.v1.0.1
-"""
+"""Iwama 2023 high-density SMR-BMI motor imagery dataset (OpenNeuro ds004444)."""
 
 import logging
 import tempfile
@@ -15,7 +8,7 @@ import mne
 import pandas as pd
 import requests
 
-from ._openneuro_mirror import OpenNeuroMirrorMixin
+from ._openneuro_mirror import OpenNeuroMirrorMixin, drop_native_stim
 from .base import BaseBIDSDataset
 from .download import get_dataset_path
 from .metadata.schema import (
@@ -35,76 +28,37 @@ from .utils import stim_channels_with_selected_ids
 
 log = logging.getLogger(__name__)
 
-# OpenNeuro dataset ID.
-_OPENNEURO_ID = "ds004444"
+_S3_BASE = "https://s3.amazonaws.com/openneuro.org/ds004444"
 
-# S3 base URL for direct download (no auth needed for OpenNeuro).
-_S3_BASE = f"https://s3.amazonaws.com/openneuro.org/{_OPENNEURO_ID}"
-
-# Marker codes in the ``value`` column of the BIDS events.tsv:
-#   1 = rest      (baseline period, used as the "rest" class)
-#   2 = ready     (preparation cue, not decoded)
-#   3 = task      (kinesthetic motor imagery of the right hand, "right_hand")
-#   4 = interval  (inter-trial interval, not decoded)
+# events.tsv ``value``: 1 rest, 2 ready, 3 task (right-hand MI), 4 interval.
 _EVENTS = {"right_hand": 3, "rest": 1}
 
-# Maximum number of recorded sessions (ses-01 .. ses-16). Some subjects
-# have fewer (sub-020 has 8, sub-030 has 9); missing sessions are skipped.
+# ses-01 .. ses-16; some subjects have fewer (sub-020: 8, sub-030: 9).
 _MAX_SESSIONS = 16
 
-# Per-session files that make up one BIDS recording.
-_SESSION_SUFFIXES = [
-    "eeg.edf",
-    "events.tsv",
-    "channels.tsv",
-    "electrodes.tsv",
-    "eeg.json",
-]
-
-# Root-level BIDS files needed for a valid dataset root.
-_ROOT_FILES = [
-    "dataset_description.json",
-    "participants.tsv",
-    "participants.json",
-    "task-smrbmi_eeg.json",
-    "task-smrbmi_events.json",
-]
-
+_SESSION_SUFFIXES = "eeg.edf events.tsv channels.tsv electrodes.tsv eeg.json".split()
+_ROOT_FILES = (
+    "dataset_description.json participants.tsv participants.json "
+    "task-smrbmi_eeg.json task-smrbmi_events.json"
+).split()
 _DOWNLOAD_ATTEMPTS = 3
 
 
 class Iwama2023(OpenNeuroMirrorMixin, BaseBIDSDataset):
     """High-density (128ch) SMR-BMI motor imagery dataset, Dataset 1 [1]_.
 
-    This is *Dataset 1* of the BMI-HDEEG collection released with the data
-    descriptor *High-density scalp electroencephalogram dataset during
-    sensorimotor rhythm-based brain-computer interfacing* [1]_. It contains
-    high-density EEG from 30 healthy participants recorded with a 128-channel
-    Magstim EGI HydroCel Geodesic Sensor Net (GES400) at 1000 Hz, referenced
-    to Cz with the ground placed on FCz. The recorded EDF carries 129 EEG
-    channels in total: the 128 net electrodes (E1-E128) plus the Cz
-    reference itself, which is stored as an additional channel.
-
-    Participants performed a sensorimotor-rhythm (SMR) neurofeedback BCI task.
-    Each trial consists of four phases marked in the events file:
-
-    - **rest** (6 s): baseline / rest period (``value = 1``)
-    - **ready** (1 s): preparation cue (``value = 2``)
-    - **task** (6 s): kinesthetic motor imagery of right-hand/finger
-      movement, with ERD-based neurofeedback (``value = 3``)
-    - **interval** (8 s): inter-trial interval (``value = 4``)
-
-    MOABB exposes the binary decoding problem **right_hand** (motor imagery,
-    ``value = 3``) versus **rest** (``value = 1``). Each recorded session
-    (``ses-01`` .. ``ses-16``) contains 20 trials. Most subjects have 16
-    sessions; a few have fewer.
-
-    The data is hosted on OpenNeuro (ds004444) in BIDS format (EDF files).
+    Dataset 1 of the BMI-HDEEG collection: 30 healthy participants, 128-channel
+    EGI HydroCel net at 1000 Hz (the EDF carries 129 EEG channels, the extra one
+    being the Cz reference). Each trial of the SMR neurofeedback task is rest
+    (6 s, ``value = 1``), ready (1 s), task (6 s kinesthetic right-hand motor
+    imagery with ERD feedback, ``value = 3``) and interval (8 s). MOABB exposes
+    **right_hand** vs **rest**; each session (``ses-01`` .. ``ses-16``, fewer
+    for some subjects) has 20 trials.
 
     .. note::
-        The BIDS ``events.tsv`` files store the ``onset`` column in
-        milliseconds (BIDS normally expects seconds); this loader rescales
-        the onsets to seconds before building the annotations.
+        The BIDS ``events.tsv`` onsets are in milliseconds; this loader
+        rescales them to seconds. The EDF's own ``Status`` trigger channel is
+        dropped because its codes do not follow ``events.tsv``.
 
     References
     ----------
@@ -222,63 +176,38 @@ class Iwama2023(OpenNeuroMirrorMixin, BaseBIDSDataset):
         return out
 
     def _get_single_subject_data(self, subject):
-        """Read each session's EDF and attach corrected event annotations.
-
-        The BIDS ``events.tsv`` onsets are in milliseconds, so they are
-        rescaled to seconds before building the annotations (the default BIDS
-        reader would misplace them).
-        """
-        bids_paths = self.bids_paths(subject)
+        """Read each session's EDF with annotations from its ms-onset events.tsv."""
         inv_events = {code: label for label, code in self.event_id.items()}
-
         sessions = {}
-        for bids_path in bids_paths:
+        for bids_path in self.bids_paths(subject):
             edf_path = Path(bids_path.fpath)
             raw = mne.io.read_raw_edf(edf_path, preload=True, verbose=False)
-            # The EDF carries its own ``Status`` trigger channel, whose codes do
-            # not follow events.tsv: code 1 marks both the rest onsets and a
-            # point ~1 s before each task onset. Left in, it is read alongside
-            # the stim channel built below and adds 20 spurious ``rest``
-            # epochs per session that overlap the imagery. events.tsv is the
-            # documented event source, so the native trigger is dropped.
-            native_stim = [
-                ch
-                for ch, kind in zip(raw.ch_names, raw.get_channel_types())
-                if kind == "stim"
-            ]
-            if native_stim:
-                raw.drop_channels(native_stim)
+            # The native ``Status`` code 1 marks rest onsets *and* ~1 s before
+            # each task onset; kept, it would add 20 spurious rest epochs.
+            drop_native_stim(raw)
 
             events_tsv = edf_path.with_name(
                 edf_path.name.replace("_eeg.edf", "_events.tsv")
             )
-            annotations = self._build_annotations(events_tsv, inv_events)
-            raw.set_annotations(annotations)
-
+            df = pd.read_csv(events_tsv, sep="\t")
+            df = df[df["value"].isin(inv_events.keys())]
+            raw.set_annotations(
+                mne.Annotations(
+                    onset=df["onset"].astype(float).to_numpy() / 1000.0,
+                    duration=df["duration"].astype(float).to_numpy(),
+                    description=df["value"].map(inv_events).to_numpy(),
+                )
+            )
             try:
                 raw.set_montage("GSN-HydroCel-129", match_case=False, on_missing="ignore")
             except Exception as exc:  # montage is optional; keep the data usable
                 log.warning("Could not set montage for %s: %s", edf_path.name, exc)
 
             raw = stim_channels_with_selected_ids(raw, self.event_id)
-
             session = bids_path.session if bids_path.session is not None else "0"
             run = bids_path.run if bids_path.run is not None else "0"
             sessions.setdefault(session, {})[run] = raw
-
         return sessions
-
-    @staticmethod
-    def _build_annotations(events_tsv, inv_events):
-        """Build MNE annotations from a BIDS events.tsv (onset in ms -> s)."""
-        df = pd.read_csv(events_tsv, sep="\t")
-        df = df[df["value"].isin(inv_events.keys())]
-        onset_s = df["onset"].astype(float).to_numpy() / 1000.0
-        duration_s = df["duration"].astype(float).to_numpy()
-        description = df["value"].map(inv_events).to_numpy()
-        return mne.Annotations(
-            onset=onset_s, duration=duration_s, description=description
-        )
 
     def _download_subject(self, subject, path, force_update, update_path, verbose) -> str:
         """Download the subject's BIDS files from OpenNeuro S3 and return the root."""
@@ -286,24 +215,28 @@ class Iwama2023(OpenNeuroMirrorMixin, BaseBIDSDataset):
         if mirror_root is not None:
             return mirror_root
 
-        if subject not in self.subject_list:
-            raise ValueError("Invalid subject number")
-
         bids_root = Path(get_dataset_path("Iwama2023", path)) / "MNE-iwama2023-data"
         bids_root.mkdir(parents=True, exist_ok=True)
+        subj_str = f"sub-{subject:03d}"
 
-        # A staged BIDS subject is complete enough to discover directly from
-        # its EDF files.  In particular, subjects can have non-consecutive
-        # session labels (sub-030 has ses-16 after ses-08), so probing S3 for
-        # the next numerical session both misses valid data and can block an
-        # otherwise offline load on a missing-object request.
-        if not force_update and self._staged_subject_is_complete(bids_root, subject):
+        # Session labels can be sparse (sub-030 has ses-16 after ses-08), so a
+        # staged subject whose EDFs all have their sidecars is used as is
+        # instead of probing S3 (which would also block offline loads).
+        edfs = sorted((bids_root / subj_str).glob("ses-*/eeg/*_eeg.edf"))
+        if (
+            not force_update
+            and edfs
+            and all(
+                (edf.parent / f"{edf.name.removesuffix('eeg.edf')}{suffix}").is_file()
+                for edf in edfs
+                for suffix in _SESSION_SUFFIXES
+            )
+        ):
             log.info("Using locally staged Iwama2023 subject %03d", subject)
             return str(bids_root)
 
-        self._download_root_files(bids_root, force_update)
-
-        subj_str = f"sub-{subject:03d}"
+        for rel_path in _ROOT_FILES:
+            self._download_file(bids_root, rel_path, force_update)
         for ses in range(1, _MAX_SESSIONS + 1):
             ses_str = f"ses-{ses:02d}"
             base = f"{subj_str}/{ses_str}/eeg/{subj_str}_{ses_str}_task-smrbmi_"
@@ -311,35 +244,8 @@ class Iwama2023(OpenNeuroMirrorMixin, BaseBIDSDataset):
             for suffix in _SESSION_SUFFIXES:
                 got_any |= self._download_file(bids_root, base + suffix, force_update)
             if not got_any and ses > 1:
-                # No files for this session index: assume no more sessions exist.
-                break
-
+                break  # no files for this session index: no more sessions
         return str(bids_root)
-
-    @staticmethod
-    def _staged_subject_edfs(bids_root, subject):
-        """Return locally staged EDFs for one subject, including sparse sessions."""
-        subject_dir = Path(bids_root) / f"sub-{subject:03d}"
-        return sorted(subject_dir.glob("ses-*/eeg/*_eeg.edf"))
-
-    @classmethod
-    def _staged_subject_is_complete(cls, bids_root, subject):
-        """Return whether every staged EDF has all required BIDS sidecars."""
-        edfs = cls._staged_subject_edfs(bids_root, subject)
-        if not edfs:
-            return False
-        for edf in edfs:
-            prefix = edf.name.removesuffix("eeg.edf")
-            if not all(
-                (edf.parent / f"{prefix}{suffix}").is_file()
-                for suffix in _SESSION_SUFFIXES
-            ):
-                return False
-        return True
-
-    def _download_root_files(self, bids_root, force_update):
-        for rel_path in _ROOT_FILES:
-            self._download_file(bids_root, rel_path, force_update)
 
     @staticmethod
     def _download_file(bids_root, rel_path, force_update) -> bool:
@@ -354,7 +260,7 @@ class Iwama2023(OpenNeuroMirrorMixin, BaseBIDSDataset):
             response = None
             try:
                 log.info(
-                    "Downloading %s (attempt %d/%d) ...",
+                    "Downloading %s (attempt %d/%d)",
                     rel_path,
                     attempt,
                     _DOWNLOAD_ATTEMPTS,
@@ -376,17 +282,9 @@ class Iwama2023(OpenNeuroMirrorMixin, BaseBIDSDataset):
             except requests.RequestException as exc:
                 if attempt == _DOWNLOAD_ATTEMPTS:
                     raise
-                log.warning(
-                    "Download of %s failed (%s); retrying (%d/%d)",
-                    rel_path,
-                    exc,
-                    attempt,
-                    _DOWNLOAD_ATTEMPTS,
-                )
+                log.warning("Download of %s failed (%s); retrying", rel_path, exc)
             finally:
                 if response is not None:
                     response.close()
                 if temp_path is not None:
                     temp_path.unlink(missing_ok=True)
-
-        raise RuntimeError(f"Unreachable download retry state for {url}")
