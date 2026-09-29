@@ -4,41 +4,10 @@ Unlike converted deposits, these public mirrors store the loader's input in
 raw BIDS, not sourcedata. Keep native parsing and subject/run selection intact.
 """
 
-import json
 import warnings
-from pathlib import Path
-
-import numpy as np
 
 from moabb.datasets.download import NemarDownloadError
 from moabb.utils import get_download_provider
-
-
-def drop_native_stim(raw):
-    """Drop recorded trigger channels; the loader rebuilds STIM from its events."""
-    kinds = zip(raw.ch_names, raw.get_channel_types())
-    return raw.drop_channels([ch for ch, kind in kinds if kind == "stim"])
-
-
-def relabel_annotations(raw, mapping):
-    """Rename annotation descriptions; unmapped ones never match ``event_id``."""
-    raw.annotations.description = np.array(
-        [mapping.get(desc, desc) for desc in raw.annotations.description], dtype=str
-    )
-
-
-def write_dataset_description(bids_root, name, bids_version, doi, authors):
-    """Write the minimal ``dataset_description.json`` mne-bids needs, if missing."""
-    dd_path = Path(bids_root) / "dataset_description.json"
-    if not dd_path.exists():
-        description = {
-            "Name": name,
-            "BIDSVersion": bids_version,
-            "License": "CC0",
-            "Authors": list(authors),
-            "DatasetDOI": doi,
-        }
-        dd_path.write_text(json.dumps(description, indent=2))
 
 
 class OpenNeuroMirrorMixin:

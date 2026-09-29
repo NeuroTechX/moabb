@@ -33,8 +33,6 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 
-from .utils import resolve_montage_name
-
 
 log = logging.getLogger(__name__)
 
@@ -483,7 +481,7 @@ class Kumar2024(BaseDataset):
         if not gdf_files:
             return {}
 
-        montage = make_standard_montage(resolve_montage_name("colin27_1020"))
+        montage = make_standard_montage("colin27_1020")
         runs = {}
         for run_idx, gdf_path in enumerate(gdf_files):
             with warnings.catch_warnings():

@@ -36,8 +36,6 @@ from moabb.analysis.results import get_digest
 from moabb.datasets import download as dl
 from moabb.datasets._channel_pick import pick_channels_for_modalities
 
-from ._montage import resolve_montage_name
-
 
 if TYPE_CHECKING:
     from sklearn.pipeline import Pipeline
@@ -2609,9 +2607,7 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
                 coord_frame = montage.get_positions().get("coord_frame", "")
                 if coord_frame == "head" and not has_nas:
                     try:
-                        std = mne.channels.make_standard_montage(
-                            resolve_montage_name("colin27_1005")
-                        )
+                        std = mne.channels.make_standard_montage("colin27_1005")
                         raw.set_montage(std, on_missing="ignore")
                     except Exception:
                         log.warning(
