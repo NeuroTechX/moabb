@@ -374,7 +374,7 @@ class BCIComp2020UpperLimb(BaseDataset):
             data, labels, ch_names = self._load_epoch_mat(paths[split], split, subject)
             sessions[session_key] = {
                 "0": build_raw_from_epochs(
-                    data, ch_names, _SFREQ, labels, montage_name="standard_1005"
+                    data, ch_names, _SFREQ, labels, montage_name="colin27_1005"
                 )
             }
         return sessions

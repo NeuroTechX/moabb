@@ -299,7 +299,7 @@ class _Nguyen2017Base(BaseDataset):
             _CH_NAMES,
             _SFREQ,
             labels,
-            montage_name="standard_1005",
+            montage_name="colin27_1005",
             ch_types=ch_types,
         )
         raw.set_montage(_MONTAGE, on_missing="ignore")

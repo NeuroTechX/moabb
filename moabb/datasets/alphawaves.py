@@ -23,6 +23,8 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 
+from .utils import resolve_montage_name
+
 
 ALPHAWAVES_URL = "https://zenodo.org/record/2348892/files/"
 
@@ -228,7 +230,7 @@ class Rodrigues2017(BaseDataset):
             ch_names=chnames, sfreq=512, ch_types=chtypes, verbose=False
         )
         raw = mne.io.RawArray(data=X, info=info, verbose=False)
-        raw.set_montage("standard_1020")
+        raw.set_montage(resolve_montage_name("colin27_1020"))
 
         return {"0": {"0": raw}}
 
