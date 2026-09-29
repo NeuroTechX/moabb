@@ -14,10 +14,8 @@ from moabb.datasets import (
     Farabbi2020,
     Han2026,
     Kodera2023,
-    batista2022,
-    dfki2023,
+    download,
     farabbi2020,
-    han2026,
     kodera2023,
 )
 
@@ -41,22 +39,18 @@ def _assert_invalid_subject_rejected(dataset):
 
 
 @pytest.mark.parametrize(
-    "cls,module,folder",
-    [
-        (Batista2022, batista2022, "sub-01"),
-        (Farabbi2020, farabbi2020, "01"),
-        (DFKI2023, dfki2023, "EEG_dataset"),
-    ],
+    "cls,folder",
+    [(Batista2022, "sub-01"), (Farabbi2020, "01"), (DFKI2023, "EEG_dataset")],
 )
-def test_download_flags_and_extraction(cls, module, folder, tmp_path, monkeypatch):
+def test_download_flags_and_extraction(cls, folder, tmp_path, monkeypatch):
     archive = tmp_path / "data.zip"
     with zipfile.ZipFile(archive, "w") as z:
         z.writestr(folder + "/payload.txt", "synthetic")
-    download = Mock(return_value=str(archive))
-    monkeypatch.setattr(module.dl, "data_dl", download)
+    data_dl = Mock(return_value=str(archive))
+    monkeypatch.setattr(download, "data_dl", data_dl)
     ds = cls()
     ds.data_path(1, path=tmp_path, force_update=True, verbose="ERROR")
-    assert download.call_args.args[2:] == (tmp_path, True, "ERROR")
+    assert data_dl.call_args.args[2:] == (tmp_path, True, "ERROR")
     assert (tmp_path / folder / "payload.txt").read_text() == "synthetic"
     _assert_invalid_subject_rejected(ds)
 
@@ -140,12 +134,12 @@ def test_han_deduplicates_only_exact_trial_markers(monkeypatch):
 
 
 def test_han_transport_flags(tmp_path, monkeypatch):
-    download = Mock(return_value=str(tmp_path / "synthetic.set"))
-    monkeypatch.setattr(han2026.dl, "data_dl", download)
+    data_dl = Mock(return_value=str(tmp_path / "synthetic.set"))
+    monkeypatch.setattr(download, "data_dl", data_dl)
     ds = Han2026()
     ds.data_path(1, path=tmp_path, force_update=True, verbose="ERROR")
-    assert download.call_args.args[2:] == (tmp_path, True, "ERROR")
-    assert "ds007327/sub-001/sub-001_task-dribble_eeg.set" in download.call_args.args[0]
+    assert data_dl.call_args.args[2:] == (tmp_path, True, "ERROR")
+    assert "ds007327/sub-001/sub-001_task-dribble_eeg.set" in data_dl.call_args.args[0]
     assert ds.nemar_id is None
     _assert_invalid_subject_rejected(ds)
 
@@ -177,11 +171,11 @@ def test_kodera_transport_flags(tmp_path, monkeypatch):
     with zipfile.ZipFile(archive, "w") as z:
         z.writestr("data/01_12_2020/1z01122020lh1.vhdr", "synthetic")
         z.writestr("data/01_12_2020/2z01122020lh1.vhdr", "other subject")
-    download = Mock(return_value=str(archive))
-    monkeypatch.setattr(kodera2023.dl, "data_dl", download)
+    data_dl = Mock(return_value=str(archive))
+    monkeypatch.setattr(download, "data_dl", data_dl)
     ds = Kodera2023()
     paths = ds.data_path(1, path=tmp_path, force_update=True, verbose="ERROR")
-    assert download.call_args.args[2:] == (tmp_path, True, "ERROR")
+    assert data_dl.call_args.args[2:] == (tmp_path, True, "ERROR")
     assert [Path(p).read_text() for p in paths] == ["synthetic"]
     _assert_invalid_subject_rejected(ds)
 

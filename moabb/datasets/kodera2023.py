@@ -1,16 +1,14 @@
 """Kodera2023 left/right-hand motor-imagery EEG dataset (University of West Bohemia)."""
 
-import logging
 import re
 import warnings
-import zipfile
 from pathlib import Path
 
 import mne
 from mne.channels import make_standard_montage
 
-from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
+from moabb.datasets.batista2022 import _download_and_extract
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
     DatasetMetadata,
@@ -21,83 +19,49 @@ from moabb.datasets.metadata.schema import (
 )
 
 
-log = logging.getLogger(__name__)
-
 # Single Zenodo archive (concept DOI 10.5281/zenodo.7893846 -> version 7893847).
 KODERA2023_URL = "https://zenodo.org/records/7893847/files/data.zip"
 
 # Event codes exposed to the paradigm. The left/right class is carried by the
-# recording file name (see module notes), not by the BrainVision markers.
+# recording file name, not by the BrainVision markers.
 EVENTS = {"left_hand": 1, "right_hand": 2}
 
 # The two trailing unnamed channels of the 500 Hz cohort ("17", "18") are not
 # scalp EEG and are marked as misc.
 _AUX_CHANNELS = {"17", "18"}
 
-# Every source recording contains these nine scalp electrodes.  The 500 Hz
-# layout has seven additional scalp electrodes, whereas the 1000 Hz layout
-# contains only this set.  Keep the ordered intersection for a genuine
-# cross-subject channel space; do not pad the 9-channel recordings or invent
-# signals for the absent optional electrodes.
+# The nine scalp electrodes every recording has (the 500 Hz layout adds seven);
+# their ordered intersection is the cross-subject channel space, never padded.
 _COMMON_EEG_CHANNELS = ("Fz", "Cz", "Pz", "F3", "F4", "P3", "P4", "C3", "C4")
 
-# Deterministic subject map: one subject == one (recording-date, person-token)
-# group of BrainVision recordings that contains both left- and right-hand runs.
-# Short names follow ``<idx><initial><ddmmyyyy><lh|rh><run>``; ``HR_*`` names
-# carry Czech ``leva``/``prava`` = left/right suffixes. The source layouts vary
-# by recording date as well as file-name family, so channel normalization is
-# derived from the actual header rather than inferred from this token. The
-# single unlabelled recording (``HR_02092021_02_...``, no side suffix) is
-# excluded.
+# One subject == one (recording-date, person-token) group of recordings holding
+# both left- and right-hand runs. Short names follow
+# ``<idx><initial><ddmmyyyy><lh|rh><run>``; ``HR_<ddmmyyyy>_<NN>_*`` names carry
+# Czech ``leva``/``prava`` suffixes. The unlabelled ``HR_02092021_02_...`` is excluded.
 SUBJECTS = [
-    ("01_12_2020", "1z"),
-    ("01_12_2020", "2z"),
-    ("02_09_2021", "S03"),
-    ("03_04_2023", "1m"),
-    ("03_04_2023", "2m"),
-    ("03_04_2023", "3m"),
-    ("03_04_2023", "4m"),
-    ("03_04_2023", "5m"),
-    ("07_10_2021", "S09"),
-    ("07_10_2021", "S10"),
-    ("10_12_2020", "1m"),
-    ("10_12_2020", "2z"),
-    ("14_01_2021", "1m"),
-    ("14_01_2021", "2m"),
-    ("14_01_2021", "3z"),
-    ("14_10_2021", "S12"),
-    ("14_10_2021", "S13"),
-    ("21_01_2021", "1m"),
-    ("21_01_2021", "2z"),
-    ("21_01_2021", "3z"),
-    ("21_01_2021", "4z"),
-    ("23_09_2021", "S04"),
-    ("23_09_2021", "S05"),
-    ("28_01_2021", "1z"),
-    ("28_01_2021", "2z"),
-    ("28_01_2021", "3z"),
-    ("30_09_2021", "S06"),
-    ("30_09_2021", "S07"),
-    ("30_09_2021", "S08"),
+    (date, token)
+    for date, tokens in (
+        ("01_12_2020", "1z 2z"),
+        ("02_09_2021", "S03"),
+        ("03_04_2023", "1m 2m 3m 4m 5m"),
+        ("07_10_2021", "S09 S10"),
+        ("10_12_2020", "1m 2z"),
+        ("14_01_2021", "1m 2m 3z"),
+        ("14_10_2021", "S12 S13"),
+        ("21_01_2021", "1m 2z 3z 4z"),
+        ("23_09_2021", "S04 S05"),
+        ("28_01_2021", "1z 2z 3z"),
+        ("30_09_2021", "S06 S07 S08"),
+    )
+    for token in tokens.split()
 ]
 
 
 def _class_from_stem(stem):
-    """Return the motor-imagery class carried by a recording file name.
+    """Return the class encoded in a recording file name, or None.
 
-    The left/right label lives in the file name: ``leva``/``prava`` (Czech for
-    left/right) for the ``HR_*`` cohort and the ``lh``/``rh`` token before the
-    trailing run digit for the short-name cohort.
-
-    Parameters
-    ----------
-    stem : str
-        Recording file name without extension.
-
-    Returns
-    -------
-    str or None
-        ``"left_hand"``, ``"right_hand"`` or ``None`` when no side is encoded.
+    ``leva``/``prava`` (Czech left/right) for the ``HR_*`` cohort, the ``lh``/``rh``
+    token before the trailing run digit for the short-name cohort.
     """
     s = stem.lower()
     if "leva" in s:
@@ -123,52 +87,20 @@ def _matches_subject(stem, date_folder, token):
 class Kodera2023(BaseDataset):
     """Left/right-hand motor-imagery EEG dataset [1]_.
 
-    .. admonition:: Dataset summary
+    EEG recorded at the University of West Bohemia (Pilsen) during cue-based left-
+    versus right-hand motor imagery. Each recording holds a single class, encoded
+    in its file name; the ``S 1`` BrainVision marker is the per-trial imagery cue
+    (the markers themselves are identical across classes). The archive mixes a
+    16-channel 500 Hz cohort (short names such as ``1z01122020lh1``, legacy
+    T3-T6 labels, DC-coupled with large slow drifts) and a 9-channel 1000 Hz
+    cohort (``HR_<date>_<nn>_..._leva``).
 
-        =========  =======  =======  ==========  =================  ============  ===============  ===========
-        Name         #Subj    #Chan    #Classes    #Trials / class    Trials len    Sampling rate      #Sessions
-        =========  =======  =======  ==========  =================  ============  ===============  ===========
-        Kodera2023      29       9           2              ~20-30            4s        500/1000 Hz            1
-        =========  =======  =======  ==========  =================  ============  ===============  ===========
-
-    **Dataset description**
-
-    EEG recorded at the University of West Bohemia (Pilsen) while participants
-    performed cue-based left- versus right-hand motor imagery, published on
-    Zenodo as "EEG motor imagery" for automatic motor-imagery detection. Each
-    recording is a single-class session (all left-hand or all right-hand
-    imagery); the class is encoded in the recording file name and the per-trial
-    imagery cue onset is the ``S 1`` BrainVision stimulus marker.
-
-    The archive mixes two acquisition cohorts recorded on eleven dates:
-
-    * a 16-channel cohort sampled at 500 Hz (Fp1, F3, F4, C3, C4, P3, P4, F7,
-      F8, T3, T4, T5, T6, Cz, Fz, Pz, plus two unnamed auxiliary channels),
-      with short file names such as ``1z01122020lh1``;
-    * a 9-channel cohort sampled at 1000 Hz (Fz, Cz, Pz, F3, F4, P3, P4, C3, C4;
-      a subset of the 16-channel montage), with file names such as
-      ``HR_07102021_09_s_vibratory_s_haptikou_leva``.
-
-    A subject here is one (recording-date, person) group of recordings holding
-    both left- and right-hand runs; 29 such subjects are exposed, each as a
-    single session with two to four runs. Each run is annotated at its ``S 1``
-    imagery cue onsets with the run's class label, so the ``LeftRightImagery``
-    paradigm epochs both classes across a subject's runs. To make subjects from
-    the two acquisition layouts comparable, the loader exposes their ordered
-    nine-channel scalp intersection (Fz, Cz, Pz, F3, F4, P3, P4, C3, C4).
-    The seven 500 Hz-only scalp channels and the two unnamed auxiliary channels
-    are deliberately omitted rather than padded or fabricated.
-
-    Notes
-    -----
-    The BrainVision markers (``S 1``, ``S 2`` and the auxiliary ``S 4``/``S 5``)
-    are identical between left- and right-hand recordings and therefore do not
-    encode the class; the class is data-borne through the recording file name.
-    Each ``S 1`` (imagery cue) is followed by an ``S 2`` after 2.5 s (500 Hz
-    cohort) or 5 s (1000 Hz cohort). The 500 Hz cohort is DC-coupled and carries
-    large slow drifts that a band-pass filter removes. Electrode names use the
-    legacy T3/T4/T5/T6 labels; the standard_1020 montage is attached with
-    ``on_missing="ignore"``.
+    A subject is one (recording-date, person) group holding both left- and
+    right-hand runs: 29 subjects, one session of two to four runs each. Every run
+    is annotated at its ``S 1`` onsets with the run's class. To make both cohorts
+    comparable the loader keeps only their ordered nine-channel intersection (Fz,
+    Cz, Pz, F3, F4, P3, P4, C3, C4); the extra scalp and two unnamed auxiliary
+    channels are dropped, never padded. The one unlabelled recording is excluded.
 
     References
     ----------
@@ -257,47 +189,14 @@ class Kodera2023(BaseDataset):
             selected_sessions=sessions,
         )
 
-    def _extracted_root(self, path=None, force_update=False, verbose=None):
-        """Download and extract the archive, returning the ``data`` folder."""
-        zip_path = Path(
-            dl.data_dl(KODERA2023_URL, self.code, path, force_update, verbose)
-        )
-        data_dir = zip_path.parent / "data"
-        if force_update or not data_dir.is_dir():
-            log.info("Extracting %s ...", zip_path.name)
-            with zipfile.ZipFile(zip_path, "r") as zf:
-                zf.extractall(zip_path.parent)
-        return data_dir
-
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
-        """Return the recording (.vhdr) paths of a single subject.
-
-        Parameters
-        ----------
-        subject : int
-            The subject number to fetch data for (1-29).
-        path : None | str
-            Location of where to look for the data storing location. If None,
-            the environment variable or config parameter MNE_(dataset) is used.
-        force_update : bool
-            Force update of the dataset even if a local copy exists.
-        update_path : bool | None
-            Unused, kept for API compatibility.
-        verbose : bool, str, int, or None
-            If not None, override default verbose level (see mne.verbose()).
-
-        Returns
-        -------
-        list of str
-            The BrainVision header paths for the subject's labelled runs.
-        """
+        """Return the BrainVision header paths of a single subject's labelled runs."""
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
-
-        data_dir = self._extracted_root(
-            path=path, force_update=force_update, verbose=verbose
+        data_dir = _download_and_extract(
+            KODERA2023_URL, self.code, "data", path, force_update, verbose
         )
         date_folder, token = SUBJECTS[subject - 1]
         folder = data_dir / date_folder
@@ -321,53 +220,30 @@ class Kodera2023(BaseDataset):
             warnings.simplefilter("ignore")
             raw = mne.io.read_raw_brainvision(vhdr_path, preload=True, verbose=False)
 
-        aux = {ch: "misc" for ch in raw.ch_names if ch in _AUX_CHANNELS}
-        if aux:
-            raw.set_channel_types(aux)
-
+        raw.set_channel_types({ch: "misc" for ch in raw.ch_names if ch in _AUX_CHANNELS})
         missing = [ch for ch in _COMMON_EEG_CHANNELS if ch not in raw.ch_names]
         if missing:
             raise ValueError(
                 "Kodera2023 recording is missing required shared EEG channels "
                 f"{missing}: {vhdr_path}"
             )
-        # The 16-channel recordings contain seven optional scalp electrodes;
-        # keeping their exact ordered intersection with the 9-channel cohort
-        # is the only lossless cross-subject normalization available here.
         raw.pick(list(_COMMON_EEG_CHANNELS))
         raw.set_montage(
             make_standard_montage("standard_1020"), on_missing="ignore", match_case=False
         )
 
-        # Keep only the S 1 imagery-cue onsets and relabel them with the run's
-        # (file-name-encoded) class, so the paradigm can epoch both classes.
+        # Keep only the S 1 imagery-cue onsets, relabelled with the run's class.
         ann = raw.annotations
-        onsets = [
-            ann.onset[i] for i in range(len(ann)) if ann.description[i].endswith("S  1")
-        ]
+        onsets = [o for o, d in zip(ann.onset, ann.description) if d.endswith("S  1")]
         raw.set_annotations(
-            mne.Annotations(
-                onset=onsets,
-                duration=[0.0] * len(onsets),
-                description=[cls] * len(onsets),
-            )
+            mne.Annotations(onsets, [0.0] * len(onsets), [cls] * len(onsets))
         )
         return raw
 
     def _get_single_subject_data(self, subject):
-        """Return the data of a single subject.
-
-        Parameters
-        ----------
-        subject : int
-            The subject number to fetch data for (1-29).
-
-        Returns
-        -------
-        dict
-            ``{"0": {run_str: Raw}}`` - one session with the subject's runs.
-        """
-        runs = {}
-        for run_idx, vhdr in enumerate(self.data_path(subject)):
-            runs[str(run_idx)] = self._read_run(vhdr)
-        return {"0": runs}
+        """Return ``{"0": {run: Raw}}``: one session with the subject's runs."""
+        return {
+            "0": {
+                str(i): self._read_run(v) for i, v in enumerate(self.data_path(subject))
+            }
+        }

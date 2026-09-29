@@ -1,14 +1,13 @@
 """DFKI2023 unilateral vs bilateral movement-execution dataset (Kueper 2024)."""
 
 import warnings
-import zipfile as z
 from pathlib import Path
 from zipfile import BadZipFile
 
 import mne
 
-from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
+from moabb.datasets.batista2022 import _download_and_extract
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
     AuxiliaryChannelsMetadata,
@@ -28,72 +27,12 @@ DFKI2023_URL = "https://zenodo.org/api/records/10229480/files/EEG_dataset.zip/co
 SUBJECT_CODES = ["AV82", "JD68", "JV43", "QS70", "RA12", "UP28", "XP01", "ZS27"]
 
 # 64 EEG channel names in acquisition order (from the BrainVision headers).
-EEG_CHANNELS = [
-    "Fp1",
-    "Fp2",
-    "F7",
-    "F3",
-    "Fz",
-    "F4",
-    "F8",
-    "FC5",
-    "FC1",
-    "FC2",
-    "FC6",
-    "T7",
-    "C3",
-    "Cz",
-    "C4",
-    "T8",
-    "TP9",
-    "CP5",
-    "CP1",
-    "CP2",
-    "CP6",
-    "TP10",
-    "P7",
-    "P3",
-    "Pz",
-    "P4",
-    "P8",
-    "PO9",
-    "O1",
-    "Oz",
-    "O2",
-    "PO10",
-    "AF7",
-    "AF3",
-    "AF4",
-    "AF8",
-    "F5",
-    "F1",
-    "F2",
-    "F6",
-    "FT9",
-    "FT7",
-    "FC3",
-    "FC4",
-    "FT8",
-    "FT10",
-    "C5",
-    "C1",
-    "C2",
-    "C6",
-    "TP7",
-    "CP3",
-    "CPz",
-    "CP4",
-    "TP8",
-    "P5",
-    "P1",
-    "P2",
-    "P6",
-    "PO7",
-    "PO3",
-    "POz",
-    "PO4",
-    "PO8",
-]
+EEG_CHANNELS = (
+    "Fp1 Fp2 F7 F3 Fz F4 F8 FC5 FC1 FC2 FC6 T7 C3 Cz C4 T8 TP9 CP5 CP1 CP2 CP6 "
+    "TP10 P7 P3 Pz P4 P8 PO9 O1 Oz O2 PO10 AF7 AF3 AF4 AF8 F5 F1 F2 F6 FT9 FT7 "
+    "FC3 FC4 FT8 FT10 C5 C1 C2 C6 TP7 CP3 CPz CP4 TP8 P5 P1 P2 P6 PO7 PO3 POz "
+    "PO4 PO8"
+).split()
 
 # 3-axis accelerometer channels (treated as misc, not EEG).
 ACCEL_CHANNELS = ["x_dir", "y_dir", "z_dir"]
@@ -106,39 +45,15 @@ ONSET_MARKER = {"unilateral": "S100", "bilateral": "S101"}
 class DFKI2023(BaseDataset):
     """Unilateral vs bilateral movement-execution EEG dataset [1]_, [2]_.
 
-    .. admonition:: Dataset summary
-
-        =========  =======  =======  =====================  ===============  ===============  ===========
-        Name         #Subj    #Chan  #Classes                 #Trials / class  Trials length    Freq (Hz)
-        =========  =======  =======  =====================  ===============  ===============  ===========
-        DFKI2023         8       64  2 (unilat., bilat.)                ~120              3s          500
-        =========  =======  =======  =====================  ===============  ===============  ===========
-
-    **Dataset description**
-
-    EEG recordings from 8 healthy participants (4 male, 4 female; mean age
-    25.5 +/- 4.0 years) performing self-initiated, self-paced reaching
-    movements in two conditions:
-
-    * ``unilateral`` -- right arm only, pressing a button;
-    * ``bilateral`` -- synchronous movement of both arms.
-
-    Each condition consists of 3 sets of 40 self-initiated movements (~120
-    trials per condition; subject ``XP01`` has an extra unilateral set). Each
-    trial began with a resting period of at least 5 s followed by a
-    self-initiated reaching movement. This loader anchors one epoch per trial on
-    the motion-tracking movement-onset marker (``S100`` for the right arm in the
-    unilateral recordings, ``S101`` for the left arm in the bilateral
-    recordings) and labels it by the movement condition, giving a binary
-    unilateral-vs-bilateral movement-execution classification problem.
-
-    EEG was acquired with a wireless Brain Products LiveAmp64 amplifier and an
-    Acticap slim cap (active electrodes), 64 EEG channels in the extended 10-20
-    system (reference FCz, ground AFz) plus a 3-axis accelerometer, at 500 Hz,
-    hardware-prefiltered to 0.1-131 Hz.
-
-    Because the two conditions are the two classes, both are pooled into a
-    single session; each recording set is exposed as a separate run.
+    Eight healthy participants performed self-initiated, self-paced reaching
+    movements with the right arm only (``unilateral``, button press) or with both
+    arms (``bilateral``), 3 sets of 40 movements per condition (subject ``XP01``
+    has an extra unilateral set), recorded with a 64-channel LiveAmp at 500 Hz plus
+    a 3-axis accelerometer (``misc``). The two conditions are the two classes, so
+    they share one session and every recording set is a run. One event per trial
+    is placed at the motion-tracking movement onset (``S100`` right arm in
+    unilateral, ``S101`` left arm in bilateral recordings); other markers are
+    dropped.
 
     References
     ----------
@@ -232,11 +147,10 @@ class DFKI2023(BaseDataset):
     )
 
     def __init__(self, subjects=None, sessions=None):
-        self.events = {"unilateral": 1, "bilateral": 2}
         super().__init__(
             subjects=list(range(1, len(SUBJECT_CODES) + 1)),
             sessions_per_subject=1,
-            events=self.events,
+            events={"unilateral": 1, "bilateral": 2},
             code="DFKI2023",
             interval=(-2.0, 1.0),
             paradigm="imagery",
@@ -245,77 +159,47 @@ class DFKI2023(BaseDataset):
             selected_sessions=sessions,
         )
 
-    def _condition_of(self, vhdr_path):
-        return "bilateral" if "bilateral" in Path(vhdr_path).parts else "unilateral"
-
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
         """Return the list of BrainVision header paths for a single subject."""
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
-
-        path_zip = Path(dl.data_dl(DFKI2023_URL, self.code, path, force_update, verbose))
-        path_folder = path_zip.parent
-
-        # Extract the archive once.
-        if force_update or not (path_folder / "EEG_dataset").is_dir():
-            try:
-                with z.ZipFile(path_zip, "r") as zip_ref:
-                    zip_ref.extractall(path_folder)
-            except BadZipFile:
-                warnings.warn(
-                    "Corrupted zip file detected, re-downloading...", stacklevel=2
-                )
-                path_zip.unlink(missing_ok=True)
-                path_zip = Path(dl.data_dl(DFKI2023_URL, self.code, path, True, verbose))
-                with z.ZipFile(path_zip, "r") as zip_ref:
-                    zip_ref.extractall(path_folder)
-
+        args = (DFKI2023_URL, self.code, "EEG_dataset", path)
+        try:
+            root = _download_and_extract(*args, force_update, verbose)
+        except BadZipFile:
+            warnings.warn("Corrupted zip file detected, re-downloading...", stacklevel=2)
+            root = _download_and_extract(*args, True, verbose)
         code = SUBJECT_CODES[subject - 1]
-        eeg_root = path_folder / "EEG_dataset" / "EEG"
-
-        subject_paths = []
-        for condition in ("unilateral", "bilateral"):
-            cond_dir = eeg_root / condition / code
-            if cond_dir.is_dir():
-                subject_paths.extend(sorted(cond_dir.glob("*.vhdr")))
-
-        return [str(p) for p in subject_paths]
+        return [
+            str(p)
+            for condition in ("unilateral", "bilateral")
+            for p in sorted((root / "EEG" / condition / code).glob("*.vhdr"))
+        ]
 
     def _get_single_subject_data(self, subject):
         """Return the data of a single subject as {session: {run: Raw}}."""
         runs = {}
         for run_idx, vhdr in enumerate(self.data_path(subject)):
-            condition = self._condition_of(vhdr)
-
+            condition = "bilateral" if "bilateral" in Path(vhdr).parts else "unilateral"
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
                 raw = mne.io.read_raw_brainvision(vhdr, preload=True, verbose=False)
-
-            # Tag the 3 accelerometer channels as misc (not EEG).
-            accel = [ch for ch in ACCEL_CHANNELS if ch in raw.ch_names]
-            if accel:
-                raw.set_channel_types(dict.fromkeys(accel, "misc"))
-
+            raw.set_channel_types(
+                {ch: "misc" for ch in ACCEL_CHANNELS if ch in raw.ch_names}
+            )
             # Keep only the movement-onset markers, relabelled by condition.
-            marker = ONSET_MARKER[condition]
             keep = [
-                d.replace(" ", "").split("/")[-1] == marker
+                d.replace(" ", "").split("/")[-1] == ONSET_MARKER[condition]
                 for d in raw.annotations.description
             ]
             onsets = raw.annotations.onset[keep]
-            annotations = mne.Annotations(
-                onset=onsets,
-                duration=[0.0] * len(onsets),
-                description=[condition] * len(onsets),
+            raw.set_annotations(
+                mne.Annotations(onsets, [0.0] * len(onsets), [condition] * len(onsets))
             )
-            raw.set_annotations(annotations)
-
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
                 raw.set_montage("standard_1020", match_case=False, on_missing="ignore")
-
             runs[f"{run_idx}{condition}"] = raw
-
         return {"0": runs}

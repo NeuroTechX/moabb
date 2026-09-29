@@ -1,14 +1,6 @@
-"""Basketball motor-observation / motor-imagery EEG dataset (Han et al., 2026).
+"""Basketball motor-observation / motor-imagery EEG dataset (Han et al., 2026)."""
 
-Han, J., Wang, J., Jia, L., and Tang, M. (2026).
-"Basketball Motor Observation and Motor Imagery EEG Dataset."
-Data DOI: 10.18112/openneuro.ds007327.v1.1.0
-Hosted on OpenNeuro (ds007327), BIDS / EEGLAB (.set) format.
-"""
-
-import logging
 import warnings
-from pathlib import Path
 
 import mne
 from mne.channels import make_standard_montage
@@ -30,8 +22,6 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 
-
-log = logging.getLogger(__name__)
 
 # OpenNeuro dataset ID and public S3 mirror (no auth required).
 _OPENNEURO_ID = "ds007327"
@@ -73,39 +63,16 @@ _EVENTS = {"motor_observation": 1, "motor_imagery": 2}
 class Han2026(BaseDataset):
     """Basketball motor-observation / motor-imagery EEG dataset [1]_.
 
-    .. admonition:: Dataset summary
-
-        =======  =======  =======  ==========  =================  ============  ===============  ===========
-        Name       #Subj    #Chan    #Classes    #Trials / class    Trials len    Sampling rate      #Sessions
-        =======  =======  =======  ==========  =================  ============  ===============  ===========
-        Han2026       35       64           2              ~120            1s           1000 Hz            1
-        =======  =======  =======  ==========  =================  ============  ===============  ===========
-
-    **Dataset description**
-
     Thirty-five healthy participants performed basketball-related motor
-    observation (MO) and motor imagery (MI) tasks while EEG was recorded with a
-    64-channel ANT Neuro system at 1000 Hz (online reference CPz, ground AFz).
-    Each participant completed three tasks: a single-handed ``dribble`` task, a
-    two-handed ``ballpass`` task, and a two-person ``passing`` task.
-
-    This loader exposes the ``dribble`` task, the only task whose trials are
-    pure single-state conditions. In it, participants either observed a
-    dribbling video (motor observation) or imagined dribbling (motor imagery),
-    each labelled per trial by a data-borne EEGLAB event marker (``A11`` =
-    observation, ``A22`` = imagery), corroborated by the BIDS ``events.tsv``
-    ``trial_type`` column. Trials are one second long; the loader keeps the two
-    pure classes (motor observation vs motor imagery, roughly 120 trials each
-    per subject) and ignores the combined observe+imagine, rest and static
-    control conditions of the same task.
-
-    The two-person ``ballpass`` and ``passing`` tasks are not loaded because
-    they contain only compound sequential conditions (MOMO / MOMI / MIMO /
-    MIMI, "first observe X then imagine Y"), i.e. no pure MO or MI trials.
-
-    Twenty-four unnamed bipolar auxiliary channels (``BIP1``..``BIP24``) present
-    in the raw ``.set`` are dropped by default (kept as ``misc`` when
-    ``return_all_modalities`` is set); only the 64 scalp electrodes are exposed.
+    observation (MO) and motor imagery (MI), recorded with a 64-channel ANT Neuro
+    system at 1000 Hz. The loader exposes the single-handed ``dribble`` task, the
+    only one with pure single-state trials: 1 s trials labelled by the EEGLAB
+    markers ``A11`` (observation) and ``A22`` (imagery), about 120 per class;
+    combined, rest and static markers are ignored, and exact duplicate markers
+    (subjects 20, 25, 27) are dropped. The ``ballpass`` and ``passing`` tasks hold
+    only compound MO/MI sequences and are not loaded. The 24 unnamed bipolar
+    ``BIP*`` channels are dropped unless ``return_all_modalities=True`` (then
+    ``misc``).
 
     References
     ----------
@@ -230,104 +197,56 @@ class Han2026(BaseDataset):
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
-        """Download the subject's dribble ``.set`` file and return its path.
-
-        Parameters
-        ----------
-        subject : int
-            Subject number (1-35).
-        path : None | str
-            Storage location override.
-        force_update : bool
-            Re-download even if a local copy exists.
-        update_path : bool | None
-            Unused, kept for API compatibility.
-        verbose : bool, str, int, or None
-            Verbosity level.
-
-        Returns
-        -------
-        list of str
-            Single-element list with the path to the downloaded ``.set`` file.
-        """
+        """Download the subject's dribble ``.set`` file and return ``[path]``."""
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
-
         subj_str = f"sub-{subject:03d}"
         url = f"{_S3_BASE}/{subj_str}/{subj_str}_task-{_TASK}_eeg.set"
-        set_path = dl.data_dl(url, self.code, path, force_update, verbose)
-        return [str(set_path)]
+        return [str(dl.data_dl(url, self.code, path, force_update, verbose))]
 
     def _get_single_subject_data(self, subject):
-        """Return the data of a single subject.
-
-        Parameters
-        ----------
-        subject : int
-            Subject number (1-35).
-
-        Returns
-        -------
-        dict
-            ``{"0": {"0": Raw}}`` for the single dribble recording, with the
-            motor-observation and motor-imagery trial markers renamed to their
-            class labels.
-        """
-        set_path = Path(self.data_path(subject)[0])
-
+        """Return ``{"0": {"0": Raw}}`` for the subject's dribble recording."""
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            raw = mne.io.read_raw_eeglab(str(set_path), preload=True, verbose=False)
+            raw = mne.io.read_raw_eeglab(
+                self.data_path(subject)[0], preload=True, verbose=False
+            )
 
-        # The .set carries 64 scalp EEG channels plus 24 unnamed bipolar
-        # auxiliary channels (BIP1..BIP24). Mark the aux channels as misc and
-        # drop them unless all modalities are requested.
+        # 24 unnamed bipolar auxiliary channels (BIP1..BIP24) are misc.
         bip = [ch for ch in raw.ch_names if ch.startswith("BIP")]
-        if bip:
-            raw.set_channel_types(dict.fromkeys(bip, "misc"))
-            if not self.return_all_modalities:
-                raw.drop_channels(bip)
+        raw.set_channel_types(dict.fromkeys(bip, "misc"))
+        if not self.return_all_modalities:
+            raw.drop_channels(bip)
 
-        # Rename the two pure single-state trial markers to their class labels.
-        # events_from_annotations (used downstream by MOABB) then matches on
-        # these descriptions; every other marker is ignored.
+        # Rename the two pure trial markers to their class labels; every other
+        # marker is ignored downstream by events_from_annotations.
         desc = raw.annotations.description.astype("<U25")
         for marker, name in _MARKER_TO_CLASS.items():
             desc[desc == marker] = name
         raw.annotations.description = desc
         self._drop_duplicate_trial_annotations(raw)
 
-        # standard_1005 places 63/64 scalp channels; the duplicate "Oz_1"
-        # export artifact has no standard position and is left unplaced.
+        # standard_1005 places 63/64 scalp channels ("Oz_1" stays unplaced).
         raw.set_montage(
             make_standard_montage("standard_1005"), on_missing="ignore", match_case=False
         )
-
         return {"0": {"0": raw}}
 
     @staticmethod
     def _drop_duplicate_trial_annotations(raw):
         """Remove exact duplicate pure-condition annotations.
 
-        Subjects 20, 25, and 27 each contain a duplicated ``A11`` EEGLAB
-        marker at one onset.  Retaining both produces duplicate windows in
-        downstream consumers.  Only same-onset, same-class duplicates are
-        removed; distinct labels at an onset remain visible as a data error.
+        Subjects 20, 25, and 27 each contain a duplicated ``A11`` EEGLAB marker at
+        one onset, which would duplicate windows downstream. Only same-onset,
+        same-class duplicates are removed; distinct labels at an onset remain
+        visible as a data error.
         """
         class_names = set(_MARKER_TO_CLASS.values())
-        seen = set()
-        duplicates = []
-        for index, (onset, duration, description) in enumerate(
-            zip(
-                raw.annotations.onset,
-                raw.annotations.duration,
-                raw.annotations.description,
-            )
-        ):
-            key = (onset, duration, description)
-            if description in class_names and key in seen:
+        seen, duplicates = set(), []
+        ann = raw.annotations
+        for index, key in enumerate(zip(ann.onset, ann.duration, ann.description)):
+            if key[2] in class_names and key in seen:
                 duplicates.append(index)
             else:
                 seen.add(key)
-        if duplicates:
-            raw.annotations.delete(duplicates)
+        raw.annotations.delete(duplicates)

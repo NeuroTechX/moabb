@@ -1,21 +1,13 @@
-"""Farabbi2020 Motor-Imagery EEG dataset during robot-arm control.
+"""Farabbi2020 Motor-Imagery EEG dataset during robot-arm control."""
 
-Farabbi, A., Ghiringhelli, F., Mainardi, L., Sanches, J. M., Moreno, P.,
-Santos-Victor, J., Figueiredo, P., and Vourvopoulos, A. (2020).
-"Motor-Imagery EEG Dataset During Robot-Arm Control."
-Data DOI: 10.5281/zenodo.5882500
-"""
-
-import logging
 import warnings
-import zipfile
 from pathlib import Path
 
 import mne
 from mne.channels import make_standard_montage
 
-from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
+from moabb.datasets.batista2022 import _EEG_CHANNELS, _download_and_extract
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
     BCIApplicationMetadata,
@@ -32,84 +24,26 @@ from moabb.datasets.metadata.schema import (
 )
 
 
-log = logging.getLogger(__name__)
-
-# Per-subject ZIPs (01.zip .. 12.zip). The plain /files/<name> endpoint serves
-# the bytes directly and yields a distinct local filename per subject, unlike
-# the /content endpoint which would collide on the name "content".
+# Per-subject ZIPs (01.zip .. 12.zip). The plain /files/<name> endpoint yields a
+# distinct local filename per subject, unlike the colliding /content endpoint.
 ZENODO_BASE = "https://zenodo.org/records/5882500/files"
 
-# 32 EEG channel names in acquisition order (from chanlocs.locs, actiCAP 10-20).
-_EEG_CHANNELS = [
-    "Fp1",
-    "Fz",
-    "F3",
-    "F7",
-    "FT9",
-    "FC5",
-    "FC1",
-    "C3",
-    "T7",
-    "TP9",
-    "CP5",
-    "CP1",
-    "Pz",
-    "P3",
-    "P7",
-    "O1",
-    "Oz",
-    "O2",
-    "P4",
-    "P8",
-    "TP10",
-    "CP6",
-    "CP2",
-    "Cz",
-    "C4",
-    "T8",
-    "FT10",
-    "FC6",
-    "FC2",
-    "F4",
-    "F8",
-    "Fp2",
-]
-
-# 3 accelerometer channels trailing the EEG montage.
+# 3 accelerometer channels trailing the 32 EEG channels (same LiveAmp/actiCAP
+# layout as Batista2022, from chanlocs.locs).
 _ACC_CHANNELS = ["ACC_X", "ACC_Y", "ACC_Z"]
 
 
 class Farabbi2020(BaseDataset):
     """Motor-Imagery EEG dataset during robot-arm control [1]_.
 
-    .. admonition:: Dataset summary
-
-        =========  =======  =======  ==========  =================  ============  ===============  ===========
-        Name         #Subj    #Chan    #Classes    #Trials / class    Trials len    Sampling rate      #Sessions
-        =========  =======  =======  ==========  =================  ============  ===============  ===========
-        Farabbi2020     12       32           2                            4s              250 Hz            3
-        =========  =======  =======  ==========  =================  ============  ===============  ===========
-
-    **Dataset description**
-
     Twelve healthy, BCI-naive subjects performed cue-based left- vs right-hand
-    motor imagery to control a Baxter robot arm reaching toward objects, over
-    three sessions on three consecutive days (each session lasting at most two
-    hours). EEG was recorded with a 32-channel LiveAmp system (actiCAP active
-    electrodes, Brain Products GmbH) at 250 Hz, plus 3 accelerometer channels.
-
-    Each session contains a resting-state recording (ignored here) and two motor
-    imagery feedback conditions -- a first-person and a third-person robot-arm
-    view -- each split into a training run and an online run. This loader exposes
-    the four motor-imagery runs per session (first-person training/online,
-    third-person training/online) and drops the resting-state recording.
-
-    Each trial lasted 6 seconds (2 seconds baseline followed by 4 seconds of
-    motor imagery), preceded by a green cross about one second before onset, with
-    inter-trial intervals randomly drawn between 1.5 and 3.5 seconds. Event code
-    769 marks the left-hand cue onset (class 1) and 770 the right-hand cue onset
-    (class 2). The exposed interval spans the 4-second imagery period following
-    the cue.
+    motor imagery to steer a Baxter robot arm, over three sessions on consecutive
+    days, recorded with a 32-channel LiveAmp at 250 Hz plus 3 accelerometer
+    channels. Each session has a first-person and a third-person view condition,
+    each with a training and an online run; the loader exposes these four runs and
+    drops the resting-state recording. GDF events 769/770 mark the left/right cue,
+    followed by the 4 s imagery period. Channels are renamed positionally to the
+    10-20 labels; only EEG is returned unless ``return_all_modalities=True``.
 
     References
     ----------
@@ -238,85 +172,39 @@ class Farabbi2020(BaseDataset):
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
-        """Return the path to the extracted per-subject ZIP directory.
-
-        Downloads the subject's ZIP from Zenodo and extracts it if needed.
-
-        Parameters
-        ----------
-        subject : int
-            Subject number (1-12).
-        path : None | str
-            Storage location override.
-        force_update : bool
-            Re-download even if a local copy exists.
-        update_path : bool | None
-            Unused, kept for API compatibility.
-        verbose : bool, str, int, or None
-            Verbosity level.
-
-        Returns
-        -------
-        list of str
-            Single-element list with the path to the extracted subject folder.
-        """
+        """Return ``[subject_dir]``, downloading and extracting the subject's ZIP."""
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
-
         url = f"{ZENODO_BASE}/{subject:02d}.zip"
-        zip_path = Path(dl.data_dl(url, self.code, path, force_update, verbose))
-        extract_dir = zip_path.parent
-
-        # The ZIP extracts a top-level "NN/" folder (e.g. "01/").
-        subject_dir = extract_dir / f"{subject:02d}"
-        if force_update or not subject_dir.is_dir():
-            log.info("Extracting %s ...", zip_path.name)
-            with zipfile.ZipFile(zip_path, "r") as zf:
-                zf.extractall(extract_dir)
-
-        return [str(subject_dir)]
+        folder = f"{subject:02d}"  # the ZIP holds a top-level "NN/" folder
+        return [
+            str(
+                _download_and_extract(url, self.code, folder, path, force_update, verbose)
+            )
+        ]
 
     def _get_single_subject_data(self, subject):
-        """Return the data of a single subject.
-
-        Parameters
-        ----------
-        subject : int
-            Subject number (1-12).
-
-        Returns
-        -------
-        dict
-            ``{session_str: {run_str: Raw}}`` with the four motor-imagery runs
-            per session (resting-state recordings are excluded).
-        """
+        """Return ``{session: {run: Raw}}`` with the four motor-imagery runs."""
         subject_dir = Path(self.data_path(subject)[0])
-
         # Session folders look like "01_session_1", "02_session_2", ...
         session_dirs = sorted(
-            (d for d in subject_dir.iterdir() if d.is_dir() and "session" in d.name),
-            key=lambda d: d.name,
+            d for d in subject_dir.iterdir() if d.is_dir() and "session" in d.name
         )
-
         montage = make_standard_montage("standard_1020")
         sessions = {}
         for sess_idx, sess_dir in enumerate(session_dirs):
-            # All motor-imagery GDFs in this session, excluding resting-state.
             gdf_files = sorted(
                 p for p in sess_dir.rglob("*.gdf") if "rest" not in p.name.lower()
             )
-            runs = {}
-            for run_idx, gdf_path in enumerate(gdf_files):
-                runs[str(run_idx)] = self._load_gdf(gdf_path, montage)
-            if runs:
-                sessions[str(sess_idx)] = runs
-
+            if gdf_files:
+                sessions[str(sess_idx)] = {
+                    str(i): self._load_gdf(f, montage) for i, f in enumerate(gdf_files)
+                }
         if not sessions:
             raise FileNotFoundError(
                 f"No motor-imagery GDF files found for subject {subject} "
                 f"under {subject_dir}"
             )
-
         return sessions
 
     def _load_gdf(self, gdf_path, montage):
@@ -325,34 +213,21 @@ class Farabbi2020(BaseDataset):
             warnings.simplefilter("ignore")
             raw = mne.io.read_raw_gdf(str(gdf_path), preload=True, verbose=False)
 
-        # The file carries 32 EEG + 3 ACC channels in acquisition order. Rename
-        # positionally to the standard 10-20 names from chanlocs.locs.
-        n_named = len(_EEG_CHANNELS) + len(_ACC_CHANNELS)
+        # 32 EEG + 3 ACC channels in acquisition order: rename positionally.
         target = _EEG_CHANNELS + _ACC_CHANNELS
-        rename_map = {}
-        for i, ch in enumerate(raw.ch_names[:n_named]):
-            if ch != target[i]:
-                rename_map[ch] = target[i]
-        if rename_map:
-            raw.rename_channels(rename_map)
-
-        # Mark accelerometer channels as misc.
-        acc_present = {ch: "misc" for ch in _ACC_CHANNELS if ch in raw.ch_names}
-        if acc_present:
-            raw.set_channel_types(acc_present)
-
+        raw.rename_channels({ch: t for ch, t in zip(raw.ch_names, target) if ch != t})
+        raw.set_channel_types({ch: "misc" for ch in _ACC_CHANNELS if ch in raw.ch_names})
         if not self.return_all_modalities:
             raw.pick([ch for ch in _EEG_CHANNELS if ch in raw.ch_names])
-
         raw.set_montage(montage, on_missing="ignore")
 
         # GDF event codes: 769 -> left-hand cue, 770 -> right-hand cue.
-        rename_ann = {
-            desc: label
-            for desc, label in (("769", "left_hand"), ("770", "right_hand"))
-            if desc in set(raw.annotations.description)
-        }
-        if rename_ann:
-            raw.annotations.rename(rename_ann)
-
+        present = set(raw.annotations.description)
+        raw.annotations.rename(
+            {
+                d: c
+                for d, c in (("769", "left_hand"), ("770", "right_hand"))
+                if d in present
+            }
+        )
         return raw
