@@ -34,7 +34,6 @@ from .metadata.schema import (
     SignalProcessingMetadata,
     Tags,
 )
-from .utils import resolve_montage_name
 
 
 log = logging.getLogger(__name__)
@@ -453,7 +452,7 @@ class Mainsah2025(BaseDataset):
         raw.rename_channels(rename)
 
         # Set montage (warn on missing channels rather than error)
-        raw.set_montage(resolve_montage_name("colin27_1020"), on_missing="warn")
+        raw.set_montage("colin27_1020", on_missing="warn")
 
         # Add synthetic stim channel
         stim_info = mne.create_info(["STI"], raw.info["sfreq"], ["stim"])
