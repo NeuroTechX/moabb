@@ -5,6 +5,7 @@ import warnings
 from pathlib import Path
 
 import mne
+import numpy as np
 from mne.channels import make_standard_montage
 
 from moabb.datasets import download as dl
@@ -27,100 +28,48 @@ from moabb.datasets.metadata.schema import (
 from .utils import safe_extract_tar
 
 
-# Zenodo record 841764 (DOI 10.5281/zenodo.841764). Each pilot is a single
-# gzip-compressed tar archive. The /records/<id>/files/<name> endpoint yields a
-# distinct local filename per pilot, unlike the API /content endpoint which
-# would collide on the name "content".
+# Zenodo record 841764: one tar.gz per pilot. The /files/<name> endpoint gives a
+# distinct local filename per pilot (the API /content endpoint would collide).
 PERDIKIS2018_BASE = "https://zenodo.org/records/841764/files/{name}?download=1"
 
-# The two Cybathlon 2016 BCI-race pilots (both tetraplegic). Subject index ->
-# pilot code used both in the archive name and in the top-level folder.
+# Subject -> pilot code (archive name and top-level folder).
 _PILOTS = {1: "MA25VE", 2: "AN14VE"}
 
-# 16 EEG electrodes over the sensorimotor cortex, in acquisition order. The GDF
-# header stores only generic labels ("eeg:1" .. "eeg:16"); the electrode
-# identities are taken from the recording's Laplacian montage grid (a 4x5 grid
-# with one central frontal site plus full FC/C/CP rows) documented in the
-# per-pilot classifier .mat and named in the paper (S3A Fig).
-_EEG_CHANNELS = [
-    "Fz",
-    "FC3",
-    "FC1",
-    "FCz",
-    "FC2",
-    "FC4",
-    "C3",
-    "C1",
-    "Cz",
-    "C2",
-    "C4",
-    "CP3",
-    "CP1",
-    "CPz",
-    "CP2",
-    "CP4",
-]
+# The GDF header only has "eeg:1".."eeg:16"; electrode names follow the
+# Laplacian grid of the per-pilot classifier .mat and the paper (S3A Fig).
+_EEG_CHANNELS = "Fz FC3 FC1 FCz FC2 FC4 C3 C1 Cz C2 C4 CP3 CP1 CPz CP2 CP4".split()
 
-# Data-borne GDF event-type (TYP) codes for the class cues, mapped to labels.
-# These are the standard BioSig/CNBI motor-imagery cue codes, verified from the
-# real recordings: the 2-class online/race "bhbf" runs carry exactly {771, 773}
-# and drop 783, which identifies 783 as the rest class; 771 is the standard
-# "feet" code and 773 the remaining (both-hands) class.
+# GDF cue codes (BioSig/CNBI). The 2-class "bhbf" race runs carry only
+# {771, 773}, identifying 783 as rest; 771 is the standard feet code.
 _CLASS_CODES = {"771": "both_feet", "773": "both_hands", "783": "rest"}
 
-# Single-limb / tongue MI cue codes (left hand, right hand, tongue). Their
-# presence marks an exploratory taskset (e.g. mi_rlsf) outside the both-hands /
-# both-feet / rest label space, so such offline runs are skipped.
+# Left hand / right hand / tongue cues mark exploratory tasksets (e.g. mi_rlsf).
 _OTHER_MI_CODES = {"769", "770", "772"}
 
-# The published GDF 2.x files declare ``uV`` in their legacy physical-dimension
-# fields but leave the newer numeric unit codes at zero. MNE therefore applies
-# no SI scaling and exposes the microvolt numeric payload as though it were
-# volts. Convert only the 16 EEG channels to MNE's required SI volts.
+# The GDF 2.x files declare ``uV`` only in the legacy dimension fields (numeric
+# unit codes are zero), so MNE leaves the payload in microvolts.
 PERDIKIS2018_EEG_SCALE_TO_VOLTS = 1e-6
 
 
 class Perdikis2018(BaseDataset):
     """CNBI EPFL Cybathlon BCI-race motor-imagery dataset [1]_.
 
-    .. admonition:: Dataset summary
-
-        ============ ======= ======= ========== ================= ============ ============ ===========
-        Name         #Subj   #Chan   #Classes   #Trials/class     Trials len   Sampling     #Sessions
-        ============ ======= ======= ========== ================= ============ ============ ===========
-        Perdikis2018 2       16      3          variable          4 s          512 Hz       1
-        ============ ======= ======= ========== ================= ============ ============ ===========
-
     **Dataset description**
 
-    Longitudinal brain-computer interface (BCI) training and competition data
-    from the two tetraplegic pilots (codes ``MA25VE`` and ``AN14VE``) of team
-    Brain Tweakers (Defitech Chair in Brain-Machine Interface, CNBI, EPFL), who
-    took part in the BCI-race discipline of the first Cybathlon (Zurich, October
-    2016) [1]_. The pilots drove an avatar in the "BrainRunners" game by
-    delivering sustained kinesthetic motor-imagery commands.
+    BCI training and competition data of the two tetraplegic pilots (``MA25VE``,
+    ``AN14VE``) of team Brain Tweakers (CNBI, EPFL) in the BCI race of the first
+    Cybathlon (2016) [1]_; 16 sensorimotor electrodes (g.USBamp, 512 Hz, GDF).
 
-    EEG was recorded with a g.USBamp amplifier (g.tec, Austria) at 512 Hz from 16
-    electrodes covering the sensorimotor cortex, stored in GDF format following
-    the CNBI recording convention.
-
-    This loader exposes the **offline calibration recordings** of the
-    both-hands / both-feet / rest motor-imagery family. Runs are selected by
-    their data-borne cue codes rather than by file name (the taskset strings are
-    spelled inconsistently across pilots, e.g. ``mi_bhbfrst`` vs
-    ``mi_bhbfrest``): a run is kept when its GDF cue codes fall within
-    ``{771, 773, 783}`` (both-feet, both-hands, rest) and contain at least two of
-    these classes. Runs whose cues include single-limb or tongue imagery
-    (exploratory tasksets such as ``mi_rlsf``) are skipped, as are the
-    ``incomplete`` and ``corrupted`` sub-folders.
-
-    Each offline trial consists of a fixation cross (GDF code 786, ~3 s), a
-    1-second class cue (771 / 773 / 783), and a continuous-feedback period (GDF
-    code 781) of about 4 s during which the pilot performed the cued motor
-    imagery. The class labels live in the GDF event table (annotations); events
-    are anchored at the class-cue onset and the imagery interval is set to the
-    1-5 s window following the cue (the calibration classifier used a 1-6 s
-    analysis window).
+    Only the **offline calibration runs** of the both-hands / both-feet / rest
+    family are exposed. Runs are selected by their data-borne cue codes, not by
+    file name (taskset names are spelled inconsistently, e.g. ``mi_bhbfrst`` vs
+    ``mi_bhbfrest``): a run is kept when its cues lie within ``{771, 773, 783}``
+    and include at least two of them. Runs with single-limb or tongue cues (e.g.
+    ``mi_rlsf``) and the ``incomplete`` / ``corrupted`` folders are skipped.
+    Events are the class cues (after a ~3 s fixation, code 786), followed by ~4 s
+    of feedback (781); the interval is 1-5 s after the cue. The GDF header only
+    has generic ``eeg:<n>`` labels, so channels are renamed positionally, and
+    the microvolt payload (unscaled by MNE) is converted to volts.
 
     .. warning::
 
@@ -250,29 +199,7 @@ class Perdikis2018(BaseDataset):
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
-        """Return the path to the extracted per-pilot data folder.
-
-        Downloads the pilot's tar.gz archive from Zenodo and extracts it if
-        needed.
-
-        Parameters
-        ----------
-        subject : int
-            Subject number (1 for pilot MA25VE, 2 for pilot AN14VE).
-        path : None | str
-            Storage location override.
-        force_update : bool
-            Re-download even if a local copy exists.
-        update_path : bool | None
-            Unused, kept for API compatibility.
-        verbose : bool, str, int, or None
-            Verbosity level.
-
-        Returns
-        -------
-        list of str
-            Single-element list with the path to the extracted pilot folder.
-        """
+        """Download/extract the pilot's archive; return ``[pilot_folder]``."""
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
@@ -288,20 +215,7 @@ class Perdikis2018(BaseDataset):
         return [str(pilot_dir)]
 
     def _get_single_subject_data(self, subject):
-        """Return the offline motor-imagery data of a single subject.
-
-        Parameters
-        ----------
-        subject : int
-            Subject number (1 or 2).
-
-        Returns
-        -------
-        dict
-            ``{"0": {run_str: Raw}}`` -- one session whose runs are the pilot's
-            cue-based offline calibration recordings (both-hands / both-feet /
-            rest family), ordered chronologically.
-        """
+        """Return ``{"0": {run: Raw}}`` with the in-scope offline runs, in order."""
         pilot_dir = Path(self.data_path(subject)[0])
 
         # Offline calibration GDFs, excluding the incomplete/corrupted folders.
@@ -312,14 +226,8 @@ class Perdikis2018(BaseDataset):
         )
 
         montage = make_standard_montage("standard_1005")
-        runs = {}
-        run_idx = 0
-        for gdf_path in offline_files:
-            raw = self._read_calibration_run(gdf_path, montage)
-            if raw is not None:
-                runs[str(run_idx)] = raw
-                run_idx += 1
-
+        raws = [self._read_calibration_run(p, montage) for p in offline_files]
+        runs = {str(i): raw for i, raw in enumerate(r for r in raws if r is not None)}
         if not runs:
             raise FileNotFoundError(
                 f"No both-hands/both-feet/rest offline calibration runs found "
@@ -367,24 +275,25 @@ class Perdikis2018(BaseDataset):
             channel_wise=False,
         )
         raw.rename_channels(dict(zip(eeg_chs, _EEG_CHANNELS)))
-        drop = [ch for ch in raw.ch_names if ch not in _EEG_CHANNELS]
-        if drop:
-            raw.drop_channels(drop)
-
-        # Keep only the class-cue events, relabelled to class names.
-        onset, duration, desc = [], [], []
-        for ann in raw.annotations:
-            label = _CLASS_CODES.get(str(ann["description"]))
-            if label is not None:
-                onset.append(ann["onset"])
-                duration.append(ann["duration"])
-                desc.append(label)
-        raw.set_annotations(
-            mne.Annotations(onset=onset, duration=duration, description=desc)
-        )
+        raw.drop_channels([ch for ch in raw.ch_names if ch not in _EEG_CHANNELS])
+        _keep_class_cues(raw, _CLASS_CODES)
 
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             raw.set_montage(montage, match_case=False, on_missing="ignore")
 
         return raw
+
+
+def _keep_class_cues(raw, class_codes):
+    """Keep only the GDF class-cue annotations, relabelled to class names."""
+    ann = raw.annotations
+    keep = np.array([str(d) in class_codes for d in ann.description], dtype=bool)
+    raw.set_annotations(
+        mne.Annotations(
+            onset=ann.onset[keep],
+            duration=ann.duration[keep],
+            description=[class_codes[str(d)] for d in ann.description[keep]],
+        )
+    )
+    return raw
