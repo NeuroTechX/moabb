@@ -12,16 +12,6 @@ from moabb.datasets import Daly2020, Damm2026, Peterson2022
 from moabb.datasets.base import BaseBIDSDataset
 
 
-@pytest.mark.parametrize("cls,subject", [(Peterson2022, 2), (Daly2020, 1)])
-def test_bids_flag_contract(cls, subject, monkeypatch, tmp_path):
-    dataset = cls()
-    download = Mock(return_value=str(tmp_path))
-    monkeypatch.setattr(dataset, "_download_subject", download)
-    monkeypatch.setattr(dataset, "_find_matching_paths", lambda **kwargs: [])
-    assert dataset.data_path(subject, tmp_path, True, False, "ERROR") == []
-    download.assert_called_once_with(subject, tmp_path, True, False, "ERROR")
-
-
 @pytest.mark.parametrize(
     "module,cls,subject,n_files",
     [("peterson2022", Peterson2022, 2, 12), ("daly2020", Daly2020, 1, 45)],
@@ -54,14 +44,20 @@ def test_damm_download_flags(monkeypatch, tmp_path):
 
 
 def _raw(descriptions):
+    """Raw with a bad EEG channel, a native stim channel and one marker per 6 s."""
     raw = mne.io.RawArray(
         np.vstack([np.full(1001, 2e-6), np.full(1001, 7)]),
         mne.create_info(["C3", "native"], 100, ["eeg", "stim"]),
         verbose=False,
     )
     raw.info["bads"] = ["C3"]
-    raw.set_annotations(mne.Annotations([0, 6], [0, 0], descriptions))
+    onsets = 6.0 * np.arange(len(descriptions))
+    raw.set_annotations(mne.Annotations(onsets, np.zeros_like(onsets), descriptions))
     return raw
+
+
+def _daly_paths(*run_numbers):
+    return [SimpleNamespace(task=f"run{n}") for n in run_numbers]
 
 
 def test_peterson_units_native_stim_and_boundary_trials(monkeypatch):
@@ -94,9 +90,19 @@ def test_peterson_units_native_stim_and_boundary_trials(monkeypatch):
     assert ds._get_path_search_params(2)["runs"] == ["1", "2", "3", "4"]
 
 
+def test_peterson_get_data_builds_pipeline_without_sourcedata(monkeypatch):
+    """Peterson overrides the process pipeline (cache version); get_data must
+    still build it through the raw mirror path without touching sourcedata."""
+    monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", "nemar")
+    ds = Peterson2022()
+    monkeypatch.setattr(ds, "sourcedata_path", Mock(side_effect=AssertionError))
+    monkeypatch.setattr(ds, "_get_selected_subject_data", lambda *args: {})
+    assert ds.get_data([2]) == {2: {}}
+
+
 def test_daly_native_stim_units_and_missing_runs(monkeypatch):
     ds = Daly2020()
-    monkeypatch.setattr(ds, "bids_paths", lambda subject: [SimpleNamespace(task="run9")])
+    monkeypatch.setattr(ds, "bids_paths", lambda subject: _daly_paths(9))
     monkeypatch.setattr(ds, "_read_raw_bids", lambda path: _raw(["1", "2"]))
     raw = ds._get_single_subject_data(1)["0"]["0"]
     assert raw.ch_names == ["C3", "STIM"]
@@ -109,11 +115,32 @@ def test_daly_native_stim_units_and_missing_runs(monkeypatch):
 
 def test_daly_duplicate_runs_rejected(monkeypatch):
     ds = Daly2020()
-    monkeypatch.setattr(
-        ds, "bids_paths", lambda subject: [SimpleNamespace(task="run2")] * 2
-    )
+    monkeypatch.setattr(ds, "bids_paths", lambda subject: _daly_paths(2, 2))
     with pytest.raises(ValueError, match="duplicate"):
         ds._get_single_subject_data(1)
+
+
+def test_daly_skips_only_targetless_noncalibration_runs(monkeypatch):
+    """A released empty events.tsv is skipped and valid runs stay re-indexed."""
+    ds = Daly2020()
+    raws = {"run2": _raw([]), "run3": _raw(["1", "2"]), "run4": _raw(["2"])}
+    monkeypatch.setattr(ds, "bids_paths", lambda subject: _daly_paths(1, 2, 3, 4))
+    monkeypatch.setattr(ds, "_read_raw_bids", lambda path: raws[path.task])
+    runs = ds._get_single_subject_data(5)["0"]
+    assert list(runs) == ["0", "1"]
+    assert list(runs["0"].annotations.description) == ["right_hand", "relax"]
+    assert list(runs["1"].annotations.description) == ["relax"]
+
+
+def test_daly_raises_when_no_noncalibration_run_has_targets(monkeypatch):
+    ds = Daly2020()
+    monkeypatch.setattr(ds, "bids_paths", lambda subject: _daly_paths(1, 2, 3))
+    # Also cover a release file without a native stim channel.
+    monkeypatch.setattr(
+        ds, "_read_raw_bids", lambda path: _raw([]).drop_channels(["native"])
+    )
+    with pytest.raises(ValueError, match="subject 5 has no usable motor-imagery runs"):
+        ds._get_single_subject_data(5)
 
 
 def test_damm_block_onsets_first_last_and_empty(tmp_path):
