@@ -21,6 +21,8 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 
+from .utils import edge_boundary_annotations
+
 
 # Figshare article "EEG data of motor imagery for stroke" (Tianyu Jia, 2019),
 # data DOI 10.6084/m9.figshare.7636301. Each of the 15 subjects has two files,
@@ -249,8 +251,5 @@ class Jia2019(BaseDataset):
                 onset=onsets, duration=0.0, description=[lab for _, lab in labelled]
             )
         )
-        raw.set_annotations(
-            raw.annotations
-            + Annotations(onset=onsets[1:], duration=0.0, description="EDGE boundary")
-        )
+        raw.set_annotations(raw.annotations + edge_boundary_annotations(onsets[1:]))
         return raw

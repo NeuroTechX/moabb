@@ -1,6 +1,5 @@
 """Offline synthetic regression tests for the MATLAB MI loader batch."""
 
-import sys
 from types import SimpleNamespace
 from unittest.mock import MagicMock
 
@@ -11,6 +10,7 @@ import pytest
 from scipy.io import savemat
 
 from moabb.datasets import Jia2019, Ortiz2023, Yilmaz2024, ZjuMI2025
+from moabb.datasets import download as dl
 from moabb.datasets.preprocessing import SetRawAnnotations
 
 
@@ -20,22 +20,21 @@ from moabb.datasets.preprocessing import SetRawAnnotations
 def test_invalid_subject_and_download_flags(cls, count, monkeypatch, tmp_path):
     with pytest.raises(ValueError, match="Invalid subject"):
         cls().data_path(999)
-    mod = sys.modules[cls.__module__]
     calls = []
 
     def download(url, sign, path=None, force_update=False, verbose=None):
         calls.append((path, force_update, verbose))
         return str(tmp_path / "archive")
 
-    monkeypatch.setattr(mod.dl, "data_dl", download)
-    monkeypatch.setattr(mod.dl, "fs_get_file_list", lambda _: [])
+    monkeypatch.setattr(dl, "data_dl", download)
+    monkeypatch.setattr(dl, "fs_get_file_list", lambda _: [])
     monkeypatch.setattr(
-        mod.dl,
+        dl,
         "fs_get_file_id",
         lambda _: {"exp1-S1-left.mat": "1", "exp1-S1-right.mat": "2"},
     )
     if cls is Ortiz2023:
-        monkeypatch.setattr(mod.z, "ZipFile", MagicMock())
+        monkeypatch.setattr("zipfile.ZipFile", MagicMock())
     cls().data_path(
         1, path=str(tmp_path), force_update=True, update_path=False, verbose=False
     )

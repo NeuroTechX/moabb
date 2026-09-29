@@ -2,7 +2,7 @@
 
 import numpy as np
 import scipy.io as sio
-from mne import Annotations, create_info
+from mne import create_info
 from mne.channels import make_standard_montage
 from mne.io import RawArray
 
@@ -17,6 +17,8 @@ from moabb.datasets.metadata.schema import (
     ParticipantMetadata,
     Tags,
 )
+
+from .utils import edge_boundary_annotations, resolve_montage_name
 
 
 # Base URL of the MI4 subset on the Hugging Face dataset repository. The
@@ -208,13 +210,9 @@ class ZjuMI2025(BaseDataset):
             ch_types=["eeg"] * n_channels + ["stim"],
         )
         raw = RawArray(data=full, info=mne_info, verbose=False)
-        montage = make_standard_montage("standard_1005")
+        montage = make_standard_montage(resolve_montage_name("colin27_1005"))
         raw.set_montage(montage, on_missing="ignore", verbose=False)
         raw.set_annotations(
-            Annotations(
-                onset=np.arange(1, n_trials) * n_samples / SFREQ,
-                duration=0.0,
-                description="EDGE boundary",
-            )
+            edge_boundary_annotations(np.arange(1, n_trials) * n_samples / SFREQ)
         )
         return raw

@@ -1,16 +1,13 @@
 """Ortiz 2023 motor imagery during walking with a lower-limb exoskeleton dataset."""
 
 import warnings
-import zipfile as z
 from collections import defaultdict
 from pathlib import Path
-from zipfile import BadZipFile
 
 import mne
 import numpy as np
 from scipy.io import loadmat
 
-from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
@@ -21,6 +18,8 @@ from moabb.datasets.metadata.schema import (
     ParticipantMetadata,
     Tags,
 )
+
+from .utils import download_and_extract_zip, resolve_montage_name
 
 
 # Single Figshare archive (article 21185362, v2) holding the whole database.
@@ -177,21 +176,17 @@ class Ortiz2023(BaseDataset):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
-        path_zip = Path(dl.data_dl(ORTIZ2023_URL, self.code, path, force_update, verbose))
-        extract_dir = path_zip.parent / "MI_walking_figshare21185362"
-        if force_update or not (extract_dir / "EXPERIENCE").is_dir():
-            try:
-                with z.ZipFile(path_zip, "r") as zip_ref:
-                    zip_ref.extractall(extract_dir)
-            except BadZipFile:
-                warnings.warn(
-                    "Corrupted zip file detected, re-downloading...", stacklevel=2
-                )
-                # data_dl(force_update=True) replaces the corrupted file.
-                path_zip = dl.data_dl(ORTIZ2023_URL, self.code, path, True, verbose)
-                with z.ZipFile(path_zip, "r") as zip_ref:
-                    zip_ref.extractall(extract_dir)
-        return str(extract_dir)
+        experience = download_and_extract_zip(
+            ORTIZ2023_URL,
+            self.code,
+            "EXPERIENCE",
+            path,
+            force_update,
+            verbose,
+            extract_to="MI_walking_figshare21185362",
+            redownload_corrupted=True,
+        )
+        return str(experience.parent)
 
     def _make_raw(self, mat_file):
         """Build a continuous mne.Raw from one open-loop task .mat file."""
@@ -214,7 +209,9 @@ class Ortiz2023(BaseDataset):
         raw = mne.io.RawArray(data, info, verbose=False)
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            raw.set_montage("standard_1005", on_missing="ignore", verbose=False)
+            raw.set_montage(
+                resolve_montage_name("colin27_1005"), on_missing="ignore", verbose=False
+            )
 
         # Build annotations from the sample-wise task code channel.
         task = np.asarray(mat.task_EEG).ravel()
