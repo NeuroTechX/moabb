@@ -1,7 +1,6 @@
 """Pan2023 cross-session motor imagery dataset."""
 
 import h5py
-import mne
 import numpy as np
 from mne import create_info
 from mne.channels import make_standard_montage
@@ -17,6 +16,8 @@ from moabb.datasets.metadata.schema import (
     ParticipantMetadata,
     Tags,
 )
+
+from .utils import edge_boundary_annotations, resolve_montage_name
 
 
 # Harvard Dataverse "A cross-session motor imagery EEG dataset" (doi:10.7910/DVN/251NOW).
@@ -73,12 +74,10 @@ def _trials_to_raw(data, labels, ch_names, sfreq, cue_offset):
     )
     cont = data.reshape(n_channels, n_trials * n_samples) * 1e-6
     raw = RawArray(np.vstack([cont, stim]), info, verbose=False)
-    montage = make_standard_montage("standard_1005")
+    montage = make_standard_montage(resolve_montage_name("colin27_1005"))
     raw.set_montage(montage, on_missing="ignore", verbose=False)
     joins = np.arange(1, n_trials) * n_samples / sfreq
-    raw.set_annotations(
-        mne.Annotations(joins, np.zeros(len(joins)), ["EDGE boundary"] * len(joins))
-    )
+    raw.set_annotations(edge_boundary_annotations(joins))
     return raw
 
 

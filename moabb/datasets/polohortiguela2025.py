@@ -1,14 +1,11 @@
 """Polo-Hortiguela 2025 lower-limb motor imagery dataset."""
 
-import warnings
-import zipfile
 from pathlib import Path
 
 import mne
 import numpy as np
 from scipy.io import loadmat
 
-from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
@@ -19,6 +16,8 @@ from moabb.datasets.metadata.schema import (
     ParticipantMetadata,
     Tags,
 )
+
+from .utils import download_and_extract_zip, resolve_montage_name
 
 
 # Zenodo record 14672334 -- one zip per subject and per exoskeleton condition.
@@ -147,31 +146,16 @@ class PoloHortiguela2025(BaseDataset):
             stem = f"B{subject:02d}_S1_{condition}"
             # Every Zenodo "/content" URL would be cached as "content"; name it.
             url = POLOHORTIGUELA2025_BASE.format(fname=f"{stem}.zip")
-            for attempt in (0, 1):
-                zip_path = Path(
-                    dl.data_dl(
-                        url,
-                        self.code,
-                        path,
-                        force_update or attempt,
-                        verbose,
-                        fname=f"{stem}.zip",
-                    )
-                )
-                extract_dir = zip_path.parent / stem
-                if not (force_update or attempt) and extract_dir.is_dir():
-                    break
-                try:
-                    with zipfile.ZipFile(zip_path) as zf:
-                        zf.extractall(zip_path.parent)
-                    break
-                except zipfile.BadZipFile:
-                    if attempt:
-                        raise
-                    warnings.warn(
-                        "Corrupted zip file detected, re-downloading...", stacklevel=2
-                    )
-                    zip_path.unlink(missing_ok=True)
+            extract_dir = download_and_extract_zip(
+                url,
+                self.code,
+                stem,
+                path,
+                force_update,
+                verbose,
+                fname=f"{stem}.zip",
+                redownload_corrupted=True,
+            )
             paths.append(str(extract_dir))
         return paths
 
@@ -187,9 +171,9 @@ class PoloHortiguela2025(BaseDataset):
             ["eeg"] * 28 + ["eog"] * 4 + ["misc"] * 3,
         )
         raw = mne.io.RawArray(data, info, verbose=False)
-        with warnings.catch_warnings():  # MNE montage-name deprecation noise
-            warnings.simplefilter("ignore")
-            raw.set_montage("standard_1005", on_missing="ignore", verbose=False)
+        raw.set_montage(
+            resolve_montage_name("colin27_1005"), on_missing="ignore", verbose=False
+        )
 
         task = np.asarray(mat.task_EEG).ravel()
         onsets, durations, descriptions = [], [], []
