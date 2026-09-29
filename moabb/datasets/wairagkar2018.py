@@ -29,7 +29,7 @@ from .metadata.schema import (
     SignalProcessingMetadata,
     Tags,
 )
-from .utils import resolve_montage_name, safe_extract_zip
+from .utils import safe_extract_zip
 
 
 log = logging.getLogger(__name__)
@@ -285,7 +285,7 @@ class Wairagkar2018(BaseDataset):
 
         continuous = np.concatenate(all_segments, axis=1)
         raw = mne.io.RawArray(data=continuous, info=info, verbose=False)
-        montage = mne.channels.make_standard_montage(resolve_montage_name("colin27_1020"))
+        montage = mne.channels.make_standard_montage("colin27_1020")
         raw.set_montage(montage)
 
         return {"0": {"0": raw}}

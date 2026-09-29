@@ -60,7 +60,7 @@ requires-python = ">=3.11"
 dependencies = [
     "numpy>=2.0",
     "scipy>=1.9.3",
-    "mne>=1.10.0",
+    "mne>=1.13",
     "pandas>=1.5.2",
     "h5py>=3.10.0",
     "pymatreader>=1.2.2",

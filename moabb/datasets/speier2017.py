@@ -24,7 +24,6 @@ from .metadata.schema import (
     ParticipantMetadata,
     Tags,
 )
-from .utils import resolve_montage_name
 
 
 log = logging.getLogger(__name__)
@@ -417,7 +416,7 @@ class Speier2017(BaseDataset):
 
         info = mne.create_info(ch_names, sfreq, ch_types)
         raw = mne.io.RawArray(all_data, info, verbose=False)
-        raw.set_montage(resolve_montage_name("colin27_1005"), on_missing="warn")
+        raw.set_montage("colin27_1005", on_missing="warn")
 
         return raw
 
