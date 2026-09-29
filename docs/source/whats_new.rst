@@ -23,7 +23,7 @@ Version 1.8  (Source - GitHub)
 
 Enhancements
 ~~~~~~~~~~~~
-- Add Leeuwis2021, Li2026, MartinezPeon2024, OpenViBE and PardoGarcia2026 motor-imagery dataset loaders by `Bruno Aristimunha`_.
+- Add Leeuwis2021, Li2026, MartinezPeon2024, OpenViBE and PardoGarcia2026 motor-imagery dataset loaders by `Bruno Aristimunha`_ in :gh:`1193`.
 
 API changes
 ~~~~~~~~~~~
