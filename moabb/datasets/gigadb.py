@@ -26,6 +26,7 @@ from moabb.datasets.metadata.schema import (
 
 from . import download as dl
 from .base import BaseDataset
+from .utils import resolve_montage_name
 
 
 log = logging.getLogger(__name__)
@@ -313,7 +314,7 @@ class Cho2017(BaseDataset):
         emg_ch_names = ["EMG1", "EMG2", "EMG3", "EMG4"]
         ch_names = eeg_ch_names + emg_ch_names + ["Stim"]
         ch_types = ["eeg"] * 64 + ["emg"] * 4 + ["stim"]
-        montage = make_standard_montage("standard_1005")
+        montage = make_standard_montage(resolve_montage_name("colin27_1005"))
         imagery_left = data.imagery_left - data.imagery_left.mean(axis=1, keepdims=True)
         imagery_right = data.imagery_right - data.imagery_right.mean(
             axis=1, keepdims=True

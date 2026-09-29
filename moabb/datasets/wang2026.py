@@ -387,7 +387,7 @@ class Wang2026(BaseDataset):
                 continue
 
             raw = build_raw_from_epochs(
-                epochs, _CHANNELS, _SFREQ, events, "standard_1005", scale=_EEG_SCALE
+                epochs, _CHANNELS, _SFREQ, events, "colin27_1005", scale=_EEG_SCALE
             )
             raw.info["line_freq"] = 60.0
             raw.info["subject_info"] = {"his_id": f"{archive}/{source_subject}"}
