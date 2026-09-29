@@ -75,10 +75,17 @@
 - Consumes: `DatasetRecord`, `FetchResult`.
 - Produces: `compare_dataset(record, fetched) -> list[EvidenceRow]`; `EvidenceRow(field, moabb_value, source_value, quote, source_file, locator, verdict, confidence, note)`; `write_report(rows, out_dir)` writing `evidence.json` and `report.md`.
 - `verify_quote(quote: str, text_path: Path) -> bool` (whitespace-normalized substring search).
+- `propose_class_name(record, fetched) -> EvidenceRow` implementing the spec's
+  Naming rule: `official_name` from the record title/README when it matches
+  `\b[A-Z][A-Za-z0-9]{2,}\b` acronym patterns explicitly presented as the
+  dataset's name ("the XYZ dataset", "XYZ:"), else `Surname + Year` from the
+  Crossref/DataCite first author (accents stripped, CamelCase for compound
+  surnames). Only emitted for classes absent from `develop` (use the
+  `pr_map.json` produced by the parent, `'develop'` entries skipped).
 - Deterministic extractors in `checks.py`: `find_subjects(text)`, `find_sampling_rate(text)`, `find_channels(text)`, `find_sessions(text)`, `find_trials(text)`, `find_reference(text)`, `find_license(text)`; each returns `list[(value, quote, locator)]`.
 - Agent reading pass: `compare.py --agent-notes notes.json` accepts rows authored by a reading agent; rows failing `verify_quote` are dropped and logged.
 
-- [ ] Step 1: Write tests: fixture text with "20 healthy participants", "sampled at 512 Hz", "64 EEG channels"; assert match/mismatch verdicts against declared values; `test_conflict_keeps_both_quotes`; `test_unverified_quote_rejected`.
+- [ ] Step 1: Write tests: fixture text with "20 healthy participants", "sampled at 512 Hz", "64 EEG channels"; assert match/mismatch verdicts against declared values; `test_conflict_keeps_both_quotes`; `test_unverified_quote_rejected`; `test_propose_class_name` (Crossref first author "Pérez-Blanco" 2026 → `PerezBlanco2026`; README "the MILimbEEG dataset" → official `MILimbEEG`; develop class → no row).
 - [ ] Step 2: Run; expect failures.
 - [ ] Step 3: Implement extractors with unit-aware regexes (kHz→Hz, "sixty-four"→64 for 1–100) and the report writer (Markdown table sorted by verdict severity).
 - [ ] Step 4: Run tests; expect pass. Golden check on the three dry-run datasets; keep the outputs under `scripts/paper_audit/tests/golden/`.
@@ -104,7 +111,7 @@
 **Files:** existing worktrees under `~/Projects/moabb/.worktrees/`; develop-only datasets in a new worktree for `audit/metadata-paper-check`.
 
 - [ ] Step 1: Parent generates `pr_map.json` and dispatches one agent per group (same grouping as the 2026-09-30 branch refresh plus one develop group of 87 split in three).
-- [ ] Step 2: Each agent, per dataset: read `report.md`; for `mismatch` rows apply the fix in metadata/docstring/summary CSV; for loader behaviour rows, update synthetic tests and tag `needs_real_data_check`; for `conflict`/`unsupported` rows add a docstring note and list them in the group report.
+- [ ] Step 2: Each agent, per dataset: read `report.md`; for `mismatch` rows apply the fix in metadata/docstring/summary CSV; for `class_name` rows with a confident proposal, rename the class, module, code, registry, docs, tests and CSV rows consistently on the PR branch (never on develop classes); for loader behaviour rows, update synthetic tests and tag `needs_real_data_check`; for `conflict`/`unsupported` rows add a docstring note and list them in the group report.
 - [ ] Step 3: Gates per branch: focused tests, `test_metadata.py`, offline `test_doi_validation.py`, pre-commit on touched files, `git diff --check`.
 - [ ] Step 4: Commit per dataset (`fix(<Dataset>): align metadata with <doi> (paper audit)`), normal push, record CI run IDs.
 - [ ] Step 5: Group report `.worktrees/paper-audit-20260930/group-<name>.md` with a "needs Bruno decision" list.

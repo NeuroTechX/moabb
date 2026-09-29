@@ -58,7 +58,33 @@ New MOABB tooling under `scripts/paper_audit/` (tracked, reusable):
    runs, channel counts/types, sampling_rate, reference/ground, hardware,
    filters, line_freq, trial/epoch window, n_trials & class labels, paradigm
    classification (imagery vs execution/observation), license, DOI/title/
-   authors/year consistency (with `doi_cache.json`), institution/country.
+   authors/year consistency (with `doi_cache.json`), institution/country,
+   and **class name** (see Naming rule below).
+
+## Naming rule (new datasets only; existing public names are frozen)
+
+MOABB's de-facto convention since the #455 standardization, verified against
+the 87 develop classes:
+
+1. If the paper or repository gives the dataset an **official proper name**
+   (competition ID, benchmark acronym, named corpus), use it, keeping the
+   established spelling: `BNCI2014_001`, `PhysionetMI`, `MAMEM1`, `EPFLP300`,
+   `Liu2020BETA` (author+year+official name when the name alone is ambiguous).
+2. Otherwise `FirstAuthorSurnameYear` in CamelCase without accents or spaces:
+   `Schirrmeister2017`, `GrosseWentrup2009`, `MartinezCagigal2023`,
+   `AguileraRodriguez2025`. Year = year of the primary paper; if only a data
+   record exists, the record's publication year.
+3. Variants of one release use a short suffix: paradigm (`Lee2019_MI`,
+   `GuttmannFlury2025_P300`), sub-study letters (`Dreyer2023A`), or the
+   official variant label (`WRCC2023_MI_A` only if `WRCC` is the dataset's
+   own name; otherwise author-year).
+4. Do not rename anything already released on `develop`. Renames are proposed
+   only for the 41 classes still in open PRs, where a rename costs nothing.
+
+The audit emits a `class_name` evidence row per new dataset: current name,
+proposed name, rule applied, and the paper/record quote (title/first author/
+official name) supporting it. Names whose official-name status is uncertain
+go to the decision list rather than being changed.
    The comparison is machine-assisted: deterministic regexes/table parsing for
    numeric fields, plus an LLM-agent reading pass **that must produce a verbatim
    quote for every mismatch**; quotes are re-verified by substring search in
