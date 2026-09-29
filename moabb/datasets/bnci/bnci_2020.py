@@ -145,7 +145,7 @@ def _load_data_001_2020(
         ch_types,
         sfreq,
         verbose=verbose,
-        montage="standard_1005",
+        montage="colin27_1005",
         line_freq=50.0,
         meas_date=datetime(2020, 1, 1, tzinfo=timezone.utc),
         description=f"electrode_type={electrode_label}",
@@ -717,7 +717,7 @@ def _convert_attention_shift(filename, verbose=None):
         ch_types_full,
         sfreq,
         verbose=verbose,
-        montage="standard_1005",
+        montage="colin27_1005",
         line_freq=50.0,
         meas_date=datetime(2020, 1, 1, tzinfo=timezone.utc),
     )

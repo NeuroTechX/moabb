@@ -187,7 +187,7 @@ def _convert_run_001_2024(run, verbose=None):
         ch_types = ["eeg"] * n_chan
         montage = None
     else:
-        montage = "standard_1005"
+        montage = "colin27_1005"
 
     # Convert from microvolts to volts
     eeg_data = convert_units(eeg_data, from_unit="uV", to_unit="V")

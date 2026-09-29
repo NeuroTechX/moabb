@@ -336,7 +336,7 @@ class Kim2025BetaRange(BaseDataset):
                 ch_names,
                 srate,
                 event_ids,
-                "standard_1005",
+                "colin27_1005",
                 ch_types=ch_types,
                 onset_sample=onset_sample,
             )

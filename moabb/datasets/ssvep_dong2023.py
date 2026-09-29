@@ -302,7 +302,7 @@ class Dong2023(BaseDataset):
         data = np.reshape(data, (-1, n_channels, eeg.shape[1]))
 
         event_ids = np.repeat(np.arange(1, n_classes + 1), n_blocks)
-        raw = build_raw_from_epochs(data, self._ch_names, 250, event_ids, "standard_1005")
+        raw = build_raw_from_epochs(data, self._ch_names, 250, event_ids, "colin27_1005")
         return {"0": {"0": raw}}
 
     def data_path(
