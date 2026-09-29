@@ -169,6 +169,12 @@ from .zhou2020 import Zhou2020
 from .zuo2025 import Zuo2025
 
 
+from .wirawan2024 import Wirawan2024
+from .wrcc2023_mi_a import WRCC2023_MI_A
+from .wrcc2023_mi_b import WRCC2023_MI_B
+from .wrcc2023_mi_c import WRCC2023_MI_C
+
+
 # Call this last in order to make sure the dataset list, dict are populated with
 # the datasets imported in this file.
 _init_dataset()
