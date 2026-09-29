@@ -26,32 +26,9 @@ NEUROTUMBCI_BASE = "https://zenodo.org/records/18087806/files/"
 NEUROTUMBCI_SESSIONS = {1: [1, 2, 3, 4, 5], 2: [1, 2, 3]}
 
 # The 24 channel labels stored in the Smarting mobi EEG stream.
-NEUROTUMBCI_CHANNELS = [
-    "Fp1",
-    "Fp2",
-    "Fz",
-    "F1",
-    "F2",
-    "F3",
-    "F4",
-    "FC1",
-    "FC2",
-    "FC3",
-    "FC4",
-    "Cz",
-    "C1",
-    "C2",
-    "C3",
-    "C4",
-    "CPz",
-    "CP1",
-    "CP2",
-    "Pz",
-    "P3",
-    "P4",
-    "M1",
-    "M2",
-]
+NEUROTUMBCI_CHANNELS = (
+    "Fp1 Fp2 Fz F1 F2 F3 F4 FC1 FC2 FC3 FC4 Cz C1 C2 C3 C4 CPz CP1 CP2 Pz P3 P4 M1 M2"
+).split()
 
 # Cue-action strings (from the per-subject mapping file) to MOABB class labels.
 NEUROTUMBCI_LABELS = {
@@ -65,48 +42,20 @@ NEUROTUMBCI_LABELS = {
 class neuroTUMBCI(BaseDataset):
     """Motor imagery dataset from the neuroTUM 2024 Cybathlon BCI [1]_, [2]_.
 
-    .. admonition:: Dataset summary
+    Recorded by the neuroTUM student team (Technical University of Munich)
+    while developing a mobile online BCI for the 2024 Cybathlon BCI race [2]_.
+    Two pilots (one tetraplegic) wore a 24-channel Smarting mobi (mBrainTrain)
+    streaming at 250 Hz over Bluetooth; P1 has five sessions, P2 three.
 
-        ================  =======  =======  ==========  =================  ============  ===============  ===========
-        Name              #Subj    #Chan    #Classes    #Trials / class    Trials len    Sampling rate    #Sessions
-        ================  =======  =======  ==========  =================  ============  ===============  ===========
-        neuroTUMBCI             2       24           3               ~10             3s           250Hz          3-5
-        ================  =======  =======  ==========  =================  ============  ===============  ===========
-
-    **Dataset description**
-
-    This dataset was collected by the neuroTUM student team (Technical University
-    of Munich) while developing a mobile, online EEG-based brain-computer
-    interface for the 2024 Cybathlon BCI race, in collaboration with a tetraplegic
-    pilot [2]_. Two participants ("pilots") are included: P1 with 5 recording
-    sessions and P2 with 3 recording sessions.
-
-    EEG was recorded with the commercial 24-channel Smarting mobi device from
-    mBrainTrain, which streams the signal and cue markers to the acquisition
-    computer over Bluetooth. The signal is sampled at 250 Hz. The 24 channels are
-    Fp1, Fp2, Fz, F1, F2, F3, F4, FC1, FC2, FC3, FC4, Cz, C1, C2, C3, C4, CPz,
-    CP1, CP2, Pz, P3, P4, M1 and M2.
-
-    An arrow-cue paradigm was used. Each trial begins with a fixation cross
-    ("reset", 3 s), followed by a directional cue (arrow or circle, 1 s), after
-    which the screen turns black ("blackscreen") and the pilot performs the
-    corresponding mental task for 3 s, before a final 3 s reset. Three classes
-    were used per subject, chosen to maximise the pilot's own distinguishable
-    patterns, so the class set is subject-specific (defined in a per-subject
-    ``mapping.yaml`` file shipped with the data):
-
-    - **P1**: rest, right-hand motor imagery, legs (feet) motor imagery.
-    - **P2**: rest, left-hand motor imagery, right-hand motor imagery.
-
-    Epochs are extracted at the onset of the blackscreen/execution marker; the
-    default analysis interval covers the 3 s execution window. The raw signals
-    are stored unfiltered (with large DC drift removed by the authors' 4-36 Hz
-    filtering downstream); only labelled recordings are exposed here (the
-    separate one-minute calibration recordings are not loaded).
+    In each arrow-cue trial a 3 s fixation cross is followed by a 1 s cue and a
+    3 s black screen during which the pilot performs the cued task. Each pilot
+    used three classes chosen from their own most distinguishable patterns, read
+    from the per-subject ``mapping.yaml``: P1 rest / right hand / legs
+    (``feet``), P2 rest / left hand / right hand. Epochs start at the
+    black-screen marker; the separate calibration recordings are not loaded.
 
     References
     ----------
-
     .. [1] neuroTUM e.V. (2025). neuroTUM-BCI: Cybathlon Dataset. Zenodo.
        DOI: https://doi.org/10.5281/zenodo.18087806
 
@@ -124,7 +73,6 @@ class neuroTUMBCI(BaseDataset):
     reports the minimum session count.
 
     .. versionadded:: 1.8
-
     """
 
     METADATA = DatasetMetadata(
@@ -225,49 +173,20 @@ class neuroTUMBCI(BaseDataset):
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
-        """Return the local paths of the data files for a single subject.
-
-        Parameters
-        ----------
-        subject : int
-            The subject number to fetch data for.
-        path : None | str
-            Location of where to look for the data storing location. If None,
-            the environment variable or config parameter MNE_(dataset) is used.
-        force_update : bool
-            Force update of the dataset even if a local copy exists.
-        update_path : bool | None
-            Unused, kept for API compatibility.
-        verbose : bool, str, int, or None
-            If not None, override default verbose level (see mne.verbose()).
-
-        Returns
-        -------
-        list
-            The per-session XDF data files, followed by the subject mapping file.
-        """
+        """Return the subject's per-session XDF files, then its mapping file."""
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
-
-        paths = []
-        for session in NEUROTUMBCI_SESSIONS[subject]:
-            url = f"{NEUROTUMBCI_BASE}P{subject}_S{session}_data.xdf"
-            paths.append(
-                dl.data_dl(
-                    url, self.code, path=path, force_update=force_update, verbose=verbose
-                )
-            )
-        mapping_url = f"{NEUROTUMBCI_BASE}P{subject}_mapping.yaml"
-        paths.append(
+        names = [f"P{subject}_S{ses}_data.xdf" for ses in NEUROTUMBCI_SESSIONS[subject]]
+        return [
             dl.data_dl(
-                mapping_url,
+                NEUROTUMBCI_BASE + name,
                 self.code,
                 path=path,
                 force_update=force_update,
                 verbose=verbose,
             )
-        )
-        return paths
+            for name in [*names, f"P{subject}_mapping.yaml"]
+        ]
 
     def _load_mapping(self, mapping_path):
         """Parse a subject mapping file into ``{cue_string: moabb_label}``."""
@@ -296,22 +215,9 @@ class neuroTUMBCI(BaseDataset):
         return eeg_stream, marker_stream
 
     def _get_single_subject_data(self, subject):
-        """Return the data of a single subject.
-
-        Parameters
-        ----------
-        subject : int
-            The subject number to fetch data for.
-
-        Returns
-        -------
-        dict
-            ``{session: {"0": mne.io.Raw}}`` for every available session.
-        """
-        files = self.data_path(subject)
-        data_files, mapping_path = files[:-1], files[-1]
+        """Return ``{session: {"0": Raw}}`` for every session of the subject."""
+        *data_files, mapping_path = self.data_path(subject)
         label_map = self._load_mapping(mapping_path)
-
         info = mne.create_info(NEUROTUMBCI_CHANNELS, sfreq=250.0, ch_types="eeg")
         montage = mne.channels.make_standard_montage("standard_1020")
 
@@ -332,14 +238,8 @@ class neuroTUMBCI(BaseDataset):
                     onsets.append(stamp - t_start)
                     descriptions.append(label_map[cue])
 
-            annotations = mne.Annotations(
-                onset=onsets, duration=[0.0] * len(onsets), description=descriptions
-            )
-
             raw = mne.io.RawArray(data, info.copy(), verbose=False)
             raw.set_montage(montage, on_missing="ignore", verbose=False)
-            raw.set_annotations(annotations)
-
+            raw.set_annotations(mne.Annotations(onsets, 0.0, descriptions))
             sessions[str(idx)] = {"0": raw}
-
         return sessions

@@ -1,14 +1,4 @@
-"""Closed-loop motor imagery EEG (live recordings) from Shin, Suma and He (2022).
-
-Only the real recorded human EEG (the ``LIVE`` BCI2000 recordings) is exposed.
-The archive also ships a ``SIMULATED`` tree containing synthetic cursor-control
-telemetry produced by a Python BCI simulator (``.csv`` files, not EEG); those
-directories are deliberately ignored by this loader.
-
-Data DOI: 10.6084/m9.figshare.20383716
-Paper: Shin, Suma and He (2022), Front. Hum. Neurosci. 16:951591.
-DOI: 10.3389/fnhum.2022.951591
-"""
+"""Closed-loop motor imagery EEG (live recordings) from Shin, Suma and He (2022)."""
 
 import logging
 import zipfile
@@ -38,19 +28,15 @@ from .utils import safe_extract_zip
 
 log = logging.getLogger(__name__)
 
-# Figshare article 20383716 (v1) ships every subject in a single ~353 MB ZIP.
-# The direct file endpoint below serves "study-2022-data-anonymized.zip".
+# Figshare article 20383716 (v1): every subject in one ~353 MB ZIP
+# ("study-2022-data-anonymized.zip").
 _FIGSHARE_ZIP_URL = "https://ndownloader.figshare.com/files/36438960"
 
 # The g.Nautilus RESEARCH records 16 dry (g.SAHARA) EEG channels.
 _N_EEG = 16
 
-# BCI2000 ``TargetCode`` state -> event name.  The paradigm is a 1D left/right
-# (LR) center-out cursor task; the cued target is stored per-sample in the
-# ``TargetCode`` state (1 or 2, constant within a trial).  The TargetCode ->
-# hand mapping follows the He-lab SMR convention used for the identical LR task
-# in Stieger2021 (TargetCode 1 = right target / right-hand imagery,
-# TargetCode 2 = left target / left-hand imagery).
+# BCI2000 ``TargetCode`` state (constant within a trial) -> event name, following
+# the He-lab convention of the identical LR task in Stieger2021.
 _TARGETCODE_TO_EVENT = {1: "right_hand", 2: "left_hand"}
 
 # Online source (0.5-30 Hz) filtering was disabled during acquisition
@@ -62,58 +48,29 @@ _UV_TO_V = 1e-6
 class Shin2022(BaseDataset):
     """Closed-loop 1D left/right motor imagery EEG dataset (live recordings).
 
-    Dataset from [1]_ (data record [2]_).
+    Dataset from [1]_ (data record [2]_). Ten healthy adults performed a 1D
+    left/right center-out sensorimotor-rhythm cursor task under continuous
+    visual feedback, recorded with a 16-channel dry-electrode g.tec g.Nautilus
+    at 250 Hz through BCI2000. Each subject has one session of 11 runs of 24
+    trials (12 per class), one run per value of an online control parameter:
+    normalization bin width (``BW30``..``BW120``), maximum cursor velocity
+    (``CV200``..``CV350``) and trials carried for normalization (``NT0``,
+    ``NT24``, ``NT48``). These only change the online dynamics, not the task.
 
-    Ten healthy adults performed a sensorimotor-rhythm (SMR) brain-computer
-    interface task: a 1D left/right (LR) center-out cursor-control paradigm in
-    which the participant modulated left- vs right-hand motor imagery to drive a
-    cursor toward a left or right target under continuous visual feedback.  EEG
-    was recorded with a 16-channel g.tec g.Nautilus RESEARCH system using dry
-    g.SAHARA electrodes at 250 Hz through BCI2000.
+    Labels are data-borne: the cued class is the BCI2000 ``TargetCode`` state
+    and events are placed at the onset of the ``Feedback`` (active control)
+    period, whose variable length (target hit or 6 s timeout) is stored as the
+    annotation duration. Only the recorded ``LIVE`` EEG is loaded; the archive's
+    ``SIMULATED`` tree (synthetic cursor telemetry in ``.csv``) is not EEG.
 
-    Each participant contributed a single recording day (one session).  Within
-    that session, 11 runs were collected while sweeping three online
-    control-parameter families, one run per parameter value:
-
-    * ``BW`` - normalization bin width (30, 60, 90, 120 s): runs ``BW30``,
-      ``BW60``, ``BW90``, ``BW120``.
-    * ``CV`` - maximum cursor velocity (200, 250, 300, 350 px/s): runs
-      ``CV200``, ``CV250``, ``CV300``, ``CV350``.
-    * ``NT`` - number of trials carried forward for normalization (0, 24, 48):
-      runs ``NT0``, ``NT24``, ``NT48``.
-
-    These parameters only affect the *online* normalization and cursor dynamics;
-    the underlying motor-imagery task and its class labels are identical across
-    all 11 runs.  Every run contains 24 trials, balanced 12 left / 12 right.
-
-    Labels are data-borne: the cued class is read from the BCI2000
-    ``TargetCode`` state variable, and the active motor-imagery (cursor-control)
-    period is read from the ``Feedback`` state.  Each trial begins with a fixed
-    ~1.92 s target-presentation period followed by up to 6 s of feedback
-    control; feedback length is variable (a trial ends when the target is hit or
-    after a 6 s timeout), so the per-trial feedback duration is stored as the
-    annotation duration.  Events are placed at the feedback (active-control)
-    onset.
-
-    .. note::
-        The published archive additionally contains a ``SIMULATED`` tree with
-        synthetic cursor telemetry (``.csv``) generated by a Python BCI
-        simulator; it is **not** EEG and is not loaded by this class.  Only the
-        real recorded ``LIVE`` EEG (BCI2000 ``.dat`` files) is returned.
-
-    .. note::
-        Reading the BCI2000 ``.dat`` files requires the ``BCI2kReader``
-        package::
-
-            pip install "moabb[bci2000]"
+    Reading the ``.dat`` files requires ``pip install "moabb[bci2000]"``.
 
     Notes
     -----
-    The BCI2000 headers do not store electrode labels (``ChannelNames`` is
-    empty), so the 16 channels are named generically ``EEG1``..``EEG16`` and no
-    standard montage is applied.  The online spatial filter / linear classifier
-    stored in the headers identify channels 7 and 9 (``EEG7`` and ``EEG9``) as
-    the C3 / C4 sensorimotor control pair.
+    The BCI2000 headers store no electrode labels, so the channels are named
+    ``EEG1``..``EEG16`` and no montage is applied; the online classifier uses
+    ``EEG7`` / ``EEG9`` as the C3 / C4 control pair. Signals are converted from
+    microvolts to volts.
 
     References
     ----------
@@ -232,27 +189,6 @@ class Shin2022(BaseDataset):
             return_all_modalities=return_all_modalities,
         )
 
-    def _live_top_dir(self, zf, subject):
-        """Return the top-level LIVE folder name for ``subject`` in the ZIP.
-
-        LIVE folders are named ``S{NN}_<date>`` while the synthetic recordings
-        live under ``SIMULATED_S{NN}_<date>``; only the former is returned.
-        """
-        prefix = f"S{subject:02d}_"
-        live = sorted(
-            {
-                name.split("/")[0]
-                for name in zf.namelist()
-                if name.split("/")[0].startswith(prefix)
-                and not name.split("/")[0].startswith("SIMULATED")
-            }
-        )
-        if not live:
-            raise FileNotFoundError(
-                f"No LIVE recordings found for subject {subject} in the archive"
-            )
-        return live[0]
-
     def _read_bci2000_dat(self, dat_path):
         """Read a BCI2000 ``.dat`` file and return an MNE Raw with annotations."""
         try:
@@ -273,24 +209,17 @@ class Shin2022(BaseDataset):
         info = mne.create_info(ch_names=ch_names, sfreq=sfreq, ch_types="eeg")
         raw = mne.io.RawArray(data, info, verbose=False)
 
-        # Data-borne labels.  ``Feedback`` marks the active cursor-control
-        # (motor-imagery) period; ``TargetCode`` (constant within a trial) is
-        # the cued class.
+        # One event per ``Feedback`` block (zero-padded, so a block still open
+        # at the end of the file closes there), labelled by its ``TargetCode``.
         target = reader.states["TargetCode"].flatten().astype(int)
         feedback = reader.states["Feedback"].flatten().astype(int)
         edges = np.diff(np.r_[0, feedback == 1, 0].astype(int))
-        onsets = np.flatnonzero(edges == 1)
-        offsets = np.flatnonzero(edges == -1)
-
         onset_s, duration_s, description = [], [], []
-        for i, onset in enumerate(onsets):
-            code = int(target[onset])
-            if code not in _TARGETCODE_TO_EVENT:
-                continue
-            end = int(offsets[i]) if i < len(offsets) else len(feedback)
-            onset_s.append(onset / sfreq)
-            duration_s.append(max((end - onset) / sfreq, 0.0))
-            description.append(_TARGETCODE_TO_EVENT[code])
+        for onset, end in zip(np.flatnonzero(edges == 1), np.flatnonzero(edges == -1)):
+            if target[onset] in _TARGETCODE_TO_EVENT:
+                onset_s.append(onset / sfreq)
+                duration_s.append((end - onset) / sfreq)
+                description.append(_TARGETCODE_TO_EVENT[target[onset]])
 
         raw.set_annotations(
             mne.Annotations(onset_s, duration_s, description), verbose=False
@@ -300,20 +229,13 @@ class Shin2022(BaseDataset):
     def _get_single_subject_data(self, subject):
         """Return ``{session: {run: Raw}}`` for one subject (LIVE runs only)."""
         session_dir = Path(self.data_path(subject))
-
         runs = {}
         for condition in ("BW", "CV", "NT"):
-            condition_dir = session_dir / condition
-            if not condition_dir.is_dir():
-                continue
-            for dat_file in sorted(condition_dir.glob("*.dat")):
-                # MOABB requires every run key to begin with an integer. Keep
-                # the informative source stem (for example ``BW120``) after a
-                # stable sequential prefix.
+            for dat_file in sorted(session_dir.glob(f"{condition}/*.dat")):
+                # Run keys must start with an integer; keep the source stem.
                 runs[f"{len(runs)}{dat_file.stem}"] = self._read_bci2000_dat(
                     str(dat_file)
                 )
-
         if not runs:
             raise FileNotFoundError(
                 f"No .dat runs found for subject {subject} under {session_dir}"
@@ -323,26 +245,10 @@ class Shin2022(BaseDataset):
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
-        """Download the archive (once) and extract this subject's LIVE runs.
+        """Download the archive (once), extract this subject's LIVE ``.dat`` runs.
 
-        Parameters
-        ----------
-        subject : int
-            Subject number (1-10).
-        path : str | None
-            Custom download location.
-        force_update : bool
-            Force re-download / re-extraction.
-        update_path : None
-            Unused, kept for API compatibility.
-        verbose : bool | None
-            Verbosity level.
-
-        Returns
-        -------
-        str
-            Path to the subject's LIVE session directory (the folder that holds
-            the ``BW`` / ``CV`` / ``NT`` sub-directories of ``.dat`` runs).
+        Returns the LIVE session directory holding the ``BW`` / ``CV`` / ``NT``
+        run folders.
         """
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
@@ -351,29 +257,35 @@ class Shin2022(BaseDataset):
             dl.data_dl(_FIGSHARE_ZIP_URL, self.code, path, force_update, verbose)
         )
         extract_root = zip_path.parent
-
         with zipfile.ZipFile(zip_path) as zf:
-            live_top = self._live_top_dir(zf, subject)
+            # LIVE folders are ``S{NN}_<date>``; ``SIMULATED_S{NN}_...`` never match.
+            live = sorted(
+                {
+                    n.split("/")[0]
+                    for n in zf.namelist()
+                    if n.startswith(f"S{subject:02d}_")
+                }
+            )
+            if not live:
+                raise FileNotFoundError(
+                    f"No LIVE recordings found for subject {subject} in the archive"
+                )
             dat_members = [
-                zf.getinfo(name)
-                for name in zf.namelist()
-                if name.startswith(live_top + "/") and name.lower().endswith(".dat")
+                info
+                for info in zf.infolist()
+                if info.filename.startswith(live[0] + "/")
+                and info.filename.lower().endswith(".dat")
             ]
             if not dat_members:
                 raise FileNotFoundError(
-                    f"No .dat files for subject {subject} in {live_top}"
+                    f"No .dat files for subject {subject} in {live[0]}"
                 )
-
-            target_dir = extract_root / live_top
+            target_dir = extract_root / live[0]
             existing = list(target_dir.rglob("*.dat")) if target_dir.is_dir() else []
             if force_update or len(existing) < len(dat_members):
                 safe_extract_zip(zf, extract_root, members=dat_members)
-
-        dat_files = sorted((extract_root / live_top).rglob("*.dat"))
-        if not dat_files:
-            raise FileNotFoundError(
-                f"Extraction failed for subject {subject}: no .dat under {target_dir}"
-            )
         # .../S{NN}_<date>/S{NN}_<date>_LR_S1001/{BW,CV,NT}/<run>.dat
-        # parents[0] = condition dir (BW/CV/NT); parents[1] = LR session dir.
-        return str(dat_files[0].parents[1])
+        dat_files = sorted(target_dir.rglob("*.dat"))
+        if not dat_files:
+            raise FileNotFoundError(f"Extraction failed: no .dat under {target_dir}")
+        return str(dat_files[0].parents[1])  # .../<LR session>/{BW,CV,NT}/<run>.dat
