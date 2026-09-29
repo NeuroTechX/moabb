@@ -31,112 +31,38 @@ log = logging.getLogger(__name__)
 # 242 participants collected at Inner Mongolia University.
 LI2026_URL = "https://zenodo.org/records/20421767/files/MI_A_Dataset.zip"
 
-# Folder names inside the archive, one per body-part motor-imagery task.
-_TASKS = ["task1", "task2", "task3", "task4", "task5"]
-
-# MOABB run names must start with an integer (recording order) optionally
-# followed by an alphanumeric description.
-_RUN_NAMES = {
-    "task1": "0hand",
-    "task2": "1foot",
-    "task3": "2thumb",
-    "task4": "3indexfinger",
-    "task5": "4pinch",
+# Archive task folder -> (MOABB run name, class for cue code 1, class for code 2).
+# Run names start with the recording order. The two Classic-Arrow cue codes map
+# to the two sides of each task's body part following the authors' consistently
+# documented condition order ("Left ... MI" listed before "Right ... MI") in
+# every task-Task*_events.json.
+_TASKS = {
+    "task1": ("0hand", "left_hand", "right_hand"),
+    "task2": ("1foot", "left_foot", "right_foot"),
+    "task3": ("2thumb", "left_thumb", "right_thumb"),
+    "task4": ("3indexfinger", "left_index", "right_index"),
+    "task5": ("4pinch", "left_pinch", "right_pinch"),
 }
 
-# The two Classic-Arrow cue codes (1 = first-listed condition = left,
-# 2 = second-listed condition = right) map to the two sides of each task's body
-# part. Codes follow the authors' consistently documented condition order
-# ("Left ... MI" listed before "Right ... MI") in every task-Task*_events.json.
-_TASK_SIDES = {
-    "task1": ("left_hand", "right_hand"),
-    "task2": ("left_foot", "right_foot"),
-    "task3": ("left_thumb", "right_thumb"),
-    "task4": ("left_index", "right_index"),
-    "task5": ("left_pinch", "right_pinch"),
-}
-
-# Globally unique integer code per exposed class label.
+# Globally unique integer code per exposed class label (left_hand=1 ... right_pinch=10).
 _EVENTS = {
-    "left_hand": 1,
-    "right_hand": 2,
-    "left_foot": 3,
-    "right_foot": 4,
-    "left_thumb": 5,
-    "right_thumb": 6,
-    "left_index": 7,
-    "right_index": 8,
-    "left_pinch": 9,
-    "right_pinch": 10,
+    label: code
+    for code, label in enumerate(
+        (lab for _, *sides in _TASKS.values() for lab in sides), start=1
+    )
 }
 
 # 64 EEG channel labels in acquisition order (from the Curry .dpa SensorLabels).
+# fmt: off
 _EEG_CHANNELS = [
-    "FP1",
-    "FPZ",
-    "FP2",
-    "AF3",
-    "AF4",
-    "F7",
-    "F5",
-    "F3",
-    "F1",
-    "FZ",
-    "F2",
-    "F4",
-    "F6",
-    "F8",
-    "FT7",
-    "FC5",
-    "FC3",
-    "FC1",
-    "FCZ",
-    "FC2",
-    "FC4",
-    "FC6",
-    "FT8",
-    "T7",
-    "C5",
-    "C3",
-    "C1",
-    "CZ",
-    "C2",
-    "C4",
-    "C6",
-    "T8",
-    "M1",
-    "TP7",
-    "CP5",
-    "CP3",
-    "CP1",
-    "CPZ",
-    "CP2",
-    "CP4",
-    "CP6",
-    "TP8",
-    "M2",
-    "P7",
-    "P5",
-    "P3",
-    "P1",
-    "PZ",
-    "P2",
-    "P4",
-    "P6",
-    "P8",
-    "PO7",
-    "PO5",
-    "PO3",
-    "POZ",
-    "PO4",
-    "PO6",
-    "PO8",
-    "CB1",
-    "O1",
-    "OZ",
-    "O2",
-    "CB2",
+    "FP1", "FPZ", "FP2", "AF3", "AF4", "F7", "F5", "F3", "F1", "FZ", "F2", "F4",
+    "F6", "F8", "FT7", "FC5", "FC3", "FC1", "FCZ", "FC2", "FC4", "FC6", "FT8", "T7",
+    "C5", "C3", "C1", "CZ", "C2", "C4", "C6", "T8", "M1", "TP7", "CP5", "CP3", "CP1",
+    "CPZ", "CP2", "CP4", "CP6", "TP8", "M2", "P7", "P5", "P3", "P1", "PZ", "P2", "P4",
+    "P6", "P8", "PO7", "PO5", "PO3", "POZ", "PO4", "PO6", "PO8", "CB1", "O1", "OZ",
+    "O2", "CB2",
 ]
+# fmt: on
 
 # 5 non-EEG channels trailing the montage, with their MNE channel types. The
 # Trigger line is kept as ``misc`` (not ``stim``) so that MOABB reads the
@@ -148,50 +74,25 @@ _MISC_TYPES = {"HEO": "eog", "VEO": "eog", "EKG": "ecg", "EMG": "emg", "Trigger"
 class Li2026(BaseDataset):
     """Multi-paradigm motor-imagery EEG dataset (IMU-MI_A) [1]_.
 
-    .. admonition:: Dataset summary
-
-        =========  =======  =======  ==========  =================  ============  ===============  ===========
-        Name         #Subj    #Chan    #Classes    #Trials / class    Trials len    Sampling rate      #Sessions
-        =========  =======  =======  ==========  =================  ============  ===============  ===========
-        Li2026           5       64          10                 12            4s           1000 Hz            1
-        =========  =======  =======  ==========  =================  ============  ===============  ===========
-
     **Dataset description**
 
     Motor-imagery EEG covering diverse cognitive states, recorded with a
-    64-channel Neuroscan system (10-20 layout, Cz reference, forehead ground)
-    at 1000 Hz, with two synchronous EOG channels (HEO, VEO), one ECG channel
-    (EKG), one EMG channel and a Trigger channel. The public Zenodo release is a
-    five-subject sample (subjects Sub_01, Sub_50, Sub_100, Sub_150, Sub_200) of a
-    larger dataset of 242 participants that the authors provide on request.
+    64-channel Neuroscan system at 1000 Hz plus HEO/VEO (EOG), EKG, EMG and
+    Trigger channels. The public Zenodo release is a five-subject sample
+    (Sub_01, Sub_50, Sub_100, Sub_150, Sub_200) of a 242-participant dataset
+    available on request. Each subject performed five left/right tasks (hand,
+    foot, thumb, index finger, index-thumb pinch), exposed as five runs of one
+    session; trials are labelled by body part and side (ten classes).
 
-    Each subject performed five motor-imagery tasks, one per recording file,
-    spanning gross and fine movements: left/right hand (``task1``), left/right
-    foot (``task2``), left/right thumb (``task3``), left/right index finger
-    (``task4``) and left/right index-thumb pinch (``task5``). This loader exposes
-    the five tasks as five runs of a single session, and labels every trial by
-    its body part and side, giving ten distinct classes overall (two per task).
-
-    Each recording contains two paradigms run back to back and separated by a
-    boundary marker (codes 800000/800001):
-
-    - **Classic Arrow paradigm**: a 1 s fixation, a 1 s left/right arrow cue and a
-      4 s imagery period, with one cue marker per trial (code 1 = left, code 2 =
-      right, 12 trials per side). This loader epochs these clean, one-per-trial
-      cues by default; the marker cadence is 5.0 s and the exposed interval spans
-      a 4 s imagery window from the cue.
-    - **Cue-Execution Dual-Stage paradigm**: a longer trial adding a countdown and
-      a slight real movement after imagery (base code 3 = left, 4 = right, 17
-      trials per side, plus phase sub-markers 13/23/33 and 14/24/34). These
-      markers are preserved in ``raw.annotations`` but are not epoched by default,
-      because the released sample's marker-to-trial timing does not match the
-      documented 10 s trial structure and the numeric-to-side mapping cannot be
-      verified from the shipped files.
-
-    Data are Compumedics Neuroscan Curry files (``.cdt`` plus ``.cdt.dpa`` and
-    ``.cdt.ceo`` sidecars) read with :func:`mne.io.read_raw_curry`; per-trial
-    event codes live in the ``.cdt.ceo`` event file. Electrode positions are the
-    real 3-D coordinates stored in the Curry files.
+    Each recording holds two paradigms separated by a boundary marker
+    (800000/800001). Only the **Classic Arrow** cues (code 1 = left, 2 = right,
+    12 trials per side; 1 s fixation, 1 s cue, 4 s imagery) are labelled and
+    epoched. The **Cue-Execution Dual-Stage** markers (3/4 and phase markers
+    13/23/33, 14/24/34) stay in ``raw.annotations`` unlabelled, because the
+    released sample's marker timing does not match the documented 10 s trial
+    and their side mapping cannot be verified. Curry files are read with
+    :func:`mne.io.read_raw_curry`, or with a float32 sidecar reader when the
+    optional ``curryreader`` dependency is missing.
 
     References
     ----------
@@ -306,26 +207,9 @@ class Li2026(BaseDataset):
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
-        """Download/extract the shared archive and return the subject's files.
+        """Return the five ``.cdt`` paths (one per task) of a subject.
 
-        Parameters
-        ----------
-        subject : int
-            Subject number (1-5), addressing the five sampled participants in
-            ascending file order (Sub_01, Sub_50, Sub_100, Sub_150, Sub_200).
-        path : None | str
-            Storage location override.
-        force_update : bool
-            Re-download even if a local copy exists.
-        update_path : bool | None
-            Unused, kept for API compatibility.
-        verbose : bool, str, int, or None
-            Verbosity level.
-
-        Returns
-        -------
-        list of str
-            The five ``.cdt`` file paths for this subject, one per task.
+        Subjects 1-5 address the sampled participants in ascending file order.
         """
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
@@ -356,24 +240,10 @@ class Li2026(BaseDataset):
         return paths
 
     def _get_single_subject_data(self, subject):
-        """Return the data of a single subject.
-
-        Parameters
-        ----------
-        subject : int
-            Subject number (1-5).
-
-        Returns
-        -------
-        dict
-            ``{"0": {run: Raw}}`` with one run per motor-imagery task (run names
-            ``0hand``, ``1foot``, ``2thumb``, ``3indexfinger``, ``4pinch``).
-        """
-        cdt_paths = self.data_path(subject)
-
-        runs = {}
-        for task, cdt_path in zip(_TASKS, cdt_paths):
-            runs[_RUN_NAMES[task]] = self._load_curry(cdt_path, task)
+        runs = {
+            _TASKS[task][0]: self._load_curry(cdt_path, task)
+            for task, cdt_path in zip(_TASKS, self.data_path(subject))
+        }
         return {"0": runs}
 
     @staticmethod
@@ -395,7 +265,7 @@ class Li2026(BaseDataset):
         # Rename the two Classic Arrow cue codes to this task's side labels
         # (1 -> left, 2 -> right). Dual-stage codes (3, 4 and phase markers) and
         # the paradigm-boundary markers are left untouched in the annotations.
-        left_label, right_label = _TASK_SIDES[task]
+        _, left_label, right_label = _TASKS[task]
         descriptions = set(raw.annotations.description)
         rename = {
             code: label

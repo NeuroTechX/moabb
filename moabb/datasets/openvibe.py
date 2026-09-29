@@ -27,74 +27,31 @@ OPENVIBE_BASE_URL = "https://openvibe.inria.fr/private/datasets/dataset-1/"
 CODE_LEFT = 769  # OVTK_GDF_Left  (0x301)
 CODE_RIGHT = 770  # OVTK_GDF_Right (0x302)
 
-# Channel names as they appear in the CSV header (the reference/nose channel is
-# stored as ``Ref_Nose``; it is the nasion ``Nz`` position).
-_CSV_CHANNELS = [
-    "C3",
-    "C4",
-    "Ref_Nose",
-    "FC3",
-    "FC4",
-    "C5",
-    "C1",
-    "C2",
-    "C6",
-    "CP3",
-    "CP4",
-]
-# Rename to standard montage names for MNE (Ref_Nose -> Nz).
-_CH_RENAME = {"Ref_Nose": "Nz"}
-_CHANNELS = [_CH_RENAME.get(c, c) for c in _CSV_CHANNELS]
+# EEG channels in CSV column order. Records 01-04 store the nasion reference as
+# ``Ref_Nose``, records 05-14 as its standard 10-10 name ``Nz``.
+_CHANNELS = "C3 C4 Nz FC3 FC4 C5 C1 C2 C6 CP3 CP4".split()
 
 
 class OpenViBE(BaseDataset):
     """Motor imagery dataset from the OpenViBE project [1]_.
 
-    .. admonition:: Dataset summary
-
-        =========  =======  =======  ==========  =================  ============  ===============  ===========
-        Name         #Subj    #Chan    #Classes    #Trials / class     Trials len    Sampling rate    #Sessions
-        =========  =======  =======  ==========  =================  ============  ===============  ===========
-        OpenViBE        14       11           2                 20            varies            512            1
-        =========  =======  =======  ==========  =================  ============  ===============  ===========
-
     **Dataset description**
 
-    This EEG dataset was recorded for the study of Brodu, Lotte and Lecuyer
-    (2012) [1]_ on band-power feature extraction for motor imagery based
-    brain-computer interfaces. It contains 14 motor imagery records of
-    left-hand versus right-hand imagined movements following the Graz
-    University protocol. Each record contains 40 trials (20 left hand, 20
-    right hand). The records were acquired over three different days of the
-    same month.
-
-    The signals were recorded with a Mindmedia NeXus32B amplifier at 512 Hz
-    in a common-average-reference mode over 11 channels: C3, C4, Nz (nasion
-    reference, stored as ``Ref_Nose`` in the CSV), FC3, FC4, C5, C1, C2, C6,
-    CP3 and CP4.
-
-    The data are distributed as bzip2-compressed CSV files produced by the
-    OpenViBE ``CSVFileWriter`` box. In the current (v2.0) format, the
-    stimulation labels are merged into the signal file (``Event Id`` /
-    ``Event Date`` / ``Event Duration`` columns). The left- and right-hand
-    imagery cues use the GDF stimulation codes ``OVTK_GDF_Left`` (769) and
-    ``OVTK_GDF_Right`` (770).
+    Recorded for Brodu, Lotte and Lecuyer (2012) [1]_ on band-power features for
+    motor-imagery BCIs: 14 records of left- versus right-hand imagined movement
+    following the Graz protocol (40 trials each, 20 per hand), acquired over
+    three days of the same month with a Mindmedia NeXus32B amplifier at 512 Hz
+    in common-average-reference mode over 11 channels.
 
     Notes
     -----
-    The original ``nicolas.brodu.net`` download URL is no longer available
-    (HTTP 404). This loader uses the working Inria OpenViBE mirror at
-    ``openvibe.inria.fr/private/datasets/dataset-1/``.
-
-    The trial labels are embedded in the signal CSV itself: the ``Event Id``
-    column carries the Graz stimulation codes, and the left/right cues use
-    ``OVTK_GDF_Left`` (769) and ``OVTK_GDF_Right`` (770). This was verified by
-    decompressing ``dataset-1/01-signal.csv.bz2`` and parsing the column
-    directly, which yields exactly 40 cue events per record (20 code 769 and
-    20 code 770), matching the 20-left / 20-right Graz design. The signal file
-    is therefore the authoritative source; the separate ``dataset-1_dep``
-    variant (``NN-signal_d.csv.bz2`` + ``NN-labels_d.csv.bz2``) is not needed
-    and is not used here.
+    The original ``nicolas.brodu.net`` URL is dead (HTTP 404); this loader uses
+    the Inria OpenViBE mirror and the current (v2.0) bzip2-compressed CSVs, in
+    which the stimulations are merged into the signal file. The ``Event Id``
+    column carries the Graz codes ``OVTK_GDF_Left`` (769) and ``OVTK_GDF_Right``
+    (770), verified to yield 40 cues (20 + 20) for record 01, so the separate
+    ``dataset-1_dep`` label files are not used. The nasion reference column
+    (``Ref_Nose`` in records 01-04) is exposed as ``Nz``.
 
     References
     ----------
@@ -150,98 +107,43 @@ class OpenViBE(BaseDataset):
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
-        """Return the local path to a single subject's signal file.
-
-        Parameters
-        ----------
-        subject : int
-            The subject (record) number, 1..14.
-        path : None | str
-            Location for the data storage folder. If None, the MNE default is
-            used.
-        force_update : bool
-            Force update of the dataset even if a local copy exists.
-        update_path : bool | None
-            Whether to update the MNE config path.
-        verbose : bool, str, int, or None
-            Verbosity level.
-
-        Returns
-        -------
-        list of str
-            A one-element list with the path to the subject's signal file.
-        """
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
         url = f"{OPENVIBE_BASE_URL}{subject:02d}-signal.csv.bz2"
-        local_path = dl.data_dl(
-            url, self.code, path=path, force_update=force_update, verbose=verbose
-        )
-        return [local_path]
+        return [
+            dl.data_dl(
+                url, self.code, path=path, force_update=force_update, verbose=verbose
+            )
+        ]
 
     def _get_single_subject_data(self, subject):
-        """Return the data for a single subject.
-
-        Parameters
-        ----------
-        subject : int
-            The subject (record) number, 1..14.
-
-        Returns
-        -------
-        dict
-            ``{"0": {"0": mne.io.Raw}}`` mapping session -> run -> raw.
-        """
-        file_path = self.data_path(subject)[0]
-
-        with bz2.open(file_path, "rt") as fobj:
+        with bz2.open(self.data_path(subject)[0], "rt") as fobj:
             df = pd.read_csv(fobj, low_memory=False)
-
-        # Records 01--04 name the nasion reference ``Ref_Nose``, while
-        # records 05--14 use its standard 10-10 name ``Nz``.  Normalize this
-        # one source-header alias before selecting the fixed channel order.
-        if "Ref_Nose" not in df.columns and "Nz" in df.columns:
-            df = df.rename(columns={"Nz": "Ref_Nose"})
+        df = df.rename(columns={"Ref_Nose": "Nz"})
 
         # Signal channels (11), converted from microvolts to volts.
-        signal = df[_CSV_CHANNELS].to_numpy(dtype=np.float64).T * 1e-6
-
-        # Build the raw object with a dedicated stim channel.
-        info = mne.create_info(
-            ch_names=list(_CHANNELS), sfreq=512.0, ch_types=["eeg"] * len(_CHANNELS)
-        )
+        info = mne.create_info(_CHANNELS, sfreq=512.0, ch_types="eeg")
+        signal = df[_CHANNELS].to_numpy(dtype=np.float64).T * 1e-6
         raw = mne.io.RawArray(signal, info, verbose=False)
 
-        # Parse the merged event column: rows carry one or more ':'-separated
-        # stimulation codes. Keep only the left/right imagery cues.
+        # Event cells carry one or more ':'-separated stimulation codes; keep
+        # only the left/right imagery cues.
+        mapping = {CODE_LEFT: "left_hand", CODE_RIGHT: "right_hand"}
         events = []
-        event_col = df["Event Id"]
-        for idx, cell in event_col.items():
-            if pd.isna(cell):
-                continue
+        for idx, cell in df["Event Id"].dropna().items():
             for tok in str(cell).split(":"):
-                tok = tok.strip()
-                if not tok:
-                    continue
                 try:
                     code = int(float(tok))
                 except ValueError:
                     continue
-                if code in (CODE_LEFT, CODE_RIGHT):
-                    events.append([int(idx), 0, code])
-
-        mapping = {CODE_LEFT: "left_hand", CODE_RIGHT: "right_hand"}
+                if code in mapping:
+                    events.append([idx, 0, code])
         if events:
-            events_arr = np.array(events, dtype=int)
-            annotations = mne.annotations_from_events(
-                events_arr, sfreq=raw.info["sfreq"], event_desc=mapping, verbose=False
+            raw.set_annotations(
+                mne.annotations_from_events(
+                    np.array(events, dtype=int), 512.0, mapping, verbose=False
+                )
             )
-            raw.set_annotations(annotations)
-
-        try:
-            raw.set_montage("standard_1005", on_missing="ignore", verbose=False)
-        except Exception:
-            pass
-
+        raw.set_montage("standard_1005", on_missing="ignore", verbose=False)
         return {"0": {"0": raw}}

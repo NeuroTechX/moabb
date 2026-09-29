@@ -108,16 +108,15 @@ def test_martinez_units_and_first_last_cue(tmp_path):
     assert raw.annotations.description.tolist() == ["level_70"] * 5
 
 
-def test_openvibe_accepts_nz_reference_header_alias(tmp_path, monkeypatch):
-    """Subjects 5--14 use ``Nz`` instead of the legacy ``Ref_Nose`` header."""
-    columns = [
-        "Nz" if channel == "Ref_Nose" else channel for channel in openvibe._CSV_CHANNELS
-    ]
+@pytest.mark.parametrize("reference", ["Ref_Nose", "Nz"])
+def test_openvibe_reference_header_variants(reference, tmp_path, monkeypatch):
+    """Records 01-04 name the nasion ``Ref_Nose``, records 05-14 ``Nz``."""
+    columns = [reference if ch == "Nz" else ch for ch in openvibe._CHANNELS]
     frame = pd.DataFrame(
         {column: np.arange(3, dtype=float) for column in columns}
         | {"Event Id": [np.nan, str(openvibe.CODE_LEFT), str(openvibe.CODE_RIGHT)]}
     )
-    path = tmp_path / "05-signal.csv.bz2"
+    path = tmp_path / "signal.csv.bz2"
     with bz2.open(path, "wt") as fout:
         frame.to_csv(fout, index=False)
 

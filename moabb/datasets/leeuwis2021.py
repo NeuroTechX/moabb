@@ -1,11 +1,5 @@
-"""Leeuwis2021 left- vs right-hand motor-imagery EEG dataset.
+"""Leeuwis2021 left- vs right-hand motor-imagery EEG dataset (DataverseNL)."""
 
-Leeuwis, N., Paas, A., and Alimardani, M. (2021). "Psychological and Cognitive
-Factors in Motor Imagery Brain Computer Interfaces." DataverseNL, V1.
-Data DOI: 10.34894/Z7ZVOD
-"""
-
-import logging
 import warnings
 
 import mne
@@ -24,98 +18,20 @@ from moabb.datasets.metadata.schema import (
 )
 
 
-log = logging.getLogger(__name__)
-
 # DataverseNL access API: a single file is fetched by its numeric datafile id.
 LEEUWIS2021_BASE_URL = "https://dataverse.nl/api/access/datafile/"
 
-# The 16 EEG channels, in the exact column order of the raw CSV header
-# ("F3","Fz","F4","FC5","FC1","FC2","FC6","T7","C3","C4","Cz","T8",
-#  "CP5","CP1","CP2","CP6").
-LEEUWIS2021_EEG_CHANNELS = [
-    "F3",
-    "Fz",
-    "F4",
-    "FC5",
-    "FC1",
-    "FC2",
-    "FC6",
-    "T7",
-    "C3",
-    "C4",
-    "Cz",
-    "T8",
-    "CP5",
-    "CP1",
-    "CP2",
-    "CP6",
-]
+# The 16 EEG channels, in the exact column order of the raw CSV header.
+LEEUWIS2021_EEG_CHANNELS = (
+    "F3 Fz F4 FC5 FC1 FC2 FC6 T7 C3 C4 Cz T8 CP5 CP1 CP2 CP6".split()
+)
 
 # Ordered run labels for the four runs shared by every subject: one calibration
 # run (no feedback) followed by three feedback runs.
 LEEUWIS2021_RUN_LABELS = ("calibration", "feedback_1", "feedback_2", "feedback_3")
 
-# Original per-subject identifiers (7-67, non-contiguous), in acquisition order.
-# MOABB subject n (1-55) maps to SUBJECTS[n - 1].
-SUBJECTS = [
-    7,
-    8,
-    9,
-    10,
-    11,
-    12,
-    13,
-    14,
-    15,
-    16,
-    17,
-    18,
-    19,
-    21,
-    22,
-    23,
-    24,
-    25,
-    26,
-    27,
-    28,
-    29,
-    30,
-    31,
-    32,
-    33,
-    34,
-    36,
-    37,
-    38,
-    40,
-    41,
-    42,
-    43,
-    44,
-    45,
-    46,
-    47,
-    48,
-    49,
-    50,
-    51,
-    52,
-    54,
-    55,
-    56,
-    57,
-    58,
-    59,
-    60,
-    61,
-    63,
-    65,
-    66,
-    67,
-]
-
-# Original subject id -> (calibration, feedback_1, feedback_2, feedback_3)
+# Original subject id (7-67, non-contiguous, in acquisition order; MOABB subject
+# n maps to the n-th key) -> (calibration, feedback_1, feedback_2, feedback_3)
 # DataverseNL datafile ids, resolved from the dataset files API (doi:10.34894/Z7ZVOD).
 # Subject 40 has irregular feedback-run file names
 # ("Subject40_eeg_1 (seq of run2).csv", "..._2.csv", "..._3.csv"); the per-trial
@@ -179,6 +95,8 @@ _FILE_IDS = {
     67: (100007, 100054, 99945, 99931),
 }
 
+SUBJECTS = list(_FILE_IDS)
+
 # Per-trial class code in the CSV "class" column -> MOABB event code.
 _CLASS_TO_EVENT = {-1: 1, 1: 2}
 
@@ -189,43 +107,21 @@ _SFREQ = 250.0
 class Leeuwis2021(BaseDataset):
     """Left- vs right-hand motor-imagery EEG dataset [1]_.
 
-    .. admonition:: Dataset summary
-
-        =========  =======  =======  ==========  =================  ============  ===============  ===========
-        Name         #Subj    #Chan    #Classes    #Trials / class    Trials len    Sampling rate      #Sessions
-        =========  =======  =======  ==========  =================  ============  ===============  ===========
-        Leeuwis2021     55       16           2                 80          5 s          250 Hz               1
-        =========  =======  =======  ==========  =================  ============  ===============  ===========
-
     **Dataset description**
 
-    Fifty-five novice BCI users performed a two-class, left- versus right-hand
-    motor-imagery task in a single session, as part of a study on the
-    psychological and cognitive factors underlying motor-imagery BCI
-    performance. Participants were BCI-naive students recruited at Tilburg
-    University (recruited cohort: 36 female / 21 male, mean age 20.71,
-    SD 3.52), all right-handed with (corrected-to-)normal vision.
+    Fifty-five BCI-naive, right-handed students at Tilburg University performed
+    a two-class, left- versus right-hand motor-imagery task in a single
+    session, as part of a study on psychological and cognitive predictors of
+    MI-BCI performance. Each session comprises one calibration run (no
+    feedback) and three feedback runs of 40 trials (20 per class), recorded
+    from 16 channels with a g.Nautilus amplifier at 250 Hz.
 
-    Each session comprises four runs of 40 trials each: one calibration run
-    (used to train the online classifier, no feedback) followed by three
-    feedback runs. Every run contains 20 left-hand and 20 right-hand trials, so
-    each subject contributes 160 labelled trials (80 per class).
-
-    EEG was recorded from 16 electrodes of the international 10-20 system (F3,
-    Fz, F4, FC1, FC5, FC2, FC6, C3, Cz, C4, CP1, CP5, CP2, CP6, T7, T8) with a
-    g.Nautilus amplifier (g.tec, Austria), referenced to the right earlobe and
-    grounded at AFz, and sampled at 250 Hz. Each trial in the raw CSV files
-    spans a fixed window from t = -3 s to t = +5 s relative to the cue (2000
-    samples); the cue is presented at t = 0 s and motor imagery follows. Every
-    CSV row carries a ``trial`` number (1-40) and a ``class`` code
-    (-1 = left hand, +1 = right hand), so the per-trial labels are read directly
-    from the data.
-
-    This loader concatenates the 40 trials of each run into a continuous
-    recording and inserts a stimulus channel with one event at each trial's cue
-    onset (t = 0). Zero-duration boundary annotations mark the joins between stored trials.
-    The inclusive analysis interval ends at 4.996 s and spans the 5 s of imagery
-    following the cue.
+    Each stored trial spans t = -3 s to +5 s around the cue and carries its
+    ``class`` label (-1 = left, +1 = right) in the CSV. This loader
+    concatenates the 40 trials of each run, writes one stimulus event at each
+    cue (t = 0) and marks the joins between stored trials with zero-duration
+    ``EDGE boundary`` annotations. The inclusive analysis interval ends at
+    4.996 s, spanning the 5 s of imagery after the cue.
 
     References
     ----------
@@ -330,73 +226,30 @@ class Leeuwis2021(BaseDataset):
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
-        """Return the four raw-CSV file paths for a single subject.
-
-        Downloads each of the subject's four runs (calibration + three feedback
-        runs) from DataverseNL if not already present.
-
-        Parameters
-        ----------
-        subject : int
-            The subject number to fetch data for (1-55).
-        path : None | str
-            Location of where to look for the data storing location. If None,
-            the environment variable or config parameter MNE_(dataset) is used.
-        force_update : bool
-            Force update of the dataset even if a local copy exists.
-        update_path : bool | None
-            Deprecated, unused.
-        verbose : bool, str, int, or None
-            If not None, override default verbose level.
-
-        Returns
-        -------
-        list of str
-            The four local CSV file paths, ordered
-            (calibration, feedback_1, feedback_2, feedback_3).
-        """
+        """Return the four run CSV paths (calibration, feedback 1-3)."""
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
-        original_id = SUBJECTS[subject - 1]
-        file_ids = _FILE_IDS[original_id]
-
-        paths = []
-        for file_id in file_ids:
-            url = f"{LEEUWIS2021_BASE_URL}{file_id}"
-            paths.append(dl.data_dl(url, self.code, path, force_update, verbose))
-        return paths
+        return [
+            dl.data_dl(
+                f"{LEEUWIS2021_BASE_URL}{file_id}", self.code, path, force_update, verbose
+            )
+            for file_id in _FILE_IDS[SUBJECTS[subject - 1]]
+        ]
 
     def _get_single_subject_data(self, subject):
-        """Return the data of a single subject.
-
-        Returns
-        -------
-        dict
-            ``{"0": {run_label: Raw}}`` with the four runs (calibration and the
-            three feedback runs) under the single session ``"0"``.
-        """
-        file_paths = self.data_path(subject)
-
-        runs = {}
-        for idx, (run_label, file_path) in enumerate(
-            zip(LEEUWIS2021_RUN_LABELS, file_paths)
-        ):
-            # MOABB requires the run key to start with an integer index
-            # (optionally followed by a letters+digits description); strip the
-            # underscore from labels like "feedback_1" -> "1feedback1".
-            runs[f"{idx}{run_label.replace('_', '')}"] = self._csv_to_raw(file_path)
-
+        # Run keys must start with an integer index followed by letters+digits:
+        # "feedback_1" -> "1feedback1".
+        runs = {
+            f"{idx}{label.replace('_', '')}": self._csv_to_raw(file_path)
+            for idx, (label, file_path) in enumerate(
+                zip(LEEUWIS2021_RUN_LABELS, self.data_path(subject))
+            )
+        }
         return {"0": runs}
 
     def _csv_to_raw(self, file_path):
-        """Read one run CSV and build a continuous Raw with a stim channel.
-
-        The 40 fixed-length trials are concatenated into one continuous signal;
-        an event marking the cue onset (t = 0 within each trial) is written to a
-        ``STI 014`` stimulus channel, using the per-trial ``class`` label
-        (-1 -> left hand -> code 1, +1 -> right hand -> code 2).
-        """
+        """Read one run CSV as a continuous Raw with a cue-onset stim channel."""
         df = pd.read_csv(file_path)
 
         # EEG data in microvolts -> Volts, shape (n_channels, n_samples).
@@ -418,7 +271,7 @@ class Leeuwis2021(BaseDataset):
             stim[0, cue] = _CLASS_TO_EVENT[int(cls[start])]
 
         data = np.vstack([eeg, stim])
-        ch_names = list(LEEUWIS2021_EEG_CHANNELS) + ["STI 014"]
+        ch_names = LEEUWIS2021_EEG_CHANNELS + ["STI 014"]
         ch_types = ["eeg"] * len(LEEUWIS2021_EEG_CHANNELS) + ["stim"]
 
         with warnings.catch_warnings():

@@ -72,118 +72,40 @@ PARDOGARCIA2026_EOG = ("HEOGn", "HEOGp", "VEOGn", "VEOGp")
 
 # 63 recording channels in acquisition order (59 EEG incl. the A1 mastoid, plus
 # 4 EOG), taken verbatim from the BrainVision headers.
+# fmt: off
 PARDOGARCIA2026_CHANNELS = [
-    "O2",
-    "OZ",
-    "O1",
-    "PO8",
-    "PO6",
-    "PO4",
-    "POZ",
-    "PO3",
-    "PO5",
-    "PO7",
-    "P8",
-    "P6",
-    "P4",
-    "P2",
-    "PZ",
-    "P1",
-    "P3",
-    "P5",
-    "P7",
-    "TP8",
-    "CP6",
-    "CP4",
-    "CP2",
-    "CPZ",
-    "CP1",
-    "CP3",
-    "CP5",
-    "TP7",
-    "HEOGn",
-    "HEOGp",
-    "VEOGn",
-    "VEOGp",
-    "FP1",
-    "FPZ",
-    "FP2",
-    "AF3",
-    "AF4",
-    "F7",
-    "F5",
-    "F3",
-    "F1",
-    "FZ",
-    "F2",
-    "F4",
-    "F6",
-    "F8",
-    "FC5",
-    "FC3",
-    "FC1",
-    "FCZ",
-    "FC2",
-    "FC4",
-    "FC6",
-    "T7",
-    "C5",
-    "C3",
-    "C1",
-    "CZ",
-    "C2",
-    "C4",
-    "C6",
-    "T8",
-    "A1",
+    "O2", "OZ", "O1", "PO8", "PO6", "PO4", "POZ", "PO3", "PO5", "PO7", "P8", "P6",
+    "P4", "P2", "PZ", "P1", "P3", "P5", "P7", "TP8", "CP6", "CP4", "CP2", "CPZ",
+    "CP1", "CP3", "CP5", "TP7", "HEOGn", "HEOGp", "VEOGn", "VEOGp", "FP1", "FPZ",
+    "FP2", "AF3", "AF4", "F7", "F5", "F3", "F1", "FZ", "F2", "F4", "F6", "F8", "FC5",
+    "FC3", "FC1", "FCZ", "FC2", "FC4", "FC6", "T7", "C5", "C3", "C1", "CZ", "C2",
+    "C4", "C6", "T8", "A1",
 ]
+# fmt: on
 
 
 class PardoGarcia2026(BaseDataset):
     """Mu/beta motor-imagery EEG in chronic MCA stroke and healthy controls [1]_.
 
-    .. admonition:: Dataset summary
-
-        ==============  =======  =======  ==========  =====================  ============  ===============  ===========
-        Name              #Subj    #Chan    #Classes    #Trials / class        Trials len    Sampling rate      #Sessions
-        ==============  =======  =======  ==========  =====================  ============  ===============  ===========
-        PardoGarcia2026      18       63           2       50 (ctrl) / 70 (pat)         1.5s          1000 Hz          1-2
-        ==============  =======  =======  ==========  =====================  ============  ===============  ===========
-
     **Dataset description**
 
-    EEG recorded during a cued, two-class hand motor-imagery task used to study mu
-    (8-12 Hz) and beta (12-30 Hz) oscillatory changes in chronic middle cerebral
-    artery (MCA) stroke patients and healthy controls. On each trial an image of
-    the grip to imagine is shown: a precision pinch (``pinch``, stimulus code 1)
-    or a closed fist (``fist``, stimulus code 2). The image starts a motor-imagery
-    and preparation phase; a later auditory go cue instructs overt execution. The
-    grip-to-code mapping is documented in the record file ``bdf_IMAGEN.txt``.
+    EEG recorded during a cued two-class hand motor-imagery task used to study
+    mu (8-12 Hz) and beta (12-30 Hz) changes in 10 chronic middle cerebral
+    artery (MCA) stroke patients (``PAC01``-``PAC10``) and 8 healthy controls
+    (``C01``, ``02``, ``C03``, ``CONTROL04``-``CONTROL08``), with a 63-channel
+    BrainVision system at 1000 Hz. Each trial shows an image of the grip to
+    imagine, a precision pinch (``pinch``, code 1) or a closed fist (``fist``,
+    code 2), as documented in the record file ``bdf_IMAGEN.txt``.
 
-    The cohort comprises 10 chronic MCA stroke patients (stems ``PAC01``-``PAC10``)
-    and 8 healthy controls (stems ``C01``, ``02``, ``C03`` and
-    ``CONTROL04``-``CONTROL08``), for 18 subjects in total. Patients were recorded
-    at baseline (session ``pre``) and, when available, again after a rehabilitation
-    programme (session ``post``); every patient has a ``post`` session except
-    patient 2 (lost to follow-up), so 9 of the 10 patients have two sessions.
-    Controls were recorded once (session ``pre`` only). Each session is exposed as
-    a single continuous run.
-
-    Signals were acquired with a 63-channel BrainVision system at 1000 Hz. The
-    montage holds 59 EEG electrodes (a 10-10 scalp layout plus the ``A1`` mastoid)
-    and 4 bipolar EOG channels (``HEOGn``, ``HEOGp``, ``VEOGn``, ``VEOGp``), which
-    this loader marks as ``eog``. Channel locations are not stored in the headers;
-    standard 10-05 template positions are attached at load time.
-
-    Each trial carries two markers of the same class: an image-onset cue
-    (``S 1``/``S 2``, taken as t = 0) and an auditory go-cue marker
-    (``S 11``/``S 22``) at roughly 2 s, after which the participant executes the
-    movement. The creator analysis manual's full 0-7 s image-locked epoch therefore
-    mixes imagery/preparation and overt execution. This adapter maps only the image
-    cues and exposes 0-1.5 s, ending just before the earliest observed go cue at
-    1.510 s. The conservative window keeps one event per trial and excludes overt
-    movement. Control recordings contain 50 trials per class and patient
-    recordings about 70.
+    Patients were recorded at baseline (session ``pre``) and after
+    rehabilitation (session ``post``), except patient 2 (lost to follow-up);
+    controls have ``pre`` only. Each session is one continuous run. The four
+    bipolar EOG channels are typed ``eog`` and standard 10-05 template
+    positions are attached. An auditory go-cue marker (``S 11``/``S 22``,
+    earliest at 1.510 s) starts overt execution, so this loader maps only the
+    image cues (``S 1``/``S 2``) and exposes 0-1.5 s, keeping one event per
+    trial and excluding overt movement. Control recordings hold 50 trials per
+    class, patient recordings about 70.
 
     References
     ----------
@@ -300,69 +222,21 @@ class PardoGarcia2026(BaseDataset):
             doi="10.5281/zenodo.19599465",
         )
 
-    def _download_recording(self, stem, path, force_update, verbose):
-        """Download the three BrainVision files of one recording.
-
-        Parameters
-        ----------
-        stem : str
-            Recording stem (e.g. ``"PAC01"`` or ``"PAC01-POST"``).
-        path : None | str
-            Storage location override forwarded to :func:`data_dl`.
-        force_update : bool
-            Re-download even if a local copy exists.
-        verbose : bool, str, int, or None
-            Verbosity level.
-
-        Returns
-        -------
-        str
-            Local path to the recording's ``.vhdr`` header file.
-        """
-        vhdr_path = None
-        # Fetch the payload (.eeg) and markers (.vmrk) before the header so that
-        # every sibling referenced by the .vhdr is present on disk once it lands.
-        for ext in (".eeg", ".vmrk", ".vhdr"):
-            url = f"{PARDOGARCIA2026_BASE_URL}/{stem}{ext}"
-            local = dl.data_dl(url, self.code, path, force_update, verbose)
-            if ext == ".vhdr":
-                vhdr_path = local
-        return vhdr_path
-
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
-        """Return the ``.vhdr`` paths of a single subject's session(s).
-
-        Parameters
-        ----------
-        subject : int
-            Subject number (1-18).
-        path : None | str
-            Location of where to look for the data storing location. If None, the
-            environment variable or config parameter MNE_(dataset) is used. If it
-            doesn't exist, the "~/mne_data" directory is used. If the dataset is
-            not found under the given path, the data will be automatically
-            downloaded to the specified folder.
-        force_update : bool
-            Force update of the dataset even if a local copy exists.
-        update_path : bool | None
-            Unused, kept for API compatibility.
-        verbose : bool, str, int, or None
-            If not None, override default verbose level (see mne.verbose()).
-
-        Returns
-        -------
-        list of str
-            One ``.vhdr`` path per session, ordered as in
-            ``PARDOGARCIA2026_SUBJECTS`` (``pre`` then, when present, ``post``).
-        """
+        """Return one ``.vhdr`` path per session (``pre`` then ``post``)."""
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
         paths = []
         for stem in PARDOGARCIA2026_SUBJECTS[subject].values():
-            paths.append(self._download_recording(stem, path, force_update, verbose))
+            # Fetch the payload (.eeg) and markers (.vmrk) before the header (the
+            # returned path) so its siblings are on disk once it lands.
+            for ext in (".eeg", ".vmrk", ".vhdr"):
+                url = f"{PARDOGARCIA2026_BASE_URL}/{stem}{ext}"
+                local = dl.data_dl(url, self.code, path, force_update, verbose)
+            paths.append(local)
         return paths
 
     def _load_raw(self, vhdr_path):
@@ -370,40 +244,27 @@ class PardoGarcia2026(BaseDataset):
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             raw = self._read_brainvision(vhdr_path)
-
-        # Mark the bipolar EOG derivations.
-        eog = {ch: "eog" for ch in PARDOGARCIA2026_EOG if ch in raw.ch_names}
-        if eog:
-            raw.set_channel_types(eog)
-
-        # The headers use upper-case names (e.g. "CZ", "FCZ", "FPZ"); map them to
-        # the canonical 10-05 template spelling so the montage resolves positions
-        # for the (sensorimotor-relevant) midline electrodes.
-        montage = make_standard_montage("standard_1005")
-        canonical = {name.lower(): name for name in montage.ch_names}
-        rename = {
-            ch: canonical[ch.lower()]
-            for ch in raw.ch_names
-            if ch.lower() in canonical and ch != canonical[ch.lower()]
-        }
-        if rename:
-            raw.rename_channels(rename)
-
-        # Map only the image-onset cue markers to their class labels; the paired
-        # motor-skill markers (S 11 / S 22) and block markers (S255) are left as-is
-        # so a single event per trial is exposed to the paradigm.
-        present = {
-            desc: label
-            for desc, label in PARDOGARCIA2026_EVENT_RENAME.items()
-            if desc in set(raw.annotations.description)
-        }
-        if present:
-            raw.annotations.rename(present)
-
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
+            raw.set_channel_types(
+                {ch: "eog" for ch in PARDOGARCIA2026_EOG if ch in raw.ch_names}
+            )
+            # Map upper-case header names (e.g. "CZ", "FCZ") to the 10-05
+            # template spelling so the montage resolves the midline electrodes.
+            montage = make_standard_montage("standard_1005")
+            canonical = {name.lower(): name for name in montage.ch_names}
+            raw.rename_channels(
+                {ch: canonical.get(ch.lower(), ch) for ch in raw.ch_names}
+            )
+            # Map only the image-onset cues; go-cue (S 11 / S 22) and block
+            # (S255) markers are left as-is, exposing one event per trial.
+            descriptions = set(raw.annotations.description)
+            raw.annotations.rename(
+                {
+                    desc: label
+                    for desc, label in PARDOGARCIA2026_EVENT_RENAME.items()
+                    if desc in descriptions
+                }
+            )
             raw.set_montage(montage, on_missing="ignore", verbose=False)
-
         return raw
 
     @staticmethod
@@ -449,26 +310,9 @@ class PardoGarcia2026(BaseDataset):
             repaired_path.unlink(missing_ok=True)
 
     def _get_single_subject_data(self, subject):
-        """Return the data of a single subject as ``{session: {run: Raw}}``.
-
-        Parameters
-        ----------
-        subject : int
-            Subject number (1-18).
-
-        Returns
-        -------
-        dict
-            ``{session_label: {"0": Raw}}`` with ``session_label`` in
-            ``{"pre", "post"}``; patients have ``pre`` and (except patient 2)
-            ``post``, controls have ``pre`` only.
-        """
-        session_labels = list(PARDOGARCIA2026_SUBJECTS[subject].keys())
-        vhdr_paths = self.data_path(subject)
-
-        sessions = {}
-        for idx, (label, vhdr_path) in enumerate(zip(session_labels, vhdr_paths)):
-            # MOABB requires the session key to start with an integer index
-            # (optionally followed by a letters+digits description).
-            sessions[f"{idx}{label}"] = {"0": self._load_raw(Path(vhdr_path))}
-        return sessions
+        # Session keys start with an integer index: "0pre", "1post".
+        labels = PARDOGARCIA2026_SUBJECTS[subject]
+        return {
+            f"{idx}{label}": {"0": self._load_raw(Path(vhdr_path))}
+            for idx, (label, vhdr_path) in enumerate(zip(labels, self.data_path(subject)))
+        }
