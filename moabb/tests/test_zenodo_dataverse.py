@@ -95,10 +95,12 @@ def test_polo_transport_flags(tmp_path):
         with zipfile.ZipFile(archives[-1], "w") as archive:
             archive.writestr(f"B01_S1_{condition}/run.mat", b"synthetic")
     with patch("moabb.datasets.download.data_dl", side_effect=archives) as download:
-        folders = PoloHortiguela2025().data_path(1, "custom", True, verbose=False)
+        folders = PoloHortiguela2025().data_path(1, tmp_path, True, verbose=False)
     # Named downloads: every Zenodo "/content" URL would otherwise share one cache file.
-    assert folders == [str(p.with_suffix("")) for p in archives]
+    data_dir = tmp_path / "MNE-polohortiguela2025-data"
+    assert folders == [str(data_dir / p.stem) for p in archives]
+    assert all((data_dir / p.stem / "run.mat").exists() for p in archives)
     assert [c.kwargs for c in download.call_args_list] == [
         {"fname": p.name} for p in archives
     ]
-    assert all(c.args[2:] == ("custom", True, False) for c in download.call_args_list)
+    assert all(c.args[2:] == (tmp_path, True, False) for c in download.call_args_list)

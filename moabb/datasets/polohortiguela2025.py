@@ -6,6 +6,7 @@ import mne
 import numpy as np
 from scipy.io import loadmat
 
+from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
@@ -17,7 +18,7 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 
-from .utils import download_and_extract_zip, resolve_montage_name
+from .utils import download_and_extract_subject_zip
 
 
 # Zenodo record 14672334 -- one zip per subject and per exoskeleton condition.
@@ -141,22 +142,25 @@ class PoloHortiguela2025(BaseDataset):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
+        data_dir = (
+            Path(dl.get_dataset_path(self.code, path)) / f"MNE-{self.code.lower()}-data"
+        )
         paths = []
         for condition in CONDITIONS.values():
             stem = f"B{subject:02d}_S1_{condition}"
-            # Every Zenodo "/content" URL would be cached as "content"; name it.
-            url = POLOHORTIGUELA2025_BASE.format(fname=f"{stem}.zip")
-            extract_dir = download_and_extract_zip(
-                url,
-                self.code,
-                stem,
-                path,
-                force_update,
-                verbose,
-                fname=f"{stem}.zip",
-                redownload_corrupted=True,
-            )
-            paths.append(str(extract_dir))
+            if force_update or not (data_dir / stem).exists():
+                # Every Zenodo "/content" URL would be cached as "content"; name it.
+                download_and_extract_subject_zip(
+                    POLOHORTIGUELA2025_BASE.format(fname=f"{stem}.zip"),
+                    self.code,
+                    data_dir,
+                    path,
+                    force_update,
+                    verbose,
+                    fname=f"{stem}.zip",
+                    redownload_corrupted=True,
+                )
+            paths.append(str(data_dir / stem))
         return paths
 
     def _make_raw(self, mat_file):
@@ -171,9 +175,7 @@ class PoloHortiguela2025(BaseDataset):
             ["eeg"] * 28 + ["eog"] * 4 + ["misc"] * 3,
         )
         raw = mne.io.RawArray(data, info, verbose=False)
-        raw.set_montage(
-            resolve_montage_name("colin27_1005"), on_missing="ignore", verbose=False
-        )
+        raw.set_montage("colin27_1005", on_missing="ignore", verbose=False)
 
         task = np.asarray(mat.task_EEG).ravel()
         onsets, durations, descriptions = [], [], []
