@@ -27,7 +27,7 @@ from .metadata.schema import (
     ParticipantMetadata,
     Tags,
 )
-from .utils import stim_channels_with_selected_ids
+from .utils import resolve_montage_name, stim_channels_with_selected_ids
 
 
 log = logging.getLogger(__name__)
@@ -340,7 +340,7 @@ class Corsi2026(BaseBIDSDataset):
     def _get_single_subject_data(self, subject):
         """Read each run's BrainVision file and set the events.tsv annotations."""
         inv_events = {code: label for label, code in self.event_id.items()}
-        montage = mne.channels.make_standard_montage("standard_1005")
+        montage = mne.channels.make_standard_montage(resolve_montage_name("colin27_1005"))
         sessions = {}
         for bids_path in self.bids_paths(subject):
             vhdr = Path(bids_path.fpath)
