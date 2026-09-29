@@ -43,6 +43,7 @@ from moabb.analysis.style import (
     MOABB_SKY,
     MOABB_TEAL,
 )
+from moabb.datasets.utils import resolve_montage_name
 
 
 log = logging.getLogger(__name__)
@@ -169,7 +170,7 @@ def _get_montage_xy(
             pass
 
     if not any(ch in pos_3d for ch in ch_names):
-        montage = mne.channels.make_standard_montage("standard_1020")
+        montage = mne.channels.make_standard_montage(resolve_montage_name("colin27_1020"))
         pos_3d = montage.get_positions()["ch_pos"]
 
     raw = {

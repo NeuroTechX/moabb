@@ -286,7 +286,7 @@ class Pressel2016(BaseDataset):
             list(_CH_NAMES),
             _SFREQ,
             stimulus_col,
-            montage_name="standard_1020",
+            montage_name="colin27_1020",
             buffer_samples=100,
         )
 
