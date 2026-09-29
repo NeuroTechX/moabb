@@ -1,17 +1,13 @@
-"""Motor imagery vs rest low-cost EEG dataset.
+"""Peterson 2020 motor imagery vs rest low-cost EEG dataset (OpenNeuro ds003810)."""
 
-Peterson, Galvan, Hernandez, and Spies (2020), Heliyon.
-Paper DOI: 10.1016/j.heliyon.2020.e03425
-Data DOI: 10.18112/openneuro.ds003810.v2.0.2
-"""
-
-import json
-import logging
 from pathlib import Path
 
-import numpy as np
-
-from ._openneuro_mirror import OpenNeuroMirrorMixin
+from ._openneuro_mirror import (
+    OpenNeuroMirrorMixin,
+    drop_native_stim,
+    relabel_annotations,
+    write_dataset_description,
+)
 from .base import BaseBIDSDataset
 from .bids_interface import StepType
 from .download import data_dl, get_dataset_path
@@ -33,13 +29,7 @@ from .preprocessing import FixedPipeline, SetRawAnnotations
 from .utils import stim_channels_with_selected_ids
 
 
-log = logging.getLogger(__name__)
-
-# OpenNeuro dataset ID.
-_OPENNEURO_ID = "ds003810"
-
-# S3 base URL for direct download (no auth needed for OpenNeuro).
-_S3_BASE = f"https://s3.amazonaws.com/openneuro.org/{_OPENNEURO_ID}"
+_S3_BASE = "https://s3.amazonaws.com/openneuro.org/ds003810"
 
 # Subjects present in the archive (sub-01 and sub-11 are absent).
 _SUBJECTS = [2, 3, 4, 5, 6, 7, 8, 9, 10, 12]
@@ -48,18 +38,11 @@ _SUBJECTS = [2, 3, 4, 5, 6, 7, 8, 9, 10, 12]
 _RUNS = ["1", "2", "3", "4"]
 
 # 15 EEG channels (consumer-grade device, old 10-20 nomenclature).
-# fmt: off
-_CH_NAMES = [
-    "Pz", "Cz", "T6", "T4", "F8", "P4", "C4", "F4",
-    "Fz", "T5", "T3", "F7", "P3", "C3", "F3",
-]
-# fmt: on
+_CH_NAMES = "Pz Cz T6 T4 F8 P4 C4 F4 Fz T5 T3 F7 P3 C3 F3".split()
 
-# Two-class event mapping.
 _EVENTS = {"motor_imagery": 1, "rest": 2}
 
-# EDF annotation descriptions (OpenViBE GDF stimulation labels) -> class names.
-# OVTK_GDF_Right = MI cue, OVTK_GDF_Tongue = Rest cue.
+# OpenViBE GDF stimulation labels: OVTK_GDF_Right = MI cue, OVTK_GDF_Tongue = rest.
 _ANNOT_TO_NAME = {"OVTK_GDF_Right": "motor_imagery", "OVTK_GDF_Tongue": "rest"}
 
 # The EDF physical-dimension fields are blank even though channels.tsv records
@@ -76,39 +59,14 @@ class _PetersonSetRawAnnotations(SetRawAnnotations):
         super().__init__(event_id, interval)
 
 
-# Minimal BIDS dataset_description.json for mne_bids compatibility.
-_DATASET_DESCRIPTION = {
-    "Name": "Motor Imagery vs Rest - Low-Cost EEG System",
-    "BIDSVersion": "1.1.1",
-    "License": "CC0",
-    "Authors": [
-        "Victoria Peterson",
-        "Catalina Maria Galvan",
-        "Hugo Sacha Hernadez",
-        "Ruben Spies",
-    ],
-    "DatasetDOI": "10.18112/openneuro.ds003810.v2.0.2",
-}
-
-
 class Peterson2022(OpenNeuroMirrorMixin, BaseBIDSDataset):
-    """Motor imagery vs rest low-cost EEG dataset from Peterson et al 2020.
+    """Motor imagery vs rest low-cost EEG dataset from Peterson et al 2020 [1]_.
 
-    Dataset from the feasibility study *A feasibility study of a complete
-    low-cost consumer-grade brain-computer interface system* [1]_.
-
-    EEG was recorded from 10 novice participants with a 15-channel
-    consumer-grade device at 125 Hz. The paradigm is a binary
-    kinesthetic motor imagery task: participants either imagined
-    grasping with their dominant hand (**motor_imagery**) or stayed
-    idle (**rest**).
-
-    Each subject completed five runs. RUN0 is a real-movement
-    demonstration run and is excluded; RUN1-RUN4 contain the MI-vs-rest
-    trials (20 MI + 20 rest per run). The data are hosted on OpenNeuro
-    (ds003810) in BIDS EDF format. Events are stored as native EDF
-    annotations (OpenViBE GDF stimulation labels): ``OVTK_GDF_Right``
-    marks a motor-imagery cue and ``OVTK_GDF_Tongue`` marks a rest cue.
+    10 novice participants, 15-channel consumer-grade EEG at 125 Hz, either
+    imagined grasping with their dominant hand (**motor_imagery**) or stayed
+    idle (**rest**). RUN0 (real-movement demonstration) is excluded; RUN1-RUN4
+    hold 20 MI + 20 rest trials each. Events are native EDF annotations
+    (OpenViBE labels ``OVTK_GDF_Right`` = MI cue, ``OVTK_GDF_Tongue`` = rest).
 
     Notes
     -----
@@ -252,28 +210,13 @@ class Peterson2022(OpenNeuroMirrorMixin, BaseBIDSDataset):
 
     def _get_single_subject_data(self, subject):
         """Load BIDS data and remap EDF annotation labels to class names."""
-        data = super()._get_single_subject_data(subject)
-
         result = {}
-        for sess_key, session_runs in data.items():
-            runs = {}
+        for sess_key, session_runs in super()._get_single_subject_data(subject).items():
             for run_key, raw in session_runs.items():
-                # Discard native triggers before constructing the authoritative STIM.
-                native_stim = [
-                    ch
-                    for ch, kind in zip(raw.ch_names, raw.get_channel_types())
-                    if kind == "stim"
-                ]
-                if native_stim:
-                    raw.drop_channels(native_stim)
-
-                desc = raw.annotations.description.astype(np.dtype("<25U"))
-                for label, name in _ANNOT_TO_NAME.items():
-                    desc[desc == label] = name
-                raw.annotations.description = desc
-                runs[run_key] = stim_channels_with_selected_ids(raw, self.event_id)
-            result[sess_key] = runs
-
+                relabel_annotations(drop_native_stim(raw), _ANNOT_TO_NAME)
+                result.setdefault(sess_key, {})[run_key] = (
+                    stim_channels_with_selected_ids(raw, self.event_id)
+                )
         return result
 
     def _download_subject(self, subject, path, force_update, update_path, verbose) -> str:
@@ -282,43 +225,27 @@ class Peterson2022(OpenNeuroMirrorMixin, BaseBIDSDataset):
         if mirror_root is not None:
             return mirror_root
 
-        if subject not in self.subject_list:
-            raise ValueError("Invalid subject number")
-
         bids_root = Path(get_dataset_path("Peterson2022", path))
         bids_root = bids_root / "MNE-peterson2022-data"
         bids_root.mkdir(parents=True, exist_ok=True)
-
         subj_str = f"sub-{subject:02d}"
-        self._download_subject_s3(bids_root, subj_str, force_update, path, verbose)
-        self._ensure_dataset_description(bids_root)
-
-        return str(bids_root)
-
-    @staticmethod
-    def _ensure_dataset_description(bids_root):
-        """Create a minimal dataset_description.json if missing."""
-        dd_path = bids_root / "dataset_description.json"
-        if not dd_path.exists():
-            with open(dd_path, "w") as f:
-                json.dump(_DATASET_DESCRIPTION, f, indent=2)
-
-    @staticmethod
-    def _download_subject_s3(bids_root, subj_str, force_update, path, verbose):
-        """Download per-subject MI-vs-rest run files directly from OpenNeuro S3."""
-        rel_paths = []
         for run in _RUNS:
             stem = f"{subj_str}/eeg/{subj_str}_task-MIvsRest_run-{run}"
-            rel_paths.extend(
-                [f"{stem}_eeg.edf", f"{stem}_eeg.json", f"{stem}_channels.tsv"]
-            )
-
-        for rel_path in rel_paths:
-            data_dl(
-                f"{_S3_BASE}/{rel_path}",
-                "Peterson2022",
-                path=path,
-                force_update=force_update,
-                verbose=verbose,
-                fname=rel_path,
-            )
+            for suffix in ("eeg.edf", "eeg.json", "channels.tsv"):
+                rel_path = f"{stem}_{suffix}"
+                data_dl(
+                    f"{_S3_BASE}/{rel_path}",
+                    "Peterson2022",
+                    path=path,
+                    force_update=force_update,
+                    verbose=verbose,
+                    fname=rel_path,
+                )
+        write_dataset_description(
+            bids_root,
+            "Motor Imagery vs Rest - Low-Cost EEG System",
+            "1.1.1",
+            "10.18112/openneuro.ds003810.v2.0.2",
+            self.METADATA.documentation.investigators,
+        )
+        return str(bids_root)

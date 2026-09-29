@@ -1,17 +1,16 @@
-"""Daly2020 tempo-based BCMI motor imagery dataset (BCMI-MIdAS).
+"""Daly2020 tempo-based BCMI motor imagery dataset (BCMI-MIdAS, OpenNeuro ds002720)."""
 
-Daly et al. (2018), "A dataset recorded during development of a tempo-based
-brain-computer music interface".
-Data DOI: 10.18112/openneuro.ds002720.v1.0.1 (OpenNeuro ds002720)
-"""
-
-import json
 import logging
 from pathlib import Path
 
 import numpy as np
 
-from ._openneuro_mirror import OpenNeuroMirrorMixin
+from ._openneuro_mirror import (
+    OpenNeuroMirrorMixin,
+    drop_native_stim,
+    relabel_annotations,
+    write_dataset_description,
+)
 from .base import BaseBIDSDataset
 from .download import data_dl, get_dataset_path
 from .metadata.schema import (
@@ -28,90 +27,40 @@ from .utils import stim_channels_with_selected_ids
 
 log = logging.getLogger(__name__)
 
-# OpenNeuro dataset ID and S3 mirror (no auth needed for OpenNeuro).
-_OPENNEURO_ID = "ds002720"
-_S3_BASE = f"https://s3.amazonaws.com/openneuro.org/{_OPENNEURO_ID}"
+_S3_BASE = "https://s3.amazonaws.com/openneuro.org/ds002720"
 
-# Binary kinesthetic motor imagery classes (from events.tsv trial_type column):
-# 1 = Lower alpha  -> right-hand ball-squeeze imagery (increase music tempo);
-#     motor imagery produces mu/alpha event-related desynchronization, i.e.
-#     it lowers alpha (verified against sub-01_task-run2_events.json and the
-#     README's tempo-increase/ball-squeeze pairing).
-# 2 = Raise alpha  -> relax (decrease music tempo)
+# events.tsv trial_type 1 = "Lower alpha": right-hand ball-squeeze imagery (mu/alpha
+# ERD; verified against sub-01_task-run2_events.json and the README);
+# 2 = "Raise alpha": relax.
 _EVENTS = {"right_hand": 1, "relax": 2}
-
-# Map raw numeric annotation descriptions ("1"/"2") to class names.
-_VALUE_TO_NAME = {"1": "right_hand", "2": "relax"}
+_VALUE_TO_NAME = {str(code): name for name, code in _EVENTS.items()}
 
 # 19 scalp EEG channels (international 10-20, FCz reference).
-# fmt: off
-_CH_NAMES = [
-    "FP1", "FP2", "F7", "F3", "Fz", "F4", "F8",
-    "T3", "C3", "Cz", "C4", "T4",
-    "T5", "P3", "Pz", "P4", "T6",
-    "O1", "O2",
-]
-# fmt: on
+_CH_NAMES = "FP1 FP2 F7 F3 Fz F4 F8 T3 C3 Cz C4 T4 T5 P3 Pz P4 T6 O1 O2".split()
 
 # 9 runs per subject; run 1 is calibration with an EMPTY events file.
 _N_RUNS = 9
 _CALIBRATION_RUN = 1
-
-# Minimal BIDS dataset_description.json for mne_bids compatibility.
-_DATASET_DESCRIPTION = {
-    "Name": (
-        "A dataset recorded during development of a tempo-based "
-        "brain-computer music interface"
-    ),
-    "BIDSVersion": "1.0.2",
-    "License": "CC0",
-    "Authors": [
-        "Ian Daly",
-        "Nicoletta Nicolaou",
-        "Duncan Williams",
-        "Faustina Hwang",
-        "Alexis Kirke",
-        "Eduardo Miranda",
-        "Slawomir J. Nasuto",
-    ],
-    "DatasetDOI": "10.18112/openneuro.ds002720.v1.0.1",
-}
+_RUN_SUFFIXES = "eeg.edf eeg.json channels.tsv events.tsv events.json".split()
 
 
 class Daly2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
     """Tempo-based BCMI motor imagery dataset from Daly et al. 2018 [1]_.
 
-    Dataset from the BCMI-MIdAS project (*Brain-Computer Music Interface for
-    Monitoring and Inducing Affective States*), recorded during development of
-    a tempo-based brain-computer music interface at the University of Reading.
-
-    18 healthy participants controlled the tempo of a piece of music via
-    intentional alpha-band neurofeedback. To *increase* the tempo they
-    kinaesthetically imagined squeezing a ball in their **right hand** (motor
-    imagery causes mu/alpha event-related desynchronization, i.e. it *lowers*
-    alpha), and to *decrease* the tempo they **relaxed** (which *raises*
-    alpha). This gives a binary kinesthetic motor-imagery contrast:
-
-    - **right_hand** (event 1, "Lower alpha"): right-hand ball-squeeze imagery
-    - **relax** (event 2, "Raise alpha"): relaxation / rest
-
-    EEG was recorded with 19 scalp electrodes (international 10-20 system,
-    FCz reference) at 1000 Hz. The paradigm was split into 9 runs per subject.
-    The first run is a calibration run whose events file is empty and is
-    therefore **skipped**; runs 2-9 contain alternating 20 s binary trials and
-    are exposed as runs ``"0"`` .. ``"7"`` of a single session ``"0"``.
-    Targetless non-calibration runs (sub-05/run2, sub-15/run3 and
-    sub-17/runs2-3) are also skipped, so the retained run count can vary.
+    Recorded at the University of Reading during development of a tempo-based
+    brain-computer music interface (BCMI-MIdAS). 18 healthy participants
+    raised the music tempo by imagining squeezing a ball in their right hand
+    (**right_hand**, event 1, "Lower alpha") and lowered it by relaxing
+    (**relax**, event 2, "Raise alpha"). Each subject has 9 runs of
+    alternating 20 s trials; the calibration run 1 (empty events file) and the
+    targetless runs sub-05/run2, sub-15/run3 and sub-17/runs2-3 are skipped,
+    and the rest are exposed as runs ``"0"``, ``"1"``, ... of session ``"0"``.
 
     .. note::
-       The README prose states 19 participants, but the released data contains
-       only 18 subjects (``sub-01`` .. ``sub-18``); this loader uses 18.
-       The machine-readable ``dataset_description.json`` licenses the data as
-       CC0 (the README text mentions CC-BY-4.0). The summary table reports
-       the designed 72 trials per class across eight runs; retained counts
-       can be lower because empty event files are skipped.
-
-    The data is hosted on OpenNeuro (``ds002720``) in BIDS EDF format.
+       The README states 19 participants and CC-BY-4.0, but the release
+       contains 18 subjects and ``dataset_description.json`` says CC0; this
+       loader follows the release. The summary table reports the designed 72
+       trials per class; retained counts can be lower.
 
     References
     ----------
@@ -207,69 +156,40 @@ class Daly2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
         return out
 
     def _get_single_subject_data(self, subject):
-        """Split the 9 BIDS ``task-runN`` files into runs of one session.
+        """Split the BIDS ``task-runN`` files into runs of one session.
 
-        The BIDS ``task`` entity encodes the run (``run1`` .. ``run9``); there
-        is no BIDS session/run entity, so the default loader would collapse all
-        files onto a single key. Here the calibration run (empty events) is
-        dropped and the remaining runs are re-indexed ``"0"`` .. ``"7"``.
+        The run lives in the BIDS ``task`` entity (no session/run entity), so
+        the default loader would collapse all files onto one key.
         """
-        bids_paths = self.bids_paths(subject)
 
         def _run_number(bids_path):
-            # task entity is "runN"; extract the trailing integer.  # codespell:ignore
             return int("".join(c for c in bids_path.task if c.isdigit()))
 
-        ordered = sorted(bids_paths, key=_run_number)
+        ordered = sorted(self.bids_paths(subject), key=_run_number)
         run_numbers = [_run_number(p) for p in ordered]
         if len(run_numbers) != len(set(run_numbers)):
             raise ValueError("Daly2020 has duplicate task/run files")
 
-        result = {}
         runs = {}
-        run_idx = 0
         for bids_path in ordered:
             if _run_number(bids_path) == _CALIBRATION_RUN:
-                continue  # calibration run has an empty events file
-            raw = self._read_raw_bids(bids_path)
-
-            # Discard native triggers before constructing the authoritative STIM.
-            native_stim = [
-                ch
-                for ch, kind in zip(raw.ch_names, raw.get_channel_types())
-                if kind == "stim"
-            ]
-            if native_stim:
-                raw.drop_channels(native_stim)
-
-            # Remap numeric annotation descriptions ("1"/"2") to class names.
-            desc = raw.annotations.description.astype(np.dtype("<25U"))
-            for code, name in _VALUE_TO_NAME.items():
-                desc[desc == code] = name
-            raw.annotations.description = desc
-
-            # A few released non-calibration runs have an empty events file
-            # (sub-05/run2, sub-15/run3, and sub-17/runs2-3).  Do not let an
-            # empty target-event selection abort the entire subject; retain
-            # every run that contains at least one of the declared classes.
-            if not np.isin(desc, list(self.event_id)).any():
+                continue
+            raw = drop_native_stim(self._read_raw_bids(bids_path))
+            relabel_annotations(raw, _VALUE_TO_NAME)
+            if not np.isin(raw.annotations.description, list(self.event_id)).any():
                 log.warning(
                     "Skipping Daly2020 subject %02d %s: no motor-imagery events",
                     subject,
                     bids_path.task,
                 )
                 continue
-
-            runs[str(run_idx)] = stim_channels_with_selected_ids(raw, self.event_id)
-            run_idx += 1
+            runs[str(len(runs))] = stim_channels_with_selected_ids(raw, self.event_id)
 
         if not runs:
             raise ValueError(
                 f"Daly2020 subject {subject} has no usable motor-imagery runs."
             )
-
-        result["0"] = runs
-        return result
+        return {"0": runs}
 
     def _read_raw_bids(self, bids_path):
         import mne_bids
@@ -286,44 +206,27 @@ class Daly2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
         if mirror_root is not None:
             return mirror_root
 
-        if subject not in self.subject_list:
-            raise ValueError("Invalid subject number")
-
         bids_root = Path(get_dataset_path("Daly2020", path)) / "MNE-daly2020-data"
         bids_root.mkdir(parents=True, exist_ok=True)
-
         subj_str = f"sub-{subject:02d}"
-        rel_files = []
         for run in range(1, _N_RUNS + 1):
             stem = f"{subj_str}/eeg/{subj_str}_task-run{run}"
-            rel_files += [
-                f"{stem}_eeg.edf",
-                f"{stem}_eeg.json",
-                f"{stem}_channels.tsv",
-                f"{stem}_events.tsv",
-                f"{stem}_events.json",
-            ]
-
-        for rel_path in rel_files:
-            self._download_file(bids_root, rel_path, force_update, path, verbose)
-
-        self._ensure_dataset_description(bids_root)
-        return str(bids_root)
-
-    @staticmethod
-    def _download_file(bids_root, rel_path, force_update, path, verbose):
-        data_dl(
-            f"{_S3_BASE}/{rel_path}",
-            "Daly2020",
-            path=path,
-            force_update=force_update,
-            verbose=verbose,
-            fname=rel_path,
+            for suffix in _RUN_SUFFIXES:
+                rel_path = f"{stem}_{suffix}"
+                data_dl(
+                    f"{_S3_BASE}/{rel_path}",
+                    "Daly2020",
+                    path=path,
+                    force_update=force_update,
+                    verbose=verbose,
+                    fname=rel_path,
+                )
+        write_dataset_description(
+            bids_root,
+            "A dataset recorded during development of a tempo-based "
+            "brain-computer music interface",
+            "1.0.2",
+            "10.18112/openneuro.ds002720.v1.0.1",
+            self.METADATA.documentation.investigators,
         )
-
-    @staticmethod
-    def _ensure_dataset_description(bids_root):
-        dd_path = bids_root / "dataset_description.json"
-        if not dd_path.exists():
-            with open(dd_path, "w") as f:
-                json.dump(_DATASET_DESCRIPTION, f, indent=2)
+        return str(bids_root)

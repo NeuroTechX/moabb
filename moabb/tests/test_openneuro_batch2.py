@@ -1,5 +1,13 @@
-"""Synthetic, no-download regressions for the second OpenNeuro batch."""
+"""Synthetic, no-download regressions for the second OpenNeuro batch.
 
+The shared ``OpenNeuroMirrorMixin`` contract (SDK raw selection with a mocked
+HTTP transport, no sourcedata prefetch) is owned by ``test_openneuro_mirror.py``
+in PR #1186. ``test_provider_policy`` is a single-case copy kept only so this
+branch covers its own copy of ``_openneuro_mirror.py``; delete it when rebasing
+on #1186.
+"""
+
+from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import Mock
 
@@ -10,6 +18,52 @@ import pytest
 
 from moabb.datasets import Daly2020, Damm2026, Peterson2022
 from moabb.datasets.base import BaseBIDSDataset
+from moabb.datasets.download import NemarDownloadError
+
+
+CASES = [
+    (Daly2020, "on002720", 1, "01"),
+    (Damm2026, "on008446", 1, "01"),
+    (Peterson2022, "on003810", 2, "02"),
+]
+
+
+@pytest.mark.parametrize("cls,nemar_id,subject,label", CASES)
+def test_mirror_flags(cls, nemar_id, subject, label, monkeypatch, tmp_path):
+    monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", "nemar")
+    transport = Mock()
+    monkeypatch.setattr("moabb.datasets.download.nemar.download", transport)
+    ds = cls()
+    assert ds.nemar_id == nemar_id
+    ds.download([subject], tmp_path, True, False, verbose="ERROR")
+    transport.assert_called_once_with(
+        dataset=nemar_id,
+        target_dir=tmp_path / f"MNE-{ds.code.lower()}-data" / nemar_id,
+        subject=label,
+        trust_existing=False,
+        scope="raw",
+        datatype="eeg",
+    )
+    # Raw mirror loaders must never prefetch converted sourcedata.
+    monkeypatch.setattr(ds, "sourcedata_path", Mock(side_effect=AssertionError))
+    ds._prefetch_nemar_sourcedata([subject])
+
+
+def test_provider_policy(monkeypatch, tmp_path):
+    cls, _, subject, _ = CASES[0]
+    ds = cls()
+    transport = Mock(side_effect=NemarDownloadError("offline"))
+    monkeypatch.setattr(ds, "_download_nemar", transport)
+    monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", "nemar")
+    with pytest.raises(NemarDownloadError):
+        ds._mirror_root(subject, tmp_path, False, False, None)
+    monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", "auto")
+    with pytest.warns(RuntimeWarning, match="OpenNeuro"):
+        assert ds._mirror_root(subject, tmp_path, False, False, None) is None
+    transport.reset_mock()
+    monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", "upstream")
+    assert ds._mirror_root(subject, tmp_path, False, False, None) is None
+    transport.assert_not_called()
 
 
 @pytest.mark.parametrize(
@@ -22,8 +76,6 @@ def test_bids_transport_only_mock(module, cls, subject, n_files, monkeypatch, tm
     transport = Mock()
     monkeypatch.setattr(f"moabb.datasets.{module}.data_dl", transport)
     root = cls()._download_subject(subject, tmp_path, True, False, "ERROR")
-    from pathlib import Path
-
     assert (Path(root) / "dataset_description.json").exists()
     assert transport.call_count == n_files
     for call in transport.call_args_list:
@@ -60,6 +112,19 @@ def _daly_paths(*run_numbers):
     return [SimpleNamespace(task=f"run{n}") for n in run_numbers]
 
 
+def _assert_loaded(raw, expected, event_id=None, tmax=None):
+    """Native stim replaced by STIM, bads and SI volts kept, boundary trials epoch."""
+    assert raw.ch_names == ["C3", "STIM"]
+    assert raw.info["bads"] == ["C3"]
+    np.testing.assert_allclose(raw.get_data(picks=["C3"]), 2e-6)
+    events = mne.find_events(raw, initial_event=True, shortest_event=1)
+    np.testing.assert_array_equal(events[:, [0, 2]], expected)
+    if tmax is not None:
+        kwargs = {"baseline": None, "picks": ["C3"], "on_missing": "ignore"}
+        epochs = mne.Epochs(raw, events, event_id, 0, tmax, preload=True, **kwargs)
+        assert len(epochs) == len(expected)
+
+
 def test_peterson_units_native_stim_and_boundary_trials(monkeypatch):
     raw = _raw(["OVTK_GDF_Right", "OVTK_GDF_Tongue"])
     monkeypatch.setattr(
@@ -70,23 +135,7 @@ def test_peterson_units_native_stim_and_boundary_trials(monkeypatch):
     ds = Peterson2022()
     assert ds._get_read_extra_params(2) == {"units": "uV"}
     result = ds._get_single_subject_data(2)["0"]["1"]
-    assert result.ch_names == ["C3", "STIM"]
-    assert result.info["bads"] == ["C3"]
-    np.testing.assert_allclose(result.get_data(picks=["C3"]), 2e-6)
-    events = mne.find_events(result, initial_event=True, shortest_event=1)
-    np.testing.assert_array_equal(events[:, [0, 2]], [[0, 1], [600, 2]])
-    epochs = mne.Epochs(
-        result,
-        events,
-        ds.event_id,
-        0,
-        4,
-        baseline=None,
-        picks=["C3"],
-        preload=True,
-        verbose=False,
-    )
-    assert len(epochs) == 2
+    _assert_loaded(result, [[0, 1], [600, 2]], ds.event_id, tmax=4)
     assert ds._get_path_search_params(2)["runs"] == ["1", "2", "3", "4"]
 
 
@@ -104,13 +153,7 @@ def test_daly_native_stim_units_and_missing_runs(monkeypatch):
     ds = Daly2020()
     monkeypatch.setattr(ds, "bids_paths", lambda subject: _daly_paths(9))
     monkeypatch.setattr(ds, "_read_raw_bids", lambda path: _raw(["1", "2"]))
-    raw = ds._get_single_subject_data(1)["0"]["0"]
-    assert raw.ch_names == ["C3", "STIM"]
-    assert raw.info["bads"] == ["C3"]
-    np.testing.assert_allclose(raw.get_data(picks=["C3"]), 2e-6)
-    np.testing.assert_array_equal(
-        mne.find_events(raw, initial_event=True, shortest_event=1)[:, 2], [1, 2]
-    )
+    _assert_loaded(ds._get_single_subject_data(1)["0"]["0"], [[0, 1], [600, 2]])
 
 
 def test_daly_duplicate_runs_rejected(monkeypatch):
@@ -167,21 +210,4 @@ def test_damm_loader_native_stim_and_si_units(monkeypatch):
     runs = ds._get_single_subject_data(1)["0"]
     assert len(runs) == 4
     for raw in runs.values():
-        assert raw.ch_names == ["C3", "STIM"]
-        assert raw.info["bads"] == ["C3"]
-        np.testing.assert_allclose(raw.get_data(picks=["C3"]), 2e-6)
-        events = mne.find_events(raw, initial_event=True, shortest_event=1)
-        np.testing.assert_array_equal(events[:, [0, 2]], [[0, 3], [400, 7]])
-        epochs = mne.Epochs(
-            raw,
-            events,
-            ds.event_id,
-            0,
-            6,
-            baseline=None,
-            picks=["C3"],
-            preload=True,
-            on_missing="ignore",
-            verbose=False,
-        )
-        assert len(epochs) == 2
+        _assert_loaded(raw, [[0, 3], [400, 7]], ds.event_id, tmax=6)
