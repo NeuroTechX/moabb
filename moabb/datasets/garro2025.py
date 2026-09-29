@@ -21,6 +21,8 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 
+from .utils import resolve_montage_name
+
 
 # Figshare article hosting the BIDS BrainVision dataset.
 FIGSHARE_ARTICLE_ID = "27301629"
@@ -305,7 +307,7 @@ class Garro2025(BaseDataset):
     def _get_single_subject_data(self, subject):
         """Return the data of a single subject as {session: {run: raw}}."""
         bids_paths = self.data_path(subject)
-        montage = make_standard_montage("standard_1005")
+        montage = make_standard_montage(resolve_montage_name("colin27_1005"))
 
         runs = {}
         for bids_path in bids_paths:

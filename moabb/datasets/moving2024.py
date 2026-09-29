@@ -15,7 +15,7 @@ from moabb.datasets.metadata.schema import (
     ParticipantMetadata,
     Tags,
 )
-from moabb.datasets.utils import extract_rar
+from moabb.datasets.utils import extract_rar, resolve_montage_name
 
 
 # EDF archive on Zenodo (record 12804784). The companion virtual_glove.rar
@@ -257,7 +257,9 @@ class MOVING2024(BaseDataset):
             raw.set_channel_types(
                 {ch: "misc" for ch in ("X", "Y", "Z") if ch in raw.ch_names}
             )
-            raw.set_montage("standard_1020", on_missing="ignore", verbose=False)
+            raw.set_montage(
+                resolve_montage_name("colin27_1020"), on_missing="ignore", verbose=False
+            )
 
         # Relabel numbered triggers into class labels; drop everything else
         # (fixation crosses and the other modality's action triggers).

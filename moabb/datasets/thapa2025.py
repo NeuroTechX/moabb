@@ -2,7 +2,6 @@
 
 import csv
 import re
-import tempfile
 import warnings
 import zipfile
 from pathlib import Path
@@ -26,6 +25,7 @@ from moabb.datasets.metadata.schema import (
 )
 
 from .base import BaseDataset
+from .utils import read_raw_brainvision_repaired, resolve_montage_name
 
 
 # Single 13.6 GB BIDS archive on Figshare (article 28632599, file id 57518986).
@@ -295,55 +295,6 @@ class Thapa2025(BaseDataset):
         return bids_paths
 
     @staticmethod
-    def _read_brainvision(vhdr_path):
-        """Read a BIDS BrainVision run, repairing stale sibling references.
-
-        Three files in the published archive retain an acquisition-time
-        ``DataFile`` or ``MarkerFile`` name although the BIDS conversion
-        renamed the adjacent ``.eeg``/``.vmrk`` file.  Repair only a missing
-        reference for which the same-stem BIDS sibling exists, in a temporary
-        header, leaving the downloaded archive unchanged.
-        """
-        vhdr_path = Path(vhdr_path)
-        header = vhdr_path.read_text(encoding="utf-8")
-        repaired = header
-        for field, suffix in (("DataFile", ".eeg"), ("MarkerFile", ".vmrk")):
-            match = re.search(rf"(?m)^{field}=(.+)$", repaired)
-            if match is None:
-                raise ValueError(
-                    f"Missing {field} entry in BrainVision header {vhdr_path}"
-                )
-            referenced = vhdr_path.parent / match.group(1).strip()
-            if referenced.exists():
-                continue
-            sibling = vhdr_path.with_suffix(suffix)
-            if not sibling.exists():
-                raise FileNotFoundError(
-                    f"{vhdr_path} references missing {referenced.name}; expected BIDS "
-                    f"sibling {sibling.name} is also absent."
-                )
-            repaired = re.sub(rf"(?m)^{field}=.+$", f"{field}={sibling.name}", repaired)
-
-        temporary = None
-        try:
-            path = vhdr_path
-            if repaired != header:
-                with tempfile.NamedTemporaryFile(
-                    "w",
-                    suffix=".vhdr",
-                    dir=vhdr_path.parent,
-                    encoding="utf-8",
-                    delete=False,
-                ) as fout:
-                    fout.write(repaired)
-                    temporary = Path(fout.name)
-                path = temporary
-            return mne.io.read_raw_brainvision(path, preload=True, verbose=False)
-        finally:
-            if temporary is not None:
-                temporary.unlink(missing_ok=True)
-
-    @staticmethod
     def _annotations_from_events(events_path):
         """Read BIDS events without assuming rectangular optional columns.
 
@@ -391,7 +342,7 @@ class Thapa2025(BaseDataset):
         for bids_path in bids_paths:
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
-                raw = self._read_brainvision(bids_path.fpath)
+                raw = read_raw_brainvision_repaired(bids_path.fpath, strict=True)
 
             # Type the auxiliary channels and (by default) keep EEG only.
             types = {ch: "eog" for ch in _EOG_CHANNELS if ch in raw.ch_names}
@@ -403,7 +354,9 @@ class Thapa2025(BaseDataset):
 
             if not self.return_all_modalities:
                 raw.pick("eeg")
-            raw.set_montage("standard_1020", on_missing="ignore", verbose=False)
+            raw.set_montage(
+                resolve_montage_name("colin27_1020"), on_missing="ignore", verbose=False
+            )
 
             runs = sessions.setdefault(ses_key[bids_path.session], {})
             runs[str(len(runs))] = raw

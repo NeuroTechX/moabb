@@ -1,7 +1,6 @@
 """Offline transport and scientific contracts for the large-recording batch."""
 
 import zipfile
-from pathlib import Path
 
 import mne
 import numpy as np
@@ -236,33 +235,6 @@ def test_overfull_run_fails_closed(tmp_path, codes, match):
 
 
 # --- Thapa2025 published BIDS irregularities
-
-
-def test_stale_brainvision_references_use_same_stem_bids_siblings(tmp_path, monkeypatch):
-    vhdr = tmp_path / "sub-09_task-reachingandgrasping_run-0009_eeg.vhdr"
-    vhdr.write_text(
-        "[Common Infos]\nDataFile=correct.eeg\nMarkerFile=stale_acquisition_name.vmrk\n",
-        encoding="utf-8",
-    )
-    vhdr.with_suffix(".eeg").touch()
-    vhdr.with_suffix(".vmrk").touch()
-    seen = {}
-
-    def fake_reader(path, **kwargs):
-        temporary = Path(path)
-        seen["path"] = temporary
-        seen["header"] = temporary.read_text(encoding="utf-8")
-        return object()
-
-    monkeypatch.setattr(
-        "moabb.datasets.thapa2025.mne.io.read_raw_brainvision", fake_reader
-    )
-
-    assert Thapa2025._read_brainvision(vhdr) is not None
-    assert seen["path"] != vhdr
-    assert f"DataFile={vhdr.with_suffix('.eeg').name}" in seen["header"]
-    assert f"MarkerFile={vhdr.with_suffix('.vmrk').name}" in seen["header"]
-    assert not seen["path"].exists()
 
 
 def test_irregular_optional_events_column_preserves_all_protocol_events(tmp_path):
