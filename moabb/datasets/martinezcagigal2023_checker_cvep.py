@@ -25,6 +25,8 @@ from moabb.datasets.utils import (
 )
 from moabb.utils import _handle_deprecated_kwargs
 
+from .utils import resolve_montage_name
+
 
 log = logging.getLogger(__name__)
 
@@ -328,7 +330,9 @@ class MartinezCagigal2023Checker(BaseDataset):
         info["subject_info"] = {"his_id": str(rec["subject_id"])}
         info["description"] = str(rec["recording_id"])
         info.set_meas_date(meas_date.replace(tzinfo=timezone.utc))
-        info.set_montage("standard_1005", match_case=False, on_missing="warn")
+        info.set_montage(
+            resolve_montage_name("colin27_1005"), match_case=False, on_missing="warn"
+        )
 
         # Set data (signal shape is samples x channels, need to transpose).
         # The BSON files store EEG in microvolts; convert to Volts for MNE.
