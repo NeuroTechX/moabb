@@ -24,7 +24,7 @@ Version 1.8  (Source - GitHub)
 Enhancements
 ~~~~~~~~~~~~
 - Add :class:`moabb.datasets.Garro2025`, :class:`moabb.datasets.MIND2026`, :class:`moabb.datasets.MOVING2024`, and :class:`moabb.datasets.Thapa2025` large-recording motor-imagery and motor-execution datasets. Preserve the MIND acquisition-restart guard and document execution-only tasks (:gh:`1195` by `Bruno Aristimunha`_).
-- Spell MNE's renamed template montages everywhere: MNE 1.13 renamed ``standard_1005``/``standard_1020`` (and the other ``standard_*`` templates) to ``colin27_*``, warns on the old names and MNE 1.14 removes them. The new :func:`moabb.datasets.utils.resolve_montage_name` returns the spelling the installed MNE knows (the electrode files are identical), and every ``make_standard_montage``/``set_montage`` call in MOABB now goes through it, so loaders keep working on MNE 1.10-1.14 without a ``FutureWarning``. ``METADATA`` montage labels are descriptive and unchanged (:gh:`1200` by `Bruno Aristimunha`_).
+- Spell MNE's renamed template montages everywhere: MNE 1.13 renamed ``standard_1005``/``standard_1020`` (and the other ``standard_*`` templates) to ``colin27_*`` (identical electrode files), warns on the old names and MNE 1.14 removes them, so every ``make_standard_montage``/``set_montage`` call in MOABB now spells ``colin27_*``. ``METADATA`` montage labels are descriptive and unchanged (:gh:`1200` by `Bruno Aristimunha`_).
 
 API changes
 ~~~~~~~~~~~
@@ -32,7 +32,7 @@ API changes
 
 Requirements
 ~~~~~~~~~~~~
-- None yet.
+- Require ``mne>=1.13`` for the ``colin27_*`` montage names and :func:`mne.io.read_raw_brainvision`'s ``overrides`` (:gh:`1200` by `Bruno Aristimunha`_).
 
 Bugs
 ~~~~
@@ -42,7 +42,7 @@ Bugs
 
 Code health
 ~~~~~~~~~~~
-- Add shared loader helpers to :mod:`moabb.datasets.utils` so dataset loaders stop carrying private copies: :func:`~moabb.datasets.utils.download_and_extract_zip` (download once, extract unless a marker exists, optional re-download of a corrupted archive), :func:`~moabb.datasets.utils.read_raw_brainvision_repaired` (read a BrainVision header whose ``DataFile``/``MarkerFile`` still names a renamed sibling, without touching the download), :func:`~moabb.datasets.utils.rename_stimulus_codes` and :func:`~moabb.datasets.utils.edge_boundary_annotations`. ``SetRawAnnotations`` now keeps ``EDGE boundary`` markers, and the OpenNeuro raw-mirror mixin (``moabb.datasets._openneuro_mirror``) lives here once instead of in each dataset PR (:gh:`1200` by `Bruno Aristimunha`_).
+- Share loader code across the new dataset PRs instead of private copies: :func:`~moabb.datasets.utils.download_and_extract_subject_zip` gains ``fname`` and ``redownload_corrupted`` (one warned re-download of a corrupted archive), :func:`~moabb.datasets.utils.rename_stimulus_codes` maps BrainVision ``Stimulus/S <n>`` markers to class labels, ``SetRawAnnotations`` keeps ``EDGE boundary`` markers, and the OpenNeuro raw-mirror mixin (``moabb.datasets._openneuro_mirror``) lives here once (:gh:`1200` by `Bruno Aristimunha`_).
 
 Version 1.7.1  (Stable - PyPi)
 -------------------------------
