@@ -1,7 +1,6 @@
 """Offline transport and scientific contracts for the large-recording batch."""
 
 import zipfile
-from collections import Counter
 from pathlib import Path
 
 import mne
@@ -193,68 +192,32 @@ def _raw_with_codes(codes):
     return raw
 
 
-def _assert_complete_run(annotations):
-    descriptions = annotations.description.tolist()
-    assert len(descriptions) == 40
-    assert Counter(descriptions) == {
-        "left_to_right": 10,
-        "up_to_down": 10,
-        "upperleft_to_lowerright": 10,
-        "upperright_to_lowerleft": 10,
-    }
+_LABELS = {4: "left_to_right", 5: "up_to_down"}
+_LABELS.update({6: "upperleft_to_lowerright", 7: "upperright_to_lowerleft"})
+_SUB19_PREFIX = [1, 3] + [4, 5] * 9 + [800000, 800001, 1, 2, 3]
 
 
-def test_mi_events_anchor_execution_onset_and_accept_balanced_run(tmp_path):
-    """Codes 4-7 start MI (code 3 is the preceding cue and is dropped).
-
-    A normal 40-event run is accepted solely by its balanced class counts,
-    without the half-order layout required after a restart.
-    """
+@pytest.mark.parametrize(
+    "source, codes",
+    [
+        # Balanced run: accepted on class counts alone; the code-3 cue is dropped.
+        ("tsv", [3] + [4, 5, 6, 7] * 10),
+        # Subject 4: aborted MI markers before the final code-1 restart (sidecar).
+        ("tsv", [1, 1, 3, 5, 7, 15, 63, 255, 7, 1, 3] + _VALID_RUN_CODES),
+        # Subject 19: same restart guard on the BrainVision-marker fallback.
+        ("markers", _SUB19_PREFIX + _VALID_RUN_CODES),
+    ],
+    ids=["balanced", "sub04-tsv-restart", "sub19-marker-restart"],
+)
+def test_mi_events_keep_one_complete_run(tmp_path, source, codes):
     vhdr = tmp_path / "sub-01_task-mi2d_run-01_eeg.vhdr"
-    events = tmp_path / "sub-01_task-mi2d_run-01_events.tsv"
-    codes = [4, 5, 6, 7] * 10
-    coded_events = [(100.0, 3), (102.016, codes[0])]
-    coded_events.extend((103.016 + index, code) for index, code in enumerate(codes[1:]))
-    _write_events(events, coded_events)
-
-    annotations = MIND2026._mi_annotations(vhdr, _raw_with_codes([]))
-
-    _assert_complete_run(annotations)
-    assert annotations.description[:4].tolist() == [
-        "left_to_right",
-        "up_to_down",
-        "upperleft_to_lowerright",
-        "upperright_to_lowerleft",
-    ]
-    np.testing.assert_allclose(annotations.onset[:2], [102.016, 103.016])
-
-
-def test_subject_4_overfull_tsv_keeps_complete_post_restart_run(tmp_path):
-    """Subject 4 has three aborted MI markers before its final code-1 restart."""
-    vhdr = tmp_path / "sub-04_task-mi2d_run-01_eeg.vhdr"
-    events = tmp_path / "sub-04_task-mi2d_run-01_events.tsv"
-    prefix = [1, 1, 3, 5, 7, 15, 63, 255, 7, 1, 3]
-    codes = prefix + _VALID_RUN_CODES
-    _write_events(events, list(enumerate(codes)))
-
-    annotations = MIND2026._mi_annotations(vhdr, _raw_with_codes([]))
-
-    _assert_complete_run(annotations)
-    np.testing.assert_allclose(annotations.onset, np.arange(11, 51))
-
-
-def test_subject_19_overfull_raw_fallback_keeps_complete_post_restart_run(tmp_path):
-    """The raw-marker fallback applies the same restart guard as the TSV path."""
-    vhdr = tmp_path / "sub-19_task-mi2d_run-01_eeg.vhdr"
-    prefix = [1, 3] + [4, 5] * 9 + [800000, 800001, 1, 2, 3]
-    codes = prefix + _VALID_RUN_CODES
-
-    annotations = MIND2026._mi_annotations(vhdr, _raw_with_codes(codes))
-
-    _assert_complete_run(annotations)
-    np.testing.assert_allclose(
-        annotations.onset, np.arange(len(prefix), len(prefix) + 40)
+    if source == "tsv":
+        _write_events(tmp_path / "sub-01_task-mi2d_run-01_events.tsv", enumerate(codes))
+    annotations = MIND2026._mi_annotations(
+        vhdr, _raw_with_codes(codes if source == "markers" else [])
     )
+    assert annotations.description.tolist() == [_LABELS[c] for c in codes[-40:]]
+    np.testing.assert_allclose(annotations.onset, np.arange(len(codes) - 40, len(codes)))
 
 
 @pytest.mark.parametrize(
