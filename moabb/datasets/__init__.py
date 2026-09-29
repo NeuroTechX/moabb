@@ -169,6 +169,11 @@ from .zhou2020 import Zhou2020
 from .zuo2025 import Zuo2025
 
 
+from .jia2019 import Jia2019
+from .ortiz2023 import Ortiz2023
+from .yilmaz2024 import Yilmaz2024
+from .zju_mi2025 import ZjuMI2025
+
 # Call this last in order to make sure the dataset list, dict are populated with
 # the datasets imported in this file.
 _init_dataset()

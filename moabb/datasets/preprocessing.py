@@ -600,11 +600,12 @@ def _is_preserved_annotation(description) -> bool:
       which is MNE's convention for spans excluded by ``reject_by_annotation``
       (e.g. ``"BAD_artifact"`` from the BNCI loaders, ``"BAD boundary"`` from
       run concatenation);
+    - zero-duration ``"EDGE boundary"`` markers separating stored epochs;
     - the non-rejecting ``"bnci_artifact"`` marker added in ``annotate`` mode,
       kept so downstream code can still inspect flagged trials.
     """
     desc = str(description)
-    return desc.lower().startswith("bad") or desc == "bnci_artifact"
+    return desc.lower().startswith("bad") or desc in {"bnci_artifact", "EDGE boundary"}
 
 
 class SetRawAnnotations(FixedTransformer):

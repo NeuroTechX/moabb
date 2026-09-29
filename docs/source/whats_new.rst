@@ -23,7 +23,7 @@ Version 1.8  (Source - GitHub)
 
 Enhancements
 ~~~~~~~~~~~~
-- None yet.
+- Add Jia2019, Ortiz2023, Yilmaz2024 and ZjuMI2025 motor-imagery loaders (by `Bruno Aristimunha`_).
 
 API changes
 ~~~~~~~~~~~

@@ -1,6 +1,6 @@
 {
     "_metadata": {
-        "total": 156
+        "total": 161
     },
     "10.1038/s41467-026-75435-5": {
         "title": "Sensory-guided human-machine joint learning accelerates the acquisition of motor imagery brain computer interface control",
@@ -1849,5 +1849,59 @@
         ],
         "year": 2026,
         "doi": "10.5281/zenodo.20848097"
+    },
+    "10.6084/m9.figshare.7636301": {
+        "title": "EEG data of motor imagery for stroke",
+        "authors": [
+            "Tianyu Jia"
+        ],
+        "year": 2019,
+        "doi": "10.6084/m9.figshare.7636301"
+    },
+    "10.1038/s41597-023-02243-7": {
+        "title": "An EEG database for the cognitive assessment of motor imagery during walking with a lower-limb exoskeleton",
+        "authors": [
+            "Mario Ortiz",
+            "Luis de la Ossa",
+            "Eduardo Ianez",
+            "Diego Torricelli",
+            "Jesus Tornero",
+            "Jose M. Azorin"
+        ],
+        "year": 2023,
+        "doi": "10.1038/s41597-023-02243-7"
+    },
+    "10.6084/m9.figshare.21185362.v2": {
+        "title": "An EEG database for the cognitive assessment of motor imagery during walking with a lower-limb exoskeleton (figshare dataset)",
+        "authors": [
+            "Mario Ortiz",
+            "Luis de la Ossa",
+            "Eduardo Ianez",
+            "Diego Torricelli",
+            "Jesus Tornero",
+            "Jose M. Azorin"
+        ],
+        "year": 2023,
+        "doi": "10.6084/m9.figshare.21185362.v2"
+    },
+    "10.1007/s00521-024-10917-5": {
+        "title": "MI-BMPI motor imagery brain-mobile phone dataset and performance evaluation of voting ensembles utilizing QPDM",
+        "authors": [
+            "Cagatay Murat Yilmaz",
+            "Beyda H. Yilmaz",
+            "Cemal Kose"
+        ],
+        "year": 2024,
+        "doi": "10.1007/s00521-024-10917-5"
+    },
+    "10.1109/TNSRE.2025.3591254": {
+        "title": "Enhanced Online Continuous Brain-Control by Deep Learning-Based EEG Decoding",
+        "authors": [
+            "Jiaheng Wang",
+            "Lin Yao",
+            "Yueming Wang"
+        ],
+        "year": 2025,
+        "doi": "10.1109/TNSRE.2025.3591254"
     }
 }
