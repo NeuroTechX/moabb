@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 
 
@@ -17,7 +16,7 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://moabb.neurotechx.com/docs/whats_new.html" />
 <meta property="og:site_name" content="MOABB - Mother of all BCI Benchmarks" />
-<meta property="og:description" content="“Enhancements” for new features, “Bugs” for bug fixes, “API changes” for backward-incompatible changes. Version 1.8 (Source - GitHub): Enhancements: None yet.. API changes: None yet.. Requirements:..." />
+<meta property="og:description" content="“Enhancements” for new features, “Bugs” for bug fixes, “API changes” for backward-incompatible changes. Version 1.8 (Source - GitHub): Enhancements: Spell MNE’s renamed template montages everywhere..." />
 <meta property="og:image" content="https://moabb.neurotechx.com/docs/_static/moabb_og_card.png" />
 <meta property="og:image:alt" content="MOABB - Mother of all BCI Benchmarks: 158 open EEG datasets for reproducible BCI research" />
 <meta name="twitter:card" content="summary_large_image" />
@@ -42,8 +41,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -62,10 +61,10 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedheader/4.0.6/css/fixedHeader.dataTables.css" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <script defer src="_static/scripts/fontawesome.js?digest=64cc4de3f052d77215f0"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
 
     <script src="_static/jquery.js?v=5d32c60e"></script>
     <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
@@ -197,7 +196,7 @@
   
     <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
   </button>
   
@@ -285,7 +284,7 @@
 
 
 <li class=" current active">
-  <a class="nav-link dropdown-item nav-internal" href="#">
+  <a class="nav-link dropdown-item nav-internal" href="#" aria-current="page">
     Release notes
   </a>
 </li>
@@ -304,7 +303,7 @@
         <div class="navbar-item navbar-persistent--container">
           
 
-<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
  <i class="fa-solid fa-magnifying-glass"></i>
  <span class="search-button__default-text">Search</span>
  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
@@ -315,15 +314,15 @@
         <div class="navbar-item">
 
 <div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
     <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
     <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
     <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
   </button>
   <ul class="dropdown-menu dropdown-menu-end">
-    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
-    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
-    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
   </ul>
 </div></div>
       
@@ -360,7 +359,7 @@
   
     <div class="navbar-persistent--mobile">
 
-<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
  <i class="fa-solid fa-magnifying-glass"></i>
  <span class="search-button__default-text">Search</span>
  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
@@ -369,7 +368,7 @@
   
 
   
-    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
       <span class="fa-solid fa-outdent"></span>
     </button>
   
@@ -442,7 +441,7 @@
 
 
 <li class="nav-item current active">
-  <a class="nav-link nav-internal" href="#">
+  <a class="nav-link nav-internal" href="#" aria-current="page">
     Release notes
   </a>
 </li>
@@ -460,15 +459,15 @@
           <div class="navbar-item">
 
 <div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
     <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
     <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
     <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
   </button>
   <ul class="dropdown-menu dropdown-menu-end">
-    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
-    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
-    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
   </ul>
 </div></div>
         
@@ -564,7 +563,7 @@
 <section id="enhancements">
 <h3>Enhancements<a class="headerlink" href="#enhancements" title="Link to this heading">#</a></h3>
 <ul class="simple">
-<li><p>None yet.</p></li>
+<li><p>Spell MNE’s renamed template montages everywhere: MNE 1.13 renamed <code class="docutils literal notranslate"><span class="pre">standard_1005</span></code>/<code class="docutils literal notranslate"><span class="pre">standard_1020</span></code> (and the other <code class="docutils literal notranslate"><span class="pre">standard_*</span></code> templates) to <code class="docutils literal notranslate"><span class="pre">colin27_*</span></code> (identical electrode files), warns on the old names and MNE 1.14 removes them, so every <code class="docutils literal notranslate"><span class="pre">make_standard_montage</span></code>/<code class="docutils literal notranslate"><span class="pre">set_montage</span></code> call in MOABB now spells <code class="docutils literal notranslate"><span class="pre">colin27_*</span></code>. <code class="docutils literal notranslate"><span class="pre">METADATA</span></code> montage labels are descriptive and unchanged (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/1200">#1200</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 </ul>
 </section>
 <section id="api-changes">
@@ -576,7 +575,7 @@
 <section id="requirements">
 <h3>Requirements<a class="headerlink" href="#requirements" title="Link to this heading">#</a></h3>
 <ul class="simple">
-<li><p>None yet.</p></li>
+<li><p>Require <code class="docutils literal notranslate"><span class="pre">mne&gt;=1.13</span></code> for the <code class="docutils literal notranslate"><span class="pre">colin27_*</span></code> montage names and <a class="reference external" href="https://mne.tools/stable/generated/mne.io.read_raw_brainvision.html#mne.io.read_raw_brainvision" title="(in MNE v1.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.io.read_raw_brainvision()</span></code></a>’s <code class="docutils literal notranslate"><span class="pre">overrides</span></code> (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/1200">#1200</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 </ul>
 </section>
 <section id="bugs">
@@ -585,12 +584,14 @@
 <li><p>Use <code class="docutils literal notranslate"><span class="pre">gmean</span></code> in TRCA and TRCSP for compatibility with pyRiemann 0.12 and 0.13, and pass the TRCSP mean metric by keyword (by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 <li><p>Fix the <code class="docutils literal notranslate"><span class="pre">-e</span></code>/<code class="docutils literal notranslate"><span class="pre">--evaluations</span></code> flag of <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">moabb.run</span></code>, which used <code class="docutils literal notranslate"><span class="pre">type=list</span></code> and so split its value into single characters: <code class="docutils literal notranslate"><span class="pre">-e</span> <span class="pre">WithinSession</span></code> reached <a class="reference internal" href="generated/moabb.benchmark.html#moabb.benchmark" title="moabb.benchmark"><code class="xref py py-func docutils literal notranslate"><span class="pre">moabb.benchmark()</span></code></a> as <code class="docutils literal notranslate"><span class="pre">['W',</span> <span class="pre">'i',</span> <span class="pre">'t',</span> <span class="pre">...]</span></code> and raised <code class="docutils literal notranslate"><span class="pre">KeyError:</span> <span class="pre">'W'</span></code>. It now takes one or more evaluation names, space separated (by <a class="reference external" href="https://github.com/NotAFlightRisk">Iain</a>)</p></li>
 <li><p>Fix the two install pages asking for optional extras MOABB does not have: the pip install page gave <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">moabb[deepleaning,carbonemission,docs]</span></code>, which is missing the <code class="docutils literal notranslate"><span class="pre">r</span></code> of <code class="docutils literal notranslate"><span class="pre">deeplearning</span></code>, and pip only warns about an unrecognised extra, so following that page left <code class="docutils literal notranslate"><span class="pre">braindecode</span></code> uninstalled. The from-sources page asked for <code class="docutils literal notranslate"><span class="pre">external</span></code>, removed in 1.2.0 (by <a class="reference external" href="https://github.com/NotAFlightRisk">Iain</a>).</p></li>
+<li><p>Fix evaluations passing NumPy arrays instead of <a class="reference external" href="https://mne.tools/stable/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a> to <a class="reference internal" href="generated/moabb.pipelines.classification.SSVEP_itCCA.html#moabb.pipelines.classification.SSVEP_itCCA" title="moabb.pipelines.classification.SSVEP_itCCA"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.pipelines.classification.SSVEP_itCCA</span></code></a> and <a class="reference internal" href="generated/moabb.pipelines.classification.SSVEP_eCCA.html#moabb.pipelines.classification.SSVEP_eCCA" title="moabb.pipelines.classification.SSVEP_eCCA"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.pipelines.classification.SSVEP_eCCA</span></code></a>, whose <code class="docutils literal notranslate"><span class="pre">fit</span></code> then raised <code class="docutils literal notranslate"><span class="pre">ValueError:</span> <span class="pre">X</span> <span class="pre">should</span> <span class="pre">be</span> <span class="pre">an</span> <span class="pre">MNE</span> <span class="pre">Epochs</span> <span class="pre">object.</span></code> The check that switches an evaluation to epochs only listed <code class="docutils literal notranslate"><span class="pre">SSVEP_CCA</span></code>, <code class="docutils literal notranslate"><span class="pre">SSVEP_TRCA</span></code> and <code class="docutils literal notranslate"><span class="pre">SSVEP_MsetCCA</span></code> (by <a class="reference external" href="https://github.com/Arthur031221">Arthur031221</a>)</p></li>
+<li><p>Fix <code class="xref py py-func docutils literal notranslate"><span class="pre">moabb.analysis.meta_analysis.compute_pvals_wilcoxon()</span></code> reporting the wrong tail when the sign of the mean paired difference disagrees with the signed-rank statistic: the one-tailed p-value is now taken directly from <code class="docutils literal notranslate"><span class="pre">scipy.stats.wilcoxon(...,</span> <span class="pre">alternative=&quot;greater&quot;)</span></code> instead of halving the two-sided value and choosing the side from the mean (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/1177">#1177</a> by <a class="reference external" href="https://github.com/azrabano23">Azra Bano</a>)</p></li>
 </ul>
 </section>
 <section id="code-health">
 <h3>Code health<a class="headerlink" href="#code-health" title="Link to this heading">#</a></h3>
 <ul class="simple">
-<li><p>None yet.</p></li>
+<li><p>Share loader code across the new dataset PRs instead of private copies: <code class="xref py py-func docutils literal notranslate"><span class="pre">download_and_extract_subject_zip()</span></code> gains <code class="docutils literal notranslate"><span class="pre">fname</span></code> and <code class="docutils literal notranslate"><span class="pre">redownload_corrupted</span></code> (one warned re-download of a corrupted archive), <a class="reference internal" href="generated/moabb.datasets.utils.rename_stimulus_codes.html#moabb.datasets.utils.rename_stimulus_codes" title="moabb.datasets.utils.rename_stimulus_codes"><code class="xref py py-func docutils literal notranslate"><span class="pre">rename_stimulus_codes()</span></code></a> maps BrainVision <code class="docutils literal notranslate"><span class="pre">Stimulus/S</span> <span class="pre">&lt;n&gt;</span></code> markers to class labels, <code class="docutils literal notranslate"><span class="pre">SetRawAnnotations</span></code> keeps <code class="docutils literal notranslate"><span class="pre">EDGE</span> <span class="pre">boundary</span></code> markers, and the OpenNeuro raw-mirror mixin (<code class="docutils literal notranslate"><span class="pre">moabb.datasets._openneuro_mirror</span></code>) lives here once (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/1200">#1200</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 </ul>
 </section>
 </section>
@@ -1872,8 +1873,8 @@ to extend beyond actual motor imagery duration into adjacent trials’ resting p
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
-<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+  <script defer src="_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1899,7 +1900,7 @@ to extend beyond actual motor imagery duration into adjacent trials’ resting p
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.22.0.
 </p></div>
       
     </div>
