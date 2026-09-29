@@ -7,6 +7,8 @@ from mne.io import RawArray
 
 from moabb.datasets import download as dl
 
+from ..utils import resolve_montage_name
+
 
 BNCI_URL = "http://bnci-horizon-2020.eu/database/data-sets/"
 
@@ -23,7 +25,7 @@ def make_raw(
     sfreq,
     *,
     verbose=None,
-    montage="standard_1005",
+    montage="colin27_1005",
     line_freq=50.0,
     meas_date=None,
     description=None,
@@ -36,7 +38,7 @@ def make_raw(
         raw.info["line_freq"] = line_freq
     if montage:
         if isinstance(montage, str):
-            montage = make_standard_montage(montage)
+            montage = make_standard_montage(resolve_montage_name(montage))
         raw.set_montage(montage, on_missing="ignore")
     if meas_date is not None:
         raw.set_meas_date(meas_date)

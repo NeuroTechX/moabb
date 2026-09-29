@@ -26,6 +26,7 @@ from moabb.datasets.metadata.schema import (
 )
 
 from .base import BaseDataset
+from .utils import resolve_montage_name
 
 
 _manifest_link = "https://dataverse.harvard.edu/api/datasets/export?exporter=dataverse_json&persistentId=doi%3A10.7910/DVN/1UJDV6"
@@ -653,7 +654,7 @@ class Kojima2024B(BaseDataset):
                 raw = mne.io.read_raw_brainvision(file, eog=["vEOG", "hEOG"])
                 raw = raw.load_data()
 
-                raw = raw.set_montage("standard_1020")
+                raw = raw.set_montage(resolve_montage_name("colin27_1020"))
 
                 # Get events from annotations and create a stimulus channel
                 events, _ = mne.events_from_annotations(raw)

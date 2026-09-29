@@ -15,6 +15,7 @@ from scipy.io import loadmat
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 
+from ..utils import resolve_montage_name
 from .utils import convert_units
 
 
@@ -187,7 +188,7 @@ def _finalize_raw(raw, dataset_code, subject_id):
         ]
 
         if eeg_picks:
-            montage = make_standard_montage("standard_1005")
+            montage = make_standard_montage(resolve_montage_name("colin27_1005"))
             if any(ch in montage.ch_names for ch in eeg_picks):
                 raw.set_montage(montage, on_missing="ignore")
 
@@ -453,7 +454,7 @@ def _convert_run(
     # parse eeg data
     event_id = {}
     n_chan = run.X.shape[1]
-    montage = make_standard_montage("standard_1005")
+    montage = make_standard_montage(resolve_montage_name("colin27_1005"))
     eeg_data = convert_units(run.X, from_unit="uV", to_unit="V")
     sfreq = run.fs
 
@@ -491,7 +492,7 @@ def _convert_run(
 def _convert_run_p300_sl(run, verbose=None):
     """Convert one p300 run from santa lucia file format."""
 
-    montage = make_standard_montage("standard_1005")
+    montage = make_standard_montage(resolve_montage_name("colin27_1005"))
     eeg_data = convert_units(run.X, from_unit="uV", to_unit="V")
     sfreq = 256
     ch_names = list(run.channels) + ["Target stim", "Flash stim"]

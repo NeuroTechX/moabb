@@ -25,6 +25,7 @@ from moabb.datasets.metadata.schema import (
 
 from . import download as dl
 from .base import BaseDataset
+from .utils import resolve_montage_name
 
 
 log = logging.getLogger(__name__)
@@ -289,7 +290,7 @@ class Nakanishi2015(BaseDataset):
         sfreq = 256
         info = create_info(ch_names, sfreq, ch_types)
         raw = RawArray(data=np.concatenate(list(data), axis=1), info=info, verbose=False)
-        montage = make_standard_montage("standard_1005")
+        montage = make_standard_montage(resolve_montage_name("colin27_1005"))
         raw.set_montage(montage)
         return {"0": {"0": raw}}
 

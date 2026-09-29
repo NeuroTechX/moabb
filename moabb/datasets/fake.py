@@ -12,6 +12,8 @@ from moabb.datasets.base import BaseDataset
 from moabb.datasets.utils import block_rep
 from moabb.utils import _handle_deprecated_kwargs
 
+from .utils import resolve_montage_name
+
 
 class FakeDataset(BaseDataset):
     """Fake Dataset for test purpose.
@@ -170,7 +172,7 @@ class FakeDataset(BaseDataset):
         return events
 
     def _generate_raw(self, n_events, duration):
-        montage = make_standard_montage("standard_1005")
+        montage = make_standard_montage(resolve_montage_name("colin27_1005"))
         sfreq = self.sfreq
         eeg_data = 2e-5 * np.random.randn(int(duration * sfreq), len(self.channels))
         events = self._generate_events(n_events, duration)
