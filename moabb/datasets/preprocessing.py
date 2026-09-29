@@ -604,7 +604,11 @@ def _is_preserved_annotation(description) -> bool:
       kept so downstream code can still inspect flagged trials.
     """
     desc = str(description)
-    return desc.lower().startswith("bad") or desc == "bnci_artifact"
+    return (
+        desc.lower().startswith("bad")
+        or desc == "bnci_artifact"
+        or desc.lower() == "edge boundary"
+    )
 
 
 class SetRawAnnotations(FixedTransformer):
