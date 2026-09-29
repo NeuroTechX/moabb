@@ -18,7 +18,6 @@ from moabb.datasets.metadata.schema import (
 
 from . import download as dl
 from .base import BaseDataset
-from .utils import resolve_montage_name
 
 
 HEADMOUNTED_URL = "https://zenodo.org/record/2617085/files/"
@@ -216,7 +215,7 @@ class Cattan2019_PHMD(BaseDataset):
             ch_names=self._chnames, sfreq=512, ch_types=self._chtypes, verbose=False
         )
         raw = mne.io.RawArray(data=X, info=info, verbose=False)
-        raw.set_montage(resolve_montage_name("colin27_1020"))
+        raw.set_montage("colin27_1020")
         return {"0": {"0": raw}}
 
     def data_path(

@@ -10,7 +10,6 @@ import shutil
 import stat
 import subprocess
 import tarfile
-import tempfile
 import warnings
 import zipfile
 from pathlib import Path
@@ -25,7 +24,6 @@ from mne.io import RawArray
 import moabb.datasets as db
 from moabb.datasets import download as dl
 from moabb.datasets._channel_pick import pick_channels_for_modalities  # noqa: F401
-from moabb.datasets._montage import resolve_montage_name
 from moabb.datasets.base import BaseDataset
 from moabb.utils import aliases_list
 
@@ -209,142 +207,7 @@ def set_neuroscan_montage(raw, montage_name="colin27_1005"):
     raw.rename_channels(
         {ch: ch.replace("Z", "z").replace("FP", "Fp") for ch in raw.ch_names}
     )
-    raw.set_montage(
-        make_standard_montage(resolve_montage_name(montage_name)), on_missing="ignore"
-    )
-
-
-def download_and_extract_zip(
-    url,
-    sign,
-    marker,
-    path=None,
-    force_update=False,
-    verbose=None,
-    *,
-    extract_to=".",
-    fname=None,
-    redownload_corrupted=False,
-):
-    """Download a ZIP archive once and extract it unless already extracted.
-
-    Parameters
-    ----------
-    url : str
-        Download URL, passed to :func:`moabb.datasets.download.data_dl`.
-    sign : str
-        Dataset code, passed to :func:`~moabb.datasets.download.data_dl`.
-    marker : str | pathlib.Path
-        Path, relative to the extraction directory, whose existence proves a
-        previous extraction (e.g. the archive's top-level folder). The
-        archive is extracted when ``force_update`` is True or ``marker`` is
-        missing.
-    path, force_update, verbose
-        Forwarded to :func:`~moabb.datasets.download.data_dl`; with
-        ``force_update`` the archive is also extracted again.
-    extract_to : str | pathlib.Path
-        Extraction directory, relative to the folder holding the downloaded
-        archive. Defaults to that folder.
-    fname : str | None
-        File name for URLs that do not end in one (forwarded to ``data_dl``).
-    redownload_corrupted : bool
-        If True, an archive that is not a valid ZIP is downloaded again once
-        (with a warning) before extracting; a second failure propagates.
-
-    Returns
-    -------
-    pathlib.Path
-        ``<extraction directory>/<marker>``.
-    """
-
-    kwargs = {} if fname is None else {"fname": fname}
-
-    def fetch(force):
-        return Path(dl.data_dl(url, sign, path, force, verbose, **kwargs))
-
-    zip_path = fetch(force_update)
-    extract_dir = zip_path.parent / extract_to
-    target = extract_dir / marker
-    if force_update or not target.exists():
-        logger.info("Extracting %s ...", zip_path.name)
-        try:
-            with zipfile.ZipFile(zip_path) as zf:
-                safe_extract_zip(zf, extract_dir)
-        except zipfile.BadZipFile:
-            if not redownload_corrupted:
-                raise
-            warnings.warn("Corrupted zip file detected, re-downloading...", stacklevel=2)
-            with zipfile.ZipFile(fetch(True)) as zf:
-                safe_extract_zip(zf, extract_dir)
-    return target
-
-
-def read_raw_brainvision_repaired(vhdr_path, *, strict=False):
-    """Read a BrainVision recording, repairing stale sibling references.
-
-    Some published headers keep an acquisition-time ``DataFile`` or
-    ``MarkerFile`` name although the ``.eeg``/``.vmrk`` file beside them was
-    renamed (typically by a BIDS conversion). A reference is repaired only if
-    the file it names is missing and the same-stem sibling exists; the fix is
-    written to a short-lived header next to the original, so the downloaded
-    files are never modified.
-
-    Parameters
-    ----------
-    vhdr_path : str | pathlib.Path
-        Path to the ``.vhdr`` header.
-    strict : bool
-        If True, a header without a ``DataFile``/``MarkerFile`` entry raises
-        :class:`ValueError`, and a reference that is missing together with
-        its sibling raises :class:`FileNotFoundError`. If False, such headers
-        are passed to MNE unchanged.
-
-    Returns
-    -------
-    raw : mne.io.Raw
-        The preloaded recording.
-    """
-    vhdr_path = Path(vhdr_path)
-    header = vhdr_path.read_text(encoding="utf-8")
-    repaired = header
-    for field, suffix in (("DataFile", ".eeg"), ("MarkerFile", ".vmrk")):
-        pattern = rf"(?m)^{field}=([^\r\n]+)"
-        match = re.search(pattern, repaired)
-        if match is None:
-            if strict:
-                raise ValueError(
-                    f"Missing {field} entry in BrainVision header {vhdr_path}"
-                )
-            continue
-        referenced = vhdr_path.parent / match.group(1).strip()
-        sibling = vhdr_path.with_suffix(suffix)
-        if referenced.is_file():
-            continue
-        if not sibling.is_file():
-            if strict:
-                raise FileNotFoundError(
-                    f"{vhdr_path} references missing {referenced.name}; expected "
-                    f"sibling {sibling.name} is also absent."
-                )
-            continue
-        repaired = re.sub(pattern, f"{field}={sibling.name}", repaired)
-
-    if repaired == header:
-        return mne.io.read_raw_brainvision(str(vhdr_path), preload=True, verbose=False)
-    with tempfile.NamedTemporaryFile(
-        "w",
-        encoding="utf-8",
-        suffix=".vhdr",
-        prefix=f".{vhdr_path.stem}-",
-        dir=vhdr_path.parent,
-        delete=False,
-    ) as stream:
-        stream.write(repaired)
-        temporary = Path(stream.name)
-    try:
-        return mne.io.read_raw_brainvision(str(temporary), preload=True, verbose=False)
-    finally:
-        temporary.unlink(missing_ok=True)
+    raw.set_montage(make_standard_montage(montage_name), on_missing="ignore")
 
 
 def rename_stimulus_codes(raw, codes):
@@ -364,18 +227,6 @@ def rename_stimulus_codes(raw, codes):
         if match and int(match.group(1)) in codes:
             rename[desc] = codes[int(match.group(1))]
     raw.annotations.rename(rename)
-
-
-def edge_boundary_annotations(onsets):
-    """Zero-duration ``"EDGE boundary"`` annotations at the given onsets (s).
-
-    Loaders that concatenate stored epochs mark every join with this
-    description so MNE filtering does not cross it; unlike ``"BAD boundary"``
-    it does not reject the adjacent trials, and
-    :class:`moabb.datasets.preprocessing.SetRawAnnotations` keeps it.
-    """
-    onsets = np.asarray(onsets, dtype=float)
-    return mne.Annotations(onsets, np.zeros(len(onsets)), ["EDGE boundary"] * len(onsets))
 
 
 def _download_all(update_path=True, verbose=None):
@@ -674,8 +525,7 @@ def build_raw_from_epochs(
     event_ids : ndarray
         Integer event code for each trial, of shape ``(n_trials,)``.
     montage_name : str
-        Name of a standard MNE montage (e.g. "colin27_1005", "biosemi32");
-        legacy ``standard_*`` names are resolved by :func:`resolve_montage_name`.
+        Name of a standard MNE montage (e.g. "colin27_1005", "biosemi32").
     ch_types : list of str or None
         Channel types for each signal channel in ``ch_names``. If None, all
         channels are treated as ``"eeg"``.
@@ -765,13 +615,21 @@ def build_raw_from_epochs(
     ch_types_full = list(ch_types) + ["stim"]
     info = create_info(ch_names_full, sfreq, ch_types_full)
     raw = RawArray(data=continuous, info=info, verbose=False)
-    montage = make_standard_montage(resolve_montage_name(montage_name))
+    montage = make_standard_montage(montage_name)
     raw.set_montage(montage, on_missing="ignore")
     return raw
 
 
 def download_and_extract_subject_zip(
-    url, sign, extract_dir, path=None, force_update=False, verbose=None
+    url,
+    sign,
+    extract_dir,
+    path=None,
+    force_update=False,
+    verbose=None,
+    *,
+    fname=None,
+    redownload_corrupted=False,
 ):
     """Download a per-subject ZIP and safely extract it.
 
@@ -792,8 +650,13 @@ def download_and_extract_subject_zip(
         Force re-download even if file exists locally.
     verbose : bool | None
         Verbosity level.
+    fname : str | None
+        File name passed to :func:`dl.data_dl`, for URLs that do not end in one.
+    redownload_corrupted : bool
+        If True, an archive that is not a valid ZIP is downloaded again once,
+        with a warning; a second failure raises :class:`zipfile.BadZipFile`.
     """
-    dl_path = Path(dl.data_dl(url, sign, path, force_update, verbose))
+    dl_path = Path(dl.data_dl(url, sign, path, force_update, verbose, fname=fname))
 
     # Rename to .zip if dl.data_dl() stripped the extension.
     zip_path = dl_path.with_suffix(".zip")
@@ -802,8 +665,17 @@ def download_and_extract_subject_zip(
 
     extract_dir = Path(extract_dir)
     extract_dir.mkdir(parents=True, exist_ok=True)
-    with zipfile.ZipFile(zip_path) as zf:
-        safe_extract_zip(zf, extract_dir)
+    try:
+        with zipfile.ZipFile(zip_path) as zf:
+            safe_extract_zip(zf, extract_dir)
+    except zipfile.BadZipFile:
+        if not redownload_corrupted:
+            raise
+        warnings.warn("Corrupted zip file detected, re-downloading...", stacklevel=2)
+        zip_path.unlink()
+        download_and_extract_subject_zip(
+            url, sign, extract_dir, path, True, verbose, fname=fname
+        )
 
 
 def extract_rar(rar_path, dest_dir):

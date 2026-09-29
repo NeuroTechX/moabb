@@ -26,8 +26,6 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 
-from ..utils import resolve_montage_name
-
 
 BNCI_URL_001_2019 = "http://bnci-horizon-2020.eu/database/data-sets/001-2019/"
 
@@ -374,7 +372,7 @@ class BNCI2019_001(BaseDataset):
     def _get_single_subject_data(self, subject):
         """Return data for a single subject."""
         file_paths = self.data_path(subject)
-        montage = make_standard_montage(resolve_montage_name("colin27_1005"))
+        montage = make_standard_montage("colin27_1005")
         eog_channels = ["eog-l", "eog-m", "eog-r"]
         data = {}
         for run_idx, path in enumerate(file_paths):
