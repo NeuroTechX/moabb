@@ -76,6 +76,8 @@ Motor Imagery Datasets
     GrosseWentrup2009
     Ofner2017
     PhysionetMI
+    Perdikis2018
+    SpinalStim2025
     Schirrmeister2017
     Shin2017A
     Shin2017B
