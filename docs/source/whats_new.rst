@@ -23,7 +23,7 @@ Version 1.8  (Source - GitHub)
 
 Enhancements
 ~~~~~~~~~~~~
-- None yet.
+- Add :class:`moabb.datasets.Garro2025`, :class:`moabb.datasets.MIND2026`, :class:`moabb.datasets.MOVING2024`, and :class:`moabb.datasets.Thapa2025` large-recording motor-imagery and motor-execution datasets. Preserve the MIND acquisition-restart guard and document execution-only tasks (by `Bruno Aristimunha`_).
 
 API changes
 ~~~~~~~~~~~
