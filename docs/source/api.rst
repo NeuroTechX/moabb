@@ -54,6 +54,9 @@ Motor Imagery Datasets
     :template: class.rst
 
     AlexMI
+    PerezBlanco2026
+    SitStand2026
+    Vagaja2023
     BNCI2003_004
     BNCI2014_001
     BNCI2014_002

@@ -23,7 +23,7 @@ Version 1.8  (Source - GitHub)
 
 Enhancements
 ~~~~~~~~~~~~
-- None yet.
+- Add PerezBlanco2026 wrist motor-execution, SitStand2026 transition imagery, and Vagaja2023 VR motor-imagery datasets (by `Bruno Aristimunha`_).
 
 API changes
 ~~~~~~~~~~~
