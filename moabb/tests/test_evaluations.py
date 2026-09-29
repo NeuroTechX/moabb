@@ -27,8 +27,11 @@ from moabb.evaluations import evaluations as ev
 from moabb.evaluations.base import BaseEvaluation, optuna_available
 from moabb.evaluations.splitters import LearningCurveSplitter
 from moabb.evaluations.utils import _create_save_path as create_save_path
+from moabb.evaluations.utils import _pipeline_requires_epochs
 from moabb.evaluations.utils import _save_model_cv as save_model_cv
+from moabb.paradigms import SSVEP
 from moabb.paradigms.motor_imagery import FakeImageryParadigm
+from moabb.pipelines import classification
 
 
 def _identity(x):
@@ -1933,3 +1936,48 @@ def test_cs_mode_trialwise_runs_end_to_end():
         scores[CrossSubjectMode.TRAIN_TRIALWISE]["score"].to_numpy(),
         scores[CrossSubjectMode.TRAIN]["score"].to_numpy(),
     )
+
+
+@pytest.mark.parametrize(
+    "name", ["SSVEP_CCA", "SSVEP_TRCA", "SSVEP_MsetCCA", "SSVEP_itCCA", "SSVEP_eCCA"]
+)
+def test_pipeline_requires_epochs_for_epochs_classifiers(name):
+    clf = getattr(classification, name)()
+    assert _pipeline_requires_epochs(clf)
+    assert _pipeline_requires_epochs(make_pipeline(clf))
+
+
+def test_pipeline_requires_epochs_false_for_array_pipeline():
+    assert not _pipeline_requires_epochs(make_pipeline(Covariances("oas"), CSP(8), LDA()))
+    assert not _pipeline_requires_epochs(Dummy())
+
+
+@pytest.mark.parametrize(
+    "clf",
+    [
+        classification.SSVEP_itCCA(),
+        # The fake epochs name their events "1", "2", "3", so the frequencies
+        # of the encoded labels have to be given explicitly.
+        classification.SSVEP_eCCA(freq_map={0: 13.0, 1: 17.0, 2: 21.0}),
+    ],
+    ids=["itCCA", "eCCA"],
+)
+def test_within_session_passes_epochs(clf, tmp_path):
+    ds = FakeDataset(
+        event_list=("13", "17", "21"),
+        n_sessions=1,
+        n_runs=1,
+        n_subjects=1,
+        paradigm="ssvep",
+        sfreq=256,
+        seed=12,
+    )
+    evaluation = ev.WithinSessionEvaluation(
+        paradigm=SSVEP(n_classes=3),
+        datasets=[ds],
+        overwrite=True,
+        n_splits=2,
+        hdf5_path=tmp_path,
+    )
+    results = evaluation.process({"clf": clf})
+    assert len(results) == 1
