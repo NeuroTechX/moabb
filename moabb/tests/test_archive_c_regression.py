@@ -1,7 +1,7 @@
 """Offline signal and transport contracts for the archive-C datasets."""
 
 import zipfile
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 import mne
 import numpy as np
@@ -67,13 +67,16 @@ def test_vagaja_annotation_mapping_units_and_bad_channel_preserved(monkeypatch):
     raw.set_annotations(
         mne.Annotations([0, 14], [0, 0], ["Stimulus/S 7", "Stimulus/S 8"])
     )
-    monkeypatch.setattr(
-        "moabb.datasets.vagaja2023.read_raw_brainvision_repaired", lambda *a, **k: raw
-    )
+    reader = Mock(return_value=raw)
+    monkeypatch.setattr(mne.io, "read_raw_brainvision", reader)
     dataset = Vagaja2023()
     result = dataset._load_run(
-        "unused", mne.channels.make_standard_montage("standard_1020")
+        "unused.vhdr", mne.channels.make_standard_montage("colin27_1020")
     )
+    assert reader.call_args.kwargs["overrides"] == {
+        "data_fname": "unused.eeg",
+        "marker_fname": "unused.vmrk",
+    }
     assert list(result.annotations.description) == ["left_hand", "right_hand"]
     assert result.info["bads"] == ["C3"]
     np.testing.assert_allclose(result.get_data(), 12e-6)
@@ -123,7 +126,7 @@ def test_sitstand_transport_flags_missing_and_duplicate_sessions(tmp_path):
 
 def test_vagaja_force_update_reextracts_archive(tmp_path):
     archive = tmp_path / "GROUPS.zip"
-    target = tmp_path / "Embodied/SUB03/SUB03_MI.vhdr"
+    target = tmp_path / "MNE-vagaja2023-data/Embodied/SUB03/SUB03_MI.vhdr"
     target.parent.mkdir(parents=True)
     target.write_text("old")
     with zipfile.ZipFile(archive, "w") as zf:
@@ -155,24 +158,22 @@ def test_perez_figshare_transport_flags(tmp_path):
     assert download.call_args.args[2:] == (tmp_path, True, "ERROR")
 
 
-def test_sitstand_nested_archive_is_extracted_only_once(tmp_path, monkeypatch):
+def test_sitstand_nested_archive_is_extracted_only_once(tmp_path):
     """The real Zenodo layout (extra ``v1_raw_s<ID>/``) must be reusable offline."""
     archive = tmp_path / "v1_raw_S01.zip"
     with zipfile.ZipFile(archive, "w") as zf:
         for session in (1, 2):
             zf.writestr(f"v1_raw_s1/S01_S{session}.mat", b"placeholder")
-    calls = []
-    extractall = zipfile.ZipFile.extractall
-    monkeypatch.setattr(
-        zipfile.ZipFile,
-        "extractall",
-        lambda *a, **k: calls.append(1) or extractall(*a, **k),
-    )
-    with patch("moabb.datasets.sitstand2026.dl.data_dl", return_value=str(archive)):
+    with (
+        patch.object(
+            zipfile.ZipFile, "extractall", autospec=True, wraps=zipfile.ZipFile.extractall
+        ) as extractall,
+        patch("moabb.datasets.sitstand2026.dl.data_dl", return_value=str(archive)),
+    ):
         paths = [SitStand2026().data_path(1) for _ in range(2)]
     expected = [str(tmp_path / f"S01/v1_raw_s1/S01_S{s}.mat") for s in (1, 2)]
     assert paths == [expected, expected]
-    assert len(calls) == 1
+    assert extractall.call_count == 1
 
 
 def test_vagaja_missing_subject_or_run_fails_explicitly(tmp_path, monkeypatch):
@@ -180,12 +181,16 @@ def test_vagaja_missing_subject_or_run_fails_explicitly(tmp_path, monkeypatch):
     with zipfile.ZipFile(archive, "w") as zf:
         zf.writestr("Embodied/SUB03/notes.txt", "no MI run")
     ds = Vagaja2023()
+    monkeypatch.setenv("MNE_DATASETS_VAGAJA2023_PATH", str(tmp_path))
     with patch("moabb.datasets.download.data_dl", return_value=str(archive)):
         with pytest.raises(FileNotFoundError, match="Missing subject directory"):
-            ds.data_path(5, path=tmp_path)
+            ds.data_path(5)
         with pytest.raises(FileNotFoundError, match="No motor-imagery BrainVision"):
             ds._get_single_subject_data(3)
-    (tmp_path / "Embodied/SUB03/SUB03_MI.vhdr").touch()
-    monkeypatch.setattr(ds, "data_path", lambda subject: [tmp_path / "Embodied/SUB03"])
-    monkeypatch.setattr(ds, "_load_run", lambda vhdr, montage: vhdr.name)
-    assert ds._get_single_subject_data(3) == {"0": {"0": "SUB03_MI.vhdr"}}
+    subject_dir = tmp_path / "MNE-vagaja2023-data/Embodied/SUB03"
+    (subject_dir / "SUB03_MI.vhdr").touch()
+    monkeypatch.setattr(ds, "data_path", Mock(return_value=[subject_dir]))
+    load_run = Mock(return_value="run")
+    monkeypatch.setattr(ds, "_load_run", load_run)
+    assert ds._get_single_subject_data(3) == {"0": {"0": "run"}}
+    assert load_run.call_args.args[0] == subject_dir / "SUB03_MI.vhdr"

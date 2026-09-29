@@ -18,8 +18,6 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 
-from .utils import resolve_montage_name
-
 
 # Zenodo raw record (per-subject zips, each holding two session .mat files).
 SITSTAND_BASE_URL = "https://zenodo.org/records/20348444/files/"
@@ -41,6 +39,24 @@ TRIGGER_CHANNEL = "trigger"
 
 # The raw ``.mat`` stores EEG/EOG signals in microvolts; MNE expects volts.
 MICROVOLTS_TO_VOLTS = 1e-6
+
+
+def _resolve_mat_paths(extract_dir, subject):
+    """Return both session ``.mat`` paths under ``extract_dir``, or ``[]``."""
+    resolved = []
+    for sess in (1, 2):
+        filename = f"S{subject:02d}_S{sess}.mat"
+        direct = extract_dir / filename
+        if direct.exists():
+            resolved.append(direct)
+            continue
+        found = sorted(extract_dir.rglob(filename))
+        if not found:
+            return []
+        if len(found) != 1:
+            raise ValueError(f"Duplicate session file {filename} under {extract_dir}")
+        resolved.append(found[0])
+    return resolved
 
 
 class SitStand2026(BaseDataset):
@@ -174,33 +190,15 @@ class SitStand2026(BaseDataset):
         )
         extract_dir = path_zip.parent / f"S{subject:02d}"
 
-        def resolve_mat_paths():
-            resolved = []
-            for sess in (1, 2):
-                filename = f"S{subject:02d}_S{sess}.mat"
-                direct = extract_dir / filename
-                if direct.exists():
-                    resolved.append(direct)
-                    continue
-                found = sorted(extract_dir.rglob(filename))
-                if not found:
-                    return []
-                if len(found) != 1:
-                    raise ValueError(
-                        f"Duplicate session file {filename} under {extract_dir}"
-                    )
-                resolved.append(found[0])
-            return resolved
-
         # Zenodo's archives contain an extra ``v1_raw_s<ID>`` directory. Check
         # that nested layout before opening the archive: otherwise every
         # subsequent ``get_data`` call needlessly extracts the same subject
         # again, which also breaks read-only/offline compute jobs.
-        mat_paths = resolve_mat_paths()
+        mat_paths = _resolve_mat_paths(extract_dir, subject)
         if force_update or len(mat_paths) != 2:
             with z.ZipFile(path_zip, "r") as zip_ref:
                 zip_ref.extractall(extract_dir)
-            mat_paths = resolve_mat_paths()
+            mat_paths = _resolve_mat_paths(extract_dir, subject)
 
         if len(mat_paths) != 2:
             raise FileNotFoundError(
@@ -241,7 +239,7 @@ class SitStand2026(BaseDataset):
         # Normalise casing against the 10-05 montage so channels are recognised,
         # and derive the MNE channel type from each (case-insensitive) name.
         # Unknown EEG labels are upper-cased as a best-effort fallback.
-        montage = mne.channels.make_standard_montage(resolve_montage_name("colin27_1005"))
+        montage = mne.channels.make_standard_montage("colin27_1005")
         lower_to_std = {ch.lower(): ch for ch in montage.ch_names}
 
         ch_names, ch_types = [], []

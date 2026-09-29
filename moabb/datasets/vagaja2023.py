@@ -4,8 +4,10 @@ import logging
 import warnings
 from pathlib import Path
 
+import mne
 from mne.channels import make_standard_montage
 
+from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
@@ -22,12 +24,7 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 
-from .utils import (
-    download_and_extract_zip,
-    read_raw_brainvision_repaired,
-    rename_stimulus_codes,
-    resolve_montage_name,
-)
+from .utils import download_and_extract_subject_zip, rename_stimulus_codes
 
 
 log = logging.getLogger(__name__)
@@ -246,14 +243,14 @@ class Vagaja2023(BaseDataset):
         # The archive extracts "Control/" and "Embodied/" directly into the
         # parent dir; extract the whole archive on first access.
         group = _SUBJECT_GROUP[subject]
-        subject_dir = download_and_extract_zip(
-            ZENODO_URL,
-            self.code,
-            f"{group}/SUB{subject:02d}",
-            path,
-            force_update,
-            verbose,
+        data_dir = (
+            Path(dl.get_dataset_path(self.code, path)) / f"MNE-{self.code.lower()}-data"
         )
+        subject_dir = data_dir / group / f"SUB{subject:02d}"
+        if force_update or not subject_dir.exists():
+            download_and_extract_subject_zip(
+                ZENODO_URL, self.code, data_dir, path, force_update, verbose
+            )
 
         if not subject_dir.is_dir():
             raise FileNotFoundError(f"Missing subject directory: {subject_dir}")
@@ -269,19 +266,22 @@ class Vagaja2023(BaseDataset):
                 f"No motor-imagery BrainVision run found for subject {subject} at {vhdr}"
             )
 
-        return {
-            "0": {
-                "0": self._load_run(
-                    vhdr, make_standard_montage(resolve_montage_name("colin27_1020"))
-                )
-            }
-        }
+        return {"0": {"0": self._load_run(vhdr, make_standard_montage("colin27_1020"))}}
 
     def _load_run(self, vhdr, montage):
         """Read one BrainVision run and standardize channels/events."""
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            raw = read_raw_brainvision_repaired(vhdr, strict=True)
+            # Some headers still name the pre-rename DataFile/MarkerFile.
+            raw = mne.io.read_raw_brainvision(
+                vhdr,
+                preload=True,
+                verbose=False,
+                overrides={
+                    "data_fname": Path(vhdr).with_suffix(".eeg").name,
+                    "marker_fname": Path(vhdr).with_suffix(".vmrk").name,
+                },
+            )
 
         raw.rename_channels({k: v for k, v in _AUX_RENAME.items() if k in raw.ch_names})
         raw.set_channel_types({k: v for k, v in _AUX_TYPES.items() if k in raw.ch_names})

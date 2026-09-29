@@ -22,9 +22,10 @@ from moabb.datasets.metadata.schema import (
     ParticipantMetadata,
     Tags,
 )
-from moabb.datasets.utils import resolve_montage_name, stim_channels_with_selected_ids
-
-from .utils import download_and_extract_zip
+from moabb.datasets.utils import (
+    download_and_extract_subject_zip,
+    stim_channels_with_selected_ids,
+)
 
 
 # Figshare article hosting the BIDS data (data DOI 10.6084/m9.figshare.29666735).
@@ -210,8 +211,8 @@ class PerezBlanco2026(BaseDataset):
             Path(dl.get_dataset_path(self.code, path)) / f"MNE-{self.code.lower()}-data"
         )
 
-        # Figshare downloads are stored below ``files/<file-id>`` and the
-        # subject zip is extracted next to that file. Once the EDFs exist, do
+        # Subject zips are extracted into the dataset root (earlier versions
+        # extracted next to the ``files/<file-id>`` download). Once the EDFs exist, do
         # not query the Figshare API merely to rediscover the zip id: compute
         # nodes may be offline while the complete extracted subject is local.
         if not force_update:
@@ -229,9 +230,11 @@ class PerezBlanco2026(BaseDataset):
             raise ValueError(f"{zip_name} not found in Figshare article")
         url = f"https://ndownloader.figshare.com/files/{file_id[zip_name]}"
 
-        eeg_dir = download_and_extract_zip(
-            url, self.code, f"{sub}/eeg", path, force_update, verbose
-        )
+        eeg_dir = dataset_root / sub / "eeg"
+        if force_update or not eeg_dir.exists():
+            download_and_extract_subject_zip(
+                url, self.code, dataset_root, path, force_update, verbose
+            )
 
         edf_files = sorted(eeg_dir.glob(f"{sub}_task-*_run-*_eeg.edf"))
         if not edf_files:
@@ -302,9 +305,7 @@ class PerezBlanco2026(BaseDataset):
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             raw.set_montage(
-                make_standard_montage(resolve_montage_name("colin27_1005")),
-                on_missing="ignore",
-                verbose=False,
+                make_standard_montage("colin27_1005"), on_missing="ignore", verbose=False
             )
 
         annotations = mne.annotations_from_events(
