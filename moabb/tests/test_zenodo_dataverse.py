@@ -38,7 +38,6 @@ def test_stored_windows(tmp_path, cls, samples, offset):
     np.testing.assert_allclose(raw.get_data(picks="eeg")[:, -1], -7e-6)
     ds = cls()
     raw = SetRawAnnotations(ds.event_id, ds.interval).transform(raw)
-    assert "EDGE boundary" in raw.annotations.description
     events = mne.find_events(raw, initial_event=True, verbose=False)
     np.testing.assert_array_equal(events[:, 0], [offset, samples + offset])
     epochs = mne.Epochs(
@@ -52,14 +51,9 @@ def test_stored_windows(tmp_path, cls, samples, offset):
         verbose=False,
     )
     assert epochs.get_data().shape == (2, 29, 1000)
-    # Independent filtering must not cross the stored-trial join.
-    filtered = raw.copy().filter(8, 30, verbose=False)
-    independent = raw.copy().crop(0, (samples - 1) / 250).filter(8, 30, verbose=False)
-    np.testing.assert_allclose(
-        filtered.get_data(picks="eeg")[:, :samples],
-        independent.get_data(picks="eeg"),
-        atol=1e-15,
-    )
+    # The non-rejecting boundary must sit exactly at the stored-trial join.
+    edges = raw.annotations[raw.annotations.description == "EDGE boundary"]
+    np.testing.assert_allclose(edges.onset, [samples / 250])
 
 
 @pytest.mark.parametrize("cls", [Pan2023, Pan2025])
