@@ -23,7 +23,7 @@ Version 1.8  (Source - GitHub)
 
 Enhancements
 ~~~~~~~~~~~~
-- Add :class:`moabb.datasets.Corsi2026` (NETBCI, Recherche Data Gouv doi:10.57745/RBJRC7): 19 subjects, 74-channel EEG, right-hand motor imagery vs rest over 4 longitudinal sessions x 6 online feedback runs; per-subject EEG is read out of the 49 GB archive by HTTP range requests (by `Bruno Aristimunha`_).
+- Add :class:`moabb.datasets.Corsi2026` (NETBCI, Recherche Data Gouv doi:10.57745/RBJRC7): 19 subjects, 74-channel EEG, right-hand motor imagery vs rest over 4 longitudinal sessions x 6 online feedback runs; per-subject EEG is read out of the 49 GB archive by HTTP range requests (:gh:`1188` by `Bruno Aristimunha`_).
 
 API changes
 ~~~~~~~~~~~
