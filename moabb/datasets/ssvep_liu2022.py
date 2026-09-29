@@ -27,7 +27,7 @@ from .metadata.schema import (
     SignalProcessingMetadata,
     Tags,
 )
-from .utils import FIGSHARE_DL_URL, safe_extract_tar
+from .utils import FIGSHARE_DL_URL, resolve_montage_name, safe_extract_tar
 
 
 # Figshare file IDs for per-subject tar.gz files (S1.tar.gz through S100.tar.gz)
@@ -506,7 +506,7 @@ class Liu2022EldBETA(BaseDataset):
         """Return data for one subject across all 7 blocks from BIDS/GDF files."""
         gdf_paths = self.data_path(subject)
 
-        montage = mne.channels.make_standard_montage("standard_1005")
+        montage = mne.channels.make_standard_montage(resolve_montage_name("colin27_1005"))
 
         sessions = {}
         for block_idx, gdf_path in enumerate(gdf_paths):

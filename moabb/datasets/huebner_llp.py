@@ -25,6 +25,8 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 
+from .utils import resolve_montage_name
+
 
 logger = logging.getLogger(__name__)
 
@@ -663,7 +665,7 @@ def _read_raw_llp_study_data(vhdr_fname, raw_slice_offset, verbose=None):
         preload=True,
         verbose=verbose,
     )  # type: mne.io.Raw
-    raw_bvr = raw_bvr.set_montage("standard_1020")
+    raw_bvr = raw_bvr.set_montage(resolve_montage_name("colin27_1020"))
 
     events = _parse_events(raw_bvr)
 

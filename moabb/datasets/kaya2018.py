@@ -26,6 +26,7 @@ from .metadata.schema import (
     SignalProcessingMetadata,
     Tags,
 )
+from .utils import resolve_montage_name
 
 
 log = logging.getLogger(__name__)
@@ -270,7 +271,9 @@ class Kaya2018(BaseDataset):
             raw = mne.io.RawArray(eeg_data, info, verbose=False)
 
             # Set standard 10-20 montage
-            montage = mne.channels.make_standard_montage("standard_1020")
+            montage = mne.channels.make_standard_montage(
+                resolve_montage_name("colin27_1020")
+            )
             raw.set_montage(montage, on_missing="warn", verbose=False)
 
             # Extract event onsets from marker channel transitions
