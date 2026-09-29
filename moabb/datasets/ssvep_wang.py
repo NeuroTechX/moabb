@@ -25,6 +25,7 @@ from moabb.datasets.metadata.schema import (
 
 from . import download as dl
 from .base import BaseDataset
+from .utils import resolve_montage_name
 
 
 log = logging.getLogger(__name__)
@@ -473,7 +474,7 @@ class Wang2016(BaseDataset):
         sfreq = 250
         info = create_info(self._ch_names, sfreq, ch_types)
         raw = RawArray(data=np.concatenate(list(data), axis=1), info=info, verbose=False)
-        montage = make_standard_montage("standard_1005")
+        montage = make_standard_montage(resolve_montage_name("colin27_1005"))
         # CB1 and CB2 are not in standard_1005 montage - ignore them
         raw.set_montage(montage, on_missing="ignore")
         return {"0": {"0": raw}}
