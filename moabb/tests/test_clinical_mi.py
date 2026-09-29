@@ -1,6 +1,7 @@
 """Synthetic clinical/graded-force source-format checks."""
 
 import json
+import zipfile
 from unittest.mock import patch
 
 import mne
@@ -10,6 +11,9 @@ import pytest
 
 from moabb.datasets import KMIHandGrip2025, MILimbEEG
 from moabb.datasets.preprocessing import SetRawAnnotations
+
+
+FLAGS = {"path": "custom", "force_update": True, "verbose": False}
 
 
 @pytest.mark.parametrize("indexed", [True, False])
@@ -61,21 +65,12 @@ def test_kmi_si_and_protocol(tmp_path):
         path, index=False
     )
     ds = KMIHandGrip2025()
-    raw = ds._read_run(path, 1)
+    raw = ds._read_run(path, "grip_10")
     np.testing.assert_allclose(raw.get_data()[0], 25e-6)
     np.testing.assert_allclose(raw.annotations.onset, np.arange(4, 84, 8))
-    events, _ = mne.events_from_annotations(raw, event_id=ds.event_id, verbose=False)
-    epochs = mne.Epochs(
-        raw,
-        events,
-        {"grip_10": 1},
-        tmin=0,
-        tmax=ds.interval[1],
-        baseline=None,
-        preload=True,
-        verbose=False,
-    )
-    assert epochs.get_data().shape == (10, 2, 2000)
+    assert set(raw.annotations.description) == {"grip_10"}
+    # The last trial's full epoch window (76 s + interval) fits in the recording.
+    assert raw.annotations.onset[-1] + ds.interval[1] <= raw.times[-1]
 
 
 def test_kmi_metadata_and_signal_transport_flags(tmp_path):
@@ -99,29 +94,17 @@ def test_kmi_metadata_and_signal_transport_flags(tmp_path):
         "moabb.datasets.kmi_handgrip2025.dl.data_dl",
         side_effect=[str(path)] + ["synthetic"] * 4,
     ) as download:
-        paths = KMIHandGrip2025().data_path(
-            1, path="custom", force_update=True, verbose=False
-        )
-    assert len(paths) == 4
-    assert len(download.call_args_list) == 5
-    for call in download.call_args_list:
-        assert call.kwargs == {"path": "custom", "force_update": True, "verbose": False}
+        assert KMIHandGrip2025().data_path(1, **FLAGS) == ["synthetic"] * 4
+    assert [call.kwargs for call in download.call_args_list] == [FLAGS] * 5
 
 
 def test_milimb_transport_flags(tmp_path):
-    import zipfile
-
     archive_path = tmp_path / "data.zip"
     with zipfile.ZipFile(archive_path, "w") as archive:
         archive.writestr("S1/synthetic.csv", "fixture")
     with patch(
         "moabb.datasets.milimbeeg.dl.data_dl", return_value=str(archive_path)
     ) as download:
-        assert MILimbEEG().data_path(
-            1, path="custom", force_update=True, verbose=False
-        ) == [str(tmp_path / "MILimbEEG" / "S1")]
-    assert download.call_args.kwargs == {
-        "path": "custom",
-        "force_update": True,
-        "verbose": False,
-    }
+        paths = MILimbEEG().data_path(1, **FLAGS)
+    assert paths == [str(tmp_path / "MILimbEEG" / "S1")]
+    assert download.call_args.kwargs == FLAGS
