@@ -247,7 +247,7 @@ class Han2024Fatigue(BaseDataset):
             all_data = np.concatenate(session_epochs[sess_name], axis=0)
             all_events = np.concatenate(session_events[sess_name])
             raw = build_raw_from_epochs(
-                all_data, TSINGHUA_64CH_NAMES, sfreq, all_events, "standard_1005"
+                all_data, TSINGHUA_64CH_NAMES, sfreq, all_events, "colin27_1005"
             )
             sessions[sess_name] = {"0": raw}
 
