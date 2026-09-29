@@ -23,7 +23,7 @@ Version 1.8  (Source - GitHub)
 
 Enhancements
 ~~~~~~~~~~~~
-- Add Batista2022, DFKI2023, Farabbi2020, Han2026 and Kodera2023 dataset loaders.
+- Add Batista2022, DFKI2023, Farabbi2020, Han2026 and Kodera2023 dataset loaders (:gh:`1194`).
 
 API changes
 ~~~~~~~~~~~
