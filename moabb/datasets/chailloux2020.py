@@ -23,6 +23,7 @@ from .metadata.schema import (
     ParticipantMetadata,
     Tags,
 )
+from .utils import resolve_montage_name
 
 
 log = logging.getLogger(__name__)
@@ -223,7 +224,7 @@ class Chailloux2020(BaseDataset):
         if non_eeg:
             raw.drop_channels(non_eeg)
         raw.set_channel_types(dict.fromkeys(eeg_chs, "eeg"))
-        raw.set_montage("standard_1020", on_missing="warn")
+        raw.set_montage(resolve_montage_name("colin27_1020"), on_missing="warn")
 
         # Extract events from annotations.
         events, event_id = mne.events_from_annotations(raw, verbose=False)
