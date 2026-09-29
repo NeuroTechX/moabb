@@ -1,8 +1,10 @@
 """Offline signal, event and transport contracts for the archive B loaders."""
 
 import bz2
+import inspect
 import zipfile
 from pathlib import Path
+from unittest.mock import Mock
 
 import mne
 import numpy as np
@@ -23,16 +25,20 @@ from moabb.datasets.leeuwis2021 import LEEUWIS2021_EEG_CHANNELS
 from moabb.datasets.preprocessing import SetRawAnnotations
 
 
-def _capture_transport(monkeypatch, local_path_for):
-    """Replace ``download.data_dl`` with a recorder returning ``local_path_for(url)``."""
-    calls = []
+_DATA_DL = inspect.signature(dl.data_dl)
 
-    def transport(url, sign, path=None, force_update=False, verbose=None):
-        calls.append((path, force_update, verbose))
-        return str(local_path_for(url))
 
-    monkeypatch.setattr(dl, "data_dl", transport)
-    return calls
+def _capture_transport(monkeypatch, local_path):
+    """Replace ``download.data_dl`` with a Mock returning ``local_path``."""
+    data_dl = Mock(return_value=str(local_path))
+    monkeypatch.setattr(dl, "data_dl", data_dl)
+    return data_dl
+
+
+def _flags(data_dl):
+    """``(path, force_update, verbose)`` of every recorded ``data_dl`` call."""
+    bound = [_DATA_DL.bind(*c.args, **c.kwargs).arguments for c in data_dl.call_args_list]
+    return [(b["path"], b["force_update"], b["verbose"]) for b in bound]
 
 
 @pytest.mark.parametrize(
@@ -40,10 +46,10 @@ def _capture_transport(monkeypatch, local_path_for):
     [(Leeuwis2021, 4), (MartinezPeon2024, 6), (OpenViBE, 1), (PardoGarcia2026, 6)],
 )
 def test_transport_flags(cls, count, tmp_path, monkeypatch):
-    calls = _capture_transport(monkeypatch, lambda url: tmp_path / url.rsplit("/", 1)[-1])
+    data_dl = _capture_transport(monkeypatch, tmp_path / "file")
     dataset = cls()
     dataset.data_path(1, path=tmp_path, force_update=True, verbose="ERROR")
-    assert calls == [(tmp_path, True, "ERROR")] * count
+    assert _flags(data_dl) == [(tmp_path, True, "ERROR")] * count
     with pytest.raises(ValueError, match="Invalid subject"):
         dataset.data_path(0)
 
@@ -56,15 +62,16 @@ def test_li2026_archive_transport_and_missing_task(tmp_path, monkeypatch):
                 stream.writestr(
                     f"MI_A_Dataset/MI_A_Dataset/Raw_data/{task}/Sub_{subject}.cdt", b""
                 )
-    calls = _capture_transport(monkeypatch, lambda url: archive)
+    data_dl = _capture_transport(monkeypatch, archive)
     paths = Li2026().data_path(5, path=tmp_path, force_update=True, verbose="ERROR")
     assert len(paths) == 5
     assert all(path.endswith("Sub_200.cdt") for path in paths)
-    assert calls == [(tmp_path, True, "ERROR")]
+    assert all(Path(path).is_relative_to(tmp_path / "MNE-li2026-data") for path in paths)
+    assert _flags(data_dl) == [(tmp_path, True, "ERROR")]
 
     Path(paths[-1]).unlink()
     with pytest.raises(FileNotFoundError, match="Expected at least"):
-        Li2026().data_path(5)
+        Li2026().data_path(5, path=tmp_path)
 
 
 def test_leeuwis_first_last_si_and_discontinuities(tmp_path):
@@ -118,7 +125,7 @@ def test_openvibe_reference_header_variants(reference, tmp_path, monkeypatch):
         frame.to_csv(fout, index=False)
 
     dataset = OpenViBE()
-    monkeypatch.setattr(dataset, "data_path", lambda subject: [str(path)])
+    monkeypatch.setattr(dataset, "data_path", Mock(return_value=[str(path)]))
     raw = dataset._get_single_subject_data(5)["0"]["0"]
 
     assert raw.ch_names == openvibe._CHANNELS
@@ -162,9 +169,9 @@ NUMBER_LIST END_LIST
 def test_pardo_missing_post_is_not_duplicated(subject, expected, monkeypatch):
     dataset = PardoGarcia2026()
     monkeypatch.setattr(
-        dataset, "data_path", lambda subject: [str(i) for i in range(len(expected))]
+        dataset, "data_path", Mock(return_value=[str(i) for i in range(len(expected))])
     )
-    monkeypatch.setattr(dataset, "_load_raw", lambda path: path)
+    monkeypatch.setattr(dataset, "_load_raw", Mock(side_effect=Path))
     sessions = dataset._get_single_subject_data(subject)
     assert list(sessions) == expected
     assert [session["0"] for session in sessions.values()] == [
@@ -182,10 +189,13 @@ def _named_raw(ch_names, descriptions):
 
 def test_pardo_load_raw_standardizes_channels_and_cues(monkeypatch):
     raw = _named_raw(["CZ", "FCZ", "HEOGn"], ["Stimulus/S  1", "Stimulus/S  2", "S 11"])
-    monkeypatch.setattr(
-        "moabb.datasets.pardogarcia2026.read_raw_brainvision_repaired", lambda p: raw
-    )
+    reader = Mock(return_value=raw)
+    monkeypatch.setattr(mne.io, "read_raw_brainvision", reader)
     out = PardoGarcia2026()._load_raw("run.vhdr")
+    assert reader.call_args.kwargs["overrides"] == {
+        "data_fname": "run.eeg",
+        "marker_fname": "run.vmrk",
+    }
     assert out.ch_names == ["Cz", "FCz", "HEOGn"]
     assert out.get_channel_types() == ["eeg", "eeg", "eog"]
     assert list(out.annotations.description) == ["pinch", "fist", "S 11"]
@@ -196,10 +206,14 @@ def test_li2026_labels_each_task_side_cues(monkeypatch):
     monkeypatch.setattr(
         mne.io,
         "read_raw_curry",
-        lambda *a, **k: _named_raw(["Cz", "HEO"], ["1", "2", "3"]),
+        Mock(
+            side_effect=[
+                _named_raw(["Cz", "HEO"], ["1", "2", "3"]) for _ in li2026._TASKS
+            ]
+        ),
     )
     ds = Li2026()
-    monkeypatch.setattr(ds, "data_path", lambda subject: list(li2026._TASKS))
+    monkeypatch.setattr(ds, "data_path", Mock(return_value=list(li2026._TASKS)))
     runs = ds._get_single_subject_data(1)["0"]
     assert list(runs) == [run for run, *_ in li2026._TASKS.values()]
     assert list(runs["1foot"].annotations.description) == ["left_foot", "right_foot", "3"]

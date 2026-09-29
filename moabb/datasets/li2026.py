@@ -7,6 +7,7 @@ from pathlib import Path
 import mne
 import numpy as np
 
+from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
@@ -21,7 +22,7 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 
-from .utils import download_and_extract_zip
+from .utils import download_and_extract_subject_zip
 
 
 log = logging.getLogger(__name__)
@@ -69,6 +70,24 @@ _EEG_CHANNELS = [
 # per-trial labels from the Curry event annotations rather than from the analog
 # trigger channel.
 _MISC_TYPES = {"HEO": "eog", "VEO": "eog", "EKG": "ecg", "EMG": "emg", "Trigger": "misc"}
+
+
+def _subject_number(cdt_path):
+    return int(re.search(r"Sub_(\d+)", cdt_path.name).group(1))
+
+
+def _dpa_parameter(dpa, name, cdt_path):
+    match = re.search(rf"(?m)^\s*{name}\s*=\s*(\S+)", dpa)
+    if match is None:
+        raise ValueError(f"Missing {name} in Curry sidecar {cdt_path}.dpa")
+    return match.group(1)
+
+
+def _dpa_labels(dpa, section):
+    match = re.search(rf"{section} START_LIST.*?\n(.*?){section} END_LIST", dpa, re.S)
+    if match is None:
+        return []
+    return [line.strip() for line in match.group(1).splitlines() if line.strip()]
 
 
 class Li2026(BaseDataset):
@@ -215,22 +234,19 @@ class Li2026(BaseDataset):
             raise ValueError("Invalid subject number")
 
         # The archive nests everything under MI_A_Dataset/MI_A_Dataset/Raw_data/.
-        raw_dir = download_and_extract_zip(
-            LI2026_URL,
-            self.code,
-            "MI_A_Dataset/MI_A_Dataset/Raw_data",
-            path,
-            force_update,
-            verbose,
+        data_dir = (
+            Path(dl.get_dataset_path(self.code, path)) / f"MNE-{self.code.lower()}-data"
         )
+        raw_dir = data_dir / "MI_A_Dataset" / "MI_A_Dataset" / "Raw_data"
+        if force_update or not raw_dir.exists():
+            download_and_extract_subject_zip(
+                LI2026_URL, self.code, data_dir, path, force_update, verbose
+            )
 
         paths = []
         for task in _TASKS:
             task_dir = raw_dir / task
-            cdt_files = sorted(
-                task_dir.glob("*.cdt"),
-                key=lambda item: int(re.search(r"Sub_(\d+)", item.name).group(1)),
-            )
+            cdt_files = sorted(task_dir.glob("*.cdt"), key=_subject_number)
             if len(cdt_files) < subject:
                 raise FileNotFoundError(
                     f"Expected at least {subject} .cdt files under {task_dir}, "
@@ -290,26 +306,10 @@ class Li2026(BaseDataset):
             encoding="utf-8-sig"
         )
         ceo_path = cdt_path.with_suffix(cdt_path.suffix + ".ceo")
-
-        def parameter(name):
-            match = re.search(rf"(?m)^\s*{name}\s*=\s*(\S+)", dpa)
-            if match is None:
-                raise ValueError(f"Missing {name} in Curry sidecar {cdt_path}.dpa")
-            return match.group(1)
-
-        n_samples = int(parameter("NumSamples"))
-        n_channels = int(parameter("NumChannels"))
-        sfreq = float(parameter("SampleFreqHz"))
-
-        def labels(section):
-            match = re.search(
-                rf"{section} START_LIST.*?\n(.*?){section} END_LIST", dpa, re.S
-            )
-            if match is None:
-                return []
-            return [line.strip() for line in match.group(1).splitlines() if line.strip()]
-
-        ch_names = labels("LABELS") + labels("LABELS_OTHERS")
+        n_samples = int(_dpa_parameter(dpa, "NumSamples", cdt_path))
+        n_channels = int(_dpa_parameter(dpa, "NumChannels", cdt_path))
+        sfreq = float(_dpa_parameter(dpa, "SampleFreqHz", cdt_path))
+        ch_names = _dpa_labels(dpa, "LABELS") + _dpa_labels(dpa, "LABELS_OTHERS")
         if len(ch_names) != n_channels:
             raise ValueError(
                 f"Curry sidecar lists {len(ch_names)} channels, expected {n_channels}"

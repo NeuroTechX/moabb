@@ -17,8 +17,6 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 
-from .utils import edge_boundary_annotations, resolve_montage_name
-
 
 # DataverseNL access API: a single file is fetched by its numeric datafile id.
 LEEUWIS2021_BASE_URL = "https://dataverse.nl/api/access/datafile/"
@@ -280,10 +278,10 @@ class Leeuwis2021(BaseDataset):
             warnings.simplefilter("ignore")
             info = mne.create_info(ch_names, _SFREQ, ch_types)
             raw = mne.io.RawArray(data, info, verbose=False)
-            raw.set_montage(
-                resolve_montage_name("colin27_1020"), on_missing="ignore", verbose=False
-            )
+            raw.set_montage("colin27_1020", on_missing="ignore", verbose=False)
 
         if len(trial_starts) > 1:
-            raw.set_annotations(edge_boundary_annotations(trial_starts[1:] / _SFREQ))
+            raw.set_annotations(
+                mne.Annotations(trial_starts[1:] / _SFREQ, 0.0, "EDGE boundary")
+            )
         return raw

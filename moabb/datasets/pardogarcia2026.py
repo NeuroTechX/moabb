@@ -3,6 +3,7 @@
 import warnings
 from pathlib import Path
 
+import mne
 from mne.channels import make_standard_montage
 
 from moabb.datasets import download as dl
@@ -15,8 +16,6 @@ from moabb.datasets.metadata.schema import (
     ParticipantMetadata,
     Tags,
 )
-
-from .utils import read_raw_brainvision_repaired, resolve_montage_name
 
 
 # Zenodo record 19599466 (version of concept record 19599465). Each recording is
@@ -242,13 +241,22 @@ class PardoGarcia2026(BaseDataset):
         """Read one BrainVision recording and standardize channels/events."""
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            raw = read_raw_brainvision_repaired(vhdr_path)
+            # Some headers still name the pre-BIDS DataFile/MarkerFile.
+            raw = mne.io.read_raw_brainvision(
+                vhdr_path,
+                preload=True,
+                verbose=False,
+                overrides={
+                    "data_fname": Path(vhdr_path).with_suffix(".eeg").name,
+                    "marker_fname": Path(vhdr_path).with_suffix(".vmrk").name,
+                },
+            )
             raw.set_channel_types(
                 {ch: "eog" for ch in PARDOGARCIA2026_EOG if ch in raw.ch_names}
             )
             # Map upper-case header names (e.g. "CZ", "FCZ") to the 10-05
             # template spelling so the montage resolves the midline electrodes.
-            montage = make_standard_montage(resolve_montage_name("colin27_1005"))
+            montage = make_standard_montage("colin27_1005")
             canonical = {name.lower(): name for name in montage.ch_names}
             raw.rename_channels(
                 {ch: canonical.get(ch.lower(), ch) for ch in raw.ch_names}
