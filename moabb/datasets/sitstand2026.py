@@ -24,68 +24,16 @@ SITSTAND_BASE_URL = "https://zenodo.org/records/20348444/files/"
 
 # The 60 EEG channels in acquisition order (readme.pdf, channel index 1-60),
 # followed by the two EOG channels and the trigger channel (index 61-63).
+# fmt: off
 EEG_CHANNELS = [
-    "Fp1",
-    "Fp2",
-    "AF7",
-    "AF8",
-    "F7",
-    "F8",
-    "FT7",
-    "FT8",
-    "AF3",
-    "AF4",
-    "AFz",
-    "Fz",
-    "F1",
-    "F2",
-    "F3",
-    "F4",
-    "F5",
-    "F6",
-    "FCz",
-    "Cz",
-    "FC1",
-    "FC2",
-    "FC3",
-    "FC4",
-    "FC5",
-    "FC6",
-    "C1",
-    "C2",
-    "C3",
-    "C4",
-    "C5",
-    "C6",
-    "CPz",
-    "Pz",
-    "CP1",
-    "CP2",
-    "CP3",
-    "CP4",
-    "CP5",
-    "CP6",
-    "TP7",
-    "TP8",
-    "P1",
-    "P2",
-    "P3",
-    "P4",
-    "P5",
-    "P6",
-    "P7",
-    "P8",
-    "POz",
-    "Oz",
-    "PO3",
-    "PO4",
-    "PO7",
-    "PO8",
-    "PO9",
-    "PO10",
-    "O1",
-    "O2",
+    "Fp1", "Fp2", "AF7", "AF8", "F7", "F8", "FT7", "FT8", "AF3", "AF4",
+    "AFz", "Fz", "F1", "F2", "F3", "F4", "F5", "F6", "FCz", "Cz", "FC1",
+    "FC2", "FC3", "FC4", "FC5", "FC6", "C1", "C2", "C3", "C4", "C5", "C6",
+    "CPz", "Pz", "CP1", "CP2", "CP3", "CP4", "CP5", "CP6", "TP7", "TP8",
+    "P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8", "POz", "Oz", "PO3",
+    "PO4", "PO7", "PO8", "PO9", "PO10", "O1", "O2",
 ]
+# fmt: on
 EOG_CHANNELS = ["hEOG", "vEOG"]
 TRIGGER_CHANNEL = "trigger"
 
@@ -98,45 +46,20 @@ class SitStand2026(BaseDataset):
 
     **Dataset description**
 
-    This is the first publicly accessible EEG dataset explicitly targeting the
-    transitions between sitting and standing during both motor execution (ME)
-    and motor imagery (MI) tasks. Twenty-two healthy participants (aged 22-28
-    years) performed sit-to-stand and stand-to-sit transitions while 60-channel
-    EEG, 2 electrooculography (EOG) and 6 electromyography (EMG) signals were
-    recorded synchronously. Twenty-three subjects were recorded; subject S05 was
-    excluded for poor signal quality, leaving 22 subjects. Each subject has two
-    recording sessions (``S<ID>_S1.mat`` and ``S<ID>_S2.mat``).
+    First public EEG dataset targeting transitions between sitting and
+    standing during motor execution and motor imagery. 23 healthy participants
+    (22-28 years) were recorded; S05 is excluded for poor signal quality,
+    leaving 22 subjects with two sessions each (``S<ID>_S1.mat``,
+    ``S<ID>_S2.mat``). Each ``eeg`` matrix has 63 rows at 1200 Hz: 60 EEG
+    channels, hEOG (right temple), vEOG (right infra-orbital) and a trigger row
+    (EMG, sampled at 2000 Hz, is not loaded). EEG/EOG are converted from uV to V.
 
-    EEG and EOG were sampled at 1200 Hz; EMG at 2000 Hz (EMG is not loaded by
-    this MOABB loader, which returns only the 1200 Hz EEG/EOG montage). The hEOG
-    electrode is at the right temple, vEOG at the right infra-orbital position.
-
-    The raw ``.mat`` file for each session stores an ``eeg`` matrix of shape
-    (n_channels x n_timepoints) with 63 rows: 60 EEG channels, hEOG, vEOG, and a
-    trigger channel (the 63rd row) carrying the following event codes:
-
-    - 1  : eyes closed, resting
-    - 2  : eyes opened, resting
-    - 10 : start of ME trials
-    - 11 : ME_SIT_STD  (executed sit-to-stand)
-    - 12 : ME_STD_SIT  (executed stand-to-sit)
-    - 13 : ME_R        (executed resting condition)
-    - 20 : start of MI trials during sit
-    - 21 : MI_SIT_STD  (imagined sit-to-stand)
-    - 22 : MI_SIT_SIT  (imagined staying seated)
-    - 23 : MI_R_SIT    (rest while sitting)
-    - 30 : start of MI trials during stand
-    - 31 : MI_STD_STD  (imagined staying standing)
-    - 32 : MI_STD_SIT  (imagined stand-to-sit)
-    - 33 : MI_R_STD    (rest while standing)
-
-    Consistent with the ``imagery`` paradigm, this loader exposes the two
-    imagined transition classes -- imagined sit-to-stand (code 21) versus
-    imagined stand-to-sit (code 32) -- which are the transitions the dataset
-    explicitly targets. The two classes are recorded in different starting
-    postures/acquisition blocks: classification can reflect posture or block
-    differences, not solely imagined movement. A benchmark EEGNet classification reported in the
-    accompanying readme reached ~70% accuracy for MI (and ~80% for ME).
+    The trigger row codes rest (1, 2), executed transitions (10-13) and
+    imagery blocks while sitting (20-23) and standing (30-33). This loader
+    exposes the two imagined transitions, sit-to-stand (21) and stand-to-sit
+    (32). They are recorded in different starting postures/blocks, so
+    classification can reflect posture or block differences, not solely
+    imagined movement. The readme reports ~70% EEGNet accuracy for MI.
 
     References
     ----------
@@ -237,26 +160,7 @@ class SitStand2026(BaseDataset):
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
-        """Return the local paths of the two session ``.mat`` files for a subject.
-
-        Parameters
-        ----------
-        subject : int
-            The subject number to fetch data for.
-        path : None | str
-            Location of where to look for the data storing location.
-        force_update : bool
-            Force update of the dataset even if a local copy exists.
-        update_path : bool | None
-            Unused, kept for API compatibility.
-        verbose : bool, str, int, or None
-            If not None, override default verbose level.
-
-        Returns
-        -------
-        list of str
-            Paths to ``S<ID>_S1.mat`` and ``S<ID>_S2.mat``.
-        """
+        """Return the paths of ``S<ID>_S1.mat`` and ``S<ID>_S2.mat`` for ``subject``."""
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
@@ -366,9 +270,5 @@ class SitStand2026(BaseDataset):
 
     def _get_single_subject_data(self, subject):
         """Return the data of a single subject as {session: {run: Raw}}."""
-        mat_paths = self.data_path(subject)
-        sessions = {}
-        for sess_idx, mat_path in enumerate(mat_paths):
-            raw = self._build_raw(mat_path)
-            sessions[str(sess_idx)] = {"0": raw}
-        return sessions
+        paths = self.data_path(subject)
+        return {str(i): {"0": self._build_raw(p)} for i, p in enumerate(paths)}

@@ -1,10 +1,4 @@
-"""Vagaja2023 motor-imagery EEG dataset (embodiment priming + MI-BCI in VR).
-
-Vagaja, K., and Vourvopoulos, A. (2023). "Electrophysiological Signals of
-Embodiment and MI-BCI Training in VR."
-Concept DOI: 8086085 (this loader downloads version record
-10.5281/zenodo.8086086, where the single GROUPS.zip archive lives).
-"""
+"""Vagaja2023 motor-imagery EEG dataset (embodiment priming + MI-BCI in VR)."""
 
 import logging
 import re
@@ -41,75 +35,21 @@ log = logging.getLogger(__name__)
 # directly and yields a clean local filename ("GROUPS.zip").
 ZENODO_URL = "https://zenodo.org/records/8086086/files/GROUPS.zip"
 
-# Data-borne group assignment (between-subject design). Subject ids are globally
-# unique across the two groups, so a MOABB integer subject maps directly onto the
-# numeric part of the "SUB<nn>" folder name. Embodied = virtual-hand-illusion
-# priming; Control = non-embodied priming.
+# Data-borne between-subject group (subject id = numeric part of "SUB<nn>").
 _SUBJECT_GROUP = {
-    3: "Embodied",
-    5: "Embodied",
-    6: "Embodied",
-    7: "Embodied",
-    8: "Embodied",
-    9: "Embodied",
-    10: "Embodied",
-    12: "Embodied",
-    14: "Embodied",
-    15: "Embodied",
-    16: "Embodied",
-    29: "Embodied",
-    31: "Embodied",
-    17: "Control",
-    18: "Control",
-    19: "Control",
-    20: "Control",
-    21: "Control",
-    22: "Control",
-    23: "Control",
-    24: "Control",
-    25: "Control",
-    26: "Control",
-    27: "Control",
-    28: "Control",
-    30: "Control",
+    **dict.fromkeys([3, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 29, 31], "Embodied"),
+    **dict.fromkeys([*range(17, 29), 30], "Control"),
 }
 
 # 32 EEG channel names in acquisition order (LiveAmp 32, actiCAP 10-20 layout),
 # read verbatim from the BrainVision .vhdr [Channel Infos] section.
+# fmt: off
 _EEG_CHANNELS = [
-    "Fp1",
-    "Fz",
-    "F3",
-    "F7",
-    "FT9",
-    "FC5",
-    "FC1",
-    "C3",
-    "T7",
-    "TP9",
-    "CP5",
-    "CP1",
-    "Pz",
-    "P3",
-    "P7",
-    "O1",
-    "Oz",
-    "O2",
-    "P4",
-    "P8",
-    "TP10",
-    "CP6",
-    "CP2",
-    "Cz",
-    "C4",
-    "T8",
-    "FT10",
-    "FC6",
-    "FC2",
-    "F4",
-    "F8",
-    "Fp2",
+    "Fp1", "Fz", "F3", "F7", "FT9", "FC5", "FC1", "C3", "T7", "TP9", "CP5",
+    "CP1", "Pz", "P3", "P7", "O1", "Oz", "O2", "P4", "P8", "TP10", "CP6",
+    "CP2", "Cz", "C4", "T8", "FT10", "FC6", "FC2", "F4", "F8", "Fp2",
 ]
+# fmt: on
 
 # AUX channels recorded synchronously through the BIP2AUX adapter (bipolar EMG
 # and skin temperature) plus the amplifier's built-in 3-axis accelerometer. The
@@ -133,14 +73,6 @@ _CLASS_CODES = {7: "left_hand", 8: "right_hand"}
 class Vagaja2023(BaseDataset):
     """Motor-imagery EEG during embodiment-primed MI-BCI training in VR [1]_.
 
-    .. admonition:: Dataset summary
-
-        =============  =======  =======  ==========  =================  ============  ===============  ===========
-        Name             #Subj    #Chan    #Classes    #Trials / class    Trials len    Sampling rate      #Sessions
-        =============  =======  =======  ==========  =================  ============  ===============  ===========
-        Vagaja2023          26       32           2                 20            10s            500 Hz              1
-        =============  =======  =======  ==========  =================  ============  ===============  ===========
-
     **Dataset description**
 
     Twenty-six healthy volunteers performed cue-based left- vs right-hand motor
@@ -163,9 +95,7 @@ class Vagaja2023(BaseDataset):
     1.25 s after the cue), so the exposed interval spans that 10 s window. Every
     subject provides 20 left-hand and 20 right-hand trials (40 in total).
 
-    Subject ids are globally unique across groups. The Embodied group holds
-    subjects 3, 5-10, 12, 14-16, 29 and 31; the Control group holds subjects
-    17-28 and 30.
+    Subjects 3, 5-10, 12, 14-16, 29 and 31 are Embodied; 17-28 and 30 Control.
 
     By default only the 32 EEG channels are returned; pass
     ``return_all_modalities=True`` to also keep the EMG, temperature and
@@ -307,29 +237,7 @@ class Vagaja2023(BaseDataset):
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
-        """Return the path to the extracted per-subject directory.
-
-        Downloads the single GROUPS.zip archive from Zenodo (once) and extracts
-        it if needed, then returns the folder for this subject.
-
-        Parameters
-        ----------
-        subject : int
-            Subject id (one of ``self.subject_list``).
-        path : None | str
-            Storage location override.
-        force_update : bool
-            Re-download even if a local copy exists.
-        update_path : bool | None
-            Unused, kept for API compatibility.
-        verbose : bool, str, int, or None
-            Verbosity level.
-
-        Returns
-        -------
-        list of str
-            Single-element list with the path to the extracted subject folder.
-        """
+        """Return ``[subject_dir]``, downloading/extracting GROUPS.zip if needed."""
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
@@ -351,18 +259,7 @@ class Vagaja2023(BaseDataset):
         return [str(subject_dir)]
 
     def _get_single_subject_data(self, subject):
-        """Return the data of a single subject.
-
-        Parameters
-        ----------
-        subject : int
-            Subject id.
-
-        Returns
-        -------
-        dict
-            ``{"0": {"0": Raw}}`` with the single motor-imagery run.
-        """
+        """Return ``{"0": {"0": Raw}}`` with the single motor-imagery run."""
         subject_dir = Path(self.data_path(subject)[0])
 
         vhdr = subject_dir / f"SUB{subject:02d}_MI.vhdr"
@@ -371,8 +268,7 @@ class Vagaja2023(BaseDataset):
                 f"No motor-imagery BrainVision run found for subject {subject} at {vhdr}"
             )
 
-        montage = make_standard_montage("standard_1020")
-        return {"0": {"0": self._load_run(vhdr, montage)}}
+        return {"0": {"0": self._load_run(vhdr, make_standard_montage("standard_1020"))}}
 
     @staticmethod
     def _read_brainvision(vhdr):
@@ -423,12 +319,8 @@ class Vagaja2023(BaseDataset):
             warnings.simplefilter("ignore")
             raw = self._read_brainvision(vhdr)
 
-        rename = {k: v for k, v in _AUX_RENAME.items() if k in raw.ch_names}
-        if rename:
-            raw.rename_channels(rename)
-        types = {k: v for k, v in _AUX_TYPES.items() if k in raw.ch_names}
-        if types:
-            raw.set_channel_types(types)
+        raw.rename_channels({k: v for k, v in _AUX_RENAME.items() if k in raw.ch_names})
+        raw.set_channel_types({k: v for k, v in _AUX_TYPES.items() if k in raw.ch_names})
 
         if not self.return_all_modalities:
             raw.pick([ch for ch in _EEG_CHANNELS if ch in raw.ch_names])
@@ -439,11 +331,8 @@ class Vagaja2023(BaseDataset):
         rename_ann = {}
         for desc in set(raw.annotations.description):
             match = re.search(r"S\s*(\d+)\s*$", desc)
-            if match:
-                label = _CLASS_CODES.get(int(match.group(1)))
-                if label is not None:
-                    rename_ann[desc] = label
-        if rename_ann:
-            raw.annotations.rename(rename_ann)
+            if match and int(match.group(1)) in _CLASS_CODES:
+                rename_ann[desc] = _CLASS_CODES[int(match.group(1))]
+        raw.annotations.rename(rename_ann)
 
         return raw

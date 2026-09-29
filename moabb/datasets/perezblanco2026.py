@@ -41,7 +41,6 @@ _EMG_NAMES = ["M1L", "M1R", "M2L", "M2R", "M3L", "M3R", "M4L", "M4R"]
 # Class labels come from the BCI2000 ``CurrentTarget`` state (the author
 # validation code maps 1=Flexion, 2=Extension, 3=Radial dev., 4=Ulnar dev.).
 _EVENTS = {"flexion": 1, "extension": 2, "radial_deviation": 3, "ulnar_deviation": 4}
-_TARGET_TO_CODE = {1: 1, 2: 2, 3: 3, 4: 4}
 _CODE_TO_NAME = {v: k for k, v in _EVENTS.items()}
 
 
@@ -58,18 +57,11 @@ class PerezBlanco2026(BaseDataset):
     the participant moved the cursor to it, yielding four balanced movement
     classes: **flexion, extension, radial deviation, ulnar deviation**.
 
-    Each trial follows the sequence: 3 s fixation, 2 s target preview (all four
-    targets shown), 2.5 s movement execution (one target shown), and 2.5 s
-    return-to-center. Participants completed at least 8 experimental runs of
-    40 trials (10 trials per movement per run), preceded and followed by
-    resting-state baselines; the released run count varies by subject (e.g.
-    sub-01 has 9 task runs, sub-02 has 10), so :meth:`data_path` loads every
-    ``task-*_run-*`` file present rather than assuming a fixed count. Signals
-    were acquired with a g.tec g.USBamp (serial UB-2016.05.01)
-    at 512 Hz: 8 EEG channels (C3, C1, Cz, C2, C4, CP3, CPz, CP4; reference on the
-    right ear, ground AFz) and 8 bipolar EMG channels over four forearm muscles.
-    Data were recorded with BCI2000 in ``.dat`` format and converted to EDF for
-    BIDS distribution.
+    Each trial is 3 s fixation, 2 s target preview, 2.5 s movement execution
+    and 2.5 s return-to-center. Participants completed at least 8 runs of 40
+    trials; the released run count varies by subject, so :meth:`data_path`
+    loads every ``task-*_run-*`` EDF present. Signals (8 EEG, 8 bipolar EMG)
+    were recorded at 512 Hz with BCI2000 and converted to EDF for BIDS.
 
     The trigger information is carried inside the EDF as BCI2000 state channels.
     This loader places one event at each movement-execution onset (the
@@ -208,30 +200,7 @@ class PerezBlanco2026(BaseDataset):
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
-        """Return the EDF file paths of a single subject.
-
-        Parameters
-        ----------
-        subject : int
-            The subject number to fetch data for.
-        path : None | str
-            Location of where to look for the data storing location. If None,
-            the environment variable or config parameter MNE_(dataset) is used.
-            If it doesn't exist, the "~/mne_data" directory is used. If the
-            dataset is not found under the given path, the data will be
-            automatically downloaded to the specified folder.
-        force_update : bool
-            Force update of the dataset even if a local copy exists.
-        update_path : bool | None
-            Unused, kept for API compatibility.
-        verbose : bool, str, int, or None
-            If not None, override default verbose level (see mne.verbose()).
-
-        Returns
-        -------
-        list
-            A sorted list of the subject's run EDF file paths.
-        """
+        """Return the sorted run EDF paths of ``subject``, downloading if needed."""
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
@@ -277,18 +246,7 @@ class PerezBlanco2026(BaseDataset):
         return [str(f) for f in edf_files]
 
     def _get_single_subject_data(self, subject):
-        """Return the data of a single subject.
-
-        Parameters
-        ----------
-        subject : int
-            The subject number to fetch data for.
-
-        Returns
-        -------
-        dict
-            ``{"0": {run_str: mne.io.Raw}}`` for the subject.
-        """
+        """Return ``{"0": {run: Raw}}``; runs without movement events are skipped."""
         runs = {}
         for run_idx, edf_path in enumerate(self.data_path(subject)):
             with warnings.catch_warnings():
@@ -331,8 +289,8 @@ class PerezBlanco2026(BaseDataset):
         events = []
         for sample in onsets:
             tval = int(round(target[sample]))
-            if tval in _TARGET_TO_CODE:
-                events.append([int(sample), 0, _TARGET_TO_CODE[tval]])
+            if tval in _CODE_TO_NAME:
+                events.append([int(sample), 0, tval])
         if not events:
             return None
         events = np.array(events, dtype=int)

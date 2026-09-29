@@ -1,6 +1,7 @@
 """Offline signal and transport contracts for the archive-C datasets."""
 
 import zipfile
+from pathlib import Path
 from unittest.mock import patch
 
 import mne
@@ -157,3 +158,47 @@ def test_perez_figshare_transport_flags(tmp_path):
         "force_update": True,
         "verbose": "ERROR",
     }
+
+
+def test_sitstand_nested_archive_is_extracted_only_once(tmp_path, monkeypatch):
+    """The real Zenodo layout (extra ``v1_raw_s<ID>/``) must be reusable offline."""
+    archive = tmp_path / "v1_raw_S01.zip"
+    with zipfile.ZipFile(archive, "w") as zf:
+        for session in (1, 2):
+            zf.writestr(f"v1_raw_s1/S01_S{session}.mat", b"placeholder")
+    calls = []
+    extractall = zipfile.ZipFile.extractall
+    monkeypatch.setattr(
+        zipfile.ZipFile,
+        "extractall",
+        lambda *a, **k: calls.append(1) or extractall(*a, **k),
+    )
+    with patch("moabb.datasets.sitstand2026.dl.data_dl", return_value=str(archive)):
+        paths = [SitStand2026().data_path(1) for _ in range(2)]
+    expected = [str(tmp_path / f"S01/v1_raw_s1/S01_S{s}.mat") for s in (1, 2)]
+    assert paths == [expected, expected]
+    assert len(calls) == 1
+
+
+def test_vagaja_stale_subject31_header_uses_bids_siblings(tmp_path, monkeypatch):
+    vhdr = tmp_path / "SUB31_MI.vhdr"
+    original = "[Common Infos]\nDataFile=SUB31_mi_.eeg\nMarkerFile=SUB31_mi_.vmrk\n"
+    vhdr.write_text(original, encoding="utf-8")
+    vhdr.with_suffix(".eeg").touch()
+    vhdr.with_suffix(".vmrk").touch()
+    seen = {}
+
+    def fake_reader(path, **kwargs):
+        seen["path"] = Path(path)
+        seen["header"] = Path(path).read_text(encoding="utf-8")
+        return object()
+
+    monkeypatch.setattr(
+        "moabb.datasets.vagaja2023.mne.io.read_raw_brainvision", fake_reader
+    )
+    assert Vagaja2023._read_brainvision(vhdr) is not None
+    assert seen["path"] != vhdr
+    assert "DataFile=SUB31_MI.eeg" in seen["header"]
+    assert "MarkerFile=SUB31_MI.vmrk" in seen["header"]
+    assert vhdr.read_text(encoding="utf-8") == original
+    assert not seen["path"].exists()
