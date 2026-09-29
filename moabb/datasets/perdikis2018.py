@@ -25,7 +25,7 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 
-from .utils import resolve_montage_name, safe_extract_tar
+from .utils import safe_extract_tar
 
 
 # Zenodo record 841764: one tar.gz per pilot. The /files/<name> endpoint gives a
@@ -225,7 +225,7 @@ class Perdikis2018(BaseDataset):
             if "incomplete" not in p.parts and "corrupted" not in p.parts
         )
 
-        montage = make_standard_montage(resolve_montage_name("colin27_1005"))
+        montage = make_standard_montage("colin27_1005")
         raws = [self._read_calibration_run(p, montage) for p in offline_files]
         runs = {str(i): raw for i, raw in enumerate(r for r in raws if r is not None)}
         if not runs:

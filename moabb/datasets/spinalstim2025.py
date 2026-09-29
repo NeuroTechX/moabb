@@ -1,9 +1,11 @@
 """SpinalStim2025 longitudinal motor-imagery BCI dataset (TESS neuromodulation)."""
 
 import warnings
+from pathlib import Path
 
 import mne
 
+from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
@@ -15,7 +17,7 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 from moabb.datasets.perdikis2018 import _keep_class_cues
-from moabb.datasets.utils import download_and_extract_zip, resolve_montage_name
+from moabb.datasets.utils import download_and_extract_subject_zip
 
 
 # Zenodo record 15454355 (concept DOI 10.5281/zenodo.15454354)
@@ -166,9 +168,14 @@ class SpinalStim2025(BaseDataset):
         zip_name, root_name = _ARCHIVES[archive_key]
         url = SPINALSTIM2025_BASE.format(name=zip_name)
 
-        archive_root = download_and_extract_zip(
-            url, self.code, root_name, path, force_update, verbose
+        data_dir = (
+            Path(dl.get_dataset_path(self.code, path)) / f"MNE-{self.code.lower()}-data"
         )
+        archive_root = data_dir / root_name
+        if force_update or not archive_root.exists():
+            download_and_extract_subject_zip(
+                url, self.code, data_dir, path, force_update, verbose
+            )
 
         # Resolve the exact subject-level offline folders first. Some d3
         # inner session directories carry the preceding subject's token, so a
@@ -232,7 +239,7 @@ class SpinalStim2025(BaseDataset):
 
         _keep_class_cues(raw, _CLASS_CODES)
 
-        montage = mne.channels.make_standard_montage(resolve_montage_name("colin27_1005"))
+        montage = mne.channels.make_standard_montage("colin27_1005")
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             raw = raw.set_montage(
