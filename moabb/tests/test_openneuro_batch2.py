@@ -1,10 +1,7 @@
 """Synthetic, no-download regressions for the second OpenNeuro batch.
 
-The shared ``OpenNeuroMirrorMixin`` contract (SDK raw selection with a mocked
-HTTP transport, no sourcedata prefetch) is owned by ``test_openneuro_mirror.py``
-in PR #1186. ``test_provider_policy`` is a single-case copy kept only so this
-branch covers its own copy of ``_openneuro_mirror.py``; delete it when rebasing
-on #1186.
+``OpenNeuroMirrorMixin`` itself is tested with the shared loader helpers
+(``test_loader_utils.py``); only dataset-specific behaviour is tested here.
 """
 
 from pathlib import Path
@@ -18,7 +15,6 @@ import pytest
 
 from moabb.datasets import Daly2020, Damm2026, Peterson2022
 from moabb.datasets.base import BaseBIDSDataset
-from moabb.datasets.download import NemarDownloadError
 
 
 CASES = [
@@ -47,23 +43,6 @@ def test_mirror_flags(cls, nemar_id, subject, label, monkeypatch, tmp_path):
     # Raw mirror loaders must never prefetch converted sourcedata.
     monkeypatch.setattr(ds, "sourcedata_path", Mock(side_effect=AssertionError))
     ds._prefetch_nemar_sourcedata([subject])
-
-
-def test_provider_policy(monkeypatch, tmp_path):
-    cls, _, subject, _ = CASES[0]
-    ds = cls()
-    transport = Mock(side_effect=NemarDownloadError("offline"))
-    monkeypatch.setattr(ds, "_download_nemar", transport)
-    monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", "nemar")
-    with pytest.raises(NemarDownloadError):
-        ds._mirror_root(subject, tmp_path, False, False, None)
-    monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", "auto")
-    with pytest.warns(RuntimeWarning, match="OpenNeuro"):
-        assert ds._mirror_root(subject, tmp_path, False, False, None) is None
-    transport.reset_mock()
-    monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", "upstream")
-    assert ds._mirror_root(subject, tmp_path, False, False, None) is None
-    transport.assert_not_called()
 
 
 @pytest.mark.parametrize(

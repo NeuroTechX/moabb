@@ -24,7 +24,7 @@ from moabb.datasets.metadata.schema import (
     ParticipantMetadata,
     Tags,
 )
-from moabb.datasets.utils import stim_channels_with_selected_ids
+from moabb.datasets.utils import resolve_montage_name, stim_channels_with_selected_ids
 
 
 _S3_BASE = "https://s3.amazonaws.com/openneuro.org/ds008446"
@@ -215,7 +215,7 @@ class Damm2026(OpenNeuroMirrorMixin, BaseDataset):
 
     def _get_single_subject_data(self, subject):
         """Return ``{"0": {run: raw}}`` with one run per task/run combination."""
-        montage = make_standard_montage("standard_1005")
+        montage = make_standard_montage(resolve_montage_name("colin27_1005"))
         runs = {}
         edf_paths = self.data_path(subject)
         for run_index, (task, run) in enumerate(product(_TASKS, _RUNS)):
