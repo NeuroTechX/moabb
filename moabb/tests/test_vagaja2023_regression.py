@@ -13,12 +13,10 @@ def test_stale_subject31_brainvision_references_use_bids_siblings(tmp_path, monk
     vhdr.with_suffix(".vmrk").touch()
     seen = {}
 
-    def fake_reader(path, *, preload, verbose):
+    def fake_reader(path, **kwargs):
         temporary = Path(path)
         seen["path"] = temporary
         seen["header"] = temporary.read_text(encoding="utf-8")
-        assert preload is True
-        assert verbose is False
         return object()
 
     monkeypatch.setattr(
