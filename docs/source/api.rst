@@ -54,6 +54,11 @@ Motor Imagery Datasets
     :template: class.rst
 
     AlexMI
+    Leeuwis2021
+    Li2026
+    MartinezPeon2024
+    OpenViBE
+    PardoGarcia2026
     BNCI2003_004
     BNCI2014_001
     BNCI2014_002
