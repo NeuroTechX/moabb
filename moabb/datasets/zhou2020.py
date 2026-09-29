@@ -26,7 +26,7 @@ from .metadata.schema import (
     SignalProcessingMetadata,
     Tags,
 )
-from .utils import download_and_extract_subject_zip, resolve_montage_name
+from .utils import download_and_extract_subject_zip
 
 
 log = logging.getLogger(__name__)
@@ -296,9 +296,7 @@ class Zhou2020(BaseDataset):
 
         # Set montage for A-subjects (standard channel names).
         if ch_names[0] != "EEG1":
-            montage = mne.channels.make_standard_montage(
-                resolve_montage_name("colin27_1005")
-            )
+            montage = mne.channels.make_standard_montage("colin27_1005")
             raw.set_montage(montage, on_missing="warn")
 
         return raw

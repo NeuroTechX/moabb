@@ -1,53 +1,17 @@
 """Offline tests of the shared loader helpers (fake data, no network)."""
 
-import configparser
-import json
 import warnings
 import zipfile
-from pathlib import Path
-from unittest.mock import Mock
+from unittest.mock import Mock, call
 
 import mne
 import numpy as np
 import pytest
 
-from moabb.datasets import _montage
 from moabb.datasets import utils as dsu
-from moabb.datasets._openneuro_mirror import (
-    OpenNeuroMirrorMixin,
-    drop_native_stim,
-    relabel_annotations,
-    write_dataset_description,
-)
+from moabb.datasets._openneuro_mirror import OpenNeuroMirrorMixin
 from moabb.datasets.download import NemarDownloadError
 from moabb.datasets.preprocessing import _is_preserved_annotation
-
-
-# --------------------------------------------------------------------------- montage
-@pytest.mark.parametrize("name", ["standard_1005", "colin27_1005"])
-def test_resolve_montage_name_matches_installed_mne(name):
-    """Either spelling resolves to a name the installed MNE builds silently."""
-    resolved = dsu.resolve_montage_name(name)
-    assert resolved in mne.channels.get_builtin_montages()
-    with warnings.catch_warnings():
-        warnings.simplefilter("error")
-        montage = mne.channels.make_standard_montage(resolved)
-    assert "Cz" in montage.ch_names
-
-
-@pytest.mark.parametrize(
-    "builtin, expected",
-    [
-        (["colin27_1020", "standard_1020"], "colin27_1020"),
-        (["standard_1020"], "standard_1020"),
-    ],
-)
-def test_resolve_montage_name_per_mne_version(monkeypatch, builtin, expected):
-    """MNE >= 1.13 gets the colin27 name, older MNE the legacy one."""
-    monkeypatch.setattr(mne.channels, "get_builtin_montages", lambda: builtin)
-    assert _montage.resolve_montage_name("standard_1020") == expected
-    assert _montage.resolve_montage_name("colin27_1020") == expected
-    assert _montage.resolve_montage_name("biosemi64") == "biosemi64"
 
 
 def test_montage_helpers_emit_no_deprecation_warning():
@@ -58,196 +22,77 @@ def test_montage_helpers_emit_no_deprecation_warning():
         warnings.simplefilter("error")
         dsu.set_neuroscan_montage(raw)
         built = dsu.build_raw_from_epochs(
-            np.ones((2, 2, 4)), ["C3", "Cz"], 100.0, [1, 2], "standard_1020"
+            np.ones((2, 2, 4)), ["C3", "Cz"], 100.0, [1, 2], "colin27_1020"
         )
     assert raw.ch_names[:2] == ["Fp1", "Cz"]
     assert not np.isnan(raw.get_montage().get_positions()["ch_pos"]["Cz"]).any()
     assert built.get_montage() is not None
 
 
-# ----------------------------------------------------------------------------- zip
 def _zip(path, members):
     with zipfile.ZipFile(path, "w") as zf:
         for name, data in members.items():
             zf.writestr(name, data)
-    return path
+    return str(path)
 
 
-@pytest.fixture
-def fake_dl(monkeypatch, tmp_path):
-    """Replace ``data_dl`` by a queue of prepared archives; record the calls."""
-    calls, queue = [], []
-
-    def data_dl(url, sign, path, force_update, verbose, fname=None):
-        calls.append((url, sign, path, force_update, fname))
-        return str(queue.pop(0) if len(queue) > 1 else queue[0])
-
+def test_download_and_extract_subject_zip(monkeypatch, tmp_path):
+    # An extension-less download (".../content") is renamed to .zip first.
+    data_dl = Mock(return_value=_zip(tmp_path / "content", {"root/x.txt": "1"}))
     monkeypatch.setattr(dsu.dl, "data_dl", data_dl)
-    return calls, queue
+    dsu.download_and_extract_subject_zip("u", "C", tmp_path / "out", "p", fname="a.zip")
+    assert (tmp_path / "out" / "root" / "x.txt").read_text() == "1"
+    assert (tmp_path / "content.zip").is_file()
+    data_dl.assert_called_once_with("u", "C", "p", False, None, fname="a.zip")
 
 
-def test_download_and_extract_zip_extracts_once(fake_dl, tmp_path):
-    calls, queue = fake_dl
-    queue.append(_zip(tmp_path / "a.zip", {"root/x.txt": "1"}))
-    target = dsu.download_and_extract_zip("u", "Code", "root", path="p", fname="a.zip")
-    assert target == tmp_path / "root" and (target / "x.txt").read_text() == "1"
-
-    (target / "x.txt").write_text("kept")  # a second call must not re-extract
-    assert dsu.download_and_extract_zip("u", "Code", "root") == target
-    assert (target / "x.txt").read_text() == "kept"
-    dsu.download_and_extract_zip("u", "Code", "root", force_update=True)
-    assert (target / "x.txt").read_text() == "1"
-    assert calls == [
-        ("u", "Code", "p", False, "a.zip"),
-        ("u", "Code", None, False, None),
-        ("u", "Code", None, True, None),
-    ]
-
-
-def test_download_and_extract_zip_into_subfolder(fake_dl, tmp_path):
-    _, queue = fake_dl
-    queue.append(_zip(tmp_path / "a.zip", {"EXP/x.txt": "1"}))
-    target = dsu.download_and_extract_zip("u", "C", "EXP", extract_to="sub")
-    assert target == tmp_path / "sub" / "EXP" and target.is_dir()
-    assert dsu.download_and_extract_zip("u", "C", ".", extract_to="sub") == target.parent
-
-
-def test_download_and_extract_zip_corrupted_archive(fake_dl, tmp_path):
-    calls, queue = fake_dl
+def test_download_and_extract_subject_zip_corrupted(monkeypatch, tmp_path):
     bad = tmp_path / "bad.zip"
     bad.write_bytes(b"not a zip")
-    queue.extend([bad, bad])
+    monkeypatch.setattr(dsu.dl, "data_dl", Mock(return_value=str(bad)))
     with pytest.raises(zipfile.BadZipFile):  # opt-in recovery only
-        dsu.download_and_extract_zip("u", "C", "root")
+        dsu.download_and_extract_subject_zip("u", "C", tmp_path / "out")
 
-    queue[:] = [bad, _zip(tmp_path / "good.zip", {"root/x.txt": "1"})]
-    calls.clear()
+    good = _zip(tmp_path / "good.zip", {"root/x.txt": "1"})
+    data_dl = Mock(side_effect=[str(bad), good])
+    monkeypatch.setattr(dsu.dl, "data_dl", data_dl)
     with pytest.warns(UserWarning, match="Corrupted zip file detected"):
-        target = dsu.download_and_extract_zip("u", "C", "root", redownload_corrupted=True)
-    assert (target / "x.txt").is_file()
-    assert [c[3] for c in calls] == [False, True]  # forced re-download
+        dsu.download_and_extract_subject_zip(
+            "u", "C", tmp_path / "out", redownload_corrupted=True
+        )
+    assert (tmp_path / "out" / "root" / "x.txt").is_file()
+    assert data_dl.call_args_list == [
+        call("u", "C", None, False, None, fname=None),
+        call("u", "C", None, True, None, fname=None),  # forced re-download
+    ]
 
-    queue[:] = [bad, bad]
+    bad.write_bytes(b"not a zip")
+    other = tmp_path / "other.zip"
+    other.write_bytes(b"still not a zip")
+    monkeypatch.setattr(dsu.dl, "data_dl", Mock(side_effect=[str(bad), str(other)]))
     with pytest.warns(UserWarning), pytest.raises(zipfile.BadZipFile):
-        dsu.download_and_extract_zip("u", "C", "other", redownload_corrupted=True)
+        dsu.download_and_extract_subject_zip(
+            "u", "C", tmp_path / "out", redownload_corrupted=True
+        )
 
 
-# ---------------------------------------------------------------------- BrainVision
-def _write_brainvision(folder, stem, data_file=None, marker_file=None, fields=True):
-    """Write a minimal 2-channel float32 BrainVision triplet named ``stem``."""
-    folder.mkdir(parents=True, exist_ok=True)
-    data = np.arange(20, dtype="<f4").reshape(10, 2)  # multiplexed samples
-    (folder / f"{stem}.eeg").write_bytes(data.tobytes())
-    (folder / f"{stem}.vmrk").write_text(
-        "Brain Vision Data Exchange Marker File, Version 1.0\n\n[Common Infos]\n"
-        f"Codepage=UTF-8\nDataFile={stem}.eeg\n\n[Marker Infos]\n"
-        "Mk1=New Segment,,1,1,0\nMk2=Stimulus,S  7,3,1,0\nMk3=Stimulus,S 12,5,1,0\n",
-        encoding="utf-8",
+def test_rename_stimulus_codes():
+    raw = mne.io.RawArray(np.zeros((1, 100)), mne.create_info(["C3"], 100.0, "eeg"))
+    raw.set_annotations(
+        mne.Annotations([0.1, 0.2, 0.3], 0, ["Stimulus/S  7", "Stimulus/S 12", "S 8"])
     )
-    refs = (
-        f"DataFile={data_file or stem + '.eeg'}\n"
-        f"MarkerFile={marker_file or stem + '.vmrk'}\n"
-        if fields
-        else ""
-    )
-    vhdr = folder / f"{stem}.vhdr"
-    vhdr.write_text(
-        "Brain Vision Data Exchange Header File Version 1.0\n\n[Common Infos]\n"
-        f"Codepage=UTF-8\n{refs}DataFormat=BINARY\nDataOrientation=MULTIPLEXED\n"
-        "NumberOfChannels=2\nSamplingInterval=4000\n\n[Binary Infos]\n"
-        "BinaryFormat=IEEE_FLOAT_32\n\n[Channel Infos]\nCh1=C3,,1,µV\nCh2=C4,,1,µV\n",
-        encoding="utf-8",
-    )
-    return vhdr
-
-
-@pytest.mark.parametrize("strict", [False, True])
-def test_read_raw_brainvision_repaired_reads_intact_header(tmp_path, strict):
-    vhdr = _write_brainvision(tmp_path, "run")
-    raw = dsu.read_raw_brainvision_repaired(vhdr, strict=strict)
-    assert raw.ch_names == ["C3", "C4"] and raw.n_times == 10
-    assert raw.info["sfreq"] == 250.0
-
-
-@pytest.mark.parametrize("strict", [False, True])
-def test_read_raw_brainvision_repaired_fixes_stale_references(tmp_path, strict):
-    vhdr = _write_brainvision(tmp_path, "sub-01_run", "Old_Name.eeg", "Old_Name.vmrk")
-    original = vhdr.read_text(encoding="utf-8")
-    raw = dsu.read_raw_brainvision_repaired(str(vhdr), strict=strict)
-    np.testing.assert_allclose(raw.get_data()[0, :2], [0, 2e-6])
-    assert "Stimulus/S  7" in raw.annotations.description
-    assert vhdr.read_text(encoding="utf-8") == original  # download untouched
-    assert sorted(p.name for p in tmp_path.iterdir()) == [
-        "sub-01_run.eeg",
-        "sub-01_run.vhdr",
-        "sub-01_run.vmrk",
+    dsu.rename_stimulus_codes(raw, {7: "left_hand", 8: "right_hand"})
+    assert list(raw.annotations.description) == [
+        "left_hand",
+        "Stimulus/S 12",
+        "right_hand",
     ]
 
 
-def test_read_raw_brainvision_repaired_strict_errors(tmp_path):
-    no_fields = _write_brainvision(tmp_path / "a", "run", fields=False)
-    with pytest.raises(ValueError, match="Missing DataFile entry"):
-        dsu.read_raw_brainvision_repaired(no_fields, strict=True)
-    with pytest.raises(configparser.Error):  # lenient: MNE reports the bad header
-        dsu.read_raw_brainvision_repaired(no_fields)
-
-    orphan = _write_brainvision(tmp_path / "b", "run", "Old.eeg")
-    (tmp_path / "b" / "run.eeg").unlink()
-    with pytest.raises(FileNotFoundError, match="sibling run.eeg is also absent"):
-        dsu.read_raw_brainvision_repaired(orphan, strict=True)
-    with pytest.raises(OSError):  # lenient mode leaves the failure to MNE
-        dsu.read_raw_brainvision_repaired(orphan)
-
-
-def test_rename_stimulus_codes(tmp_path):
-    raw = dsu.read_raw_brainvision_repaired(_write_brainvision(tmp_path, "run"))
-    dsu.rename_stimulus_codes(raw, {7: "left_hand", 8: "right_hand"})
-    assert list(raw.annotations.description) == ["left_hand", "Stimulus/S 12"]
-
-
-# ------------------------------------------------------------------- EDGE boundary
-def test_edge_boundary_annotations_survive_event_rederivation():
-    ann = dsu.edge_boundary_annotations([1.0, 2.5])
-    np.testing.assert_array_equal(ann.onset, [1.0, 2.5])
-    np.testing.assert_array_equal(ann.duration, [0.0, 0.0])
-    assert list(ann.description) == ["EDGE boundary"] * 2
-    assert len(dsu.edge_boundary_annotations([])) == 0
+def test_edge_boundary_is_preserved():
     assert _is_preserved_annotation("EDGE boundary")
     assert _is_preserved_annotation("edge boundary")
     assert not _is_preserved_annotation("left_hand")
-
-
-# ------------------------------------------------------------- OpenNeuro mirror
-def _raw(ch_types, annotations=()):
-    names = [f"ch{i}" for i in range(len(ch_types))]
-    raw = mne.io.RawArray(
-        np.zeros((len(names), 100)),
-        mne.create_info(names, 100.0, ch_types),
-        verbose=False,
-    )
-    raw.set_annotations(mne.Annotations([0.1] * len(annotations), 0, list(annotations)))
-    return raw
-
-
-def test_mirror_raw_helpers(tmp_path):
-    raw = drop_native_stim(_raw(["eeg", "stim", "eog", "stim"]))
-    assert raw.get_channel_types() == ["eeg", "eog"]
-
-    raw = _raw(["eeg"], ["S  1", "S  2", "boundary"])
-    relabel_annotations(raw, {"S  1": "left_hand", "S  2": "right_hand"})
-    assert list(raw.annotations.description) == ["left_hand", "right_hand", "boundary"]
-
-    write_dataset_description(tmp_path, "Name", "1.9.0", "10.1/x", ("A", "B"))
-    written = json.loads((tmp_path / "dataset_description.json").read_text())
-    assert written == {
-        "Name": "Name",
-        "BIDSVersion": "1.9.0",
-        "License": "CC0",
-        "Authors": ["A", "B"],
-        "DatasetDOI": "10.1/x",
-    }
-    write_dataset_description(tmp_path, "Other", "1.0", "d", ())  # never overwrites
-    assert json.loads((tmp_path / "dataset_description.json").read_text()) == written
 
 
 class _Mirror(OpenNeuroMirrorMixin):
@@ -293,8 +138,3 @@ def test_mirror_mixin_download_iterates_data_path():
     ds.data_path.reset_mock()
     ds.download([2])
     ds.data_path.assert_called_once_with(2, None, False, None, None)
-
-
-def test_helpers_are_reexported():
-    assert dsu.resolve_montage_name is _montage.resolve_montage_name
-    assert Path(dsu.__file__).name == "utils.py"

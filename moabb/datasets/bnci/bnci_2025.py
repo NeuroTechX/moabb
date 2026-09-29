@@ -27,7 +27,6 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 
-from ..utils import resolve_montage_name
 from .base import BNCIBaseDataset
 from .utils import (
     BNCI_URL,
@@ -208,7 +207,7 @@ def _load_data_001_2025(
     raw.info["line_freq"] = 50.0
 
     # Set montage for standard 10-10 positions
-    montage = mne.channels.make_standard_montage(resolve_montage_name("colin27_1005"))
+    montage = mne.channels.make_standard_montage("colin27_1005")
     raw.set_montage(montage, on_missing="ignore")
 
     # Return in MOABB session format

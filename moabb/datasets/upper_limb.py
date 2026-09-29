@@ -22,7 +22,6 @@ from moabb.datasets.utils import stim_channels_with_selected_ids
 from moabb.utils import _handle_deprecated_kwargs
 
 from . import download as dl
-from .utils import resolve_montage_name
 
 
 UPPER_LIMB_URL = "https://zenodo.org/record/834976/files/"
@@ -390,7 +389,7 @@ class Ofner2017(BaseDataset):
             paths = self.data_path(subject, session=session)
 
             eog = ["eog-l", "eog-m", "eog-r"]
-            montage = make_standard_montage(resolve_montage_name("colin27_1005"))
+            montage = make_standard_montage("colin27_1005")
             # Correct channel names for subject 1 execution files where GDF
             # stores generic "eeg-0".."eeg-60" instead of 10-20 labels.
             _correct_eeg_names = [
