@@ -23,7 +23,7 @@ Version 1.8  (Source - GitHub)
 
 Enhancements
 ~~~~~~~~~~~~
-- Add the continuous-recording :class:`datasets.Shin2022` and :class:`datasets.neuroTUMBCI` motor-imagery datasets (by `Bruno Aristimunha`_).
+- Add the continuous-recording :class:`datasets.Shin2022` and :class:`datasets.neuroTUMBCI` motor-imagery datasets (:gh:`1192`, by `Bruno Aristimunha`_).
 
 API changes
 ~~~~~~~~~~~
