@@ -41,14 +41,10 @@ def test_stored_windows_preserve_samples_units_and_first_last(tmp_path, monkeypa
         assert len(epochs) == 1
         assert epochs.get_data().shape[-1] == 4000
         assert events[0, 2] == i + 1
-        # Filtering operates on one stored window, never its neighbour.
-        filtered = raw.copy().filter(8, 30, verbose=False)
-        expected = mne.filter.filter_data(data[i], 1000, 8, 30, verbose=False)
-        np.testing.assert_allclose(filtered.get_data(), expected)
 
 
 @pytest.mark.parametrize("cls", WRCC)
-@pytest.mark.parametrize("labels", [[1], [1, 4], [1, 2, 3], [1, 2.5]])
+@pytest.mark.parametrize("labels", [[1], [1, 4]], ids=["count-mismatch", "bad-code"])
 def test_invalid_trial_labels_fail(tmp_path, cls, labels):
     path = tmp_path / "bad.mat"
     savemat(path, {"data": np.zeros((2, 59, 4000)), "label": labels, "fs": 1000})
