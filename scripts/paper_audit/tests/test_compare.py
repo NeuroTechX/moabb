@@ -289,6 +289,59 @@ def test_unverified_quote_rejected(tmp_path):
     assert {r["reason"] for r in rejected} == {"quote_not_found", "empty_quote"}
 
 
+# --- class naming rule ------------------------------------------------------
+
+
+def test_propose_class_name(tmp_path):
+    from scripts.paper_audit.compare import propose_class_name
+
+    # Rule 2: first author "Pérez-Blanco", 2026 -> PerezBlanco2026
+    record, fetched, ds = _fixture(tmp_path / "a", with_readme=False)
+    (ds / "record.json").write_text(
+        json.dumps(
+            {
+                "name": "FixtureDS",
+                "dois": {
+                    "10.1000/fixture": {
+                        "kind": "paper",
+                        "year": 2026,
+                        "authors": ["Juan Pérez-Blanco", "Ann Author"],
+                    }
+                },
+            },
+            indent=2,
+            ensure_ascii=False,
+        )
+    )
+    row = propose_class_name(record, fetched, is_new=True)
+    assert row.field == "class_name"
+    assert row.source_value == "PerezBlanco2026"
+    assert row.verdict == "mismatch"
+    assert verify_quote(row.quote, ds / row.source_file)
+    record.name = "PerezBlanco2026_MI"
+    assert propose_class_name(record, fetched, is_new=True).verdict == "match"
+
+    # Rule 1: README presents an official name
+    record, fetched, ds = _fixture(tmp_path / "b", with_readme=True)
+    readme = fetched.repository_files[0]
+    readme.write_text(
+        "# Data\nWe release the MILimbEEG dataset for upper-limb decoding.\n"
+    )
+    row = propose_class_name(record, fetched, is_new=True)
+    assert row.source_value == "MILimbEEG"
+    assert row.verdict == "unsupported" and "needs decision" in row.note
+    assert verify_quote(row.quote, ds / row.source_file)
+    record.name = "MILimbEEG2024"
+    assert propose_class_name(record, fetched, is_new=True).verdict == "match"
+
+    # develop class -> no row
+    assert propose_class_name(record, fetched, is_new=False) is None
+    rows = compare_dataset(record, fetched)
+    assert not [r for r in rows if r.field == "class_name"]
+    rows = compare_dataset(record, fetched, is_new=True)
+    assert [r for r in rows if r.field == "class_name"]
+
+
 # --- report -----------------------------------------------------------------
 
 

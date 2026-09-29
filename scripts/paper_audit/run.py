@@ -82,7 +82,10 @@ def run(
         notes = None
         if agent_notes_dir and (Path(agent_notes_dir) / f"{rec.name}.json").exists():
             notes = load_agent_notes(Path(agent_notes_dir) / f"{rec.name}.json")
-        rows = compare_dataset(rec, fetched, agent_notes=notes)
+        is_new = (new_vs is not None) or (
+            pr_map is not None and str(pr_map.get(rec.name, "develop")) != "develop"
+        )
+        rows = compare_dataset(rec, fetched, agent_notes=notes, is_new=is_new)
         write_report(
             rows,
             out / rec.name,

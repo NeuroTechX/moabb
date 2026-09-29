@@ -668,12 +668,199 @@ def _compare_investigators(record: DatasetRecord, fetched: FetchResult, base: Pa
 
 
 # ---------------------------------------------------------------------------
+# Class naming rule (new datasets only)
+# ---------------------------------------------------------------------------
+
+_NAME_STOPWORDS = {
+    "EEG",
+    "MEG",
+    "BCI",
+    "ERP",
+    "SSVEP",
+    "VEP",
+    "MI",
+    "P300",
+    "The",
+    "This",
+    "Our",
+    "Data",
+    "Dataset",
+    "Datasets",
+    "Open",
+    "Large",
+    "Public",
+    "New",
+    "Motor",
+    "Imagery",
+    "Brain",
+    "Human",
+    "Multi",
+    "Full",
+    "Raw",
+    "Table",
+    "Figure",
+    "Fig",
+    "Section",
+    "Supplementary",
+    "Online",
+    "Present",
+    "Proposed",
+    "Whole",
+    "Entire",
+    "Same",
+    "Training",
+    "Test",
+    "Testing",
+    "Validation",
+    "Benchmark",
+    "Competition",
+    "Original",
+    "Current",
+    "First",
+    "Second",
+    "Third",
+    "Final",
+    "Complete",
+    "Resulting",
+    "Combined",
+    "Note",
+    "Notes",
+    "Abstract",
+    "Keywords",
+    "Methods",
+    "Results",
+    "References",
+}
+_OFFICIAL_RE = re.compile(
+    r"(?:\bthe\s+([A-Z][A-Za-z0-9]{2,}(?:[-_][A-Za-z0-9]+)?)\s+(?:dataset|database|corpus|benchmark)\b"
+    r"|(?:^|\n)\s*([A-Z][A-Za-z0-9]{2,}(?:[-_][A-Za-z0-9]+)?):\s+[A-Za-z])"
+)
+
+
+def _camel(surname: str) -> str:
+    ascii_name = unicodedata.normalize("NFKD", surname).encode("ascii", "ignore").decode()
+    parts = [p for p in re.split(r"[\s\-']+", ascii_name) if p]
+    return "".join(p[:1].upper() + p[1:] for p in parts)
+
+
+def _first_author_surname(author: str) -> str:
+    """Surname of ``"Given Family"`` or ``"Family, Given"``; particles kept."""
+    a = author.strip()
+    if "," in a:
+        return a.split(",", 1)[0].strip()
+    tokens = a.split()
+    if not tokens:
+        return ""
+    idx = len(tokens) - 1
+    while idx > 0 and tokens[idx - 1][:1].islower():  # "de la Cruz" -> DeLaCruz
+        idx -= 1
+    return " ".join(tokens[idx:])
+
+
+def propose_class_name(
+    record: DatasetRecord, fetched: FetchResult, is_new: bool = True
+) -> EvidenceRow | None:
+    """Apply the spec naming rule; returns a ``class_name`` row or ``None``.
+
+    Only classes absent from ``develop`` (``is_new``) get a proposal; existing
+    public names are frozen.
+    """
+    if not is_new:
+        return None
+    base = Path(fetched.record_json).parent if fetched.record_json else Path(".")
+    current = record.name
+    sources = _load_sources(fetched, base)
+    lowered_stop = {w.lower() for w in _NAME_STOPWORDS}
+    # Rule 1: official name explicitly presented as the dataset's name.
+    for name, text, _kind in sources:
+        for m in _OFFICIAL_RE.finditer(text):
+            cand = m.group(1) or m.group(2)
+            if not cand or cand.lower() in lowered_stop:
+                continue
+            if not re.search(r"[A-Z]", cand[1:]) and not re.search(r"\d", cand):
+                continue  # plain capitalised word, not an acronym/proper name
+            official = re.sub(r"[^A-Za-z0-9]", "", cand)
+            quote = checks._quote(text, m.start(), m.end())
+            loc = checks.locate(text, m.start())
+            if official.lower() in current.lower():
+                return EvidenceRow(
+                    "class_name",
+                    current,
+                    official,
+                    quote,
+                    name,
+                    loc,
+                    "match",
+                    "medium",
+                    "rule 1: official name present in class name",
+                )
+            return EvidenceRow(
+                "class_name",
+                current,
+                official,
+                quote,
+                name,
+                loc,
+                "unsupported",
+                "low",
+                f"rule 1: official-name candidate {official!r}; needs decision",
+            )
+    # Rule 2: FirstAuthorSurname + Year from the DOI records.
+    dois = _record_dois(fetched)
+    src_file = (
+        _rel(Path(fetched.record_json), base) if fetched.record_json else "record.json"
+    )
+    ordered = [d for d in fetched.paper_dois if d in dois] + [
+        d for d in dois if d not in fetched.paper_dois
+    ]
+    if record.primary_doi in ordered:
+        ordered.remove(record.primary_doi)
+        ordered.insert(0, record.primary_doi)
+    for d in ordered:
+        info = dois.get(d) or {}
+        authors, year = info.get("authors") or [], info.get("year")
+        if not authors or not year:
+            continue
+        proposed = f"{_camel(_first_author_surname(authors[0]))}{year}"
+        verdict = (
+            "match"
+            if re.match(re.escape(proposed) + r"(?:_?[A-Za-z0-9]{0,12})?$", current)
+            else "mismatch"
+        )
+        return EvidenceRow(
+            "class_name",
+            current,
+            proposed,
+            f'"{authors[0]}"',
+            src_file,
+            f"dois.{d}.authors",
+            verdict,
+            "medium",
+            f"rule 2: first author surname + year of {d} ({info.get('kind')})",
+        )
+    return EvidenceRow(
+        "class_name",
+        current,
+        None,
+        "",
+        "",
+        "",
+        "unsupported",
+        "low",
+        "no author/year record to derive a name",
+    )
+
+
+# ---------------------------------------------------------------------------
 # Main entry point
 # ---------------------------------------------------------------------------
 
 
 def compare_dataset(
-    record: DatasetRecord, fetched: FetchResult, agent_notes: list[dict] | None = None
+    record: DatasetRecord,
+    fetched: FetchResult,
+    agent_notes: list[dict] | None = None,
+    is_new: bool = False,
 ) -> list[EvidenceRow]:
     base = Path(fetched.record_json).parent if fetched.record_json else Path(".")
     sources = _load_sources(fetched, base)
@@ -708,6 +895,7 @@ def compare_dataset(
         for r in (
             _compare_year(record, fetched, base),
             _compare_investigators(record, fetched, base),
+            propose_class_name(record, fetched, is_new=is_new),
         ):
             if r:
                 rows.append(r)
@@ -824,6 +1012,10 @@ def compare_dataset(
             continue
         checked.append(r)
     rows = checked
+
+    name_row = propose_class_name(record, fetched, is_new=is_new)
+    if name_row is not None:
+        rows.append(name_row)
 
     if agent_notes:
         accepted, rejected = apply_agent_notes(agent_notes, base)
