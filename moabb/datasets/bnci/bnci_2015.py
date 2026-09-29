@@ -302,7 +302,7 @@ def _load_data_006_2015(
     ch_types = ch_types + ["stim"]
     info = create_info(ch_names=ch_names, ch_types=ch_types, sfreq=sfreq)
     raw = RawArray(data=eeg_data.T, info=info, verbose=verbose)
-    montage = make_standard_montage("standard_1005")
+    montage = make_standard_montage("colin27_1005")
     raw.set_montage(montage, on_missing="ignore")
     raw.info["line_freq"] = 50.0
     _finalize_raw(raw, "BNCI2015-006", subject)

@@ -372,7 +372,7 @@ class Weibo2014(BaseDataset):
             struct_as_record=False,
             verify_compressed_data_integrity=False,
         )
-        montage = mne.channels.make_standard_montage("standard_1005")
+        montage = mne.channels.make_standard_montage("colin27_1005")
 
         # fmt: off
         ch_names = [

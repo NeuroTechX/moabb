@@ -149,7 +149,7 @@ class BaseMAMEM(BaseDataset):
                 m = loadmat(fpath)
                 ch_names = [e[0] for e in m["info"][0, 0][9][0]]
                 sfreq = 128
-                montage = make_standard_montage("standard_1020")
+                montage = make_standard_montage("colin27_1020")
                 eeg = m["eeg"][:-1] * 1e-6
                 stim = np.expand_dims(np.round(m["eeg"][-1], 0).astype(int), 0)
                 eeg = np.concatenate([eeg, stim], axis=0)

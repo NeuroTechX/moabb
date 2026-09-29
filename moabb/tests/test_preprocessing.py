@@ -680,7 +680,7 @@ def test_raw_to_epochs_interpolate_missing():
     data[-1, 500] = 1
     raw = mne.io.RawArray(data, info, verbose=False)
     raw.set_montage(
-        mne.channels.make_standard_montage("standard_1020"), on_missing="ignore"
+        mne.channels.make_standard_montage("colin27_1020"), on_missing="ignore"
     )
     ev = np.array([[500, 0, 1]], dtype="int32")
     result = RawToEpochs(

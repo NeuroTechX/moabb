@@ -23,7 +23,7 @@ def make_raw(
     sfreq,
     *,
     verbose=None,
-    montage="standard_1005",
+    montage="colin27_1005",
     line_freq=50.0,
     meas_date=None,
     description=None,

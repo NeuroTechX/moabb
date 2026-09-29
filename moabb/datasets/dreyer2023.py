@@ -308,7 +308,7 @@ class _Dreyer2023Base(BaseDataset):
                 eeg_idx = [i for i, t in enumerate(raw.get_channel_types()) if t == "eeg"]
                 if any(np.isnan(raw.info["chs"][i]["loc"][:3]).any() for i in eeg_idx):
                     raw.set_montage(
-                        make_standard_montage("standard_1005"), on_missing="ignore"
+                        make_standard_montage("colin27_1005"), on_missing="ignore"
                     )
 
                 # We are losting several annotations because there is no fuck

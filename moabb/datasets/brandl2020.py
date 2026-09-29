@@ -605,7 +605,7 @@ class Brandl2020(BaseDataset):
         raw = RawArray(data=full_data, info=info, verbose=False)
 
         # Set montage
-        montage = make_standard_montage("standard_1005")
+        montage = make_standard_montage("colin27_1005")
         raw.set_montage(montage, on_missing="ignore")
 
         return raw

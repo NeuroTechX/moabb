@@ -334,7 +334,7 @@ class PhysionetMI(BaseDataset):
         }
         # fmt: on
         raw.rename_channels(renames)
-        raw.set_montage(mne.channels.make_standard_montage("standard_1005"))
+        raw.set_montage(mne.channels.make_standard_montage("colin27_1005"))
         return raw
 
     def _get_single_subject_data(self, subject):

@@ -154,7 +154,7 @@ def _load_data_002_2016(
         ch_types,
         sfreq,
         verbose=verbose,
-        montage="standard_1005",
+        montage="colin27_1005",
         line_freq=50.0,
         meas_date=datetime(2011, 1, 1, tzinfo=timezone.utc),
     )

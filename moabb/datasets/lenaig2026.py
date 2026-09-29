@@ -326,7 +326,7 @@ class Lenaig2026(BaseDataset):
             raw.rename_channels(_CH_NAMES_EEG, verbose=False)
 
             # Set standard 10-20 montage
-            montage = mne.channels.make_standard_montage("standard_1020")
+            montage = mne.channels.make_standard_montage("colin27_1020")
             raw.set_montage(montage, verbose=0)
 
             # Extract events from annotations

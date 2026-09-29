@@ -337,7 +337,7 @@ class Sosulski2019(BaseDataset):
         raw = mne.io.read_raw_brainvision(
             file_path, misc=non_scalp_channels, preload=True
         )
-        raw.set_montage("standard_1020")
+        raw.set_montage("colin27_1020")
         if self.reject_non_iid:
             raw.set_annotations(raw.annotations[7:85])  # non-iid rejection
         raw.annotations.rename(self.description_map)

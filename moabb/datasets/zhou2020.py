@@ -296,7 +296,7 @@ class Zhou2020(BaseDataset):
 
         # Set montage for A-subjects (standard channel names).
         if ch_names[0] != "EEG1":
-            montage = mne.channels.make_standard_montage("standard_1005")
+            montage = mne.channels.make_standard_montage("colin27_1005")
             raw.set_montage(montage, on_missing="warn")
 
         return raw

@@ -23,6 +23,7 @@ Version 1.8  (Source - GitHub)
 
 Enhancements
 ~~~~~~~~~~~~
+- Spell MNE's renamed template montages everywhere: MNE 1.13 renamed ``standard_1005``/``standard_1020`` (and the other ``standard_*`` templates) to ``colin27_*`` (identical electrode files), warns on the old names and MNE 1.14 removes them, so every ``make_standard_montage``/``set_montage`` call in MOABB now spells ``colin27_*``. ``METADATA`` montage labels are descriptive and unchanged (:gh:`1200` by `Bruno Aristimunha`_).
 - Add :class:`moabb.datasets.Ma2022`, the SHU cross-session motor-imagery dataset: 25 subjects, five sessions, 32 EEG channels at 250 Hz and 11,988 retained 4 s trials. Read the authors' EDF release and BIDS events from NEMAR ``nm000288`` (publication pending), preserving bad-channel flags. These are authors-preprocessed, concatenated imagery windows, not continuous amplifier recordings. The ``Ma-edf2022`` code prevents reuse of legacy MATLAB caches; there is no MATLAB fallback (:gh:`1178` by `LiQing`_ and `Bruno Aristimunha`_)
 
 API changes
@@ -31,16 +32,19 @@ API changes
 
 Requirements
 ~~~~~~~~~~~~
-- None yet.
+- Require ``mne>=1.13`` for the ``colin27_*`` montage names and :func:`mne.io.read_raw_brainvision`'s ``overrides`` (:gh:`1200` by `Bruno Aristimunha`_).
 
 Bugs
 ~~~~
 - Use ``gmean`` in TRCA and TRCSP for compatibility with pyRiemann 0.12 and 0.13, and pass the TRCSP mean metric by keyword (by `Bruno Aristimunha`_).
 - Fix the ``-e``/``--evaluations`` flag of ``python -m moabb.run``, which used ``type=list`` and so split its value into single characters: ``-e WithinSession`` reached :func:`moabb.benchmark` as ``['W', 'i', 't', ...]`` and raised ``KeyError: 'W'``. It now takes one or more evaluation names, space separated (by `Iain`_)
+- Fix the two install pages asking for optional extras MOABB does not have: the pip install page gave ``pip install moabb[deepleaning,carbonemission,docs]``, which is missing the ``r`` of ``deeplearning``, and pip only warns about an unrecognised extra, so following that page left ``braindecode`` uninstalled. The from-sources page asked for ``external``, removed in 1.2.0 (by `Iain`_).
+- Fix evaluations passing NumPy arrays instead of :class:`mne.Epochs` to :class:`moabb.pipelines.classification.SSVEP_itCCA` and :class:`moabb.pipelines.classification.SSVEP_eCCA`, whose ``fit`` then raised ``ValueError: X should be an MNE Epochs object.`` The check that switches an evaluation to epochs only listed ``SSVEP_CCA``, ``SSVEP_TRCA`` and ``SSVEP_MsetCCA`` (by `Arthur031221`_)
+- Fix :func:`moabb.analysis.meta_analysis.compute_pvals_wilcoxon` reporting the wrong tail when the sign of the mean paired difference disagrees with the signed-rank statistic: the one-tailed p-value is now taken directly from ``scipy.stats.wilcoxon(..., alternative="greater")`` instead of halving the two-sided value and choosing the side from the mean (:gh:`1177` by `Azra Bano`_)
 
 Code health
 ~~~~~~~~~~~
-- None yet.
+- Share loader code across the new dataset PRs instead of private copies: :func:`~moabb.datasets.utils.download_and_extract_subject_zip` gains ``fname`` and ``redownload_corrupted`` (one warned re-download of a corrupted archive), :func:`~moabb.datasets.utils.rename_stimulus_codes` maps BrainVision ``Stimulus/S <n>`` markers to class labels, ``SetRawAnnotations`` keeps ``EDGE boundary`` markers, and the OpenNeuro raw-mirror mixin (``moabb.datasets._openneuro_mirror``) lives here once (:gh:`1200` by `Bruno Aristimunha`_).
 
 Version 1.7.1  (Stable - PyPi)
 -------------------------------
@@ -1060,3 +1064,4 @@ API changes
 .. _Barış Talar: https://github.com/baris-talar
 .. _Iain: https://github.com/NotAFlightRisk
 .. _Anna Sokolova: https://github.com/ZyntZ
+.. _Arthur031221: https://github.com/Arthur031221

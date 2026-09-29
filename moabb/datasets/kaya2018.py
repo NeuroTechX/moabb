@@ -270,7 +270,7 @@ class Kaya2018(BaseDataset):
             raw = mne.io.RawArray(eeg_data, info, verbose=False)
 
             # Set standard 10-20 montage
-            montage = mne.channels.make_standard_montage("standard_1020")
+            montage = mne.channels.make_standard_montage("colin27_1020")
             raw.set_montage(montage, on_missing="warn", verbose=False)
 
             # Extract event onsets from marker channel transitions

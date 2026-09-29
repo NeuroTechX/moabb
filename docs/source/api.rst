@@ -328,6 +328,7 @@ Utilities
     utils.find_intersecting_channels
     utils.plot_datasets_grid
     utils.plot_datasets_cluster
+    utils.rename_stimulus_codes
 
 -------------
 Preprocessing
