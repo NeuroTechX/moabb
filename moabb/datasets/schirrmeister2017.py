@@ -409,7 +409,7 @@ class Schirrmeister2017(BaseDataset):
 
         # Select only EEG sensors (remove EOG, EMG) if return_all_modalities is False,
         # and also set montage for visualizations
-        montage = make_standard_montage("standard_1005")
+        montage = make_standard_montage("colin27_1005")
         for raw in (train_raw, test_raw):
             if not self.return_all_modalities:
                 raw.pick_types(eeg=True)

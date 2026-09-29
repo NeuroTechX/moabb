@@ -424,7 +424,7 @@ class Lee2024(BaseDataset):
 
         info = mne.create_info(ch_names_full, sfreq, ch_types)
         raw = mne.io.RawArray(all_data, info, verbose=False)
-        raw.set_montage("standard_1020", on_missing="warn")
+        raw.set_montage("colin27_1020", on_missing="warn")
 
         # Convert stim channel events to annotations for BIDS compatibility.
         events = mne.find_events(raw, stim_channel="STI", verbose=False)

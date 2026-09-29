@@ -266,7 +266,7 @@ class RomaniBF2025ERP(BaseDataset):
         extra_runs: bool = False,
         include_inference: bool = False,
         load_failed: bool = False,
-        montage: str = "standard_1020",
+        montage: str = "colin27_1020",
         sessions: Optional[List[str]] = None,
         calibration_buffer=1.5,
     ):

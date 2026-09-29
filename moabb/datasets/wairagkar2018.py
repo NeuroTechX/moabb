@@ -285,7 +285,7 @@ class Wairagkar2018(BaseDataset):
 
         continuous = np.concatenate(all_segments, axis=1)
         raw = mne.io.RawArray(data=continuous, info=info, verbose=False)
-        montage = mne.channels.make_standard_montage("standard_1020")
+        montage = mne.channels.make_standard_montage("colin27_1020")
         raw.set_montage(montage)
 
         return {"0": {"0": raw}}

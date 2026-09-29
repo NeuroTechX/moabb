@@ -2607,7 +2607,7 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
                 coord_frame = montage.get_positions().get("coord_frame", "")
                 if coord_frame == "head" and not has_nas:
                     try:
-                        std = mne.channels.make_standard_montage("standard_1005")
+                        std = mne.channels.make_standard_montage("colin27_1005")
                         raw.set_montage(std, on_missing="ignore")
                     except Exception:
                         log.warning(

@@ -60,7 +60,7 @@ _IVA2003_LEGACY_TO_1005 = {
 
 def _set_iva2003_montage(raw):
     """Set positions for all 118 channels via the modern 10-5 equivalents."""
-    pos = make_standard_montage("standard_1005").get_positions()["ch_pos"]
+    pos = make_standard_montage("colin27_1005").get_positions()["ch_pos"]
     ch_pos = {
         ch: pos[mapped]
         for ch in raw.ch_names

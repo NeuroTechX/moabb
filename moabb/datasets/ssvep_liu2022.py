@@ -506,7 +506,7 @@ class Liu2022EldBETA(BaseDataset):
         """Return data for one subject across all 7 blocks from BIDS/GDF files."""
         gdf_paths = self.data_path(subject)
 
-        montage = mne.channels.make_standard_montage("standard_1005")
+        montage = mne.channels.make_standard_montage("colin27_1005")
 
         sessions = {}
         for block_idx, gdf_path in enumerate(gdf_paths):

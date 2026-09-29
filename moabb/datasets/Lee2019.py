@@ -165,7 +165,7 @@ class Lee2019(BaseDataset):
 
         # Create RawArray
         raw = self._make_raw_array(data["x"], data["chan"], "eeg", sfreq)
-        montage = make_standard_montage("standard_1005")
+        montage = make_standard_montage("colin27_1005")
         raw.set_montage(montage)
 
         # Create EMG channels
@@ -189,7 +189,7 @@ class Lee2019(BaseDataset):
         sfreq = data["fs"].item()
         rest_key = f"{prefix}_rest"
         raw = self._make_raw_array(data[rest_key], data["chan"], "eeg", sfreq)
-        montage = make_standard_montage("standard_1005")
+        montage = make_standard_montage("colin27_1005")
         raw.set_montage(montage)
 
         # Add EMG channels if available and duration matches

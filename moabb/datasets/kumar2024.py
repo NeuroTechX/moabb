@@ -481,7 +481,7 @@ class Kumar2024(BaseDataset):
         if not gdf_files:
             return {}
 
-        montage = make_standard_montage("standard_1020")
+        montage = make_standard_montage("colin27_1020")
         runs = {}
         for run_idx, gdf_path in enumerate(gdf_files):
             with warnings.catch_warnings():

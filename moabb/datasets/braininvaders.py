@@ -212,7 +212,7 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
         # Set it here rather than on each Raw: the Cattan2019-VR branch below
         # builds many Raws from this Info, and used to leave them with no
         # channel positions at all.
-        info.set_montage(make_standard_montage("standard_1020"), on_missing="ignore")
+        info.set_montage(make_standard_montage("colin27_1020"), on_missing="ignore")
 
         if not ds.code == "Cattan2019-VR":
             raw = mne.io.RawArray(data=X, info=info, verbose=False)

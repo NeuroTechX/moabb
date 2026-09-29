@@ -397,7 +397,7 @@ def _build_raw(eeg_stream, annotations):
     info = mne.create_info(_CH_NAMES, _SFREQ, ch_types="eeg")
     raw = mne.io.RawArray(data, info, verbose=False)
     raw.set_montage(
-        mne.channels.make_standard_montage("standard_1020"), on_missing="ignore"
+        mne.channels.make_standard_montage("colin27_1020"), on_missing="ignore"
     )
 
     if len(annotations):

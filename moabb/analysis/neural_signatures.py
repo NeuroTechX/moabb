@@ -169,7 +169,7 @@ def _get_montage_xy(
             pass
 
     if not any(ch in pos_3d for ch in ch_names):
-        montage = mne.channels.make_standard_montage("standard_1020")
+        montage = mne.channels.make_standard_montage("colin27_1020")
         pos_3d = montage.get_positions()["ch_pos"]
 
     raw = {

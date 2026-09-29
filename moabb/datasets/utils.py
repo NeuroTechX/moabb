@@ -5,10 +5,12 @@ from __future__ import annotations
 import abc
 import inspect
 import logging
+import re
 import shutil
 import stat
 import subprocess
 import tarfile
+import warnings
 import zipfile
 from pathlib import Path
 
@@ -192,7 +194,7 @@ def find_intersecting_channels(datasets, verbose=False):
     return allchans, keep_datasets
 
 
-def set_neuroscan_montage(raw, montage_name="standard_1005"):
+def set_neuroscan_montage(raw, montage_name="colin27_1005"):
     """Normalize Neuroscan ALL_CAPS labels and apply a standard montage.
 
     Neuroscan caps label channels in upper case (``FP1``, ``FPZ``, ``CZ``)
@@ -206,6 +208,25 @@ def set_neuroscan_montage(raw, montage_name="standard_1005"):
         {ch: ch.replace("Z", "z").replace("FP", "Fp") for ch in raw.ch_names}
     )
     raw.set_montage(make_standard_montage(montage_name), on_missing="ignore")
+
+
+def rename_stimulus_codes(raw, codes):
+    """Rename BrainVision ``Stimulus/S  <n>`` annotations to class labels.
+
+    Parameters
+    ----------
+    raw : mne.io.Raw
+        Recording whose annotations are renamed in place.
+    codes : dict of int to str
+        Marker number to label, e.g. ``{7: "left_hand", 8: "right_hand"}``.
+        Descriptions whose trailing ``S <n>`` is not in ``codes`` are kept.
+    """
+    rename = {}
+    for desc in set(raw.annotations.description):
+        match = re.search(r"S\s*(\d+)\s*$", desc)
+        if match and int(match.group(1)) in codes:
+            rename[desc] = codes[int(match.group(1))]
+    raw.annotations.rename(rename)
 
 
 def _download_all(update_path=True, verbose=None):
@@ -504,7 +525,7 @@ def build_raw_from_epochs(
     event_ids : ndarray
         Integer event code for each trial, of shape ``(n_trials,)``.
     montage_name : str
-        Name of a standard MNE montage (e.g. "standard_1005", "biosemi32").
+        Name of a standard MNE montage (e.g. "colin27_1005", "biosemi32").
     ch_types : list of str or None
         Channel types for each signal channel in ``ch_names``. If None, all
         channels are treated as ``"eeg"``.
@@ -600,7 +621,15 @@ def build_raw_from_epochs(
 
 
 def download_and_extract_subject_zip(
-    url, sign, extract_dir, path=None, force_update=False, verbose=None
+    url,
+    sign,
+    extract_dir,
+    path=None,
+    force_update=False,
+    verbose=None,
+    *,
+    fname=None,
+    redownload_corrupted=False,
 ):
     """Download a per-subject ZIP and safely extract it.
 
@@ -621,8 +650,13 @@ def download_and_extract_subject_zip(
         Force re-download even if file exists locally.
     verbose : bool | None
         Verbosity level.
+    fname : str | None
+        File name passed to :func:`dl.data_dl`, for URLs that do not end in one.
+    redownload_corrupted : bool
+        If True, an archive that is not a valid ZIP is downloaded again once,
+        with a warning; a second failure raises :class:`zipfile.BadZipFile`.
     """
-    dl_path = Path(dl.data_dl(url, sign, path, force_update, verbose))
+    dl_path = Path(dl.data_dl(url, sign, path, force_update, verbose, fname=fname))
 
     # Rename to .zip if dl.data_dl() stripped the extension.
     zip_path = dl_path.with_suffix(".zip")
@@ -631,8 +665,17 @@ def download_and_extract_subject_zip(
 
     extract_dir = Path(extract_dir)
     extract_dir.mkdir(parents=True, exist_ok=True)
-    with zipfile.ZipFile(zip_path) as zf:
-        safe_extract_zip(zf, extract_dir)
+    try:
+        with zipfile.ZipFile(zip_path) as zf:
+            safe_extract_zip(zf, extract_dir)
+    except zipfile.BadZipFile:
+        if not redownload_corrupted:
+            raise
+        warnings.warn("Corrupted zip file detected, re-downloading...", stacklevel=2)
+        zip_path.unlink()
+        download_and_extract_subject_zip(
+            url, sign, extract_dir, path, True, verbose, fname=fname
+        )
 
 
 def extract_rar(rar_path, dest_dir):

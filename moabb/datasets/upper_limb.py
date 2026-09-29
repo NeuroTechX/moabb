@@ -389,7 +389,7 @@ class Ofner2017(BaseDataset):
             paths = self.data_path(subject, session=session)
 
             eog = ["eog-l", "eog-m", "eog-r"]
-            montage = make_standard_montage("standard_1005")
+            montage = make_standard_montage("colin27_1005")
             # Correct channel names for subject 1 execution files where GDF
             # stores generic "eeg-0".."eeg-60" instead of 10-20 labels.
             _correct_eeg_names = [

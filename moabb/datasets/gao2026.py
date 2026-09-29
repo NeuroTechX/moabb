@@ -292,7 +292,7 @@ class Gao2026(BaseDataset):
                 raw.pick(["eeg"])
 
                 # Set standard montage.
-                montage = mne.channels.make_standard_montage("standard_1005")
+                montage = mne.channels.make_standard_montage("colin27_1005")
                 raw.set_montage(montage, on_missing="warn")
 
                 # Extract events from Status channel of the original file.
