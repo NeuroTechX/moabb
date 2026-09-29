@@ -6,6 +6,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import pytest
+import scipy.stats as stats
 from matplotlib.pyplot import Figure
 
 import moabb.analysis.meta_analysis as ma
@@ -200,6 +201,26 @@ class TestStats:
         assert np.isfinite(pvals).all(), f"P-values must be finite {pvals}"
         assert pvals[0, 1] == 0.5, f"Indistinguishable pipelines give 0.5 {pvals}"
         assert pvals[1, 0] == 0.5, f"Indistinguishable pipelines give 0.5 {pvals}"
+
+    def test_wilcoxon_tail_follows_rank_sums_not_mean(self):
+        # pipeline_1 beats pipeline_2 on 6 of 7 subjects by a small margin and
+        # loses badly on the remaining one, so the mean difference is negative
+        # while the signed-rank statistic favours pipeline_1. The one-tailed
+        # p-value must follow the rank sums, not the sign of the mean. See
+        # issue #1176.
+        diffs = np.array([0.02, 0.02, 0.02, 0.02, 0.02, 0.02, -0.20])
+        df = pd.DataFrame({"pipeline_1": 0.7 + diffs, "pipeline_2": [0.7] * 7})
+        assert diffs.mean() < 0
+        pvals = ma.compute_pvals_wilcoxon(df)
+        expected_greater = stats.wilcoxon(
+            df["pipeline_1"], df["pipeline_2"], alternative="greater"
+        )[1]
+        expected_less = stats.wilcoxon(
+            df["pipeline_1"], df["pipeline_2"], alternative="less"
+        )[1]
+        assert np.isclose(pvals[0, 1], expected_greater), pvals
+        assert np.isclose(pvals[1, 0], expected_less), pvals
+        assert pvals[0, 1] < 0.5 < pvals[1, 0], pvals
 
     def test_wilcoxon_stays_inside_unit_interval(self):
         # Stouffer's method maps 0 and 1 to an infinite z-score, so the Wilcoxon
