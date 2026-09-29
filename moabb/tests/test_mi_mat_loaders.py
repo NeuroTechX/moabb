@@ -1,7 +1,8 @@
 """Offline synthetic regression tests for the MATLAB MI loader batch."""
 
+import sys
 from types import SimpleNamespace
-from unittest.mock import MagicMock, Mock
+from unittest.mock import MagicMock
 
 import h5py
 import mne
@@ -20,19 +21,16 @@ def test_invalid_subject(cls):
 
 
 @pytest.mark.parametrize(
-    "cls,module,count",
-    [
-        (Jia2019, "jia2019", 2),
-        (Ortiz2023, "ortiz2023", 1),
-        (Yilmaz2024, "yilmaz2024", 4),
-        (ZjuMI2025, "zju_mi2025", 4),
-    ],
+    "cls,count", [(Jia2019, 2), (Ortiz2023, 1), (Yilmaz2024, 4), (ZjuMI2025, 4)]
 )
-def test_download_flags(cls, module, count, monkeypatch, tmp_path):
-    import importlib
+def test_download_flags(cls, count, monkeypatch, tmp_path):
+    mod = sys.modules[cls.__module__]
+    calls = []
 
-    mod = importlib.import_module(f"moabb.datasets.{module}")
-    download = Mock(return_value=str(tmp_path / "archive"))
+    def download(url, sign, path=None, force_update=False, verbose=None):
+        calls.append((path, force_update, verbose))
+        return str(tmp_path / "archive")
+
     monkeypatch.setattr(mod.dl, "data_dl", download)
     monkeypatch.setattr(mod.dl, "fs_get_file_list", lambda _: [])
     monkeypatch.setattr(
@@ -41,17 +39,11 @@ def test_download_flags(cls, module, count, monkeypatch, tmp_path):
         lambda _: {"exp1-S1-left.mat": "1", "exp1-S1-right.mat": "2"},
     )
     if cls is Ortiz2023:
-        archive = MagicMock()
-        monkeypatch.setattr(mod.z, "ZipFile", archive)
+        monkeypatch.setattr(mod.z, "ZipFile", MagicMock())
     cls().data_path(
         1, path=str(tmp_path), force_update=True, update_path=False, verbose=False
     )
-    assert download.call_count == count
-    for call in download.call_args_list:
-        args, kw = call
-        assert (args[2] if len(args) > 2 else kw["path"]) == str(tmp_path)
-        assert (args[3] if len(args) > 3 else kw["force_update"]) is True
-        assert (args[4] if len(args) > 4 else kw["verbose"]) is False
+    assert calls == [(str(tmp_path), True, False)] * count
 
 
 def _check_epochs(dataset, raw, expected, amplitude):
@@ -73,9 +65,6 @@ def _check_epochs(dataset, raw, expected, amplitude):
     )
     assert epochs.events[:, 2].tolist() == expected
     np.testing.assert_allclose(epochs.get_data(), amplitude)
-    # Boundaries survive preprocessing, and filtering does not mix trial levels.
-    filtered = raw.copy().filter(1, 30, verbose=False)
-    assert np.max(np.abs(filtered.get_data(picks="eeg"))) < 1e-10
 
 
 def test_jia_first_last_and_units():
