@@ -1,6 +1,6 @@
 {
     "_metadata": {
-        "total": 156
+        "total": 160
     },
     "10.1038/s41467-026-75435-5": {
         "title": "Sensory-guided human-machine joint learning accelerates the acquisition of motor imagery brain computer interface control",
@@ -1849,5 +1849,69 @@
         ],
         "year": 2026,
         "doi": "10.5281/zenodo.20848097"
+    },
+    "10.3389/fnhum.2022.951591": {
+        "title": "Closed-loop motor imagery EEG simulation for brain-computer interfaces",
+        "authors": [
+            "Hyonyoung Shin",
+            "Daniel Suma",
+            "Bin He"
+        ],
+        "year": 2022,
+        "doi": "10.3389/fnhum.2022.951591"
+    },
+    "10.6084/m9.figshare.20383716": {
+        "title": "Data from: Closed-loop motor imagery EEG simulation for brain-computer interfaces",
+        "authors": [
+            "Hyonyoung Shin",
+            "Daniel Suma",
+            "Bin He"
+        ],
+        "year": 2022,
+        "doi": "10.6084/m9.figshare.20383716"
+    },
+    "10.5281/zenodo.18087806": {
+        "title": "neuroTUM-BCI: Cybathlon Dataset",
+        "authors": [
+            "Isabel W. Tscherniak",
+            "Niels C. Thiemann",
+            "Ana McWhinnie-Fernandez",
+            "Iustin Curcean",
+            "Leon L. J. Jokinen",
+            "Sadat Hodzic",
+            "Thomas E. Huber",
+            "Daniel Pavlov",
+            "Manuel Methasani",
+            "Pietro Marcolongo",
+            "Glenn V. Krafczyk",
+            "Oscar Osvaldo Soto Rivera",
+            "Thien Le",
+            "Flaminia Pallotti",
+            "Enrico A. Fazzi"
+        ],
+        "year": 2025,
+        "doi": "10.5281/zenodo.18087806"
+    },
+    "10.48550/arXiv.2511.23384": {
+        "title": "Improving motor imagery decoding methods for an EEG-based mobile brain-computer interface in the context of the 2024 Cybathlon",
+        "authors": [
+            "Isabel W. Tscherniak",
+            "Niels C. Thiemann",
+            "Ana McWhinnie-Fernandez",
+            "Iustin Curcean",
+            "Leon L. J. Jokinen",
+            "Sadat Hodzic",
+            "Thomas E. Huber",
+            "Daniel Pavlov",
+            "Manuel Methasani",
+            "Pietro Marcolongo",
+            "Glenn V. Krafczyk",
+            "Oscar Osvaldo Soto Rivera",
+            "Thien Le",
+            "Flaminia Pallotti",
+            "Enrico A. Fazzi"
+        ],
+        "year": 2026,
+        "doi": "10.48550/arXiv.2511.23384"
     }
 }
