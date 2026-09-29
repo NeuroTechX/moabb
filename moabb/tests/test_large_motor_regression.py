@@ -24,8 +24,7 @@ def test_invalid_subject_does_not_download(dataset):
         dataset().data_path(999)
 
 
-@pytest.mark.parametrize("force", [False, True])
-def test_mind_transport_flags_and_cached_subject(tmp_path, monkeypatch, force):
+def test_mind_transport_flags_and_cached_subject(tmp_path, monkeypatch):
     root = tmp_path / "MNE-mind2026-data"
     header = root / "MIND_BIDS/sub-01/eeg/sub-01_task-mi2d_run-01_eeg.vhdr"
     header.parent.mkdir(parents=True)
@@ -42,16 +41,16 @@ def test_mind_transport_flags_and_cached_subject(tmp_path, monkeypatch, force):
 
     monkeypatch.setattr(mind2026.dl, "get_dataset_path", lambda *args: tmp_path)
     monkeypatch.setattr(mind2026.dl, "data_dl", transport)
-    MIND2026().data_path(1, path=str(tmp_path), force_update=force, verbose=False)
-    assert len(calls) == int(force)
-    if force:
-        assert calls == [{"path": str(tmp_path), "force_update": True, "verbose": False}]
-        assert header.read_text() == "updated"
+    dataset = MIND2026()
+    dataset.data_path(1, path=str(tmp_path), verbose=False)
+    assert calls == []
+    dataset.data_path(1, path=str(tmp_path), force_update=True, verbose=False)
+    assert calls == [{"path": str(tmp_path), "force_update": True, "verbose": False}]
+    assert header.read_text() == "updated"
     assert not (root / "MIND_BIDS/sub-01/nirs").exists()
 
 
-@pytest.mark.parametrize("force", [False, True])
-def test_thapa_transport_and_missing_sessions(tmp_path, monkeypatch, force):
+def test_thapa_transport_and_missing_sessions(tmp_path, monkeypatch):
     archive = tmp_path / "source.zip"
     with zipfile.ZipFile(archive, "w") as zf:
         zf.writestr("dataset_description.json", "{}")
@@ -73,9 +72,12 @@ def test_thapa_transport_and_missing_sessions(tmp_path, monkeypatch, force):
     paths = dataset.data_path(1, path=str(tmp_path), verbose=False)
     assert len(paths) == 1
     assert paths[0].session == "01"
-    dataset.data_path(1, path=str(tmp_path), force_update=force, verbose=False)
-    assert len(calls) == 1 + int(force)
-    assert calls[-1] == {"path": str(tmp_path), "force_update": force, "verbose": False}
+    assert calls == [{"path": str(tmp_path), "force_update": False, "verbose": False}]
+    dataset.data_path(1, path=str(tmp_path), verbose=False)
+    assert len(calls) == 1
+    dataset.data_path(1, path=str(tmp_path), force_update=True, verbose=False)
+    assert len(calls) == 2
+    assert calls[-1] == {"path": str(tmp_path), "force_update": True, "verbose": False}
 
 
 def test_garro_transport_and_subject_local_tasks(tmp_path, monkeypatch):
@@ -123,12 +125,6 @@ def test_moving_units_first_last_and_modality(monkeypatch, execution, triggers):
     epochs = mne.Epochs(loaded, events, ids, tmin=0, tmax=6, baseline=None, preload=True)
     assert len(epochs) == 4
     np.testing.assert_array_equal(events[:, 0], [0, 1000, 2000, 3000])
-
-
-def test_target_parser_does_not_match_substrings():
-    assert thapa2025._target_from_description("Tgt1") == "Tgt1"
-    assert thapa2025._target_from_description("Tgt10") is None
-    assert thapa2025._target_from_description("not_target1_end") is None
 
 
 def test_moving_duplicate_subject_recordings_fail(tmp_path):

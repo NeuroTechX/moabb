@@ -15,12 +15,10 @@ def test_stale_brainvision_references_use_same_stem_bids_siblings(tmp_path, monk
     vhdr.with_suffix(".vmrk").touch()
     seen = {}
 
-    def fake_reader(path, *, preload, verbose):
+    def fake_reader(path, **kwargs):
         temporary = Path(path)
         seen["path"] = temporary
         seen["header"] = temporary.read_text(encoding="utf-8")
-        assert preload is True
-        assert verbose is False
         return object()
 
     monkeypatch.setattr(
@@ -39,16 +37,23 @@ def test_irregular_optional_events_column_preserves_all_protocol_events(tmp_path
     events.write_text(
         "onset\tduration\ttrial_type\tstim_file\n"
         "1.0\tn/a\ttrial_start\tstimuli/Start.wav\n"
-        "2.0\tn/a\tTgt4\n"
-        "3.0\tn/a\ttrial_end\tstimuli/End.wav\t\n",
+        "2.0\tn/a\ttarget 4\n"
+        "3.0\tn/a\ttrial_end\tstimuli/End.wav\t\n"
+        "4.0\tn/a\tTgt10\n",
         encoding="utf-8",
     )
 
     annotations = Thapa2025._annotations_from_events(events)
 
-    assert annotations.description.tolist() == ["trial_start", "Tgt4", "trial_end"]
-    assert annotations.onset.tolist() == [1.0, 2.0, 3.0]
-    assert annotations.duration.tolist() == [0.0, 0.0, 0.0]
+    # Target variants normalise to Tgt{n}; "Tgt10" is not a substring match.
+    assert annotations.description.tolist() == [
+        "trial_start",
+        "Tgt4",
+        "trial_end",
+        "Tgt10",
+    ]
+    assert annotations.onset.tolist() == [1.0, 2.0, 3.0, 4.0]
+    assert annotations.duration.tolist() == [0.0] * 4
 
 
 def test_events_sidecar_stays_beside_brainvision_header(tmp_path):

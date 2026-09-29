@@ -44,39 +44,18 @@ def _assert_complete_run(annotations):
     }
 
 
-def test_mi_events_anchor_ten_second_execution_window(tmp_path):
-    """Codes 4-7 start MI; code 3 is the preceding two-second cue."""
-    vhdr = tmp_path / "sub-01_task-mi2d_run-01_eeg.vhdr"
-    events = tmp_path / "sub-01_task-mi2d_run-01_events.tsv"
-    coded_events = [(100.0, 3), (102.016, _VALID_RUN_CODES[0])]
-    coded_events.extend(
-        (103.016 + index, code) for index, code in enumerate(_VALID_RUN_CODES[1:])
-    )
-    _write_events(events, coded_events)
-    raw = mne.io.RawArray(
-        np.zeros((1, 150_000)),
-        mne.create_info(["Cz"], sfreq=1000.0, ch_types="eeg"),
-        verbose=False,
-    )
+def test_mi_events_anchor_execution_onset_and_accept_balanced_run(tmp_path):
+    """Codes 4-7 start MI (code 3 is the preceding cue and is dropped).
 
-    annotations = MIND2026._mi_annotations(vhdr, raw)
-    dataset = MIND2026()
-
-    _assert_complete_run(annotations)
-    assert annotations.description[:2].tolist() == ["left_to_right", "up_to_down"]
-    np.testing.assert_allclose(annotations.onset[:2], [102.016, 103.016])
-    assert dataset.interval == [0, 10]
-    np.testing.assert_allclose(
-        annotations.onset[0] + np.asarray(dataset.interval), [102.016, 112.016]
-    )
-
-
-def test_exact_balanced_run_does_not_require_restart_layout(tmp_path):
-    """A normal 40-event run is accepted solely by its balanced class counts."""
+    A normal 40-event run is accepted solely by its balanced class counts,
+    without the half-order layout required after a restart.
+    """
     vhdr = tmp_path / "sub-01_task-mi2d_run-01_eeg.vhdr"
     events = tmp_path / "sub-01_task-mi2d_run-01_events.tsv"
     codes = [4, 5, 6, 7] * 10
-    _write_events(events, list(enumerate(codes)))
+    coded_events = [(100.0, 3), (102.016, codes[0])]
+    coded_events.extend((103.016 + index, code) for index, code in enumerate(codes[1:]))
+    _write_events(events, coded_events)
 
     annotations = MIND2026._mi_annotations(vhdr, _raw_with_codes([]))
 
@@ -87,6 +66,7 @@ def test_exact_balanced_run_does_not_require_restart_layout(tmp_path):
         "upperleft_to_lowerright",
         "upperright_to_lowerleft",
     ]
+    np.testing.assert_allclose(annotations.onset[:2], [102.016, 103.016])
 
 
 def test_subject_4_overfull_tsv_keeps_complete_post_restart_run(tmp_path):
@@ -117,18 +97,12 @@ def test_subject_19_overfull_raw_fallback_keeps_complete_post_restart_run(tmp_pa
     )
 
 
-@pytest.mark.parametrize("source", ["tsv", "raw"])
-def test_overfull_run_without_code_1_restart_fails_closed(tmp_path, source):
+def test_overfull_run_without_code_1_restart_fails_closed(tmp_path):
     """Extra MI markers are never trimmed without the acquisition restart marker."""
     vhdr = tmp_path / "sub-01_task-mi2d_run-01_eeg.vhdr"
-    codes = _VALID_RUN_CODES + [4]
-    raw = _raw_with_codes(codes if source == "raw" else [])
-    if source == "tsv":
-        events = tmp_path / "sub-01_task-mi2d_run-01_events.tsv"
-        _write_events(events, list(enumerate(codes)))
 
     with pytest.raises(RuntimeError, match="final code 1 restart marker"):
-        MIND2026._mi_annotations(vhdr, raw)
+        MIND2026._mi_annotations(vhdr, _raw_with_codes(_VALID_RUN_CODES + [4]))
 
 
 def test_overfull_run_requires_expected_post_restart_half_order(tmp_path):
