@@ -23,7 +23,7 @@ Version 1.8  (Source - GitHub)
 
 Enhancements
 ~~~~~~~~~~~~
-- Add WRCC2023 MI-A/MI-B/MI-C and Wirawan2024 motor-imagery datasets with isolated recording windows (by `Bruno Aristimunha`_).
+- Add WRCC2023 MI-A/MI-B/MI-C and Wirawan2024 motor-imagery datasets with isolated recording windows (:gh:`1196`, by `Bruno Aristimunha`_).
 
 API changes
 ~~~~~~~~~~~
