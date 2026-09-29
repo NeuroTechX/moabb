@@ -7,7 +7,7 @@ import warnings
 import zipfile
 import zlib
 from types import SimpleNamespace
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 import mne
 import numpy as np
@@ -1839,9 +1839,12 @@ def test_corsi2026_events_replace_markers_and_off_rate_run_is_resampled(
     )
     dataset = db.Corsi2026(subjects=[1])
     bids_path = SimpleNamespace(fpath=f"{stem}_eeg.vhdr", session="01", run="04")
-    monkeypatch.setattr(dataset, "bids_paths", lambda subject: [bids_path])
-    monkeypatch.setattr(mne.io, "read_raw_brainvision", lambda *a, **k: raw.copy())
+    monkeypatch.setattr(dataset, "bids_paths", Mock(return_value=[bids_path]))
+    reader = Mock(return_value=raw.copy())
+    monkeypatch.setattr(mne.io, "read_raw_brainvision", reader)
     out = dataset._get_single_subject_data(1)["01"]["04"]
+    dataset.bids_paths.assert_called_once_with(1)
+    assert str(reader.call_args.args[0]) == f"{stem}_eeg.vhdr"
     assert out.info["sfreq"] == 250.0
     events = mne.find_events(out, shortest_event=0, verbose=False)
     assert events[:, 2].tolist() == [1, 2, 1, 2]
@@ -1877,7 +1880,7 @@ def test_corsi2026_staged_subject_skips_the_network(tmp_path, monkeypatch):
             stem = f"sub-02_ses-{ses:02d}_task-MotorImageryRest_run-{run:02d}_"
             for suffix in corsi._RUN_SUFFIXES:
                 (eeg / f"{stem}{suffix}").touch()
-    monkeypatch.setattr(corsi, "get_dataset_path", lambda sign, path: str(tmp_path))
+    monkeypatch.setattr(corsi, "get_dataset_path", Mock(return_value=str(tmp_path)))
     monkeypatch.delattr(corsi.requests, "Session")  # any network use fails
     assert db.Corsi2026()._download_subject(2, None, False, None, None) == str(root)
 
@@ -1917,9 +1920,9 @@ def test_corsi2026_read_member_one_request_and_crc(compression):
 
 def test_corsi2026_root_files_are_md5_checked(tmp_path, monkeypatch):
     corsi = db.corsi2026
-    response = SimpleNamespace(content=b"tampered", raise_for_status=lambda: None)
-    session = SimpleNamespace(get=lambda *a, **k: response)
-    monkeypatch.setattr(corsi, "get_dataset_path", lambda sign, path: str(tmp_path))
-    monkeypatch.setattr(corsi.requests, "Session", lambda: session)
+    session = Mock()
+    session.get.return_value.content = b"tampered"
+    monkeypatch.setattr(corsi, "get_dataset_path", Mock(return_value=str(tmp_path)))
+    monkeypatch.setattr(corsi.requests, "Session", Mock(return_value=session))
     with pytest.raises(OSError, match="MD5"):
         db.Corsi2026()._download_subject(3, None, False, None, None)

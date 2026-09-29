@@ -7,6 +7,7 @@ import struct
 import time
 import zipfile
 import zlib
+from operator import attrgetter
 from pathlib import Path
 
 import mne
@@ -27,7 +28,7 @@ from .metadata.schema import (
     ParticipantMetadata,
     Tags,
 )
-from .utils import resolve_montage_name, stim_channels_with_selected_ids
+from .utils import stim_channels_with_selected_ids
 
 
 log = logging.getLogger(__name__)
@@ -340,7 +341,7 @@ class Corsi2026(BaseBIDSDataset):
     def _get_single_subject_data(self, subject):
         """Read each run's BrainVision file and set the events.tsv annotations."""
         inv_events = {code: label for label, code in self.event_id.items()}
-        montage = mne.channels.make_standard_montage(resolve_montage_name("colin27_1005"))
+        montage = mne.channels.make_standard_montage("colin27_1005")
         sessions = {}
         for bids_path in self.bids_paths(subject):
             vhdr = Path(bids_path.fpath)
@@ -440,9 +441,10 @@ class Corsi2026(BaseBIDSDataset):
     @staticmethod
     def _subject_members(infos, subject):
         """EEG members of one subject (MI runs + session sidecars), in archive order."""
-
-        def keep(parts):  # sub-XX/ses-YY/eeg/<file>
-            return (
+        members = []
+        for info in infos:
+            parts = info.filename.split("/")  # sub-XX/ses-YY/eeg/<file>
+            if (
                 len(parts) == 4
                 and parts[0] == f"sub-{subject:02d}"
                 and parts[2] == "eeg"
@@ -450,10 +452,9 @@ class Corsi2026(BaseBIDSDataset):
                     f"_task-{_TASK}_" in parts[3]
                     or parts[3].endswith(("_electrodes.tsv", "_coordsystem.json"))
                 )
-            )
-
-        members = [info for info in infos if keep(info.filename.split("/"))]
-        return sorted(members, key=lambda info: info.header_offset)
+            ):
+                members.append(info)
+        return sorted(members, key=attrgetter("header_offset"))
 
     @staticmethod
     def _staged_subject_is_complete(bids_root, subject):
