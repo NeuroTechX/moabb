@@ -30,39 +30,16 @@ WIRAWAN2024_MI_URL = (
 )
 
 # The 14 Emotiv EPOC X electrodes, in the channel order stored in each .mat.
-WIRAWAN2024_CHANNELS = [
-    "AF3",
-    "F7",
-    "F3",
-    "FC5",
-    "T7",
-    "P7",
-    "O1",
-    "O2",
-    "P8",
-    "T8",
-    "FC6",
-    "F4",
-    "F8",
-    "AF4",
-]
+WIRAWAN2024_CHANNELS = "AF3 F7 F3 FC5 T7 P7 O1 O2 P8 T8 FC6 F4 F8 AF4".split()
 
-# Scenario sub-folders inside the archive, each mapped to the single class
-# it records. Inspection of the distributed .mat files shows they carry only
-# ``joined_data`` (the four imagery repetitions), plus ``Fs``, ``channel`` and
-# ``subject`` metadata -- there is no per-repetition activity label. The
-# up/down split within a scenario is therefore not recoverable from the data,
-# so each scenario folder is treated as one reliable class: the left-hand,
-# right-hand and trunk (stand/sit) imagery.
+# Scenario folder -> class (the .mat files carry no per-repetition label).
 WIRAWAN2024_SCENARIOS = {
     "Left Hand Up-Down Imagine": "left_hand",
     "Right Hand Up-Down Imagine": "right_hand",
     "Stand Up-Down Imagine": "trunk",
 }
 
-# 3 s baseline recorded before each imagery period, at 128 Hz.
 WIRAWAN2024_SFREQ = 128
-WIRAWAN2024_BASELINE_SAMPLES = 384
 
 
 class Wirawan2024(BaseDataset):
@@ -70,36 +47,17 @@ class Wirawan2024(BaseDataset):
 
     **Dataset description**
 
-    The MIMED (Motor Imagery and Motor Execution Dataset) was recorded from
-    30 healthy students from the Bali region of Indonesia using an Emotiv
-    EPOC X 14-channel wireless headset sampled at 128 Hz. The 14 electrodes
-    follow the international 10-20 system: AF3, F7, F3, FC5, T7, P7, O1, O2,
-    P8, T8, FC6, F4, F8, AF4.
-
-    Participants performed six activities, both as motor execution and as
-    motor imagery: raising the right hand, lowering the right hand, raising
-    the left hand, lowering the left hand, standing and sitting. Only the
-    motor imagery recordings are loaded here. The imagery recordings are
-    distributed as three scenario files per subject (one folder per scenario),
-    each containing four recording blocks across two days. Each block has a
-    3 s (384-sample) baseline period; the event marker is placed at the onset
-    of the imagery period, so that the 3 s baseline precedes the epoched
-    window.
-
-    The distributed ``.mat`` files carry only the recorded signals
-    (``joined_data``) together with ``Fs``, ``channel`` and ``subject``
-    metadata; they do **not** store a per-repetition activity label. The
-    within-scenario up/down (or stand/sit) split is therefore not recoverable
-    from the data. The loader consequently exposes the reliable, folder-borne
-    3-class task in which each scenario folder is a single class:
-    ``left_hand`` (1) from "Left Hand Up-Down Imagine", ``right_hand`` (2) from
-    "Right Hand Up-Down Imagine" and ``trunk`` (3) from "Stand Up-Down
-    Imagine". Each block contributes one four-second analysis window after the baseline
-    (four windows per class, twelve in total), not an invented cue sequence.
-    The two recording days are separate sessions, with six runs per day.
-
-    The signals are stored in Emotiv raw units (micro-volts with a DC offset
-    of roughly 4200 uV) and are rescaled to volts on load.
+    MIMED (Motor Imagery and Motor Execution Dataset): 30 healthy students
+    recorded with a 14-channel Emotiv EPOC X headset at 128 Hz while executing
+    and imagining six activities (raise/lower each hand, stand/sit). Only the
+    imagery recordings are loaded: three scenario files per subject, each with
+    four blocks over two days. Each block starts with a 3 s (384-sample)
+    baseline; the event marks imagery onset, and each block contributes one 4 s
+    window. The ``.mat`` files carry no per-repetition label, so each scenario
+    folder is one class: ``left_hand`` (1), ``right_hand`` (2) and ``trunk``
+    (3, stand/sit). The two days are separate sessions with six runs each.
+    Signals are stored in Emotiv raw microvolts (DC offset ~4200 uV) and are
+    rescaled to volts on load.
 
     Notes
     -----
@@ -220,53 +178,17 @@ class Wirawan2024(BaseDataset):
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
-        """Return the list of scenario file paths for a single subject.
-
-        Parameters
-        ----------
-        subject : int
-            The subject number to fetch data for.
-        path : None | str
-            Location of where to look for the data storing location. If None,
-            the environment variable or config parameter MNE_(dataset) is used.
-        force_update : bool
-            Force update of the dataset even if a local copy exists.
-        update_path : bool | None
-            Unused, kept for API compatibility.
-        verbose : bool, str, int, or None
-            If not None, override default verbose level (see mne.verbose()).
-
-        Returns
-        -------
-        list of str
-            One path per scenario file for the subject.
-        """
+        """Return one ``.mat`` path per imagery scenario for ``subject``."""
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
         path_folder = self._extract_root(path, force_update, verbose)
         sub = f"P{subject:02d}"
-        subject_paths = []
-        for scenario in WIRAWAN2024_SCENARIOS:
-            subject_paths.append(
-                str(path_folder / "Motor Imagery" / scenario / f"{sub}.mat")
-            )
-        return subject_paths
+        root = path_folder / "Motor Imagery"
+        return [str(root / scenario / f"{sub}.mat") for scenario in WIRAWAN2024_SCENARIOS]
 
     def _get_single_subject_data(self, subject):
-        """Return the data of a single subject.
-
-        Parameters
-        ----------
-        subject : int
-            The subject number to fetch data for.
-
-        Returns
-        -------
-        dict
-            Two recording-day sessions, each with six independently filtered
-            scenario blocks annotated with their folder-level class.
-        """
+        """Return two day sessions of six scenario-block runs each."""
         file_paths = self.data_path(subject)
         if len(set(file_paths)) != len(file_paths):
             raise ValueError("Duplicate MIMED scenario files")

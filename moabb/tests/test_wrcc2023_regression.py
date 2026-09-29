@@ -9,16 +9,23 @@ from moabb.datasets import WRCC2023_MI_A, WRCC2023_MI_B, WRCC2023_MI_C, Wirawan2
 from moabb.datasets.preprocessing import SetRawAnnotations
 
 
-WRCC = [WRCC2023_MI_A, WRCC2023_MI_B, WRCC2023_MI_C]
-
-
-@pytest.mark.parametrize("cls", WRCC)
-def test_stored_windows_preserve_samples_units_and_first_last(tmp_path, monkeypatch, cls):
-    data = np.random.default_rng(42).normal(0, 10e-6, (3, 59, 4000))
+def _wrcc_subject(tmp_path, monkeypatch, cls, data, labels, **extra):
     path = tmp_path / "subject.mat"
-    savemat(path, {"data": data, "label": [1, 2, 3], "fs": 1000})
+    savemat(path, {"data": data, "label": labels, **extra})
     ds = cls()
     monkeypatch.setattr(ds, "data_path", lambda subject: str(path))
+    return ds
+
+
+# MI-A/MI-C files store ``fs``; MI-B files do not.
+@pytest.mark.parametrize(
+    "cls, extra", [(WRCC2023_MI_A, {"fs": 1000}), (WRCC2023_MI_B, {})]
+)
+def test_stored_windows_preserve_samples_units_and_first_last(
+    tmp_path, monkeypatch, cls, extra
+):
+    data = np.random.default_rng(42).normal(0, 10e-6, (3, 59, 4000))
+    ds = _wrcc_subject(tmp_path, monkeypatch, cls, data, [1, 2, 3], **extra)
     runs = ds._get_single_subject_data(1)["0"]
     assert len(runs) == 3
     for i, raw in enumerate(runs.values()):
@@ -43,16 +50,19 @@ def test_stored_windows_preserve_samples_units_and_first_last(tmp_path, monkeypa
         assert events[0, 2] == i + 1
 
 
-@pytest.mark.parametrize("cls", WRCC)
-@pytest.mark.parametrize("labels", [[1], [1, 4]], ids=["count-mismatch", "bad-code"])
-def test_invalid_trial_labels_fail(tmp_path, cls, labels):
-    path = tmp_path / "bad.mat"
-    savemat(path, {"data": np.zeros((2, 59, 4000)), "label": labels, "fs": 1000})
-    with pytest.raises(ValueError, match="labels"):
-        cls._mat_to_raw(path)
+@pytest.mark.parametrize(
+    "labels, extra, match",
+    [([1], {}, "labels"), ([1, 4], {}, "labels"), ([1, 2], {"fs": 500}, "1000 Hz")],
+    ids=["count-mismatch", "bad-code", "bad-fs"],
+)
+def test_invalid_source_files_fail(tmp_path, monkeypatch, labels, extra, match):
+    data = np.zeros((2, 59, 4000))
+    ds = _wrcc_subject(tmp_path, monkeypatch, WRCC2023_MI_C, data, labels, **extra)
+    with pytest.raises(ValueError, match=match):
+        ds._get_single_subject_data(1)
 
 
-@pytest.mark.parametrize("cls", WRCC)
+@pytest.mark.parametrize("cls", [WRCC2023_MI_A, WRCC2023_MI_B, WRCC2023_MI_C])
 def test_download_flags_and_subject_validation(tmp_path, monkeypatch, cls):
     calls = []
     monkeypatch.setattr(
@@ -60,6 +70,7 @@ def test_download_flags_and_subject_validation(tmp_path, monkeypatch, cls):
     )
     ds = cls()
     ds.data_path(1, path=tmp_path, force_update=True, update_path=False, verbose=False)
+    assert calls[0][0].endswith(f"/{cls.FILE_IDS[1]}")
     assert calls[0][1:] == (ds.code, tmp_path, True, False)
     with pytest.raises(ValueError):
         ds.data_path(0)
