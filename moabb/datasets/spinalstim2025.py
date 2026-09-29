@@ -1,12 +1,9 @@
 """SpinalStim2025 longitudinal motor-imagery BCI dataset (TESS neuromodulation)."""
 
 import warnings
-import zipfile as z
-from pathlib import Path
 
 import mne
 
-from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
@@ -18,7 +15,7 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 from moabb.datasets.perdikis2018 import _keep_class_cues
-from moabb.datasets.utils import safe_extract_zip
+from moabb.datasets.utils import download_and_extract_zip, resolve_montage_name
 
 
 # Zenodo record 15454355 (concept DOI 10.5281/zenodo.15454354)
@@ -169,24 +166,15 @@ class SpinalStim2025(BaseDataset):
         zip_name, root_name = _ARCHIVES[archive_key]
         url = SPINALSTIM2025_BASE.format(name=zip_name)
 
-        path_zip = Path(
-            dl.data_dl(
-                url, self.code, path=path, force_update=force_update, verbose=verbose
-            )
+        archive_root = download_and_extract_zip(
+            url, self.code, root_name, path, force_update, verbose
         )
-        path_folder = path_zip.parent
-
-        # Extract the archive once.
-        if force_update or not (path_folder / root_name).is_dir():
-            with z.ZipFile(path_zip, "r") as zip_ref:
-                safe_extract_zip(zip_ref, path_folder)
 
         # Resolve the exact subject-level offline folders first. Some d3
         # inner session directories carry the preceding subject's token, so a
         # substring match over the full file path would assign eight runs to
         # two subjects. d4 legitimately has two same-depth roots (REST/TESS).
         prefix = f"Subject_{token}_"
-        archive_root = path_folder / root_name
         subject_roots = [
             candidate
             for candidate in archive_root.rglob(f"{prefix}*_Offline")
@@ -244,7 +232,7 @@ class SpinalStim2025(BaseDataset):
 
         _keep_class_cues(raw, _CLASS_CODES)
 
-        montage = mne.channels.make_standard_montage("standard_1005")
+        montage = mne.channels.make_standard_montage(resolve_montage_name("colin27_1005"))
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             raw = raw.set_montage(

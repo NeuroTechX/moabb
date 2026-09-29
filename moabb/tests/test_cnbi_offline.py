@@ -7,6 +7,7 @@ import numpy as np
 import pytest
 
 from moabb.datasets import Perdikis2018, SpinalStim2025
+from moabb.datasets import download as dl
 from moabb.datasets import perdikis2018 as per
 from moabb.datasets import spinalstim2025 as spinal
 
@@ -18,7 +19,7 @@ def test_spinal_exact_roots_deduplicate_subject_identity(tmp_path, monkeypatch):
         folder = root / f"Subject_{owner}_REST_Offline" / "Subject_501_session"
         folder.mkdir(parents=True)
         (folder / "run.gdf").touch()
-    monkeypatch.setattr(spinal.dl, "data_dl", lambda *a, **k: tmp_path / "d3.zip")
+    monkeypatch.setattr(dl, "data_dl", lambda *a, **k: tmp_path / "d3.zip")
     paths = SpinalStim2025().data_path(21)
     assert len(paths) == 1
     assert "Subject_501_REST_Offline" in paths[0]
