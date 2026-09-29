@@ -1,13 +1,4 @@
-"""MI-BMPI motor-imagery brain-mobile phone interface dataset (Yilmaz 2024).
-
-Yilmaz, C. M., Yilmaz, B. H., and Kose, C. (2024). "MI-BMPI motor imagery
-brain-mobile phone dataset and performance evaluation of voting ensembles
-utilizing QPDM." Neural Computing and Applications.
-Paper DOI: 10.1007/s00521-024-10917-5
-Data: https://zenodo.org/records/13626922
-"""
-
-import logging
+"""MI-BMPI motor-imagery brain-mobile phone interface dataset (Yilmaz 2024)."""
 
 import h5py
 import mne
@@ -32,10 +23,7 @@ from moabb.datasets.metadata.schema import (
 )
 
 
-log = logging.getLogger(__name__)
-
 _DOI = "10.1007/s00521-024-10917-5"
-_SIGN = "Yilmaz2024"
 
 # Zenodo record hosting the epoched EEGLAB .set files and label .mat files.
 _ZENODO_RECORD = "13626922"
@@ -44,21 +32,7 @@ _ZENODO_BASE = f"https://zenodo.org/records/{_ZENODO_RECORD}/files"
 # 13 sensorimotor EEG channels in acquisition order (read from chanlocs of the
 # EEGLAB .set files; identical across subjects/sessions). Canonical 10-20 case
 # so the standard_1020 montage attaches to all of them.
-_CH_NAMES = [
-    "C5",
-    "C3",
-    "FC3",
-    "CP3",
-    "C1",
-    "Cz",
-    "FCz",
-    "CPz",
-    "C2",
-    "C4",
-    "FC4",
-    "CP4",
-    "C6",
-]
+_CH_NAMES = "C5 C3 FC3 CP3 C1 Cz FCz CPz C2 C4 FC4 CP4 C6".split()
 
 _SFREQ = 128.0
 
@@ -74,39 +48,19 @@ _LABEL_TO_EVENT = {1: "tap", 2: "swipe"}
 class Yilmaz2024(BaseDataset):
     """MI-BMPI motor-imagery brain-mobile phone interface dataset [1]_.
 
-    .. admonition:: Dataset summary
-
-        =========  =======  =======  ==========  =================  ============  ===============  ===========
-        Name         #Subj    #Chan    #Classes    #Trials / class    Trials len    Sampling rate      #Sessions
-        =========  =======  =======  ==========  =================  ============  ===============  ===========
-        Yilmaz2024       8       13           2              ~100-120           2.5s           128 Hz            2
-        =========  =======  =======  ==========  =================  ============  ===============  ===========
-
     **Dataset description**
 
-    Eight healthy subjects performed two motor-imagery gestures designed for a
-    brain-mobile phone interface (BMPI): (i) imagining tapping on the screen of
-    a mobile device (class ``tap``) and (ii) imagining swiping down with a thumb
-    on the screen (class ``swipe``). Each subject completed two recording
-    sessions.
+    Eight healthy subjects imagined two mobile-phone gestures, tapping the
+    screen (``tap``) and swiping down with the thumb (``swipe``), in two sessions
+    recorded with an Emotiv EPOC Flex at 128 Hz (13 sensorimotor channels,
+    average reference). The data are epoched (1 s pre-task baseline + 2.5 s
+    imagery, 96-120 trials per session); the EEGLAB ``.set`` files carry no
+    events, so labels come from the separate ``*_labels.mat`` files.
 
-    EEG was recorded with a consumer-market Emotiv EPOC Flex (Model 1.0) headset
-    with saline-based sensors and Emotiv Pro (2.5.1.227) software, at 128 Hz. The
-    published data are restricted to 13 sensorimotor channels (C5, C3, FC3, CP3,
-    C1, Cz, FCz, CPz, C2, C4, FC4, CP4, C6) and are average-referenced.
-
-    The recordings are provided epoched. Each epoch is 3.5 s long: 1 s recorded
-    before the motor-imagery task starts (a pre-task baseline) followed by 2.5 s
-    recorded during motor-imagery execution. Per-session trial counts range from
-    96 to 120, roughly balanced between the two classes. Trial labels are stored
-    in separate ``*_labels.mat`` files (a per-trial array of 1s and 2s); the
-    EEGLAB ``.set`` files carry no event structure, so the labels are taken from
-    the label files.
-
-    This loader reconstructs a continuous ``Raw`` per session by concatenating
-    the epochs with a short zero-padded gap, inserting a stim-channel event at
-    each imagery onset (value 1 = ``tap``, 2 = ``swipe``). The exposed interval
-    ends at 2.5 - 1/128 s (inclusive), excluding the padding.
+    The loader rebuilds one continuous ``Raw`` per session by concatenating the
+    epochs with a 0.5 s zero gap and a stim event at each imagery onset
+    (1 = ``tap``, 2 = ``swipe``); the interval ends at 2.5 - 1/128 s so the gap
+    is excluded.
 
     References
     ----------
@@ -236,26 +190,7 @@ class Yilmaz2024(BaseDataset):
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
-        """Download the subject's two sessions and return the local file paths.
-
-        Parameters
-        ----------
-        subject : int
-            Subject number (1-8).
-        path : None | str
-            Storage location override.
-        force_update : bool
-            Re-download even if a local copy exists.
-        update_path : bool | None
-            Unused, kept for API compatibility.
-        verbose : bool, str, int, or None
-            Verbosity level.
-
-        Returns
-        -------
-        list of str
-            Paths ``[s1.set, s1_labels.mat, s2.set, s2_labels.mat]``.
-        """
+        """Return ``[s1.set, s1_labels.mat, s2.set, s2_labels.mat]`` local paths."""
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
@@ -271,29 +206,12 @@ class Yilmaz2024(BaseDataset):
         return paths
 
     def _get_single_subject_data(self, subject):
-        """Return the data of a single subject.
-
-        Parameters
-        ----------
-        subject : int
-            Subject number (1-8).
-
-        Returns
-        -------
-        dict
-            ``{session_str: {"0": Raw}}`` with one reconstructed continuous
-            ``Raw`` per session.
-        """
+        """Return ``{session: {"0": Raw}}``, one reconstructed Raw per session."""
         files = self.data_path(subject)
-
-        sessions = {}
-        for sess_idx in range(2):
-            set_path = files[2 * sess_idx]
-            lab_path = files[2 * sess_idx + 1]
-            raw = self._reconstruct_raw(set_path, lab_path)
-            sessions[str(sess_idx)] = {"0": raw}
-
-        return sessions
+        return {
+            str(i): {"0": self._reconstruct_raw(files[2 * i], files[2 * i + 1])}
+            for i in range(2)
+        }
 
     @staticmethod
     def _reconstruct_raw(set_path, lab_path):
@@ -339,9 +257,7 @@ class Yilmaz2024(BaseDataset):
             start = i * stride
             # arr[i] is (n_samples, n_channels); transpose to (n_channels, n_samples).
             all_data[:n_ch, start : start + n_samples] = arr[i].T
-            event_sample = start + onset_offset
-            if event_sample < total_len:
-                all_data[n_ch, event_sample] = int(labels[i])
+            all_data[n_ch, start + onset_offset] = int(labels[i])
 
         ch_names = list(_CH_NAMES) + ["STI 014"]
         ch_types = ["eeg"] * n_ch + ["stim"]

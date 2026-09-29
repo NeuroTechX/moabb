@@ -1,13 +1,4 @@
-"""ZJU-MI-EEG (MI4) four-class motor imagery dataset from Zhejiang University.
-
-Wang, J., Yao, L., and Wang, Y. (2025). "Enhanced Online Continuous
-Brain-Control by Deep Learning-Based EEG Decoding." IEEE Transactions on
-Neural Systems and Rehabilitation Engineering, vol. 33, pp. 2834-2846.
-DOI: 10.1109/TNSRE.2025.3591254
-
-Data host: Hugging Face ``Jiaheng-Wang/ZJU-MI-EEG`` (MI4 subset).
-https://huggingface.co/datasets/Jiaheng-Wang/ZJU-MI-EEG
-"""
+"""ZJU-MI-EEG (MI4) four-class motor imagery dataset from Zhejiang University."""
 
 import numpy as np
 import scipy.io as sio
@@ -40,116 +31,39 @@ ZJU_MI2025_BASE_URL = (
 SFREQ = 256.0
 
 # Each stored trial spans -1 s to 4 s relative to cue onset (1280 samples).
-EPOCH_START = -1.0
+CUE_OFFSET = 256  # sample of the cue (t = 0) within each trial
 
 # 62 EEG channels in acquisition order, taken from the provided
 # "62channels_gNautilus.ced" montage file and normalised to MNE casing
 # (midline "Z" -> "z"). All 62 names resolve in the standard_1005 montage.
-CHANNELS = [
-    "Fp1",
-    "Fpz",
-    "Fp2",
-    "AF7",
-    "AF3",
-    "AF4",
-    "AF8",
-    "F7",
-    "F5",
-    "F3",
-    "F1",
-    "Fz",
-    "F2",
-    "F4",
-    "F6",
-    "F8",
-    "FT7",
-    "FC5",
-    "FC3",
-    "FC1",
-    "FCz",
-    "FC2",
-    "FC4",
-    "FC6",
-    "FT8",
-    "T7",
-    "C5",
-    "C3",
-    "C1",
-    "Cz",
-    "C2",
-    "C4",
-    "C6",
-    "T8",
-    "TP7",
-    "CP5",
-    "CP3",
-    "CP1",
-    "CPz",
-    "CP2",
-    "CP4",
-    "CP6",
-    "TP8",
-    "P7",
-    "P5",
-    "P3",
-    "P1",
-    "Pz",
-    "P2",
-    "P4",
-    "P6",
-    "P8",
-    "PO7",
-    "PO3",
-    "POz",
-    "PO4",
-    "PO8",
-    "O1",
-    "Oz",
-    "O2",
-    "F9",
-    "F10",
-]
+CHANNELS = (
+    "Fp1 Fpz Fp2 AF7 AF3 AF4 AF8 F7 F5 F3 F1 Fz F2 F4 F6 F8 FT7 FC5 FC3 FC1 "
+    "FCz FC2 FC4 FC6 FT8 T7 C5 C3 C1 Cz C2 C4 C6 T8 TP7 CP5 CP3 CP1 CPz CP2 "
+    "CP4 CP6 TP8 P7 P5 P3 P1 Pz P2 P4 P6 P8 PO7 PO3 POz PO4 PO8 O1 Oz O2 F9 F10"
+).split()
 
 # Integer label code (data-borne, stored in the ``labels`` field) -> class name.
 EVENT_ID = {"left_hand": 1, "right_hand": 2, "tongue": 3, "feet": 4}
 
 # Two runs per session: cued calibration (240 trials) then online feedback
-# (160 trials). Keys are the file basenames within each "sub-NN" folder.
-RUN_FILES = {"0calibration": "calibration", "1feedback": "feedback"}
+# (160 trials), stored as s<day>_calibration.mat / s<day>_feedback.mat.
+RUN_KEYS = ("0calibration", "1feedback")
 
 
 class ZjuMI2025(BaseDataset):
     """Four-class motor imagery dataset (ZJU-MI-EEG / MI4) [1]_.
 
-    .. admonition:: Dataset summary
-
-        =========  =======  =======  ==========  =================  ============  ===============  ===========
-        Name         #Subj    #Chan    #Classes    #Trials / class    Trials len    Sampling rate      #Sessions
-        =========  =======  =======  ==========  =================  ============  ===============  ===========
-        ZjuMI2025       15       62           4                200            4s            256 Hz            2
-        =========  =======  =======  ==========  =================  ============  ===============  ===========
-
     **Dataset description**
 
-    Electroencephalography (EEG) recordings from 15 healthy subjects performing
-    a cued four-class motor imagery task, collected at Zhejiang University and
-    distributed as the "MI4" subset of the ``ZJU-MI-EEG`` Hugging Face dataset.
+    15 healthy subjects performed cued four-class motor imagery (left hand, right
+    hand, tongue, both feet) on two days, mapped to two sessions. Each day has a
+    240-trial calibration run and a 160-trial online feedback run (``MI4`` subset
+    of the ``ZJU-MI-EEG`` Hugging Face dataset; 62 channels, 256 Hz).
 
-    Each subject took part on two separate days (mapped here to two sessions).
-    Every day comprises a calibration run of 240 trials followed by an online
-    feedback run of 160 trials (400 trials/day, 800 trials/subject). The four
-    imagined movements are left hand, right hand, tongue and both feet, and the
-    trials are balanced across classes (200 trials/class/subject).
-
-    Signals were recorded from 62 electrodes with a gtec gNautilus system at a
-    sampling rate of 256 Hz. Raw EEG was high-pass filtered above 0.1 Hz; each
-    stored trial spans -1 s to 4 s relative to cue onset (1280 samples), and the
-    motor imagery window used here ends at 4 - 1/256 s (inclusive).
-
-    The data are distributed as MATLAB ``.mat`` files (one per subject, day and
-    run) on Hugging Face. Each file holds an ``EEG_data`` array of shape
-    ``(62, 1280, n_trials)`` in microvolts and an integer ``labels`` vector
-    (1 = left hand, 2 = right hand, 3 = tongue, 4 = both feet).
+    Each ``.mat`` run stores ``EEG_data`` ``(62, 1280, n_trials)`` in microvolts
+    (-1 to 4 s around the cue) and integer ``labels``. The loader concatenates the
+    trials, marks each cue with a stim event and converts to volts; the interval
+    ends at 4 - 1/256 s.
 
     References
     ----------
@@ -244,30 +158,7 @@ class ZjuMI2025(BaseDataset):
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
-        """Return the local paths of a single subject's four ``.mat`` files.
-
-        The four files are the calibration and feedback runs of day 1 (``s1_*``)
-        and day 2 (``s2_*``), in that order.
-
-        Parameters
-        ----------
-        subject : int
-            Subject number (1-15).
-        path : None | str
-            Storage location override.
-        force_update : bool
-            Re-download even if a local copy exists.
-        update_path : bool | None
-            Unused, kept for API compatibility.
-        verbose : bool, str, int, or None
-            Verbosity level.
-
-        Returns
-        -------
-        list of str
-            The four local file paths, ordered
-            ``[s1_calibration, s1_feedback, s2_calibration, s2_feedback]``.
-        """
+        """Return ``[s1_calibration, s1_feedback, s2_calibration, s2_feedback]``."""
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
@@ -279,29 +170,12 @@ class ZjuMI2025(BaseDataset):
         return paths
 
     def _get_single_subject_data(self, subject):
-        """Return the data of a single subject.
-
-        Parameters
-        ----------
-        subject : int
-            Subject number (1-15).
-
-        Returns
-        -------
-        dict
-            ``{session_str: {run_str: Raw}}`` with two sessions (days), each
-            holding a "0calibration" and a "1feedback" run.
-        """
-        files = self.data_path(subject)
-        # data_path yields [s1_cal, s1_fb, s2_cal, s2_fb]; group into two days.
-        sessions = {}
-        for sess_idx in range(2):
-            runs = {}
-            for run_idx, run_key in enumerate(RUN_FILES):
-                file_path = files[sess_idx * 2 + run_idx]
-                runs[run_key] = self._load_raw(file_path)
-            sessions[str(sess_idx)] = runs
-        return sessions
+        """Return ``{day: {"0calibration": Raw, "1feedback": Raw}}``."""
+        files = iter(self.data_path(subject))  # [s1_cal, s1_fb, s2_cal, s2_fb]
+        return {
+            str(day): {key: self._load_raw(next(files)) for key in RUN_KEYS}
+            for day in range(2)
+        }
 
     @staticmethod
     def _load_raw(file_path):
@@ -311,10 +185,8 @@ class ZjuMI2025(BaseDataset):
         stim channel marks each trial's cue onset (t = 0) with its class code.
         """
         mat = sio.loadmat(file_path)
-        data = np.asarray(
-            mat["EEG_data"], dtype=float
-        )  # (n_channels, n_samples, n_trials)
-        labels = np.atleast_1d(np.asarray(mat["labels"]).ravel())
+        data = np.asarray(mat["EEG_data"], dtype=float)  # (chan, samples, trials)
+        labels = np.asarray(mat["labels"]).ravel()
 
         if data.ndim != 3 or data.shape[:2] != (len(CHANNELS), 1280):
             raise ValueError("Expected EEG_data shape (62, 1280, n_trials)")
@@ -325,20 +197,11 @@ class ZjuMI2025(BaseDataset):
             or not np.isin(labels, [1, 2, 3, 4]).all()
         ):
             raise ValueError("Expected one valid class label per trial")
-        # Concatenate trials along time: (n_channels, n_trials * n_samples).
+        # Concatenate trials along time and convert from microvolts to volts.
         cont = np.transpose(data, (0, 2, 1)).reshape(n_channels, n_trials * n_samples)
-        # Convert from microvolts to volts.
-        cont = cont * 1e-6
-
-        # Sample offset of the cue (t = 0) within each epoch.
-        cue_offset = int(round((0.0 - EPOCH_START) * SFREQ))
-
         stim = np.zeros((1, cont.shape[1]))
-        for trial_idx, label in enumerate(labels[:n_trials]):
-            onset = trial_idx * n_samples + cue_offset
-            stim[0, onset] = label
-
-        full = np.vstack([cont, stim])
+        stim[0, np.arange(n_trials) * n_samples + CUE_OFFSET] = labels
+        full = np.vstack([cont * 1e-6, stim])
         mne_info = create_info(
             ch_names=list(CHANNELS) + ["STI 014"],
             sfreq=SFREQ,

@@ -30,18 +30,7 @@ ORTIZ2023_URL = "https://ndownloader.figshare.com/files/37759473"
 # file names). Restricted to the EXPERIENCE (flat-ground) scenario, sorted by
 # M-code. The subject_NN folder numbering in the archive is not a stable
 # participant id (some folders hold two M-codes), so the M-code is used instead.
-SUBJECT_MCODE = {
-    1: "M05",
-    2: "M06",
-    3: "M07",
-    4: "M08",
-    5: "M09",
-    6: "M10",
-    7: "M11",
-    8: "M17",
-    9: "M20",
-    10: "M21",
-}
+SUBJECT_MCODE = dict(enumerate("M05 M06 M07 M08 M09 M10 M11 M17 M20 M21".split(), 1))
 
 # 27 EEG electrodes in the row order of ``data_EEG`` (as listed in
 # conf.acquisition.device.devices_EEG.electrodes_names_selected), normalised to
@@ -59,7 +48,6 @@ EOG_CHANNELS = ["HR", "HL", "VU", "VD"]
 # instruction codes (400, 401, 403, 405) and the baseline codes (709, 900) are
 # not decoded as classes.
 TASK_CODES = {402: "relax", 404: "motor_imagery", 406: "regressive_count"}
-MI_CODE = 404
 
 SFREQ = 200.0
 
@@ -71,50 +59,17 @@ FIRST_TASK_INDEX = 3
 class Ortiz2023(BaseDataset):
     """Motor imagery during walking with a lower-limb exoskeleton [1]_.
 
-    .. admonition:: Dataset summary
+    Able-bodied participants walked in a fully assisted H3 exoskeleton
+    (DECODED / EUROBENCH), so ``motor_imagery`` is kinesthetic imagination of the
+    gait, not its execution. Each open-loop trial is relax (402), gait imagery
+    (404), regressive count (406), relax (402); the three classes come from the
+    sample-wise ``task_EEG`` codes, so counts are unbalanced (32/16/16 per
+    session). The paper's main contrast is ``relax`` vs ``motor_imagery``.
 
-        ==========  =======  =======  ==========  =================  ============  ===============  ===========
-        Name          #Subj    #Chan    #Classes    #Trials / class    Trials len    Sampling rate    #Sessions
-        ==========  =======  =======  ==========  =================  ============  ===============  ===========
-        Ortiz2023        10       27           3              ~25.6             9s            200Hz          1-2
-        ==========  =======  =======  ==========  =================  ============  ===============  ===========
-
-    Dataset [1]_ recorded within the DECODED sub-project of the EU EUROBENCH
-    project for the cognitive assessment of motor imagery during walking with a
-    lower-limb exoskeleton. Able-bodied participants wore an H3 exoskeleton that
-    provided fully assisted walking while they performed mental tasks. Because
-    the exoskeleton produced the gait, the "motor imagery" class is the
-    kinesthetic imagination of the limb movement rather than a voluntary
-    execution of walking (the participant does not command the gait). Each task
-    trial (open-loop) follows the sequence:
-
-    - 15 s standing and relaxed (code 402, effective 10 s),
-    - 24 s walking while imagining the limb movement (code 404, effective 20 s),
-    - 22 s walking while performing a regressive-count mental task (code 406,
-      effective 20 s),
-    - 14 s standing and relaxed (code 402, effective 10 s).
-
-    Each run has two relaxation segments and one segment for each other class.
-    Counts therefore are not class-balanced (32/16/16 per session).
-
-    Three classes are exposed from the data-borne ``task_EEG`` code channel:
-    ``relax``, ``motor_imagery`` and ``regressive_count``. The canonical motor
-    imagery contrast reported in the paper is ``relax`` vs ``motor_imagery``
-    (the "Motor Imagery Index"); ``regressive_count`` supports the secondary
-    "Attention to Gait Index" (``motor_imagery`` vs ``regressive_count``).
-
-    EEG was recorded with a Brain Products actiCHamp amplifier, 27 wet
-    electrodes over fronto-central and parietal areas plus 4 EOG channels, at
-    200 Hz, referenced/grounded to the earlobes. Only online hardware filtering
-    was applied (0.1 Hz high-pass and 50 Hz notch); no artefact removal.
-
-    This loader exposes only the **EXPERIENCE** (flat-ground) scenario, which is
-    structurally consistent across participants: 10 participants, one recording
-    per participant (M05 and M11 have a second recording exposed as a second
-    session), each with 16 task trials (runs). The archive also contains a
-    **SLOPES** (inclined-surface) scenario for a partly different set of
-    participants; it uses variable-length trials, a different code table and
-    duplicated ``_sync`` copies, and is not loaded here.
+    Only the **EXPERIENCE** (flat-ground) scenario is loaded: one session per
+    recording (M05 and M11 have two) with the 16 task trials as runs; the two
+    resting baselines are skipped. The **SLOPES** scenario (variable-length
+    trials, different codes, duplicated ``_sync`` files) is not loaded.
 
     References
     ----------
@@ -222,18 +177,9 @@ class Ortiz2023(BaseDataset):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
-        path_zip = Path(
-            dl.data_dl(
-                ORTIZ2023_URL,
-                self.code,
-                path=path,
-                force_update=force_update,
-                verbose=verbose,
-            )
-        )
+        path_zip = Path(dl.data_dl(ORTIZ2023_URL, self.code, path, force_update, verbose))
         extract_dir = path_zip.parent / "MI_walking_figshare21185362"
-        marker = extract_dir / "EXPERIENCE"
-        if force_update or not marker.is_dir():
+        if force_update or not (extract_dir / "EXPERIENCE").is_dir():
             try:
                 with z.ZipFile(path_zip, "r") as zip_ref:
                     zip_ref.extractall(extract_dir)
@@ -241,16 +187,8 @@ class Ortiz2023(BaseDataset):
                 warnings.warn(
                     "Corrupted zip file detected, re-downloading...", stacklevel=2
                 )
-                path_zip.unlink(missing_ok=True)
-                path_zip = Path(
-                    dl.data_dl(
-                        ORTIZ2023_URL,
-                        self.code,
-                        path=path,
-                        force_update=True,
-                        verbose=verbose,
-                    )
-                )
+                # data_dl(force_update=True) replaces the corrupted file.
+                path_zip = dl.data_dl(ORTIZ2023_URL, self.code, path, True, verbose)
                 with z.ZipFile(path_zip, "r") as zip_ref:
                     zip_ref.extractall(extract_dir)
         return str(extract_dir)
@@ -284,16 +222,13 @@ class Ortiz2023(BaseDataset):
             raise ValueError("task_EEG must have one code per EEG sample")
         onsets, durations, descriptions = [], [], []
         for code, label in TASK_CODES.items():
-            mask = task == code
-            if not mask.any():
-                continue
-            starts = np.where(np.diff(np.concatenate(([0], mask.astype(int)))) == 1)[0]
-            ends = np.where(np.diff(np.concatenate((mask.astype(int), [0]))) == -1)[0]
-            for s, e in zip(starts, ends):
-                onsets.append(s / SFREQ)
-                if e - s + 1 < int(9 * SFREQ) + 1:
+            # +1 / -1 edges of each contiguous run of this code (end exclusive).
+            edges = np.diff(np.concatenate(([0], (task == code).astype(int), [0])))
+            for s, e in zip(np.where(edges == 1)[0], np.where(edges == -1)[0]):
+                if e - s < int(9 * SFREQ) + 1:
                     raise ValueError("Task segment does not cover the analysis interval")
-                durations.append((e - s + 1) / SFREQ)
+                onsets.append(s / SFREQ)
+                durations.append((e - s) / SFREQ)
                 descriptions.append(label)
 
         annotations = mne.Annotations(
@@ -313,9 +248,8 @@ class Ortiz2023(BaseDataset):
 
         by_date = defaultdict(list)
         for f in mat_files:
+            # The glob guarantees parts[0] == mcode and len(parts) >= 4.
             parts = f.stem.split("_")  # e.g. ["M05", "20210928", "openloop", "05"]
-            if len(parts) < 4 or parts[0] != mcode:
-                continue
             date = parts[1]
             try:
                 idx = int(parts[3])
@@ -334,8 +268,8 @@ class Ortiz2023(BaseDataset):
                 raise ValueError(f"Duplicate task recording for {mcode} on {date}")
             if set(indices) != set(range(3, 19)):
                 raise ValueError(f"Expected task recordings 3..18 for {mcode} on {date}")
-            runs = {}
-            for run_idx, (_, mat_file) in enumerate(sorted(by_date[date])):
-                runs[str(run_idx)] = self._make_raw(mat_file)
-            sessions[str(sess_idx)] = runs
+            sessions[str(sess_idx)] = {
+                str(run_idx): self._make_raw(mat_file)
+                for run_idx, (_, mat_file) in enumerate(sorted(by_date[date]))
+            }
         return sessions

@@ -14,16 +14,12 @@ from moabb.datasets import Jia2019, Ortiz2023, Yilmaz2024, ZjuMI2025
 from moabb.datasets.preprocessing import SetRawAnnotations
 
 
-@pytest.mark.parametrize("cls", [Jia2019, Ortiz2023, Yilmaz2024, ZjuMI2025])
-def test_invalid_subject(cls):
-    with pytest.raises(ValueError):
-        cls().data_path(999)
-
-
 @pytest.mark.parametrize(
     "cls,count", [(Jia2019, 2), (Ortiz2023, 1), (Yilmaz2024, 4), (ZjuMI2025, 4)]
 )
-def test_download_flags(cls, count, monkeypatch, tmp_path):
+def test_invalid_subject_and_download_flags(cls, count, monkeypatch, tmp_path):
+    with pytest.raises(ValueError, match="Invalid subject"):
+        cls().data_path(999)
     mod = sys.modules[cls.__module__]
     calls = []
 
@@ -102,12 +98,8 @@ def test_ortiz_codes_units(monkeypatch):
         "moabb.datasets.ortiz2023.loadmat", lambda *a, **k: {"session": mat}
     )
     raw = Ortiz2023()._make_raw("synthetic.mat")
-    assert list(raw.annotations.description) == [
-        "relax",
-        "motor_imagery",
-        "regressive_count",
-        "relax",
-    ]
+    labels = "relax motor_imagery regressive_count relax".split()
+    assert list(raw.annotations.description) == labels
     np.testing.assert_allclose(raw.get_data(), 6e-6)
     assert raw.get_channel_types().count("eog") == 4
 

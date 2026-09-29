@@ -66,42 +66,18 @@ _BLOCK_KEYS = ("DATA1", "DATA2")
 class Jia2019(BaseDataset):
     """Motor-imagery EEG dataset for stroke patients (Jia 2019) [1]_.
 
-    .. admonition:: Dataset summary
-
-        =======  =======  =======  ==========  =================  ============  ===============  ===========
-        Name       #Subj    #Chan    #Classes    #Trials / class    Trials len    Sampling rate      #Sessions
-        =======  =======  =======  ==========  =================  ============  ===============  ===========
-        Jia2019       15       63           2                 40         6.8 s           512 Hz            1
-        =======  =======  =======  ==========  =================  ============  ===============  ===========
-
     **Dataset description**
 
-    EEG recorded from 15 stroke patients performing cue-based left-hand versus
-    right-hand motor imagery. For each patient one hand is paretic (affected) and
-    the other is unaffected; both left- and right-hand imagination were acquired.
-    Signals were recorded with 63 channels under the international 10-10 system at
-    512 Hz (as reported in [2]_, which decodes this dataset).
+    15 stroke patients performed cue-based left- vs right-hand motor imagery
+    (63 channels, 512 Hz, as reported in [2]_). The class is given by the file
+    (``exp1-S<n>-left.mat`` / ``-right.mat``); each file holds two blocks
+    (``DATA1``, ``DATA2``) of 20 epoched trials. The loader exposes one session
+    with one run per block, concatenating that block's left- and right-hand trials
+    and annotating every trial onset; amplitudes are converted from µV to V.
 
-    Each subject contributes two MATLAB files, ``exp1-S<n>-left.mat`` and
-    ``exp1-S<n>-right.mat``, corresponding to left-hand and right-hand motor
-    imagery. Every file holds two variables, ``DATA1`` and ``DATA2``, each an
-    array of 20 epoched trials of shape ``(63 channels, n_samples)``. The movement
-    class is therefore data-borne: it is fixed by which file a trial comes from
-    (``*-left.mat`` -> left hand, ``*-right.mat`` -> right hand), giving 40 trials
-    per class per subject (80 trials total).
-
-    This loader exposes a single session with two runs, one per acquisition block
-    (``DATA1`` -> run ``"0"``, ``DATA2`` -> run ``"1"``). Each run concatenates the
-    20 left-hand trials of that block with the 20 right-hand trials of the same
-    block into a continuous :class:`mne.io.RawArray`, and an MNE annotation marks
-    the onset of every trial with its class label (``left_hand`` / ``right_hand``).
-    Amplitudes are converted from microvolts to volts.
-
-    The stored epoch length varies across subjects (3500 samples for some,
-    4000 for others; roughly 6.8 to 7.8 s at 512 Hz); the default analysis
-    interval ``[0, 6.8]`` s stays within the shortest epoch. The distributed
-    files contain no channel labels, so the 63 EEG channels are named generically
-    (``Ch1`` .. ``Ch63``); no montage positions are attached.
+    Epochs are 3500 or 4000 samples depending on the subject; the ``[0, 6.8]`` s
+    interval fits the shortest. The files carry no channel labels, so channels
+    are named ``Ch1`` .. ``Ch63`` and no montage is attached.
 
     References
     ----------
@@ -201,26 +177,7 @@ class Jia2019(BaseDataset):
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
-        """Return the local paths of a subject's left- and right-hand files.
-
-        Parameters
-        ----------
-        subject : int
-            Subject number (1-15).
-        path : None | str
-            Storage location override.
-        force_update : bool
-            Re-download even if a local copy exists.
-        update_path : bool | None
-            Unused, kept for API compatibility.
-        verbose : bool, str, int, or None
-            Verbosity level.
-
-        Returns
-        -------
-        list of str
-            ``[left_hand_file, right_hand_file]`` local paths.
-        """
+        """Return ``[left_hand_file, right_hand_file]`` local paths."""
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
@@ -251,26 +208,13 @@ class Jia2019(BaseDataset):
 
     def _get_single_subject_data(self, subject):
         """Return the data of a single subject as ``{"0": {run: Raw}}``."""
-        left_path, right_path = self.data_path(subject)
-        left = sio.loadmat(left_path)
-        right = sio.loadmat(right_path)
-
+        mats = [sio.loadmat(p) for p in self.data_path(subject)]  # [left, right]
         runs = {}
         for run_idx, key in enumerate(_BLOCK_KEYS):
-            left_trials = self._trials(left[key])
-            right_trials = self._trials(right[key])
-            runs[str(run_idx)] = self._build_raw(left_trials, right_trials)
+            # Each block is a (1, n_trials) MATLAB cell array of (63, n_samples).
+            left, right = ([np.asarray(t, dtype=float) for t in m[key][0]] for m in mats)
+            runs[str(run_idx)] = self._build_raw(left, right)
         return {"0": runs}
-
-    @staticmethod
-    def _trials(block):
-        """Return the list of ``(n_channels, n_samples)`` trials in a block.
-
-        ``block`` is the ``(1, n_trials)`` MATLAB cell array stored under
-        ``DATA1`` / ``DATA2``.
-        """
-        block = np.asarray(block)
-        return [np.asarray(block[0, i], dtype=float) for i in range(block.shape[1])]
 
     @staticmethod
     def _build_raw(left_trials, right_trials):
@@ -292,22 +236,18 @@ class Jia2019(BaseDataset):
             for t, _ in labelled
         ):
             raise ValueError("Expected 63-channel trials covering the analysis interval")
-        n_channels = labelled[0][0].shape[0]
 
         cont = np.concatenate([t for t, _ in labelled], axis=1) * 1e-6
-        ch_names = [f"Ch{i + 1}" for i in range(n_channels)]
+        ch_names = [f"Ch{i + 1}" for i in range(JIA2019_N_CHANNELS)]
         info = create_info(ch_names=ch_names, sfreq=JIA2019_SFREQ, ch_types="eeg")
         raw = RawArray(data=cont, info=info, verbose=False)
 
-        onsets = []
-        descriptions = []
-        pos = 0
-        for trial, label in labelled:
-            onsets.append(pos / JIA2019_SFREQ)
-            descriptions.append(label)
-            pos += trial.shape[1]
+        lengths = [t.shape[1] for t, _ in labelled]
+        onsets = list(np.cumsum([0, *lengths[:-1]]) / JIA2019_SFREQ)
         raw.set_annotations(
-            Annotations(onset=onsets, duration=0.0, description=descriptions)
+            Annotations(
+                onset=onsets, duration=0.0, description=[lab for _, lab in labelled]
+            )
         )
         raw.set_annotations(
             raw.annotations
