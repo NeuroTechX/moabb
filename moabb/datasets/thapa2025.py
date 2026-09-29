@@ -25,7 +25,6 @@ from moabb.datasets.metadata.schema import (
 )
 
 from .base import BaseDataset
-from .utils import read_raw_brainvision_repaired, resolve_montage_name
 
 
 # Single 13.6 GB BIDS archive on Figshare (article 28632599, file id 57518986).
@@ -342,7 +341,16 @@ class Thapa2025(BaseDataset):
         for bids_path in bids_paths:
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
-                raw = read_raw_brainvision_repaired(bids_path.fpath, strict=True)
+                # Some headers still name the pre-BIDS DataFile/MarkerFile.
+                raw = mne.io.read_raw_brainvision(
+                    bids_path.fpath,
+                    preload=True,
+                    verbose=False,
+                    overrides={
+                        "data_fname": bids_path.fpath.with_suffix(".eeg").name,
+                        "marker_fname": bids_path.fpath.with_suffix(".vmrk").name,
+                    },
+                )
 
             # Type the auxiliary channels and (by default) keep EEG only.
             types = {ch: "eog" for ch in _EOG_CHANNELS if ch in raw.ch_names}
@@ -354,9 +362,7 @@ class Thapa2025(BaseDataset):
 
             if not self.return_all_modalities:
                 raw.pick("eeg")
-            raw.set_montage(
-                resolve_montage_name("colin27_1020"), on_missing="ignore", verbose=False
-            )
+            raw.set_montage("colin27_1020", on_missing="ignore", verbose=False)
 
             runs = sessions.setdefault(ses_key[bids_path.session], {})
             runs[str(len(runs))] = raw

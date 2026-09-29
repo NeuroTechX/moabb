@@ -4,6 +4,7 @@ import csv
 import logging
 import re
 from collections import Counter
+from operator import itemgetter
 from pathlib import Path
 
 import mne
@@ -52,6 +53,10 @@ _EVENTS = {
 }
 _N_MI_EVENTS_PER_RUN = 40
 _N_MI_EVENTS_PER_CLASS = 10
+
+
+def _format_counts(counts, codes):
+    return ", ".join(f"{code}:{counts.get(code, 0)}" for code in sorted(codes))
 
 
 class MIND2026(BaseDataset):
@@ -328,7 +333,7 @@ class MIND2026(BaseDataset):
                 "the BrainVision markers."
             )
 
-        coded_events.sort(key=lambda event: event[0])
+        coded_events.sort(key=itemgetter(0))
         mi_events = MIND2026._validated_mi_events(
             coded_events, source=source, recording=Path(vhdr).name
         )
@@ -348,11 +353,7 @@ class MIND2026(BaseDataset):
 
         if len(mi_events) == _N_MI_EVENTS_PER_RUN and counts == expected_counts:
             return mi_events
-
-        def fmt(c):
-            return ", ".join(f"{code}:{c.get(code, 0)}" for code in sorted(mi_codes))
-
-        counts_text = fmt(counts)
+        counts_text = _format_counts(counts, mi_codes)
         context = f"{recording} from {source}"
         if len(mi_events) <= _N_MI_EVENTS_PER_RUN:
             raise RuntimeError(
@@ -383,7 +384,7 @@ class MIND2026(BaseDataset):
                 f"{context} are not one complete run; expected "
                 f"{_N_MI_EVENTS_PER_RUN} MI events "
                 f"({_N_MI_EVENTS_PER_CLASS} per class), found {len(suffix)} "
-                f"({fmt(suffix_counts)})."
+                f"({_format_counts(suffix_counts, mi_codes)})."
             )
 
         halves = [code in {4, 5} for _, code in suffix[:20]]

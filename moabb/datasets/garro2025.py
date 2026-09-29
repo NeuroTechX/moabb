@@ -21,8 +21,6 @@ from moabb.datasets.metadata.schema import (
     Tags,
 )
 
-from .utils import resolve_montage_name
-
 
 # Figshare article hosting the BIDS BrainVision dataset.
 FIGSHARE_ARTICLE_ID = "27301629"
@@ -246,23 +244,15 @@ class Garro2025(BaseDataset):
             Path(dl.get_dataset_path(self.code, path)) / f"MNE-{self.code.lower()}-data"
         )
         root.mkdir(parents=True, exist_ok=True)
-
-        def local_or_download(file_id):
-            cached = root / "files" / str(file_id)
-            if cached.is_file() and not force_update:
-                return cached
-            url = FIGSHARE_FILE_URL.format(file_id=file_id)
-            return Path(
-                dl.data_dl(
-                    url, self.code, path=path, force_update=force_update, verbose=verbose
-                )
-            )
+        # data_dl caches each Figshare file under <root>/files/<file_id>.
+        kwargs = {"path": path, "force_update": force_update, "verbose": verbose}
 
         # Ensure the top-level BIDS metadata files are present.
         for fname in _ROOT_FILES:
             target = root / fname
             if force_update or not target.exists():
-                downloaded = local_or_download(_ROOT_FILE_IDS[fname])
+                url = FIGSHARE_FILE_URL.format(file_id=_ROOT_FILE_IDS[fname])
+                downloaded = Path(dl.data_dl(url, self.code, **kwargs))
                 target.write_bytes(downloaded.read_bytes())
 
         # Download and extract this subject's zip if not already extracted.
@@ -272,7 +262,8 @@ class Garro2025(BaseDataset):
                 file_id = _SUBJECT_FILE_IDS[subject]
             except KeyError:
                 raise ValueError(f"No data released for subject {subject}") from None
-            zip_path = local_or_download(file_id)
+            url = FIGSHARE_FILE_URL.format(file_id=file_id)
+            zip_path = dl.data_dl(url, self.code, **kwargs)
             with zipfile.ZipFile(zip_path, "r") as zf:
                 zf.extractall(root)
 
@@ -307,7 +298,7 @@ class Garro2025(BaseDataset):
     def _get_single_subject_data(self, subject):
         """Return the data of a single subject as {session: {run: raw}}."""
         bids_paths = self.data_path(subject)
-        montage = make_standard_montage(resolve_montage_name("colin27_1005"))
+        montage = make_standard_montage("colin27_1005")
 
         runs = {}
         for bids_path in bids_paths:

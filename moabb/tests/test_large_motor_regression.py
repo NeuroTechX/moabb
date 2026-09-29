@@ -1,6 +1,7 @@
 """Offline transport and scientific contracts for the large-recording batch."""
 
 import zipfile
+from unittest.mock import Mock
 
 import mne
 import numpy as np
@@ -33,19 +34,16 @@ def test_mind_transport_flags_and_cached_subject(tmp_path, monkeypatch):
     with zipfile.ZipFile(archive, "w") as zf:
         zf.writestr(str(header.relative_to(root)), "updated")
         zf.writestr("MIND_BIDS/sub-01/nirs/ignored.txt", "not EEG")
-    calls = []
-
-    def transport(url, sign, **kwargs):
-        calls.append(kwargs)
-        return archive
-
-    monkeypatch.setattr(mind2026.dl, "get_dataset_path", lambda *args: tmp_path)
-    monkeypatch.setattr(mind2026.dl, "data_dl", transport)
+    data_dl = Mock(return_value=archive)
+    monkeypatch.setattr(mind2026.dl, "get_dataset_path", Mock(return_value=tmp_path))
+    monkeypatch.setattr(mind2026.dl, "data_dl", data_dl)
     dataset = MIND2026()
     dataset.data_path(1, path=str(tmp_path), verbose=False)
-    assert calls == []
+    data_dl.assert_not_called()
     dataset.data_path(1, path=str(tmp_path), force_update=True, verbose=False)
-    assert calls == [{"path": str(tmp_path), "force_update": True, "verbose": False}]
+    assert [c.kwargs for c in data_dl.call_args_list] == [
+        {"path": str(tmp_path), "force_update": True, "verbose": False}
+    ]
     assert header.read_text() == "updated"
     assert not (root / "MIND_BIDS/sub-01/nirs").exists()
 
@@ -60,24 +58,27 @@ def test_thapa_transport_and_missing_sessions(tmp_path, monkeypatch):
                 f"sub-{subject:02}_ses-{session:02}_task-reachingandgrasping_run-01_eeg.vhdr",
                 "synthetic header",
             )
-    calls = []
-
-    def transport(url, sign, **kwargs):
-        calls.append(kwargs)
-        return archive
-
-    monkeypatch.setattr(thapa2025.dl, "get_dataset_path", lambda *args: tmp_path)
-    monkeypatch.setattr(thapa2025.dl, "data_dl", transport)
+    data_dl = Mock(return_value=archive)
+    monkeypatch.setattr(thapa2025.dl, "get_dataset_path", Mock(return_value=tmp_path))
+    monkeypatch.setattr(thapa2025.dl, "data_dl", data_dl)
     dataset = Thapa2025()
     paths = dataset.data_path(1, path=str(tmp_path), verbose=False)
     assert len(paths) == 1
     assert paths[0].session == "01"
-    assert calls == [{"path": str(tmp_path), "force_update": False, "verbose": False}]
+    assert data_dl.call_args.kwargs == {
+        "path": str(tmp_path),
+        "force_update": False,
+        "verbose": False,
+    }
     dataset.data_path(1, path=str(tmp_path), verbose=False)
-    assert len(calls) == 1
+    assert data_dl.call_count == 1
     dataset.data_path(1, path=str(tmp_path), force_update=True, verbose=False)
-    assert len(calls) == 2
-    assert calls[-1] == {"path": str(tmp_path), "force_update": True, "verbose": False}
+    assert data_dl.call_count == 2
+    assert data_dl.call_args.kwargs == {
+        "path": str(tmp_path),
+        "force_update": True,
+        "verbose": False,
+    }
 
 
 def test_garro_transport_and_subject_local_tasks(tmp_path, monkeypatch):
@@ -86,20 +87,17 @@ def test_garro_transport_and_subject_local_tasks(tmp_path, monkeypatch):
         zf.writestr("sub-01/eeg/sub-01_task-free_eeg.vhdr", "header")
     metadata = tmp_path / "metadata"
     metadata.write_text("{}")
-    calls = []
-
-    def transport(url, sign, **kwargs):
-        calls.append(kwargs)
-        return archive if url.endswith("49987455") else metadata
-
-    monkeypatch.setattr(garro2025.dl, "get_dataset_path", lambda *args: tmp_path)
-    monkeypatch.setattr(garro2025.dl, "data_dl", transport)
+    # Three top-level BIDS metadata files, then the subject archive.
+    data_dl = Mock(side_effect=[metadata] * 3 + [archive])
+    monkeypatch.setattr(garro2025.dl, "get_dataset_path", Mock(return_value=tmp_path))
+    monkeypatch.setattr(garro2025.dl, "data_dl", data_dl)
     paths = Garro2025().data_path(1, path=str(tmp_path), force_update=True, verbose=False)
     assert [p.task for p in paths] == ["free"]
-    assert len(calls) == 4
+    assert data_dl.call_count == 4
+    assert data_dl.call_args.args[0].endswith("49987455")
     assert all(
-        c == {"path": str(tmp_path), "force_update": True, "verbose": False}
-        for c in calls
+        c.kwargs == {"path": str(tmp_path), "force_update": True, "verbose": False}
+        for c in data_dl.call_args_list
     )
 
 
@@ -116,8 +114,8 @@ def test_moving_units_first_last_and_modality(monkeypatch, execution, triggers):
         mne.Annotations([0, 10, 20, 30], 0, [f"Trigger#{t}" for t in triggers])
     )
     dataset = MOVING2024(execution=execution)
-    monkeypatch.setattr(dataset, "data_path", lambda subject: ["synthetic.edf"])
-    monkeypatch.setattr(moving2024.mne.io, "read_raw_edf", lambda *a, **kw: raw)
+    monkeypatch.setattr(dataset, "data_path", Mock(return_value=["synthetic.edf"]))
+    monkeypatch.setattr(moving2024.mne.io, "read_raw_edf", Mock(return_value=raw))
     loaded = dataset._get_single_subject_data(1)["0"]["0"]
     np.testing.assert_allclose(loaded.get_data(), 2e-6)
     assert loaded.get_channel_types() == ["eeg", "misc", "misc", "misc"]
@@ -155,8 +153,8 @@ def test_mind_keeps_reader_units_and_bad_channels(tmp_path, monkeypatch):
     )
     raw.info["bads"] = ["Cz"]
     dataset = MIND2026()
-    monkeypatch.setattr(dataset, "_subject_vhdrs", lambda subject: [header])
-    monkeypatch.setattr(mind2026.mne.io, "read_raw_brainvision", lambda *a, **kw: raw)
+    monkeypatch.setattr(dataset, "_subject_vhdrs", Mock(return_value=[header]))
+    monkeypatch.setattr(mind2026.mne.io, "read_raw_brainvision", Mock(return_value=raw))
     loaded = dataset._get_single_subject_data(1)["0"]["0"]
     np.testing.assert_allclose(loaded.get_data(), 2e-6)
     assert loaded.info["bads"] == ["Cz"]
