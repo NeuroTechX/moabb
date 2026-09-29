@@ -293,7 +293,7 @@ class HefmiIch2025(BaseDataset):
             ch_names,
             fs,
             event_ids,
-            "standard_1005",
+            "colin27_1005",
             buffer_samples=int(0.5 * fs),
             onset_sample=int(12 * fs),
         )

@@ -25,6 +25,8 @@ from moabb.datasets.metadata.schema import (
 from moabb.datasets.utils import stim_channels_with_selected_ids
 from moabb.utils import _handle_deprecated_kwargs
 
+from .utils import resolve_montage_name
+
 
 # New freidok URL - the old fedora URLs no longer work
 SPOT_PILOT_P300_URL = "https://freidok.uni-freiburg.de/dnb/download/154576"
@@ -337,7 +339,7 @@ class Sosulski2019(BaseDataset):
         raw = mne.io.read_raw_brainvision(
             file_path, misc=non_scalp_channels, preload=True
         )
-        raw.set_montage("standard_1020")
+        raw.set_montage(resolve_montage_name("colin27_1020"))
         if self.reject_non_iid:
             raw.set_annotations(raw.annotations[7:85])  # non-iid rejection
         raw.annotations.rename(self.description_map)
