@@ -452,8 +452,10 @@ class BNCI2015_001(MNEBNCI):
     **Dataset Description**
 
     This dataset contains EEG data from 12 subjects performing two-class motor
-    imagery tasks (right hand vs feet). Each subject participated in multiple
-    sessions, with some subjects having three sessions.
+    imagery tasks (right hand vs feet). Each subject participated in two
+    sessions (``A`` and ``B``); subjects 8-11 have a third session (``C``).
+    ``sessions_per_subject`` therefore reports the common number of sessions
+    (2), and the loader returns three sessions for subjects 8-11.
 
     **Participants**
 
@@ -594,7 +596,7 @@ class BNCI2015_001(MNEBNCI):
             trials_context="per_session",
             n_trials_per_class={"right_hand": 100, "feet": 100},
         ),
-        sessions_per_subject=3,
+        sessions_per_subject=2,
         runs_per_session=1,
         data_processed=True,
         file_format="gdf",
