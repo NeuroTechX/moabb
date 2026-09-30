@@ -190,7 +190,7 @@ class Wang2016(BaseDataset):
             sensor_type=None,
         ),
         participants=ParticipantMetadata(
-            n_subjects=35,
+            n_subjects=34,
             health_status="healthy",
             gender={"female": 17, "male": 18},
             age_mean=22.0,

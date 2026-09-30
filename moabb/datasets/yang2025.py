@@ -112,7 +112,7 @@ class Yang2025(BaseDataset):
             line_freq=50.0,
         ),
         participants=ParticipantMetadata(
-            n_subjects=62,
+            n_subjects=51,
             health_status="healthy",
             gender={"female": 18, "male": 44},
             age_min=17.0,
