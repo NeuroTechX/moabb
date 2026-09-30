@@ -75,14 +75,21 @@ class MartinezPeon2024(BaseDataset):
     cue onsets follow the fixed acquisition protocol. The published fourth
     "basal" (rest) class is not separately marked and is not exposed. Stored
     amplitudes are raw microvolts (large DC offset) converted to volts; the
-    gyroscope and time columns are discarded.
+    gyroscope and time columns are discarded. The article [2]_ reports the
+    Emotiv EPOC "with P3 and P4 as reference locations", a 60 Hz notch in
+    its processing, ten participants (seven males, aged 27.8 +- 2.78, range
+    24-32 years) and a single session.
 
     References
     ----------
 
     .. [1] Martinez-Peon, D. (2024). EEG Kinesthetic motor imagery levels.
        figshare. Dataset. DOI: https://doi.org/10.6084/m9.figshare.25773342
-       Associated article: https://doi.org/10.1088/1741-2552/ad5f27
+
+    .. [2] Martinez-Peon, D., Garcia-Hernandez, N. V., Benavides-Bravo, F. G.,
+       & Parra-Vega, V. (2024). Characterization and classification of
+       kinesthetic motor imagery levels. Journal of Neural Engineering, 21(4),
+       046024. DOI: https://doi.org/10.1088/1741-2552/ad5f27
 
     Notes
     -----
@@ -99,11 +106,19 @@ class MartinezPeon2024(BaseDataset):
             hardware="Emotiv EPOC",
             sensor_type="wet",
             electrode_type="saline",
+            reference="P3 and P4 (Emotiv EPOC reference locations)",
             line_freq=60.0,
             sensors=list(MARTINEZPEON2024_CHANNELS),
         ),
         participants=ParticipantMetadata(
-            n_subjects=10, health_status="healthy", species="homo sapiens"
+            n_subjects=10,
+            health_status="healthy",
+            age_mean=27.8,
+            age_std=2.78,
+            age_min=24.0,
+            age_max=32.0,
+            gender={"male": 7, "female": 3},
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             paradigm="imagery",
@@ -131,6 +146,10 @@ class MartinezPeon2024(BaseDataset):
                 "14 channels, 128 Hz."
             ),
             investigators=["Dulce Martinez-Peon"],
+            institution=(
+                "National Technological Institute of Mexico (TecNM) - IT Nuevo "
+                "Leon; Cinvestav Saltillo"
+            ),
             country="MX",
             data_url="https://doi.org/10.6084/m9.figshare.25773342",
             associated_paper_doi="10.1088/1741-2552/ad5f27",
