@@ -54,6 +54,9 @@ Motor Imagery Datasets
     :template: class.rst
 
     AlexMI
+    Pan2023
+    Pan2025
+    PoloHortiguela2025
     BNCI2003_004
     BNCI2014_001
     BNCI2014_002
