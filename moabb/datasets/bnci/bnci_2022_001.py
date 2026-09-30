@@ -583,9 +583,9 @@ class BNCI2022_001(BNCIBaseDataset):
             license="CC-BY-4.0",
             repository="BNCI Horizon",
         ),
-        sessions_per_subject=3,
+        sessions_per_subject=1,
         runs_per_session=1,
-        sessions=["offline", "online_session_2", "online_session_3"],
+        sessions=["0"],
         data_processed=True,
         file_format="gdf",
         tags=Tags(
