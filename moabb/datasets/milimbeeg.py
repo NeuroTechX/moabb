@@ -56,12 +56,20 @@ class MILimbEEG(BaseDataset):
 
     **Dataset description**
 
-    Over 8,680 four-second EEG recordings from 60 healthy volunteers, acquired
-    with a 16-channel OpenBCI Cyton+Daisy (dry electrodes, neutral-ear
-    reference) at 125 Hz, hardware band-pass filtered 5-50 Hz with a 60 Hz
-    notch. In each of one to four repetitions, participants first executed
+    Over 8,680 four-second EEG recordings from 60 adult volunteers of
+    Ecuadorian nationality (average age 36 years; 31 females, 29 males; three
+    left-handed), recruited among ESPOL colleagues and patients of a
+    neurosurgeon at the Hospital Luis Vernaza in Guayaquil, Ecuador. The cohort
+    is not uniformly healthy: two participants have amputations (both upper
+    limbs; right lower limb below the knee), one has hydrocephalus after a
+    ventricular infarct and eighteen are post-COVID-19. EEG was acquired
+    with a 16-channel OpenBCI Cyton+Daisy (dry electrodes, monopolar against a
+    neutral electrode on both ear lobes) at 125 Hz, hardware band-pass filtered
+    5-50 Hz with a 60 Hz notch. In each repetition (one for most subjects;
+    only one subject performed up to four), participants first executed
     (``M``) and then imagined (``I``) hand closing and foot dorsal/plantar
-    flexion, plus a baseline-eyes-open and rest trials. This loader exposes the
+    flexion, each task presented randomly up to five times per run, plus a
+    baseline-eyes-open and rest trials. This loader exposes the
     **motor-imagery** files only, one session per repetition: the per-trial
     CSVs (microvolts, converted to volts) are concatenated into a continuous
     recording with a cue annotation at every trial onset and a non-rejecting
@@ -108,7 +116,17 @@ class MILimbEEG(BaseDataset):
             auxiliary_channels=AuxiliaryChannelsMetadata(has_eog=False, has_emg=False),
         ),
         participants=ParticipantMetadata(
-            n_subjects=60, health_status="healthy", species="homo sapiens"
+            n_subjects=60,
+            health_status="mixed",
+            clinical_population=(
+                "mostly healthy; 2 amputees (both upper limbs; right lower limb "
+                "below the knee), 1 hydrocephalus after ventricular infarct, "
+                "18 post-COVID-19"
+            ),
+            gender={"female": 31, "male": 29},
+            age_mean=36.0,
+            handedness={"right": 57, "left": 3},
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             paradigm="imagery",
@@ -160,7 +178,7 @@ class MILimbEEG(BaseDataset):
         ),
         sessions_per_subject=1,
         runs_per_session=1,
-        tags=Tags(pathology=["healthy"], modality=["Motor"], type=["Motor Imagery"]),
+        tags=Tags(pathology=["mixed"], modality=["Motor"], type=["Motor Imagery"]),
         preprocessing=PreprocessingMetadata(
             data_state="raw",
             preprocessing_applied=True,
