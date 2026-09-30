@@ -110,17 +110,24 @@ class Pan2023(_PanDataverse):
 
     EEG from 14 healthy subjects (five females, two left-handed, aged 22-25)
     performing cued left- vs right-hand motor imagery on two separate days (D1,
-    D2 -> sessions ``"0"``, ``"1"``), 120 trials per session (the deposit
-    description gives no per-class breakdown; the 60/60 split assumes balanced
-    classes). EEG was recorded with a Neuroscan SynAmps2 amplifier and 28 scalp
-    electrodes at 250 Hz with a 0.01-200 Hz band-pass filter. The deposit stores
-    epochs from -3 s to +4 s around the cue (2 s rest, 1 s preparation, 4 s
-    imagery) as MATLAB v7.3 ``.mat`` files; the loader concatenates them,
-    converts microvolts to volts, places each class event at the cue and marks
+    D2 -> sessions ``"0"``, ``"1"``; at most 100 h apart except for subject 9)
+    [2]_. Each session consisted of four blocks of 30 trials (15 left- and 15
+    right-hand, random order) separated by 5 min breaks, i.e. 120 trials and
+    60 trials per class per session; the released session files carry no block
+    boundaries, so MOABB exposes one run per session. Each 7 s trial had a 1 s
+    'Ready' preparation period (with a 0.25 s beep), a 4 s task period during
+    which a left- or right-handed rowing-game animation with sound was shown,
+    and a 2 s rest period. EEG was recorded with a Neuroscan SynAmps2 amplifier
+    and 28 scalp electrodes, nose-tip reference and forehead ground, at 1000 Hz
+    with a 0.01-200 Hz band-pass and a 50 Hz notch filter; the deposit releases
+    the signals downsampled to 250 Hz. The deposit stores epochs from -3 s to
+    +4 s around the task onset (2 s rest, 1 s preparation, 4 s imagery) as
+    MATLAB v7.3 ``.mat`` files; the loader concatenates them, converts
+    microvolts to volts, places each class event at the task onset and marks
     every trial join with a non-rejecting ``EDGE boundary`` annotation. Distinct
     from :class:`Pan2025` (doi:10.7910/DVN/GH74ZG, 10 subjects, ~180 trials per
-    session). The Dataverse deposit is registered as a supplement to [2]_ (closed
-    access), so acquisition details here come from the deposit description.
+    session). The Dataverse deposit is registered as a supplement to [2]_, which
+    names it "Pan2023".
 
     References
     ----------
@@ -147,10 +154,10 @@ class Pan2023(_PanDataverse):
             channel_types={"eeg": 28},
             montage="10-10",
             hardware="Neuroscan SynAmps2",
-            reference=None,
-            ground=None,
+            reference="nose",
+            ground="forehead",
             sensors=PAN2023_CHANNELS,
-            filters={"bandpass": [0.01, 200.0]},
+            filters={"bandpass": [0.01, 200.0], "notch": 50.0},
             line_freq=50.0,
         ),
         participants=ParticipantMetadata(
@@ -168,11 +175,15 @@ class Pan2023(_PanDataverse):
             class_labels=["left_hand", "right_hand"],
             trials_per_class={"left_hand": 60, "right_hand": 60},
             trial_duration=4.0,
-            study_design="Cued left- vs right-hand motor imagery. Each of 120 trials "
-            "per session has a 2 s rest, a 1 s 'Ready' preparation, then a 4 s motor "
-            "imagery task period.",
+            study_design="Cued left- vs right-hand motor imagery on two separate days. "
+            "Each session has four blocks of 30 trials (15 left, 15 right, random "
+            "order) with 5 min breaks; each 7 s trial has a 1 s 'Ready' preparation "
+            "(0.25 s beep), a 4 s task period showing a left- or right-handed rowing "
+            "game animation with sound, then a 2 s rest. Released as one file per "
+            "session without block boundaries.",
             feedback_type="none",
-            stimulus_type="cue",
+            stimulus_type="visual",
+            stimulus_modalities=["visual", "auditory"],
             synchronicity="cue-based",
             mode="offline",
             events={"left_hand": 1, "right_hand": 2},
@@ -181,7 +192,15 @@ class Pan2023(_PanDataverse):
             doi="10.7910/DVN/251NOW",
             description="Cross-session motor imagery EEG dataset from 14 subjects "
             "performing cued left- vs right-hand motor imagery across two sessions.",
-            investigators=["Lincong Pan"],
+            investigators=[
+                "Lincong Pan",
+                "Kun Wang",
+                "Lichao Xu",
+                "Xinwei Sun",
+                "Weibo Yi",
+                "Minpeng Xu",
+                "Dong Ming",
+            ],
             institution="Tianjin University",
             institution_department=(
                 "School of Precision Instruments and Optoelectronics Engineering"
@@ -192,6 +211,16 @@ class Pan2023(_PanDataverse):
             publication_year=2023,
             license="CC0-1.0",
             repository="Harvard Dataverse",
+            funding=[
+                "STI 2030-Major Projects 2022ZD0208900",
+                "National Natural Science Foundation of China 62122059",
+                "National Natural Science Foundation of China 62206198",
+                "National Natural Science Foundation of China 81925020",
+                "National Natural Science Foundation of China 62006014",
+                "Introduce Innovative Teams of 2021 'New High School 20 Items' "
+                "Project 2021GXRC071",
+            ],
+            ethics_approval=["Ethics committee of Tianjin University (TJUE-2021-062)"],
             keywords=[
                 "motor imagery",
                 "cross-session",
@@ -227,6 +256,7 @@ class Pan2023(_PanDataverse):
             # h5py returns MATLAB's (n_channels, n_samples, n_trials) transposed.
             data = np.asarray(f["data"], dtype=float).transpose(2, 0, 1)
             labels = np.asarray(f["label"]).ravel().astype(int)
-        # Each stored epoch starts 3 s before the motor-imagery cue.
+        # Each stored epoch starts 3 s before the task onset (2 s rest + 1 s
+        # preparation); the authors' own loader uses interval [3, 7] of the 0-7 s trial.
         cue_offset = int(round(3.0 * sfreq))
         return _trials_to_raw(data, labels, PAN2023_CHANNELS, sfreq, cue_offset)
