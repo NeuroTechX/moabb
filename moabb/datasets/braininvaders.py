@@ -919,6 +919,11 @@ class BI2014a(BaseDataset):
     at GIPSA-lab, Grenoble, France, in 2014. A full description of the experiment is available
     at [1]_. The ID of this dataset is BI2014a.
 
+    The release distributes a single ``subject_XX.mat`` file per subject, which
+    the loader returns as one session (``"0"``) with one run, hence
+    ``sessions_per_subject=1`` regardless of the number of game sessions
+    played.
+
     :Investigators: Eng. Louis Korczowski, B. Sc. Ekaterina Ostaschenko
     :Technical Support: Eng. Anton Andreev, Eng. Grégoire Cattan, Eng. Pedro. L. C. Rodrigues,
                         M. Sc. Violette Gautheret
