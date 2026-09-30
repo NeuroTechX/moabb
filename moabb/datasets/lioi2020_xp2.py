@@ -48,7 +48,7 @@ _SEXES = [
 ]
 # fmt: on
 
-# Shared with the sibling XP1 loader (LioiXP1, same team, cap and protocol).
+# Shared with the sibling XP1 loader (Lioi2020_XP1, same team, cap and protocol).
 _AUTHORS = [
     "Giulia Lioi",
     "Claire Cury",

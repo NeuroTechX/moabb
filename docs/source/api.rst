@@ -98,8 +98,8 @@ Motor Imagery Datasets
     Kaya2018
     Kumar2024
     Lee2022
+    Lioi2020_XP1
     Lioi2020_XP2
-    LioiXP1
     Liu2025
     Ma2020
     Rozado2015

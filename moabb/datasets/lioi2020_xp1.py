@@ -1,4 +1,4 @@
-"""Lioi XP1 EEG-fMRI motor imagery / neurofeedback dataset (OpenNeuro ds002336)."""
+"""Lioi 2020 EEG-fMRI motor imagery neurofeedback dataset (XP1, OpenNeuro ds002336)."""
 
 import logging
 from pathlib import Path
@@ -38,8 +38,8 @@ _MARKER_TO_LABEL = {"Stimulus/S 99": "rest", "Stimulus/S  2": "right_hand"}
 _EVENTS = {"rest": 1, "right_hand": 2}
 
 
-class LioiXP1(OpenNeuroMirrorMixin, BaseDataset):
-    """XP1 simultaneous EEG-fMRI motor imagery / neurofeedback dataset [1]_ [2]_.
+class Lioi2020_XP1(OpenNeuroMirrorMixin, BaseDataset):
+    """XP1 simultaneous EEG-fMRI motor imagery / neurofeedback dataset [1]_ [2]_ [3]_.
 
     Ten healthy subjects performed right-hand kinaesthetic motor imagery
     inside an MR scanner in 20 s rest / task blocks. Five runs are exposed as
@@ -60,14 +60,19 @@ class LioiXP1(OpenNeuroMirrorMixin, BaseDataset):
     References
     ----------
     .. [1] Lioi, G., Cury, C., Perronnet, L., Mano, M., Bannier, E.,
-           Lecuyer, A., & Barillot, C. (2019). Simultaneous MRI-EEG during a
-           motor imagery neurofeedback task: an open access brain imaging
-           dataset for multi-modal data integration. bioRxiv 862375.
-           https://doi.org/10.1101/862375
+           Lecuyer, A., & Barillot, C. (2020). Simultaneous EEG-fMRI during a
+           neurofeedback task, a brain imaging dataset for multimodal data
+           integration. Scientific Data, 7, 173.
+           https://doi.org/10.1038/s41597-020-0498-3
     .. [2] Perronnet, L., Lecuyer, A., Mano, M., Bannier, E., Lotte, F.,
            Clerc, M., & Barillot, C. (2017). Unimodal versus bimodal EEG-fMRI
            neurofeedback of a motor imagery task. Frontiers in Human
            Neuroscience, 11, 193. https://doi.org/10.3389/fnhum.2017.00193
+    .. [3] Lioi, G., Cury, C., Perronnet, L., Mano, M., Bannier, E.,
+           Lecuyer, A., & Barillot, C. (2019). Simultaneous MRI-EEG during a
+           motor imagery neurofeedback task: an open access brain imaging
+           dataset for multi-modal data integration. bioRxiv 862375
+           (preprint of [1]_). https://doi.org/10.1101/862375
     """
 
     nemar_id = "on002336"
@@ -114,13 +119,13 @@ class LioiXP1(OpenNeuroMirrorMixin, BaseDataset):
             mode="online",
         ),
         documentation=DocumentationMetadata(
-            doi="10.1101/862375",
-            related_paper_dois=["10.3389/fnhum.2017.00193"],
+            doi="10.1038/s41597-020-0498-3",
+            related_paper_dois=["10.3389/fnhum.2017.00193", "10.1101/862375"],
             investigators=list(_AUTHORS),
             institution="Univ Rennes, Inria, CNRS, Inserm, IRISA",
             country="FR",
             data_url="https://openneuro.org/datasets/ds002336",
-            publication_year=2019,
+            publication_year=2020,
             license="CC0",
         ),
         sessions_per_subject=1,
@@ -151,10 +156,10 @@ class LioiXP1(OpenNeuroMirrorMixin, BaseDataset):
             subjects=list(range(1, 11)),
             sessions_per_subject=1,
             events=dict(_EVENTS),
-            code="LioiXP1",
+            code="Lioi2020-XP1",
             interval=[0, 20],
             paradigm="imagery",
-            doi="10.1101/862375",
+            doi="10.1038/s41597-020-0498-3",
             selected_subjects=subjects,
             selected_sessions=sessions,
             return_all_modalities=return_all_modalities,

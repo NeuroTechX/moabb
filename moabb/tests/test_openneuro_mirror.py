@@ -17,14 +17,14 @@ import mne
 import numpy as np
 import pytest
 
-from moabb.datasets import Iwama2023, Lee2022, Lioi2020_XP2, LioiXP1
+from moabb.datasets import Iwama2023, Lee2022, Lioi2020_XP1, Lioi2020_XP2
 
 
 CASES = [
     (Iwama2023, "on004444", 30, "030"),
     (Lee2022, "on004022", 1, "01"),
+    (Lioi2020_XP1, "on002336", 10, "xp110"),
     (Lioi2020_XP2, "on002338", 17, "xp222"),
-    (LioiXP1, "on002336", 10, "xp110"),
 ]
 MIXIN_CASE = CASES[0]
 
@@ -166,14 +166,14 @@ def test_iwama2023_ignores_the_native_status_trigger(tmp_path, monkeypatch):
     )
 
 
-def test_lioixp1_maps_block_markers_and_skips_absent_runs(monkeypatch):
+def test_lioi2020_xp1_maps_block_markers_and_skips_absent_runs(monkeypatch):
     markers = ["Stimulus/S 99", "Stimulus/S  2", "Response/R128", "Stimulus/S  1"]
     raw = _raw(["Cz", "ECG"], ["eeg", "eeg"], zip([1, 21, 22, 41], markers))
-    ds = LioiXP1()
+    ds = Lioi2020_XP1()
     runs = ["sub-xp102_task-eegNF_eeg.vhdr", "sub-xp102_task-MIpost_eeg.vhdr"]
     monkeypatch.setattr(ds, "data_path", Mock(return_value=runs))
     monkeypatch.setattr(
-        "moabb.datasets.lioixp1.mne.io.read_raw_brainvision",
+        "moabb.datasets.lioi2020_xp1.mne.io.read_raw_brainvision",
         Mock(side_effect=[raw.copy() for _ in range(2)]),
     )
     loaded = ds._get_single_subject_data(2)["0"]
