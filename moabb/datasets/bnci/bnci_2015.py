@@ -454,8 +454,9 @@ class BNCI2015_001(MNEBNCI):
     This dataset contains EEG data from 12 subjects performing two-class motor
     imagery tasks (right hand vs feet). Each subject participated in two
     sessions (``A`` and ``B``); subjects 8-11 have a third session (``C``).
-    ``sessions_per_subject`` therefore reports the common number of sessions
-    (2), and the loader returns three sessions for subjects 8-11.
+    The loader returns two sessions for subjects 1-7 and 12 and three
+    sessions for subjects 8-11, so ``sessions_per_subject`` declares the
+    maximum (3).
 
     **Participants**
 
@@ -596,7 +597,7 @@ class BNCI2015_001(MNEBNCI):
             trials_context="per_session",
             n_trials_per_class={"right_hand": 100, "feet": 100},
         ),
-        sessions_per_subject=2,
+        sessions_per_subject=3,
         runs_per_session=1,
         data_processed=True,
         file_format="gdf",
@@ -605,7 +606,7 @@ class BNCI2015_001(MNEBNCI):
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             subjects=list(range(1, 13)),
-            sessions_per_subject=2,
+            sessions_per_subject=3,
             events={"right_hand": 1, "feet": 2},
             code="BNCI2015-001",
             interval=[0, 5],
