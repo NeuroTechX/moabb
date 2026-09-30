@@ -23,6 +23,7 @@ Version 1.8  (Source - GitHub)
 
 Enhancements
 ~~~~~~~~~~~~
+- Audit every dataset's ``METADATA`` and docstring against its primary paper and data-repository record with a new reusable tool (``scripts/paper_audit/``): ``country`` is now an ISO 3166-1 alpha-2 code everywhere, loader declarations (``sessions_per_subject``, ``subjects``, ``runs_per_session``) and the ``summary_*.csv`` tables match what each loader actually returns, and per-dataset fields (reference/ground, hardware, filters, licence, demographics, trial counts, DOIs) are corrected with quoted evidence; ``Cattan2019_VR`` declares its two sessions, ``Nakanishi2015`` exposes subject 10, ``PhysionetMI``/``MAMEM3``/``BI2015b`` metadata now come from their own records (:gh:`1203` by `Bruno Aristimunha`_).
 - Spell MNE's renamed template montages everywhere: MNE 1.13 renamed ``standard_1005``/``standard_1020`` (and the other ``standard_*`` templates) to ``colin27_*`` (identical electrode files), warns on the old names and MNE 1.14 removes them, so every ``make_standard_montage``/``set_montage`` call in MOABB now spells ``colin27_*``. ``METADATA`` montage labels are descriptive and unchanged (:gh:`1200` by `Bruno Aristimunha`_).
 
 API changes

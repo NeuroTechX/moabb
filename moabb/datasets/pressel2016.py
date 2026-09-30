@@ -83,7 +83,11 @@ class Pressel2016(BaseDataset):
 
     EEG was recorded at 1024 Hz from 6 channels (F3, F4, C3, C4,
     P3, P4) using a Grass 8-18-36 amplifier with a DataTranslation
-    DT9816 ADC. Signals were bandpass filtered at 2-45 Hz.
+    DT9816 ADC (analog 0.3-35 Hz band-pass), with Ag-AgCl cup
+    electrodes referenced to the left mastoid (ground on the right
+    mastoid). The released registers were band-pass filtered at
+    2-40 Hz with FIR filters and sectioned to the Imagine/Pronounce
+    interval [1]_.
 
     Each trial is 4 seconds (4096 samples). Data is organized as a
     matrix where each row is a trial with 6*4096 = 24576 EEG samples
@@ -126,16 +130,22 @@ class Pressel2016(BaseDataset):
             montage="standard_1020",
             hardware="Grass 8-18-36 amplifier + DataTranslation DT9816 ADC",
             sensors=list(_CH_NAMES),
-            filters={"highpass": 2.0, "lowpass": 45.0},
+            reference="left mastoid",
+            ground="right mastoid",
+            filters={"highpass": 0.3, "lowpass": 35.0},
             line_freq=50.0,
             sensor_type="EEG",
+            electrode_type="cup electrodes (no cap)",
+            electrode_material="Ag/AgCl",
         ),
         participants=ParticipantMetadata(
             n_subjects=15,
             health_status="healthy",
             gender={"female": 7, "male": 8},
+            age_mean=25.0,
             age_min=24,
             age_max=28,
+            handedness={"right": 14, "left": 1},
             species="human",
         ),
         experiment=ExperimentMetadata(
@@ -206,9 +216,13 @@ class Pressel2016(BaseDataset):
         preprocessing=PreprocessingMetadata(
             data_state="preprocessed",
             preprocessing_applied=True,
-            preprocessing_steps=["Bandpass 2-45 Hz"],
+            preprocessing_steps=[
+                "Bandpass 2-40 Hz (FIR, orders 1204/372, group delay compensated)",
+                "Sectioned to the 4 s Imagine/Pronounce interval",
+            ],
             highpass_hz=2.0,
-            lowpass_hz=45.0,
+            lowpass_hz=40.0,
+            filter_type="FIR",
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
@@ -218,8 +232,9 @@ class Pressel2016(BaseDataset):
         data_structure=DataStructureMetadata(
             n_trials="varies (~278-424 clean imagined per subject)",
             trials_context=(
-                "15 subjects, ~50-70 trials per class before artifact "
-                "rejection. 10-52% artifact rate across subjects."
+                "15 subjects, 50 repetitions per word (40 imagined + 10 "
+                "pronounced) before artifact rejection. 10-52% artifact rate "
+                "across subjects."
             ),
         ),
         data_processed=True,

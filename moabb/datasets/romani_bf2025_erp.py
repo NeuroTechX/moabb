@@ -76,6 +76,10 @@ class RomaniBF2025ERP(BaseDataset):
     texture and play the game again. The extra sessions include a calibration and can be included by setting the `extra_runs`
     parameter. The full protocol is described in [1]_.
     A study on cross-subject decoding using this dataset is presented in [2]_.
+    The paper [1]_ reports 22 participants (10 females; mean age 21.87,
+    SD 3.22) recorded with the g.tec Unicorn Hybrid Black (eight gel
+    electrodes, reference/ground on the mastoids M1/M2); the Zenodo record
+    says 11 females.
 
     A total of 2 subjects (15 and 18) did not complete the full protocol and are excluded by default.
 
@@ -189,6 +193,7 @@ class RomaniBF2025ERP(BaseDataset):
             institution_address="38122, Trento, Italy",
             institution_department=None,
             associated_paper_doi=None,
+            related_paper_dois=["10.48550/arXiv.2509.23247"],
             keywords=[
                 "Brain-Computer Interfaces",
                 "Event-Related Potentials",
@@ -197,7 +202,7 @@ class RomaniBF2025ERP(BaseDataset):
                 "Human factors",
             ],
             doi="10.48550/arXiv.2510.10169",
-            repository="GitHub",
+            repository="Zenodo",
             data_url="https://zenodo.org/records/17225966",
             license="CC-BY-4.0",
         ),
