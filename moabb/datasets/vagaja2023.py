@@ -74,9 +74,12 @@ class Vagaja2023(BaseDataset):
 
     **Dataset description**
 
-    Twenty-six healthy volunteers performed cue-based left- vs right-hand motor
-    imagery in an immersive virtual-reality environment (Oculus Rift CV1) during
-    a single lab session. A between-subject design tested whether a virtual
+    Twenty-six healthy volunteers (10 males, mean age 25.4 +/- 7.4; 16
+    females, mean age 23 +/- 3.2; all right-handed; three with prior BCI
+    experience) performed cue-based left- vs right-hand motor imagery in an
+    immersive virtual-reality environment (Oculus Rift CV1) during a single
+    lab session of about 90-120 minutes (setup, 4 min resting state, 5 min
+    embodiment induction/breaking, 15 min MI training). A between-subject design tested whether a virtual
     embodiment (virtual-hand-illusion) priming phase changes the subsequent
     motor-imagery training: participants were randomly assigned to an
     ``Embodied`` group (N=13, embodiment induced) or a ``Control`` group (N=13,
@@ -133,7 +136,9 @@ class Vagaja2023(BaseDataset):
         participants=ParticipantMetadata(
             n_subjects=26,
             health_status="healthy",
-            bci_experience=None,
+            gender={"male": 10, "female": 16},
+            handedness={"right": 26},
+            bci_experience="mixed (3 of 26 with prior BCI experience)",
             species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
