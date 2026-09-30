@@ -93,9 +93,10 @@ class Ma2022(BaseBIDSDataset):
     cross-session variability in motor imagery BCIs.
 
     Each session was designed with 100 trials (50 left-hand, 50 right-hand,
-    randomized order). The released files retain 74 to 100 trials per
-    session after the source-side bad-segment rejection described in the
-    data paper, for 11,988 trials in total. Signals were recorded from 32
+    randomized order); the data paper's Table 2 reports "90 to 100" trials
+    per session. The released files retain 74 to 100 trials per session
+    after the source-side bad-segment rejection described in the data
+    paper, for 11,988 trials in total. Signals were recorded from 32
     EEG channels (10-10 according to the paper, called 10-20 in the source
     sidecar; unipolar reference on M1, ground on AFz) at 250 Hz. Only the
     4 s motor imagery window is stored (1000 samples per trial), so the
@@ -228,7 +229,7 @@ class Ma2022(BaseBIDSDataset):
             publication_year=2022,
             ethics_approval=[
                 "Shanghai Second Rehabilitation Hospital Ethics Committee "
-                "(approval number: ECSHSRH 2018-0101)"
+                "(approval number: ECSHSRH 20180101)"
             ],
             funding=[
                 "National Natural Science Foundation of China (No. 61976133)",
