@@ -77,6 +77,12 @@ class Batista2022(BaseDataset):
     (``S 7`` left / ``S 8`` right) and span the 5 s imagery/feedback window. Only
     the 32 EEG channels are returned unless ``return_all_modalities=True``.
 
+    The Zenodo record (10.5281/zenodo.7664068) reports 20 healthy volunteers
+    (mean age 24.79 years, SD 3.54); the release holds ``sub-01``..``sub-19``
+    without ``sub-10``/``sub-11`` (no markers) plus the three pilot subjects
+    ``sub-p01``..``sub-p03``, exposed here as subjects 20-22, i.e. 20 subjects.
+    The record does not state the institution or country of acquisition.
+
     References
     ----------
 
@@ -111,6 +117,8 @@ class Batista2022(BaseDataset):
         participants=ParticipantMetadata(
             n_subjects=20,
             health_status="healthy",
+            age_mean=24.79,
+            age_std=3.54,
             bci_experience=None,
             species="homo sapiens",
         ),
