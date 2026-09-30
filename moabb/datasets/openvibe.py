@@ -23,6 +23,12 @@ from moabb.datasets.metadata.schema import (
 # ``<NN>-signal.csv.bz2`` with NN in 01..14.
 OPENVIBE_BASE_URL = "https://openvibe.inria.fr/private/datasets/dataset-1/"
 
+# The 14 records of "Dataset #1 - Motor Imagery of Hands" all come from the
+# single OpenViBE / INRIA subject of Brodu et al. (2012): "560 trials of motor
+# imagery (280 trials per class) were recorded over a 2 week period"
+# (14 records x 40 trials). They are exposed as 14 runs of one session.
+N_RECORDS = 14
+
 # OpenViBE / GDF stimulation codes for the Graz protocol (decimal).
 CODE_LEFT = 769  # OVTK_GDF_Left  (0x301)
 CODE_RIGHT = 770  # OVTK_GDF_Right (0x302)
@@ -38,10 +44,17 @@ class OpenViBE(BaseDataset):
     **Dataset description**
 
     Recorded for Brodu, Lotte and Lecuyer (2012) [1]_ on band-power features for
-    motor-imagery BCIs: 14 records of left- versus right-hand imagined movement
-    following the Graz protocol (40 trials each, 20 per hand), acquired over
-    three days of the same month with a Mindmedia NeXus32B amplifier at 512 Hz
-    in common-average-reference mode over 11 channels.
+    motor-imagery BCIs ("OpenViBE / INRIA data"): 14 records of left- versus
+    right-hand imagined movement following the Graz protocol (40 trials each,
+    20 per hand), acquired with a Mindmedia NeXus32B amplifier at 512 Hz in
+    common-average-reference mode over 11 channels. The paper states that the
+    data "comprises EEG signals from a single subject for which 560 trials of
+    motor imagery (280 trials per class) were recorded over a 2 week period"
+    (the download page: "on three different days of the same month"), so the
+    14 records are exposed as the 14 runs of one session of a single subject;
+    the record-to-day assignment is not documented. The paper describes a
+    "nose reference electrode", while the download page states the channels
+    "are recorded in common average mode and Nz can be used as a reference".
 
     Notes
     -----
@@ -59,6 +72,8 @@ class OpenViBE(BaseDataset):
        features for EEG-based brain-computer interfaces: Multifractal
        cumulants and predictive complexity. Neurocomputing, 79, 87-94.
        DOI: https://doi.org/10.1016/j.neucom.2011.10.010
+       Data: https://openvibe.inria.fr/datasets-downloads/ (Dataset #1,
+       recorded 2008/03, uploaded 2010/03).
     """
 
     METADATA = DatasetMetadata(
@@ -67,35 +82,40 @@ class OpenViBE(BaseDataset):
             channel_types={"eeg": 11},
             montage="10-10",
             hardware="Mindmedia NeXus32B amplifier",
-            reference="common average reference",
+            reference="common average (nose electrode Nz recorded)",
             ground=None,
             sensors=list(_CHANNELS),
         ),
-        participants=ParticipantMetadata(n_subjects=14, species="homo sapiens"),
+        participants=ParticipantMetadata(n_subjects=1, species="homo sapiens"),
         experiment=ExperimentMetadata(
             paradigm="imagery",
             n_classes=2,
             class_labels=["left_hand", "right_hand"],
-            trials_per_class={"left_hand": 20, "right_hand": 20},
+            trials_per_class={"left_hand": 280, "right_hand": 280},
             events={"left_hand": CODE_LEFT, "right_hand": CODE_RIGHT},
-            study_design="Graz University motor imagery protocol: 40 trials "
-            "per record (20 left-hand, 20 right-hand imagined movements).",
+            study_design="Graz University motor imagery protocol: 14 records "
+            "of 40 trials (20 left-hand, 20 right-hand imagined movements) from "
+            "one subject over a two-week period.",
         ),
         documentation=DocumentationMetadata(
             doi="10.1016/j.neucom.2011.10.010",
             description="OpenViBE motor imagery dataset (left vs right hand, "
-            "Graz protocol, 11 channels, 512 Hz).",
+            "Graz protocol, 11 channels, 512 Hz; one subject, 14 records).",
             investigators=["Nicolas Brodu", "Fabien Lotte", "Anatole Lecuyer"],
+            institution="INRIA Rennes-Bretagne Atlantique",
             country="FR",
             license="free for research use",
             repository="OpenViBE (Inria)",
             data_url=OPENVIBE_BASE_URL,
+            publication_year=2012,
         ),
+        sessions_per_subject=1,
+        runs_per_session=N_RECORDS,
     )
 
     def __init__(self):
         super().__init__(
-            subjects=list(range(1, 14 + 1)),
+            subjects=[1],
             sessions_per_subject=1,
             events={"left_hand": CODE_LEFT, "right_hand": CODE_RIGHT},
             code="OpenViBE",
@@ -107,18 +127,33 @@ class OpenViBE(BaseDataset):
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
+        """Return the 14 record files (``01-signal.csv.bz2`` .. ``14-...``)."""
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
-        url = f"{OPENVIBE_BASE_URL}{subject:02d}-signal.csv.bz2"
         return [
             dl.data_dl(
-                url, self.code, path=path, force_update=force_update, verbose=verbose
+                f"{OPENVIBE_BASE_URL}{record:02d}-signal.csv.bz2",
+                self.code,
+                path=path,
+                force_update=force_update,
+                verbose=verbose,
             )
+            for record in range(1, N_RECORDS + 1)
         ]
 
     def _get_single_subject_data(self, subject):
-        with bz2.open(self.data_path(subject)[0], "rt") as fobj:
+        """Return ``{"0": {run: Raw}}`` with one run per record file."""
+        return {
+            "0": {
+                str(run): self._read_record(path)
+                for run, path in enumerate(self.data_path(subject))
+            }
+        }
+
+    @staticmethod
+    def _read_record(path):
+        with bz2.open(path, "rt") as fobj:
             df = pd.read_csv(fobj, low_memory=False)
         df = df.rename(columns={"Ref_Nose": "Nz"})
 
@@ -146,4 +181,4 @@ class OpenViBE(BaseDataset):
                 )
             )
         raw.set_montage("colin27_1005", on_missing="ignore", verbose=False)
-        return {"0": {"0": raw}}
+        return raw

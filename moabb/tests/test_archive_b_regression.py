@@ -43,7 +43,7 @@ def _flags(data_dl):
 
 @pytest.mark.parametrize(
     "cls,count",
-    [(Leeuwis2021, 4), (MartinezPeon2024, 6), (OpenViBE, 1), (PardoGarcia2026, 6)],
+    [(Leeuwis2021, 4), (MartinezPeon2024, 6), (OpenViBE, 14), (PardoGarcia2026, 6)],
 )
 def test_transport_flags(cls, count, tmp_path, monkeypatch):
     data_dl = _capture_transport(monkeypatch, tmp_path / "file")
@@ -125,9 +125,13 @@ def test_openvibe_reference_header_variants(reference, tmp_path, monkeypatch):
         frame.to_csv(fout, index=False)
 
     dataset = OpenViBE()
-    monkeypatch.setattr(dataset, "data_path", Mock(return_value=[str(path)]))
-    raw = dataset._get_single_subject_data(5)["0"]["0"]
+    monkeypatch.setattr(dataset, "data_path", Mock(return_value=[str(path)] * 2))
+    sessions = dataset._get_single_subject_data(1)
 
+    # One subject, one session, one run per record file (14 in the release).
+    assert dataset.subject_list == [1]
+    assert list(sessions) == ["0"] and list(sessions["0"]) == ["0", "1"]
+    raw = sessions["0"]["0"]
     assert raw.ch_names == openvibe._CHANNELS
     np.testing.assert_allclose(raw.get_data()[2], np.arange(3) * 1e-6)
     assert list(raw.annotations.description) == ["left_hand", "right_hand"]
