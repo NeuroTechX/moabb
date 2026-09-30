@@ -71,6 +71,16 @@ class Ortiz2023(BaseDataset):
     resting baselines are skipped. The **SLOPES** scenario (variable-length
     trials, different codes, duplicated ``_sync`` files) is not loaded.
 
+    Paper-vs-release note: the paper reports fourteen able-bodied subjects over
+    both scenarios, and its Table 1 lists nine Experience M-codes (M05-M11,
+    M20, M21), three of them (M05, M08, M11) with two Experience weeks; M17 is
+    listed there as the Slopes code of S4. This loader follows the released
+    archive, which holds Experience task files for ten M-codes (including M17)
+    and two recording dates for M05 and M11 only. The paper's Methods place
+    the reference on the left (A1) and the ground on the right (A2) ear lobe,
+    while the per-trial ``.json`` example lists the reference on the right and
+    the ground on the left ear lobe.
+
     References
     ----------
 
@@ -92,8 +102,8 @@ class Ortiz2023(BaseDataset):
             channel_types={"eeg": 27, "eog": 4},
             sensors=EEG_CHANNELS,
             sensor_type="Ag/AgCl wet",
-            reference="linked earlobes (A1, A2)",
-            ground="earlobe",
+            reference="left ear lobe (A1)",
+            ground="right ear lobe (A2)",
             hardware="Brain Products actiCHamp",
             montage="standard_1005",
             line_freq=50.0,
@@ -142,7 +152,7 @@ class Ortiz2023(BaseDataset):
                 "Jesus Tornero",
                 "Jose M. Azorin",
             ],
-            institution="Universitas Miguel Hernandez de Elche",
+            institution="Miguel Hernandez University of Elche",
             country="ES",
             repository="Figshare",
             data_url="https://doi.org/10.6084/m9.figshare.21185362.v2",
