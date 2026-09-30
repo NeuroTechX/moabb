@@ -74,6 +74,7 @@ NEMAR_ID_PENDING = {
     "Kaneshiro2015": "nm000263",
     "Kumar2024": "nm000177",
     "Lee2019_SSVEP": "nm000273",
+    "Ma2022": "nm000288",
     "Mainsah2025_A": "nm000269",
     "Nguyen2017_L": "nm000252",
     "Nguyen2017_S": "nm000257",
