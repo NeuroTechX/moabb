@@ -684,7 +684,7 @@ class MAMEM1(BaseMAMEM):
             ],
         ),
         sessions_per_subject=1,
-        runs_per_session=None,
+        runs_per_session=5,
         sessions=None,
         data_processed=False,
         file_format="MATLAB .mat",
@@ -735,7 +735,7 @@ class MAMEM1(BaseMAMEM):
         ),
         data_structure=DataStructureMetadata(
             n_trials=1104,
-            trials_context="Total 1104 trials across all subjects. Each session includes 23 trials (8 adaptation + 15 main). S001: 3 sessions, S003 and S004: 4 sessions, others: 5 sessions. Some sessions excluded due to technical issues.",
+            trials_context="Total 1104 trials across all subjects. Each session includes 23 trials (8 adaptation + 15 main). S001: 3 sessions, S003 and S004: 4 sessions, others: 5 sessions. Some sessions excluded due to technical issues. The loader exposes each released session file (T0NN[a-e]) as one run of a single session; runs_per_session=5 is the maximum (3 runs for S001, S003 and S008, 4 for S004).",
         ),
         abstract="Brain-computer interfaces (BCIs) have been gaining momentum in making human-computer interaction more natural, especially for people with neuro-muscular disabilities. This report focuses on SSVEP-based BCIs and performs a comparative evaluation of the most promising algorithms. A dataset of 256-channel EEG signals from 11 subjects is provided, along with a processing toolbox for reproducing results and supporting further experimentation.",
         methodology="Empirical approach where each signal processing parameter (filtering, artifact removal, feature extraction, feature selection, classification) is studied independently by keeping all other parameters fixed. Leave-one-subject-out cross-validation used to evaluate system without subject-specific training. Multiple algorithms compared for each processing stage to obtain state-of-the-art baseline.",
