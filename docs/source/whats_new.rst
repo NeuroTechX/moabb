@@ -23,7 +23,7 @@ Version 1.8  (Source - GitHub)
 
 Enhancements
 ~~~~~~~~~~~~
-- Add PerezBlanco2026 wrist motor-execution, SitStand2026 transition imagery, and Vagaja2023 VR motor-imagery datasets (:pr:`1199`) (by `Bruno Aristimunha`_).
+- Add Leelakittisin2025 sit-stand transition imagery, PerezBlanco2026 wrist motor-execution, and Vagaja2023 VR motor-imagery datasets (:pr:`1199`) (by `Bruno Aristimunha`_).
 - Spell MNE's renamed template montages everywhere: MNE 1.13 renamed ``standard_1005``/``standard_1020`` (and the other ``standard_*`` templates) to ``colin27_*`` (identical electrode files), warns on the old names and MNE 1.14 removes them, so every ``make_standard_montage``/``set_montage`` call in MOABB now spells ``colin27_*``. ``METADATA`` montage labels are descriptive and unchanged (:gh:`1200` by `Bruno Aristimunha`_).
 
 API changes

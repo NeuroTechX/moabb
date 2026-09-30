@@ -8,9 +8,9 @@ import numpy as np
 import pytest
 from scipy.io import savemat
 
-from moabb.datasets import PerezBlanco2026, SitStand2026, Vagaja2023
+from moabb.datasets import Leelakittisin2025, PerezBlanco2026, Vagaja2023
+from moabb.datasets.leelakittisin2025 import EEG_CHANNELS
 from moabb.datasets.perezblanco2026 import _EEG_NAMES, _EMG_NAMES
-from moabb.datasets.sitstand2026 import EEG_CHANNELS
 from moabb.datasets.vagaja2023 import _EEG_CHANNELS
 
 
@@ -30,14 +30,14 @@ def test_perez_execution_first_last_events_and_si_units():
     assert result.get_channel_types().count("emg") == 8
 
 
-def test_sitstand_physiological_units_trigger_and_trial_boundaries(tmp_path):
+def test_leelakittisin2025_physiological_units_trigger_and_trial_boundaries(tmp_path):
     data = np.full((63, 12001), 25.0)
     data[-1] = 0
     data[-1, 0] = 21
     data[-1, 7200] = 32
     path = tmp_path / "S01_S1.mat"
     savemat(path, {"eeg": data, "eeg_fs": 1200})
-    dataset = SitStand2026()
+    dataset = Leelakittisin2025()
     raw = dataset._build_raw(path)
     np.testing.assert_allclose(raw.get_data(picks="eeg"), 25e-6)
     np.testing.assert_allclose(raw.get_data(picks="eog"), 25e-6)
@@ -95,22 +95,25 @@ def test_vagaja_annotation_mapping_units_and_bad_channel_preserved(monkeypatch):
 
 
 @pytest.mark.parametrize(
-    "dataset,subject", [(PerezBlanco2026(), 0), (SitStand2026(), 5), (Vagaja2023(), 1)]
+    "dataset,subject",
+    [(PerezBlanco2026(), 0), (Leelakittisin2025(), 5), (Vagaja2023(), 1)],
 )
 def test_invalid_subject_rejected_without_transport(dataset, subject):
     with pytest.raises(ValueError, match="Invalid subject"):
         dataset.data_path(subject)
 
 
-def test_sitstand_transport_flags_missing_and_duplicate_sessions(tmp_path):
+def test_leelakittisin2025_transport_flags_missing_and_duplicate_sessions(tmp_path):
     archive = tmp_path / "subject.zip"
     with zipfile.ZipFile(archive, "w") as zf:
         zf.writestr("a/S01_S1.mat", "first")
     with patch(
-        "moabb.datasets.sitstand2026.dl.data_dl", return_value=str(archive)
+        "moabb.datasets.leelakittisin2025.dl.data_dl", return_value=str(archive)
     ) as download:
         with pytest.raises(FileNotFoundError):
-            SitStand2026().data_path(1, path=tmp_path, force_update=True, verbose="ERROR")
+            Leelakittisin2025().data_path(
+                1, path=tmp_path, force_update=True, verbose="ERROR"
+            )
         assert download.call_args.kwargs == {
             "path": tmp_path,
             "force_update": True,
@@ -119,9 +122,9 @@ def test_sitstand_transport_flags_missing_and_duplicate_sessions(tmp_path):
     with zipfile.ZipFile(archive, "w") as zf:
         for name in ["a/S01_S1.mat", "b/S01_S1.mat", "a/S01_S2.mat"]:
             zf.writestr(name, "duplicate")
-    with patch("moabb.datasets.sitstand2026.dl.data_dl", return_value=str(archive)):
+    with patch("moabb.datasets.leelakittisin2025.dl.data_dl", return_value=str(archive)):
         with pytest.raises(ValueError, match="Duplicate session"):
-            SitStand2026().data_path(1, force_update=True)
+            Leelakittisin2025().data_path(1, force_update=True)
 
 
 def test_vagaja_force_update_reextracts_archive(tmp_path):
@@ -158,7 +161,7 @@ def test_perez_figshare_transport_flags(tmp_path):
     assert download.call_args.args[2:] == (tmp_path, True, "ERROR")
 
 
-def test_sitstand_nested_archive_is_extracted_only_once(tmp_path):
+def test_leelakittisin2025_nested_archive_is_extracted_only_once(tmp_path):
     """The real Zenodo layout (extra ``v1_raw_s<ID>/``) must be reusable offline."""
     archive = tmp_path / "v1_raw_S01.zip"
     with zipfile.ZipFile(archive, "w") as zf:
@@ -168,9 +171,9 @@ def test_sitstand_nested_archive_is_extracted_only_once(tmp_path):
         patch.object(
             zipfile.ZipFile, "extractall", autospec=True, wraps=zipfile.ZipFile.extractall
         ) as extractall,
-        patch("moabb.datasets.sitstand2026.dl.data_dl", return_value=str(archive)),
+        patch("moabb.datasets.leelakittisin2025.dl.data_dl", return_value=str(archive)),
     ):
-        paths = [SitStand2026().data_path(1) for _ in range(2)]
+        paths = [Leelakittisin2025().data_path(1) for _ in range(2)]
     expected = [str(tmp_path / f"S01/v1_raw_s1/S01_S{s}.mat") for s in (1, 2)]
     assert paths == [expected, expected]
     assert extractall.call_count == 1

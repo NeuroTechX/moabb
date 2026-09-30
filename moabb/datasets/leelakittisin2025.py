@@ -1,4 +1,4 @@
-"""Sit-to-stand / stand-to-sit transition motor imagery dataset (Leelakittisin 2026)."""
+"""Leelakittisin2025 sit-to-stand / stand-to-sit transition motor imagery dataset."""
 
 import zipfile as z
 from pathlib import Path
@@ -20,7 +20,7 @@ from moabb.datasets.metadata.schema import (
 
 
 # Zenodo raw record (per-subject zips, each holding two session .mat files).
-SITSTAND_BASE_URL = "https://zenodo.org/records/20348444/files/"
+LEELAKITTISIN2025_BASE_URL = "https://zenodo.org/records/20348444/files/"
 
 # The 60 EEG channels in acquisition order (readme.pdf, channel index 1-60),
 # followed by the two EOG channels and the trigger channel (index 61-63).
@@ -59,7 +59,7 @@ def _resolve_mat_paths(extract_dir, subject):
     return resolved
 
 
-class SitStand2026(BaseDataset):
+class Leelakittisin2025(BaseDataset):
     """Sit-to-stand / stand-to-sit transition motor imagery dataset [1]_.
 
     **Dataset description**
@@ -86,15 +86,17 @@ class SitStand2026(BaseDataset):
     release, each MI task has two rounds of 10 trials per session (20 per
     class per session). The readme reports ~70% EEGNet accuracy for MI.
 
-    The Zenodo record (issued 2025, CC0) links no paper; the readme lists
-    Benjakarn Uengsawapak as first author while the Zenodo creator list gives
-    Benjakarn Leelakittisin, so the first-author surname is ambiguous for
-    naming purposes.
+    The Zenodo record (issued 2025, CC0) links no paper, so the class is
+    named after the record's first creator, Benjakarn Leelakittisin (the
+    citable authorship); the readme byline spells the same first author
+    "Benjakarn Uengsawapak". "SitStand" was only the GitHub repository slug
+    (``eeg_sit_stand``), not a name the authors give the dataset.
 
     References
     ----------
 
-    .. [1] Uengsawapak, B., Kongwudhikunakorn, S., Kiatthaveephong, S.,
+    .. [1] Leelakittisin, B. (readme byline: Uengsawapak, B.),
+       Kongwudhikunakorn, S., Kiatthaveephong, S.,
        Polpakdee, W., Chaisaen, R., Manoonpong, P., Chuenchit, C.,
        Bhakdisongkhram, G., & Wilaiprasitporn, T. (2025). EEG-Based Dataset
        Explicitly Targeting the Transitions between Sitting and Standing for
@@ -185,7 +187,7 @@ class SitStand2026(BaseDataset):
             selected_sessions=sessions,
             sessions_per_subject=2,
             events={"sit_stand": 21, "stand_sit": 32},
-            code="SitStand2026",
+            code="Leelakittisin2025",
             interval=[0, 4],
             paradigm="imagery",
             doi="10.5281/zenodo.20348444",
@@ -198,7 +200,7 @@ class SitStand2026(BaseDataset):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
-        url = f"{SITSTAND_BASE_URL}v1_raw_S{subject:02d}.zip?download=1"
+        url = f"{LEELAKITTISIN2025_BASE_URL}v1_raw_S{subject:02d}.zip?download=1"
         path_zip = Path(
             dl.data_dl(
                 url, self.code, path=path, force_update=force_update, verbose=verbose
