@@ -674,6 +674,16 @@ def _compare_investigators(record: DatasetRecord, fetched: FetchResult, base: Pa
 # ---------------------------------------------------------------------------
 
 _NAME_STOPWORDS = {
+    "SHA1",
+    "SHA256",
+    "MD5",
+    "DOI",
+    "URL",
+    "ISBN",
+    "ISSN",
+    "PMID",
+    "PMCID",
+    "README",
     "EEG",
     "MEG",
     "BCI",
@@ -734,7 +744,8 @@ _NAME_STOPWORDS = {
     "References",
 }
 _OFFICIAL_RE = re.compile(
-    r"\bthe\s+([A-Z][A-Za-z0-9]{2,}(?:[-_][A-Za-z0-9]+)?)\s+(?:dataset|database|corpus|benchmark)\b"
+    r"(?:\bthe\s+([A-Z][A-Za-z0-9]{2,}(?:[-_][A-Za-z0-9]+)?)\s+(?:dataset|database|corpus|benchmark)\b"
+    r"|(?:^|\n)\s*(?:#+\s*)?([A-Z][A-Za-z0-9]{2,}(?:[-_][A-Za-z0-9]+)?):\s+[A-Za-z])"
 )
 
 
@@ -803,11 +814,13 @@ def propose_class_name(
     # Rule 1: official name explicitly presented as the dataset's name.
     for name, text, _kind in sources:
         for m in _OFFICIAL_RE.finditer(text):
-            cand = m.group(1)
+            cand = m.group(1) or m.group(2)
             if not cand or cand.lower() in lowered_stop:
                 continue
             if not re.search(r"[A-Z]", cand[1:]) and not re.search(r"\d", cand):
                 continue  # plain capitalised word, not an acronym/proper name
+            if m.group(2) and len(re.findall(re.escape(cand), text)) < 3:
+                continue  # "XYZ:" title form must recur to count as the dataset's name
             official = re.sub(r"[^A-Za-z0-9]", "", cand)
             quote = checks._quote(text, m.start(), m.end())
             loc = checks.locate(text, m.start())
