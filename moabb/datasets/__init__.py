@@ -154,9 +154,9 @@ from .thielen2015 import Thielen2015
 from .thielen2021 import Thielen2021
 from .triana_guzman2024 import TrianaGuzman2024
 from .upper_limb import Ofner2017
-from .garro2025 import Garro2025
 from .mind2026 import MIND2026
 from .moving2024 import MOVING2024
+from .nebula2025 import NeBULA2025
 from .thapa2025 import Thapa2025
 from .utils import _init_dataset, dataset_dict
 from .wairagkar2018 import Wairagkar2018

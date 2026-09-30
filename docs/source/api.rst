@@ -74,9 +74,9 @@ Motor Imagery Datasets
     Dreyer2023C
     Lee2019_MI
     GrosseWentrup2009
-    Garro2025
     MIND2026
     MOVING2024
+    NeBULA2025
     Thapa2025
     Ofner2017
     PhysionetMI

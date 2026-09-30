@@ -10,16 +10,16 @@ import pytest
 from moabb.datasets import (
     MIND2026,
     MOVING2024,
-    Garro2025,
+    NeBULA2025,
     Thapa2025,
-    garro2025,
     mind2026,
     moving2024,
+    nebula2025,
     thapa2025,
 )
 
 
-@pytest.mark.parametrize("dataset", [Garro2025, MIND2026, MOVING2024, Thapa2025])
+@pytest.mark.parametrize("dataset", [NeBULA2025, MIND2026, MOVING2024, Thapa2025])
 def test_invalid_subject_does_not_download(dataset):
     with pytest.raises(ValueError, match="Invalid subject"):
         dataset().data_path(999)
@@ -81,7 +81,7 @@ def test_thapa_transport_and_missing_sessions(tmp_path, monkeypatch):
     }
 
 
-def test_garro_transport_and_subject_local_tasks(tmp_path, monkeypatch):
+def test_nebula2025_transport_and_subject_local_tasks(tmp_path, monkeypatch):
     archive = tmp_path / "source.zip"
     with zipfile.ZipFile(archive, "w") as zf:
         zf.writestr("sub-01/eeg/sub-01_task-free_eeg.vhdr", "header")
@@ -89,9 +89,11 @@ def test_garro_transport_and_subject_local_tasks(tmp_path, monkeypatch):
     metadata.write_text("{}")
     # Three top-level BIDS metadata files, then the subject archive.
     data_dl = Mock(side_effect=[metadata] * 3 + [archive])
-    monkeypatch.setattr(garro2025.dl, "get_dataset_path", Mock(return_value=tmp_path))
-    monkeypatch.setattr(garro2025.dl, "data_dl", data_dl)
-    paths = Garro2025().data_path(1, path=str(tmp_path), force_update=True, verbose=False)
+    monkeypatch.setattr(nebula2025.dl, "get_dataset_path", Mock(return_value=tmp_path))
+    monkeypatch.setattr(nebula2025.dl, "data_dl", data_dl)
+    paths = NeBULA2025().data_path(
+        1, path=str(tmp_path), force_update=True, verbose=False
+    )
     assert [p.task for p in paths] == ["free"]
     assert data_dl.call_count == 4
     assert data_dl.call_args.args[0].endswith("49987455")

@@ -1,4 +1,4 @@
-"""Garro2025 (NeBULA) standardized reaching motor-execution EEG dataset."""
+"""NeBULA2025 standardized reaching motor-execution EEG dataset (Garro et al. 2025)."""
 
 import warnings
 import zipfile
@@ -92,7 +92,7 @@ _TASK_TO_RUN = {"free": "0free", "low": "1low", "high": "2high"}
 _MISSING_SUBJECTS = (28,)
 
 
-class Garro2025(BaseDataset):
+class NeBULA2025(BaseDataset):
     """Standardized reaching motor-execution EEG dataset (NeBULA) [1]_.
 
     **Dataset description**
@@ -241,7 +241,7 @@ class Garro2025(BaseDataset):
             subjects=all_subjects,
             sessions_per_subject=1,
             events=dict(_EVENTS),
-            code="Garro2025",
+            code="NeBULA2025",
             interval=[0, 2],
             paradigm="imagery",
             doi="10.1038/s41597-025-05042-4",
