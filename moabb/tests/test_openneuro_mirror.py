@@ -17,13 +17,13 @@ import mne
 import numpy as np
 import pytest
 
-from moabb.datasets import Iwama2023, Lee2022, Lioi2020, LioiXP1
+from moabb.datasets import Iwama2023, Lee2022, Lioi2020_XP2, LioiXP1
 
 
 CASES = [
     (Iwama2023, "on004444", 30, "030"),
     (Lee2022, "on004022", 1, "01"),
-    (Lioi2020, "on002338", 17, "xp222"),
+    (Lioi2020_XP2, "on002338", 17, "xp222"),
     (LioiXP1, "on002336", 10, "xp110"),
 ]
 MIXIN_CASE = CASES[0]
@@ -183,12 +183,12 @@ def test_lioixp1_maps_block_markers_and_skips_absent_runs(monkeypatch):
     np.testing.assert_array_equal(events[:, [0, 2]], [[100, 1], [2100, 2]])
 
 
-def test_lioi2020_upstream_manifest_transport_only(monkeypatch, tmp_path):
+def test_lioi2020_xp2_upstream_manifest_transport_only(monkeypatch, tmp_path):
     """Real per-run S3 manifest and BIDS stub; only requests.get is mocked."""
     monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", "upstream")
     get = Mock(return_value=Mock(status_code=404))
-    monkeypatch.setattr("moabb.datasets.lioi2020.requests.get", get)
-    ds = Lioi2020(imagery_only=True)
+    monkeypatch.setattr("moabb.datasets.lioi2020_xp2.requests.get", get)
+    ds = Lioi2020_XP2(imagery_only=True)
     root = Path(ds._download_subject(4, str(tmp_path), False, None, None))
     description = json.loads((root / "dataset_description.json").read_text())
     assert description["DatasetDOI"] == "doi:10.18112/openneuro.ds002338.v2.0.1"

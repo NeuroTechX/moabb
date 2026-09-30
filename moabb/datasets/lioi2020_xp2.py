@@ -85,7 +85,7 @@ _RUN_PLAN = [
 ]
 
 
-class Lioi2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
+class Lioi2020_XP2(OpenNeuroMirrorMixin, BaseBIDSDataset):
     """Right-hand motor imagery EEG-fMRI neurofeedback dataset (XP2) [1]_.
 
     EEG recorded inside an MR scanner (fMRI is not loaded) from 17 healthy
@@ -220,7 +220,7 @@ class Lioi2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
             subjects=list(range(1, len(_SUBJECT_IDS) + 1)),
             sessions_per_subject=1,
             events={"rest": 1, "right_hand": 2},
-            code="Lioi2020",
+            code="Lioi2020-XP2",
             interval=[0, 20],
             paradigm="imagery",
             doi="10.1038/s41597-020-0498-3",
@@ -315,7 +315,7 @@ class Lioi2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
             return mirror_root
 
         sid = self._sid(subject)
-        bids_root = Path(get_dataset_path("Lioi2020", path)) / "MNE-lioi2020-data"
+        bids_root = Path(get_dataset_path("Lioi2020-XP2", path)) / "MNE-lioi2020-xp2-data"
         bids_root.mkdir(parents=True, exist_ok=True)
         mne_bids.make_dataset_description(
             path=bids_root,

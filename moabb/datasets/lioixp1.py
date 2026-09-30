@@ -9,7 +9,7 @@ from mne.channels import make_standard_montage
 from moabb.datasets import download as dl
 from moabb.datasets._openneuro_mirror import OpenNeuroMirrorMixin
 from moabb.datasets.base import BaseDataset
-from moabb.datasets.lioi2020 import _AUTHORS, _CH_NAMES
+from moabb.datasets.lioi2020_xp2 import _AUTHORS, _CH_NAMES
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
     AuxiliaryChannelsMetadata,
