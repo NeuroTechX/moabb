@@ -909,8 +909,10 @@ class BI2013a(BaseDataset):
 class BI2014a(BaseDataset):
     """P300 dataset BI2014a from a "Brain Invaders" experiment.
 
-    This dataset contains electroencephalographic (EEG) recordings of 71 subjects
-    playing to a visual P300 Brain-Computer Interface (BCI) videogame named Brain Invaders.
+    This dataset contains electroencephalographic (EEG) recordings of 64 subjects
+    (out of the 71 recruited: participants 65-71 are not distributed because of tagging
+    issues or aborted experiments, see [1]_) playing to a visual P300 Brain-Computer
+    Interface (BCI) videogame named Brain Invaders.
     The interface uses the oddball paradigm on a grid of 36 symbols (1 Target, 35 Non-Target)
     that are flashed pseudo-randomly to elicit the P300 response. EEG data were recorded
     using 16 active dry electrodes with up to three game sessions. The experiment took place
@@ -1328,7 +1330,10 @@ class BI2015a(BaseDataset):
     32 active wet electrodes with three conditions: flash duration 50ms, 80ms
     or 110ms. The experiment took place at GIPSA-lab, Grenoble, France, in 2015.
     A full description of the experiment is available at [1]_. The ID of this
-    dataset is BI2015a.
+    dataset is BI2015a. Although 50 subjects were recruited, the Zenodo record only
+    distributes subjects 1-43; participants 44-50 are listed in the report's Table 1
+    with recording problems (NaN values, powering issue, no visible alpha) and are
+    not available.
 
     :Investigators: Eng. Louis Korczowski, B. Sc. Martine Cederhout
     :Technical Support: Eng. Anton Andreev, Eng. Grégoire Cattan, Eng. Pedro. L. C. Rodrigues,
@@ -1907,7 +1912,9 @@ class Cattan2019_VR(BaseDataset):
         self.n_repetitions = 5
         super().__init__(
             subjects=list(range(1, 21 + 1)),
-            sessions_per_subject=1,
+            # One session per display condition: ``0VR`` (virtual reality) and
+            # ``1PC`` (screen), as returned by ``_get_single_subject_data``.
+            sessions_per_subject=2,
             events={"Target": 2, "NonTarget": 1},
             code="Cattan2019-VR",  # before: "VR-P300"
             interval=[0, 1.0],
