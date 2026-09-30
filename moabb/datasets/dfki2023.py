@@ -11,6 +11,7 @@ from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
     AuxiliaryChannelsMetadata,
     DatasetMetadata,
+    DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
     ParticipantMetadata,
@@ -55,6 +56,12 @@ class DFKI2023(BaseDataset):
     is placed at the motion-tracking movement onset (``S100`` right arm in
     unilateral, ``S101`` left arm in bilateral recordings); other markers are
     dropped.
+
+    Paper audit (2026-09-30): the 500 Hz rate applies to the EEG (the paper's
+    2000 Hz figure is the Cometa EMG, which is not part of the release); the
+    paper states "3 sets of 40 self-initiated movements" per task, i.e. 120
+    trials per class by design, and 6 sets per subject (7 for ``XP01``). The
+    ground electrode (``AFz``) is not stated in the paper.
 
     References
     ----------
@@ -135,7 +142,18 @@ class DFKI2023(BaseDataset):
             repository="Zenodo",
         ),
         sessions_per_subject=1,
+        runs_per_session=6,
         tags=Tags(modality=["Motor"], type=["Movement Execution"]),
+        data_structure=DataStructureMetadata(
+            n_trials=240,
+            n_trials_per_class={"unilateral": 120, "bilateral": 120},
+            n_blocks=6,
+            trials_context=(
+                "3 sets of 40 self-initiated movements per task (unilateral, "
+                "bilateral) by design; one run per set, 6 runs per subject "
+                "(subject XP01 has an extra unilateral set in the release)."
+            ),
+        ),
         preprocessing=PreprocessingMetadata(
             data_state="raw",
             preprocessing_applied=False,
