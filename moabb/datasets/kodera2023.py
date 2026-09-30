@@ -104,6 +104,12 @@ class Kodera2023(BaseDataset):
     Cz, Pz, F3, F4, P3, P4, C3, C4); the extra scalp and two unnamed auxiliary
     channels are dropped, never padded. The one unlabelled recording is excluded.
 
+    The Zenodo record carries only the title "EEG motor imagery", the creator
+    list and a one-line description ("EEG dataset used for automatic motor
+    imagery detection."); there is no linked paper. Subject, channel, rate and
+    class information above is derived from the archive contents and could not
+    be checked against a publication (paper audit, 2026-09-30).
+
     References
     ----------
 
