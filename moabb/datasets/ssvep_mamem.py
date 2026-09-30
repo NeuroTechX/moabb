@@ -1226,9 +1226,9 @@ class MAMEM2(BaseMAMEM):
             n_repetitions=3,
         ),
         data_structure=DataStructureMetadata(
-            n_trials=1104,
+            n_trials=None,
             n_trials_per_class=None,
-            trials_context="Each session includes 23 trials (8 adaptation trials excluded from analysis). 5 sessions per subject (with exceptions: S001=3 sessions, S003=4 sessions, S004=4 sessions). Total: 1104 trials of 5 seconds each.",
+            trials_context="Per the class docstring (experiment 2): 25 flickering windows of 5 s per session (5 per frequency), 5 sessions per subject, one adaptation period before the first session. Released as five files T0NN[a-e] per subject that the loader exposes as 5 runs of one session; the adaptation file (T0NNx) is skipped. The previous n_trials=1104 was copied from MAMEM1 and did not describe this experiment.",
         ),
         abstract="Brain-computer interfaces (BCIs) have been gaining momentum in making human-computer interaction more natural, especially for people with neuro-muscular disabilities. This study focuses on SSVEP-based BCIs and performs a comparative evaluation of state-of-the-art algorithms for filtering, artifact removal, feature extraction, feature selection and classification. Dataset consists of 256-channel EEG signals from 11 subjects with 5 flickering frequencies (6.66, 7.50, 8.57, 10.00, 12.00 Hz).",
         methodology="Leave-one-subject-out cross-validation was used to evaluate a general-purpose BCI system without subject-specific training. Systematic comparison of algorithms across all signal processing stages: (1) Signal filtering: FIR vs IIR filters; (2) Artifact removal: AMUSE vs FastICA; (3) Feature extraction: PWelch, Periodogram, PYULEAR, DWT, STFT, Goertzel; (4) Feature selection: entropy-based methods and PCA/SVD; (5) Classification: SVM, LDA, KNN, Naive Bayes, Random Forest, AdaBoost. Optimal configuration achieved 74.42% mean accuracy using IIR-Elliptic filter, AMUSE artifact removal, PWelch feature extraction with nfft=512, segment length=350, overlap=0.75, and channel-138.",
