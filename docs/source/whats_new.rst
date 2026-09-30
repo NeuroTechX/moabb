@@ -23,6 +23,7 @@ Version 1.8  (Source - GitHub)
 
 Enhancements
 ~~~~~~~~~~~~
+- Add :class:`moabb.datasets.MIND2026`, :class:`moabb.datasets.MOVING2024`, :class:`moabb.datasets.NeBULA2025`, and :class:`moabb.datasets.Thapa2025` large-recording motor-imagery and motor-execution datasets. Preserve the MIND acquisition-restart guard and document execution-only tasks (:gh:`1195` by `Bruno Aristimunha`_).
 - Spell MNE's renamed template montages everywhere: MNE 1.13 renamed ``standard_1005``/``standard_1020`` (and the other ``standard_*`` templates) to ``colin27_*`` (identical electrode files), warns on the old names and MNE 1.14 removes them, so every ``make_standard_montage``/``set_montage`` call in MOABB now spells ``colin27_*``. ``METADATA`` montage labels are descriptive and unchanged (:gh:`1200` by `Bruno Aristimunha`_).
 
 API changes
