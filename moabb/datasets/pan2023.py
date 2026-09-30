@@ -108,14 +108,19 @@ class _PanDataverse(BaseDataset):
 class Pan2023(_PanDataverse):
     """Cross-session motor imagery dataset from Pan et al. 2023.
 
-    EEG from 14 healthy subjects performing cued left- vs right-hand motor imagery
-    on two separate days (D1, D2 -> sessions ``"0"``, ``"1"``), 120 trials per
-    session. The deposit stores epochs from -3 s to +4 s around the cue (2 s rest,
-    1 s preparation, 4 s imagery) as MATLAB v7.3 ``.mat`` files; the loader
-    concatenates them, converts microvolts to volts, places each class event at the
-    cue and marks every trial join with a non-rejecting ``EDGE boundary``
-    annotation. Distinct from :class:`Pan2025` (doi:10.7910/DVN/GH74ZG, 10
-    subjects, 180 trials per session).
+    EEG from 14 healthy subjects (five females, two left-handed, aged 22-25)
+    performing cued left- vs right-hand motor imagery on two separate days (D1,
+    D2 -> sessions ``"0"``, ``"1"``), 120 trials per session (the deposit
+    description gives no per-class breakdown; the 60/60 split assumes balanced
+    classes). EEG was recorded with a Neuroscan SynAmps2 amplifier and 28 scalp
+    electrodes at 250 Hz with a 0.01-200 Hz band-pass filter. The deposit stores
+    epochs from -3 s to +4 s around the cue (2 s rest, 1 s preparation, 4 s
+    imagery) as MATLAB v7.3 ``.mat`` files; the loader concatenates them,
+    converts microvolts to volts, places each class event at the cue and marks
+    every trial join with a non-rejecting ``EDGE boundary`` annotation. Distinct
+    from :class:`Pan2025` (doi:10.7910/DVN/GH74ZG, 10 subjects, ~180 trials per
+    session). The Dataverse deposit is registered as a supplement to [2]_ (closed
+    access), so acquisition details here come from the deposit description.
 
     References
     ----------
@@ -145,13 +150,16 @@ class Pan2023(_PanDataverse):
             reference=None,
             ground=None,
             sensors=PAN2023_CHANNELS,
+            filters={"bandpass": [0.01, 200.0]},
             line_freq=50.0,
         ),
         participants=ParticipantMetadata(
             n_subjects=14,
             health_status="healthy",
+            gender={"female": 5, "male": 9},
             age_min=22,
             age_max=25,
+            handedness={"right": 12, "left": 2},
             species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
@@ -175,6 +183,9 @@ class Pan2023(_PanDataverse):
             "performing cued left- vs right-hand motor imagery across two sessions.",
             investigators=["Lincong Pan"],
             institution="Tianjin University",
+            institution_department=(
+                "School of Precision Instruments and Optoelectronics Engineering"
+            ),
             country="CN",
             data_url="https://doi.org/10.7910/DVN/251NOW",
             associated_paper_doi="10.1088/1741-2552/ad0a01",
