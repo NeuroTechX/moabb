@@ -59,17 +59,28 @@ class _PetersonSetRawAnnotations(SetRawAnnotations):
 class Peterson2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
     """Motor imagery vs rest low-cost EEG dataset from Peterson et al 2020 [1]_.
 
-    10 novice participants, 15-channel consumer-grade EEG at 125 Hz, either
-    imagined grasping with their dominant hand (**motor_imagery**) or stayed
-    idle (**rest**). RUN0 (real-movement demonstration) is excluded; RUN1-RUN4
-    hold 20 MI + 20 rest trials each. Events are native EDF annotations
-    (OpenViBE labels ``OVTK_GDF_Right`` = MI cue, ``OVTK_GDF_Tongue`` = rest).
+    10 novice participants (12 recruited, two excluded by the authors),
+    15-channel consumer-grade EEG (OpenBCI Cyton + Daisy board with an
+    Electro-Cap, reference left / ground right ear lobe) at 125 Hz, recorded
+    in a non-shielded office. Subjects either imagined grasping with their
+    dominant hand (**motor_imagery**) or stayed idle (**rest**) for 4 s after
+    the cue; no feedback was presented. RUN0 (real-movement demonstration) is
+    excluded; RUN1-RUN4 hold 20 MI + 20 rest trials each. Events are native
+    EDF annotations (OpenViBE labels ``OVTK_GDF_Right`` = MI cue,
+    ``OVTK_GDF_Tongue`` = rest).
 
     Notes
     -----
     The EDF physical-dimension fields are blank; the channels sidecars
     specify microvolts. The reader is given ``units="uV"`` so MNE returns
     SI volts without a second post-read scaling. Bad-channel flags are kept.
+
+    The paper states that "during acquisition, the EEG signals were filtered
+    between 0.5 and 45 Hz with a 3rd order Butterworth bandpass-filter"
+    (OpenViBE), whereas the BIDS sidecars declare no hardware/software
+    filters; whether the released EDF files carry that online filter has not
+    been verified on the data. The 1-40 Hz 5th-order Butterworth filter of
+    the paper was applied offline for the published analysis only.
 
     References
     ----------
@@ -86,9 +97,16 @@ class Peterson2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
             sampling_rate=125.0,
             channel_types={"eeg": 15},
             montage="10-20",
-            hardware="consumer-grade EEG device",
+            hardware="OpenBCI Cyton + Daisy (16-channel) with Electro-Cap System II",
+            cap_manufacturer="Electro-Cap International",
+            cap_model="Electro-Cap System II",
             reference="left ear lobe",
-            filters="none (no hardware/software filters applied during recording)",
+            ground="right ear lobe",
+            filters=(
+                "paper: 0.5-45 Hz 3rd-order Butterworth band-pass applied in "
+                "OpenViBE during acquisition; BIDS sidecars: n/a"
+            ),
+            software="OpenViBE",
             sensors=list(_CH_NAMES),
             line_freq=50.0,
         ),
@@ -108,12 +126,12 @@ class Peterson2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
                 "versus rest. RUN0 real-movement demo (excluded); RUN1-RUN4 "
                 "MI-vs-rest (20 MI + 20 rest trials per run)."
             ),
-            feedback_type="continuous visual",
-            stimulus_type="visual cue",
-            stimulus_modalities=["visual"],
+            feedback_type="none",
+            stimulus_type="visual cue (red arrow) after an auditory beep",
+            stimulus_modalities=["visual", "auditory"],
             primary_modality="visual",
             synchronicity="cue-based",
-            mode="online",
+            mode="offline",
         ),
         documentation=DocumentationMetadata(
             doi="10.1016/j.heliyon.2020.e03425",
@@ -137,8 +155,10 @@ class Peterson2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
             data_state="raw",
             preprocessing_applied=False,
             notes=(
-                "Signals distributed raw. The reference paper applied a "
-                "3rd-order Butterworth bandpass filter (0.5-45 Hz) offline."
+                "BIDS sidecars declare no hardware/software filters; the paper "
+                "reports a 0.5-45 Hz 3rd-order Butterworth band-pass applied in "
+                "OpenViBE during acquisition and a 1-40 Hz 5th-order Butterworth "
+                "post-processing filter for its analysis."
             ),
         ),
         signal_processing=SignalProcessingMetadata(
@@ -160,7 +180,9 @@ class Peterson2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
             ),
         ),
         bci_application=BCIApplicationMetadata(
-            applications=["motor_control"], environment="laboratory", online_feedback=True
+            applications=["motor_control", "rehabilitation"],
+            environment="non-shielded office",
+            online_feedback=False,
         ),
         data_processed=False,
         file_format="EDF (BIDS)",
