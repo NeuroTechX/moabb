@@ -44,8 +44,12 @@ class neuroTUMBCI(BaseDataset):
 
     Recorded by the neuroTUM student team (Technical University of Munich)
     while developing a mobile online BCI for the 2024 Cybathlon BCI race [2]_.
-    Two pilots (one tetraplegic) wore a 24-channel Smarting mobi (mBrainTrain)
-    streaming at 250 Hz over Bluetooth; P1 has five sessions, P2 three.
+    Two pilots (P1, the tetraplegic patient; P2, the healthy participant) wore
+    a 24-channel Smarting mobi (mBrainTrain) streaming at 250 Hz over
+    Bluetooth; P1 has five sessions, P2 three. The dataset record
+    ("neuroTUM-BCI: Cybathlon Dataset", Zenodo, issued 29 December 2025) is
+    credited to the organisation neuroTUM e.V.; the associated preprint lists
+    Isabel W. Tscherniak as first author.
 
     In each arrow-cue trial a 3 s fixation cross is followed by a 1 s cue and a
     3 s black screen during which the pilot performs the cued task. Each pilot
@@ -60,8 +64,9 @@ class neuroTUMBCI(BaseDataset):
        DOI: https://doi.org/10.5281/zenodo.18087806
 
     .. [2] Tscherniak, I. W., Thiemann, N. C., McWhinnie-Fernandez, A., et al.
-       (2026). Improving motor imagery decoding methods for an EEG-based mobile
-       brain-computer interface in the context of the 2024 Cybathlon. arXiv.
+       (2025). Improving motor imagery decoding methods for an EEG-based mobile
+       brain-computer interface in the context of the 2024 Cybathlon. arXiv
+       (v1 November 2025; v4 March 2026).
        DOI: https://doi.org/10.48550/arXiv.2511.23384
 
     Notes
@@ -139,7 +144,7 @@ class neuroTUMBCI(BaseDataset):
             institution_address="Munich, Germany",
             country="DE",
             data_url="https://doi.org/10.5281/zenodo.18087806",
-            publication_year=2026,
+            publication_year=2025,
             related_paper_dois=["10.48550/arXiv.2511.23384"],
             license="CC-BY-4.0",
             repository="Zenodo",
