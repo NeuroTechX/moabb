@@ -58,7 +58,15 @@ class ZjuMI2025(BaseDataset):
     15 healthy subjects performed cued four-class motor imagery (left hand, right
     hand, tongue, both feet) on two days, mapped to two sessions. Each day has a
     240-trial calibration run and a 160-trial online feedback run (``MI4`` subset
-    of the ``ZJU-MI-EEG`` Hugging Face dataset; 62 channels, 256 Hz).
+    of the ``ZJU-MI-EEG`` Hugging Face dataset; 62 channels, 256 Hz). In the
+    paper [1]_ each session consists of six calibration runs and four online
+    feedback runs of 40 trials (10 per class); the release merges them into one
+    calibration and one feedback file per day, which are the two runs exposed
+    here. The paper reports a 62-channel g.USBamp amplifier (g.tec) sampled at
+    256 Hz and high-pass filtered above 0.1 Hz, whereas the release ships a
+    ``62channels_gNautilus.ced`` montage file; the amplifier model is therefore
+    recorded as reported by the paper. Feedback trials lasted up to 10 s online,
+    but the release stores every trial as the -1 to 4 s window around the cue.
 
     Each ``.mat`` run stores ``EEG_data`` ``(62, 1280, n_trials)`` in microvolts
     (-1 to 4 s around the cue) and integer ``labels``. The loader concatenates the
@@ -85,11 +93,21 @@ class ZjuMI2025(BaseDataset):
             sampling_rate=SFREQ,
             channel_types={"eeg": 62},
             montage="10-10",
+            hardware="g.USBamp (g.tec medical engineering, Austria), 62 channels",
+            filters="0.1 Hz high-pass",
             reference=None,
             ground=None,
             sensors=list(CHANNELS),
         ),
-        participants=ParticipantMetadata(n_subjects=15, species="homo sapiens"),
+        participants=ParticipantMetadata(
+            n_subjects=15,
+            health_status="healthy",
+            age_mean=24.0,
+            age_std=5.1,
+            gender={"male": 12, "female": 3},
+            bci_experience="10 BCI-naive; 5 without online BCI experience",
+            species="homo sapiens",
+        ),
         experiment=ExperimentMetadata(
             paradigm="imagery",
             n_classes=4,
