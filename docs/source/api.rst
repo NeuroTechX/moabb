@@ -88,7 +88,6 @@ Motor Imagery Datasets
     BCIComp2020UpperLimb
     Brandl2020
     Chang2025
-    Corsi2026
     Forenzo2023
     Gao2026
     GuttmannFlury2025_ME
@@ -99,6 +98,7 @@ Motor Imagery Datasets
     Kumar2024
     Liu2025
     Ma2020
+    NETBCI2026
     Rozado2015
     Tavakolan2017
     TrianaGuzman2024

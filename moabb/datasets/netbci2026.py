@@ -174,7 +174,7 @@ class _HTTPRangeFile(io.RawIOBase):
         return len(data)
 
 
-class Corsi2026(BaseBIDSDataset):
+class NETBCI2026(BaseBIDSDataset):
     """NETBCI: longitudinal right-hand motor imagery vs rest BCI training [1]_.
 
     Networks for BCI (NETBCI), Paris Brain Institute: 19 healthy right-handed
@@ -328,7 +328,7 @@ class Corsi2026(BaseBIDSDataset):
             subjects=list(range(1, _N_SUBJECTS + 1)),
             sessions_per_subject=_N_SESSIONS,
             events=dict(_EVENTS),
-            code="Corsi2026",
+            code="NETBCI2026",
             interval=[0, 5],
             paradigm="imagery",
             doi="10.1038/s41597-026-08237-5",
@@ -384,10 +384,10 @@ class Corsi2026(BaseBIDSDataset):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
-        bids_root = Path(get_dataset_path("Corsi2026", path)) / "MNE-corsi2026-data"
+        bids_root = Path(get_dataset_path("NETBCI2026", path)) / "MNE-netbci2026-data"
         bids_root.mkdir(parents=True, exist_ok=True)
         if not force_update and self._staged_subject_is_complete(bids_root, subject):
-            log.info("Using locally staged Corsi2026 subject %02d", subject)
+            log.info("Using locally staged NETBCI2026 subject %02d", subject)
             return str(bids_root)
 
         session = requests.Session()

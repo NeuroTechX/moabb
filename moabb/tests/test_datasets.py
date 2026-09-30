@@ -64,7 +64,7 @@ NEMAR_ID_EXEMPT = {
     "Schrag2026Pediatric",
     "Lenaig2026",
     "Wang2026",
-    "Corsi2026",  # CC-BY 4.0 on Recherche Data Gouv; NEMAR rehost not done yet
+    "NETBCI2026",  # CC-BY 4.0 on Recherche Data Gouv; NEMAR rehost not done yet
 }
 # Datasets whose NEMAR deposit is assigned but not yet public (private,
 # pending publication). Their ids are valid and still checked; tracked here
@@ -1813,7 +1813,7 @@ def test_lee2024_data_path_downloads_the_real_upstream_inventory(tmp_path, monke
     assert [fname for _, fname in calls] == ["Doorlock/Dat_sub01/sub01_Testing1.mat"]
 
 
-def test_corsi2026_events_replace_markers_and_off_rate_run_is_resampled(
+def test_netbci2026_events_replace_markers_and_off_rate_run_is_resampled(
     tmp_path, monkeypatch
 ):
     """Each trial is epoched once and an off-rate run yields 250 Hz epochs.
@@ -1837,7 +1837,7 @@ def test_corsi2026_events_replace_markers_and_off_rate_run_is_resampled(
             for o, v in zip(onsets, [1, 2, 1, 2])
         )
     )
-    dataset = db.Corsi2026(subjects=[1])
+    dataset = db.NETBCI2026(subjects=[1])
     bids_path = SimpleNamespace(fpath=f"{stem}_eeg.vhdr", session="01", run="04")
     monkeypatch.setattr(dataset, "bids_paths", Mock(return_value=[bids_path]))
     reader = Mock(return_value=raw.copy())
@@ -1851,7 +1851,7 @@ def test_corsi2026_events_replace_markers_and_off_rate_run_is_resampled(
     np.testing.assert_allclose(events[:, 0] / 250.0, onsets, atol=4e-3)
 
 
-def test_corsi2026_subject_members_are_eeg_motor_imagery_only():
+def test_netbci2026_subject_members_are_eeg_motor_imagery_only():
     names = [
         "sub-01/",
         "sub-01/ses-01/eeg/sub-01_ses-01_task-MotorImageryRest_run-01_eeg.eeg",
@@ -1866,27 +1866,27 @@ def test_corsi2026_subject_members_are_eeg_motor_imagery_only():
     infos = [zipfile.ZipInfo(name) for name in names]
     for offset, info in enumerate(reversed(infos)):
         info.header_offset = offset  # archive order differs from listing order
-    members = db.Corsi2026._subject_members(infos, 1)
+    members = db.NETBCI2026._subject_members(infos, 1)
     assert [info.filename for info in members] == [names[3], names[2], names[1]]
 
 
-def test_corsi2026_staged_subject_skips_the_network(tmp_path, monkeypatch):
-    corsi = db.corsi2026
-    root = tmp_path / "MNE-corsi2026-data"
+def test_netbci2026_staged_subject_skips_the_network(tmp_path, monkeypatch):
+    netbci = db.netbci2026
+    root = tmp_path / "MNE-netbci2026-data"
     for ses in range(1, 5):
         eeg = root / "sub-02" / f"ses-{ses:02d}" / "eeg"
         eeg.mkdir(parents=True)
         for run in range(1, 7):
             stem = f"sub-02_ses-{ses:02d}_task-MotorImageryRest_run-{run:02d}_"
-            for suffix in corsi._RUN_SUFFIXES:
+            for suffix in netbci._RUN_SUFFIXES:
                 (eeg / f"{stem}{suffix}").touch()
-    monkeypatch.setattr(corsi, "get_dataset_path", Mock(return_value=str(tmp_path)))
-    monkeypatch.delattr(corsi.requests, "Session")  # any network use fails
-    assert db.Corsi2026()._download_subject(2, None, False, None, None) == str(root)
+    monkeypatch.setattr(netbci, "get_dataset_path", Mock(return_value=str(tmp_path)))
+    monkeypatch.delattr(netbci.requests, "Session")  # any network use fails
+    assert db.NETBCI2026()._download_subject(2, None, False, None, None) == str(root)
 
 
 class _BytesRemote:
-    """Stand-in for ``corsi2026._HTTPRangeFile`` backed by local bytes."""
+    """Stand-in for ``netbci2026._HTTPRangeFile`` backed by local bytes."""
 
     def __init__(self, data):
         self.data = data
@@ -1900,7 +1900,7 @@ class _BytesRemote:
 @pytest.mark.parametrize(
     "compression", [zipfile.ZIP_STORED, zipfile.ZIP_DEFLATED], ids=["stored", "deflated"]
 )
-def test_corsi2026_read_member_one_request_and_crc(compression):
+def test_netbci2026_read_member_one_request_and_crc(compression):
     payload = {"a/first.eeg": b"\x00\x01" * 5000, "a/second.tsv": b"onset\tvalue\n1\t1\n"}
     buf = io.BytesIO()
     with zipfile.ZipFile(buf, "w", compression=compression) as zf:
@@ -1909,20 +1909,20 @@ def test_corsi2026_read_member_one_request_and_crc(compression):
     remote = _BytesRemote(buf.getvalue())
     infos = zipfile.ZipFile(buf).infolist()
     for info in infos:
-        assert db.Corsi2026._read_member(remote, info) == payload[info.filename]
+        assert db.NETBCI2026._read_member(remote, info) == payload[info.filename]
     assert remote.n_requests == len(infos)  # one range request per member
 
     corrupt = bytearray(remote.data)
     corrupt[infos[0].header_offset + 30 + len(infos[0].filename) + 10] ^= 0xFF
     with pytest.raises((OSError, zlib.error)):
-        db.Corsi2026._read_member(_BytesRemote(bytes(corrupt)), infos[0])
+        db.NETBCI2026._read_member(_BytesRemote(bytes(corrupt)), infos[0])
 
 
-def test_corsi2026_root_files_are_md5_checked(tmp_path, monkeypatch):
-    corsi = db.corsi2026
+def test_netbci2026_root_files_are_md5_checked(tmp_path, monkeypatch):
+    netbci = db.netbci2026
     session = Mock()
     session.get.return_value.content = b"tampered"
-    monkeypatch.setattr(corsi, "get_dataset_path", Mock(return_value=str(tmp_path)))
-    monkeypatch.setattr(corsi.requests, "Session", Mock(return_value=session))
+    monkeypatch.setattr(netbci, "get_dataset_path", Mock(return_value=str(tmp_path)))
+    monkeypatch.setattr(netbci.requests, "Session", Mock(return_value=session))
     with pytest.raises(OSError, match="MD5"):
-        db.Corsi2026()._download_subject(3, None, False, None, None)
+        db.NETBCI2026()._download_subject(3, None, False, None, None)

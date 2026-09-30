@@ -23,7 +23,7 @@ Version 1.8  (Source - GitHub)
 
 Enhancements
 ~~~~~~~~~~~~
-- Add :class:`moabb.datasets.Corsi2026` (NETBCI, Recherche Data Gouv doi:10.57745/RBJRC7): 19 subjects, 74-channel EEG, right-hand motor imagery vs rest over 4 longitudinal sessions x 6 online feedback runs; per-subject EEG is read out of the 49 GB archive by HTTP range requests (:gh:`1188` by `Bruno Aristimunha`_).
+- Add :class:`moabb.datasets.NETBCI2026` (NETBCI, Recherche Data Gouv doi:10.57745/RBJRC7): 19 subjects, 74-channel EEG, right-hand motor imagery vs rest over 4 longitudinal sessions x 6 online feedback runs; per-subject EEG is read out of the 49 GB archive by HTTP range requests (:gh:`1188` by `Bruno Aristimunha`_).
 - Spell MNE's renamed template montages everywhere: MNE 1.13 renamed ``standard_1005``/``standard_1020`` (and the other ``standard_*`` templates) to ``colin27_*`` (identical electrode files), warns on the old names and MNE 1.14 removes them, so every ``make_standard_montage``/``set_montage`` call in MOABB now spells ``colin27_*``. ``METADATA`` montage labels are descriptive and unchanged (:gh:`1200` by `Bruno Aristimunha`_).
 
 API changes

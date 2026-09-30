@@ -63,7 +63,6 @@ from .castillos2023 import (
 )
 from .chailloux2020 import Chailloux2020
 from .chang2025 import Chang2025
-from .corsi2026 import Corsi2026
 from .dreyer2023 import Dreyer2023, Dreyer2023A, Dreyer2023B, Dreyer2023C
 from .epfl import EPFLP300
 from .erpcore2021 import (
@@ -126,6 +125,7 @@ from .mainsah2025 import (
 from .martinezcagigal2023_checker_cvep import MartinezCagigal2023Checker
 from .martinezcagigal2023_pary_cvep import MartinezCagigal2023Pary
 from .mpi_mi import GrosseWentrup2009
+from .netbci2026 import NETBCI2026
 from .nieto2022 import Nieto2022
 from .nguyen2017 import Nguyen2017_L, Nguyen2017_S, Nguyen2017_SL, Nguyen2017_V
 from .phmd_ml import Cattan2019_PHMD
