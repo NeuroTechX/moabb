@@ -80,6 +80,7 @@ class Kalunga2016(BaseDataset):
             sensor_type="EEG",
             hardware="g.tec MobiLab",
             reference="right mastoid",
+            ground="Fz",
             sensors=["Oz", "O1", "O2", "POz", "PO3", "PO4", "PO7", "PO8"],
             line_freq=50.0,
         ),
