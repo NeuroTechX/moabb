@@ -13,14 +13,14 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from moabb.datasets import Daly2020, Damm2026, Peterson2022
+from moabb.datasets import Daly2020, Damm2026, Peterson2020
 from moabb.datasets.base import BaseBIDSDataset
 
 
 CASES = [
     (Daly2020, "on002720", 1, "01"),
     (Damm2026, "on008446", 1, "01"),
-    (Peterson2022, "on003810", 2, "02"),
+    (Peterson2020, "on003810", 2, "02"),
 ]
 
 
@@ -47,7 +47,7 @@ def test_mirror_flags(cls, nemar_id, subject, label, monkeypatch, tmp_path):
 
 @pytest.mark.parametrize(
     "module,cls,subject,n_files",
-    [("peterson2022", Peterson2022, 2, 12), ("daly2020", Daly2020, 1, 45)],
+    [("peterson2020", Peterson2020, 2, 12), ("daly2020", Daly2020, 1, 45)],
 )
 def test_bids_transport_only_mock(module, cls, subject, n_files, monkeypatch, tmp_path):
     """Exercise the real download manifest and root creation, mocking transport only."""
@@ -109,7 +109,7 @@ def test_peterson_units_native_stim_and_boundary_trials(monkeypatch):
     monkeypatch.setattr(
         BaseBIDSDataset, "_get_single_subject_data", Mock(return_value={"0": {"1": raw}})
     )
-    ds = Peterson2022()
+    ds = Peterson2020()
     assert ds._get_read_extra_params(2) == {"units": "uV"}
     result = ds._get_single_subject_data(2)["0"]["1"]
     _assert_loaded(result, [[0, 1], [600, 2]], ds.event_id, tmax=4)
@@ -120,7 +120,7 @@ def test_peterson_get_data_builds_pipeline_without_sourcedata(monkeypatch):
     """Peterson overrides the process pipeline (cache version); get_data must
     still build it through the raw mirror path without touching sourcedata."""
     monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", "nemar")
-    ds = Peterson2022()
+    ds = Peterson2020()
     monkeypatch.setattr(ds, "sourcedata_path", Mock(side_effect=AssertionError))
     monkeypatch.setattr(ds, "_get_selected_subject_data", Mock(return_value={}))
     assert ds.get_data([2]) == {2: {}}

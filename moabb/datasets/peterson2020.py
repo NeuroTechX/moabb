@@ -45,7 +45,7 @@ _ANNOT_TO_NAME = {"OVTK_GDF_Right": "motor_imagery", "OVTK_GDF_Tongue": "rest"}
 # The EDF physical-dimension fields are blank even though channels.tsv records
 # all 15 EEG signals as microvolts. Tell MNE the missing source unit so its EDF
 # reader performs the standard microvolts-to-SI-volts conversion.
-PETERSON2022_CACHE_VERSION = "edf-blank-physdim-uv-to-v-v1"
+PETERSON2020_CACHE_VERSION = "edf-blank-physdim-uv-to-v-v1"
 
 
 class _PetersonSetRawAnnotations(SetRawAnnotations):
@@ -56,7 +56,7 @@ class _PetersonSetRawAnnotations(SetRawAnnotations):
         super().__init__(event_id, interval)
 
 
-class Peterson2022(OpenNeuroMirrorMixin, BaseBIDSDataset):
+class Peterson2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
     """Motor imagery vs rest low-cost EEG dataset from Peterson et al 2020 [1]_.
 
     10 novice participants, 15-channel consumer-grade EEG at 125 Hz, either
@@ -171,7 +171,7 @@ class Peterson2022(OpenNeuroMirrorMixin, BaseBIDSDataset):
             subjects=list(_SUBJECTS),
             sessions_per_subject=1,
             events=dict(_EVENTS),
-            code="Peterson2022",
+            code="Peterson2020",
             interval=[0, 4],
             paradigm="imagery",
             doi="10.1016/j.heliyon.2020.e03425",
@@ -188,7 +188,7 @@ class Peterson2022(OpenNeuroMirrorMixin, BaseBIDSDataset):
                     _PetersonSetRawAnnotations(
                         self.event_id,
                         interval=self.interval,
-                        cache_version=PETERSON2022_CACHE_VERSION,
+                        cache_version=PETERSON2020_CACHE_VERSION,
                     ),
                 )
             ]
@@ -235,8 +235,8 @@ class Peterson2022(OpenNeuroMirrorMixin, BaseBIDSDataset):
         if mirror_root is not None:
             return mirror_root
 
-        bids_root = Path(get_dataset_path("Peterson2022", path))
-        bids_root = bids_root / "MNE-peterson2022-data"
+        bids_root = Path(get_dataset_path("Peterson2020", path))
+        bids_root = bids_root / "MNE-peterson2020-data"
         bids_root.mkdir(parents=True, exist_ok=True)
         subj_str = f"sub-{subject:02d}"
         for run in _RUNS:
@@ -245,7 +245,7 @@ class Peterson2022(OpenNeuroMirrorMixin, BaseBIDSDataset):
                 rel_path = f"{stem}_{suffix}"
                 data_dl(
                     f"{_S3_BASE}/{rel_path}",
-                    "Peterson2022",
+                    "Peterson2020",
                     path=path,
                     force_update=force_update,
                     verbose=verbose,

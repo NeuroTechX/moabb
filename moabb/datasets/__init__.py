@@ -171,7 +171,7 @@ from .zuo2025 import Zuo2025
 
 from .daly2020 import Daly2020
 from .damm2026 import Damm2026
-from .peterson2022 import Peterson2022
+from .peterson2020 import Peterson2020
 
 
 # Call this last in order to make sure the dataset list, dict are populated with
