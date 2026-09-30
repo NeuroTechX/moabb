@@ -1125,6 +1125,11 @@ class BI2014b(BaseDataset):
     (Solo1, Solo2, Collaboration). The experiment took place at GIPSA-lab, Grenoble, France, in 2014.
     A full description of the experiment is available at [1]_. The ID of this dataset is BI2014b.
 
+    The loader reads one ``group_XX_sujet_0N.mat`` file per subject (the solo
+    recording of that participant) and returns it as a single session
+    (``"0"``) with one run; the collaborative-condition recording is not
+    loaded. ``sessions_per_subject`` is therefore 1.
+
     :Investigators: Eng. Louis Korczowski, B. Sc. Ekaterina Ostaschenko
     :Technical Support: Eng. Anton Andreev, Eng. Grégoire Cattan, Eng. Pedro. L. C. Rodrigues,
                         M. Sc. Violette Gautheret
