@@ -585,6 +585,11 @@ class BNCI2014_002(MNEBNCI):
     were aged between 20 and 30 years, 8 naive to the task, and had no known
     disabilities.
 
+    .. note::
+        The BNCI description above mentions 13 participants, but the BNCI
+        Horizon 2020 release contains 14 subject files (``S01`` to ``S14``),
+        which is what this loader exposes (``n_subjects=14``).
+
     References
     ----------
     .. [1] Scherer, R., Faller, J., Balderas, D., Friedrich, E. V., &
@@ -625,7 +630,7 @@ class BNCI2014_002(MNEBNCI):
             electrode_material="Ag/AgCl",
         ),
         participants=ParticipantMetadata(
-            n_subjects=13,
+            n_subjects=14,
             health_status="healthy",
             age_min=20.0,
             age_max=30.0,
