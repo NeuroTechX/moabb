@@ -96,6 +96,12 @@ class MOVING2024(BaseDataset):
     Extraction of ``edf.rar`` requires ``unrar``, ``unar`` or ``7z`` to be
     installed on the system.
 
+    The Sensors paper describes the protocol (32 dry Enobio electrodes, 2 s
+    fixation + 6 s action, eight repetitions of the triplet, ~10 min) but
+    states neither the number of participants nor the raw sampling rate; the
+    eleven subjects come from the Zenodo record and the 500 Hz rate from the
+    EDF headers (paper audit, 2026-09-30).
+
     .. versionadded:: 1.8
 
     """
