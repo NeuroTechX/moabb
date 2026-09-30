@@ -297,7 +297,13 @@ class Stieger2021(BaseDataset):
             imagery_duration_s=6.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials=450, n_blocks=18, trials_context="per_session"
+            n_trials=450,
+            n_blocks=6,
+            trials_context=(
+                "per session: 2 blocks of each task (LR, UD, 2D), each block "
+                "3 runs of 25 trials (18 runs, 450 trials); released as one "
+                "file per session, exposed as a single run"
+            ),
         ),
         file_format="MAT",
         sessions_per_subject=11,
