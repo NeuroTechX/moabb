@@ -1526,9 +1526,13 @@ class BI2015b(BaseDataset):
     per subjects (total: 64 electrodes) during four randomised conditions
     (Cooperation 1-Target, Cooperation 2-Targets, Competition 1-Target,
     Competition 2-Targets). The experiment took place at GIPSA-lab, Grenoble,
-    France, in 2015. A full description of the experiment is available at
-    A full description of the experiment is available at [1]_. The ID of this
-    dataset is BI2015a.
+    France, in 2015. A full description of the experiment is available at [1]_.
+    The ID of this dataset is BI2015b.
+
+    The four conditions are released as four recordings per pair of subjects
+    (``group_XX_s1.mat`` ... ``group_XX_s4.mat``); MOABB exposes them as one
+    session with four runs per subject. Participant demographics are not
+    given in the Zenodo record (see [1]_ for the full description).
 
     :Investigators: Eng. Louis Korczowski, B. Sc. Martine Cederhout
     :Technical Support: Eng. Anton Andreev, Eng. Grégoire Cattan, Eng. Pedro. L. C. Rodrigues,
@@ -1546,7 +1550,8 @@ class BI2015b(BaseDataset):
     .. [1] Korczowski, L., Cederhout, M., Andreev, A., Cattan, G., Rodrigues, P. L. C.,
            Gautheret, V., & Congedo, M. (2019). Brain Invaders Cooperative versus Competitive:
            Multi-User P300-based Brain-Computer Interface Dataset (BI2015b)
-           https://hal.archives-ouvertes.fr/hal-02172347
+           https://hal.archives-ouvertes.fr/hal-02173913
+           Data: https://doi.org/10.5281/zenodo.3267307
     """
 
     nemar_id = "nm000217"
@@ -1602,31 +1607,24 @@ class BI2015b(BaseDataset):
             filters="no digital filter applied",
         ),
         participants=ParticipantMetadata(
-            n_subjects=50,
-            health_status="Healthy",
-            gender={"male": 36, "female": 14},
-            age_mean=23.70,
-            age_std=3.19,
-            bci_experience="mostly students and young researchers",
-            species="human",
+            n_subjects=44, health_status="Healthy", species="human"
         ),
         experiment=ExperimentMetadata(
             paradigm="p300",
             events={"Target": 1, "Non-Target": 2},
             n_classes=2,
             class_labels=["Target", "Non-Target"],
-            study_design="Three game sessions with different flash durations (110ms, 80ms, 50ms), with resting state and eyes closed conditions recorded before and after. Subjects were instructed to limit eye blinks, head movements and face muscular contractions.",
+            study_design="Subjects played in pairs to the multi-user version of Brain Invaders during four randomised conditions (Cooperation 1-Target, Cooperation 2-Targets, Competition 1-Target, Competition 2-Targets). The interface uses the oddball paradigm on a grid of 36 symbols (1 or 2 Target, 35 or 34 Non-Target).",
             feedback_type="visual (game interface with reward screen)",
             stimulus_type="visual flash",
             stimulus_modalities=["visual"],
             primary_modality="visual",
             mode="online",
-            instructions="Players had up to eight attempts to destroy the target symbol per level. Target symbol identification using oddball paradigm with 36 aliens flashing in pseudo-random groups of six symbols.",
             has_training_test_split=False,
         ),
         documentation=DocumentationMetadata(
-            doi="10.5281/zenodo.3266930",
-            description="EEG recordings of 50 subjects playing to a visual P300 Brain-Computer Interface (BCI) videogame named Brain Invaders. The interface uses the oddball paradigm on a grid of 36 symbols (1 Target, 35 Non-Target) that are flashed pseudo-randomly to elicit the P300 response. Three conditions: flash duration 50ms, 80ms or 110ms.",
+            doi="10.5281/zenodo.3267307",
+            description="EEG recordings of 44 subjects playing in pair to the multi-user version of a visual P300 Brain-Computer Interface (BCI) named Brain Invaders. The interface uses the oddball paradigm on a grid of 36 symbols (1 or 2 Target, 35 or 34 Non-Target) that are flashed pseudo-randomly to elicit the P300 response. Four randomised conditions: Cooperation 1-Target, Cooperation 2-Targets, Competition 1-Target, Competition 2-Targets.",
             investigators=[
                 "Louis Korczowski",
                 "Martine Cederhout",
@@ -1639,10 +1637,10 @@ class BI2015b(BaseDataset):
             institution="GIPSA-lab, CNRS, University Grenoble-Alpes, Grenoble INP",
             country="France",
             repository="Zenodo",
-            data_url="https://doi.org/10.5281/zenodo.3266930",
+            data_url="https://doi.org/10.5281/zenodo.3267307",
             publication_year=2019,
             senior_author="Marco Congedo",
-            associated_paper_doi="hal-02172347",
+            associated_paper_doi="hal-02173913",
             institution_address="GIPSA-lab, 11 rue des Mathématiques, Grenoble Campus BP46, F-38402, France",
             ethics_approval=[
                 "Ethical Committee of the University of Grenoble Alpes (Comité d'Ethique pour la Recherche Non-Interventionnelle)"
@@ -1655,7 +1653,7 @@ class BI2015b(BaseDataset):
             ],
             license="CC-BY-4.0",
         ),
-        sessions_per_subject=3,
+        sessions_per_subject=1,
         runs_per_session=4,
         contributing_labs=["GIPSA-lab"],
         n_contributing_labs=1,
@@ -1675,25 +1673,18 @@ class BI2015b(BaseDataset):
             ],
             feature_extraction=["Covariance/Riemannian", "xDAWN"],
         ),
-        cross_validation=CrossValidationMetadata(evaluation_type=["cross_session"]),
+        cross_validation=CrossValidationMetadata(evaluation_type=["within_session"]),
         bci_application=BCIApplicationMetadata(
-            applications=["gaming"],
-            environment="small room with a surface of four meters square, containing a 24' screen",
-            online_feedback=True,
+            applications=["gaming"], online_feedback=True
         ),
-        paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="p300", n_targets=1, n_repetitions=12, soa_ms=None
-        ),
+        paradigm_specific=ParadigmSpecificMetadata(detected_paradigm="p300"),
         data_structure=DataStructureMetadata(
-            n_trials="variable per subject (up to 8 attempts per level, 9 levels per session, 3 sessions)",
-            n_blocks=9,
-            trials_context="per session (9 levels per session, 3 sessions with different flash durations)",
+            n_trials="variable per subject (four conditions recorded as four runs)",
+            n_blocks=4,
+            trials_context="per subject (four randomised conditions: Cooperation 1-Target, Cooperation 2-Targets, Competition 1-Target, Competition 2-Targets)",
         ),
-        performance={
-            "note": "Real-time adaptive classifier used during experiment, performance variable per subject"
-        },
-        abstract="We describe the experimental procedures for an experiment dataset that we have made publicly available at https://doi.org/10.5281/zenodo.3266930 in mat and csv formats. This dataset contains electroencephalographic (EEG) recordings of 50 subjects playing to a visual P300 Brain-Computer Interface (BCI) videogame named Brain Invaders. The interface uses the oddball paradigm on a grid of 36 symbols (1 Target, 35 Non-Target) that are flashed pseudo-randomly to elicit the P300 response. EEG data were recorded using 32 active wet electrodes with three conditions: flash duration 50ms, 80ms or 110ms. The experiment took place at GIPSA-lab, Grenoble, France, in 2015.",
-        methodology="The experiment consisted of three game sessions of Brain Invaders of 9 levels each with different flash duration (110ms, 80ms, 50ms). Before and after the three game sessions, around one minute of resting state and eyes closed conditions were recorded. The interface is composed of 36 aliens. A repetition is composed of 12 flashes of pseudo-random groups of six symbols chosen in such a way that after each repetition each symbol has flashed exactly two times. The ratio of Target versus non-Target is one-to-five. During the experiment, the output of a real-time adaptive Riemannian Minimum Distance to Mean (RMDM) classifier was used for assessing the participants' command. This scheme allows a calibration-free classifier.",
+        abstract="This dataset contains electroencephalographic (EEG) recordings of 44 subjects playing in pair to the multi-user version of a visual P300 Brain-Computer Interface (BCI) named Brain Invaders. The interface uses the oddball paradigm on a grid of 36 symbols (1 or 2 Target, 35 or 34 Non-Target) that are flashed pseudo-randomly to elicit the P300 response. EEG data were recorded using 32 active wet electrodes per subjects (total: 64 electrodes) during four randomised conditions (Cooperation 1-Target, Cooperation 2-Targets, Competition 1-Target, Competition 2-Targets). The experiment took place at GIPSA-lab, Grenoble, France, in 2015.",
+        methodology="Pairs of subjects played the multi-user version of Brain Invaders under four randomised conditions (Cooperation 1-Target, Cooperation 2-Targets, Competition 1-Target, Competition 2-Targets), each released as one recording. EEG data were recorded using 32 active wet electrodes per subject (total: 64 electrodes). See https://hal.archives-ouvertes.fr/hal-02173913 for the full description of the experiment.",
     )
 
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
