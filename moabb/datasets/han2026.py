@@ -72,7 +72,9 @@ class Han2026(BaseDataset):
     (subjects 20, 25, 27) are dropped. The ``ballpass`` and ``passing`` tasks hold
     only compound MO/MI sequences and are not loaded. The 24 unnamed bipolar
     ``BIP*`` channels are dropped unless ``return_all_modalities=True`` (then
-    ``misc``).
+    ``misc``). Demographics (20 female / 15 male, age 21.5 +/- 1.9 years) are
+    computed from the BIDS ``participants.tsv``; the reference (``CPz``) and
+    ground (``AFz``) electrodes are not stated in the OpenNeuro metadata.
 
     References
     ----------
@@ -103,7 +105,12 @@ class Han2026(BaseDataset):
             line_freq=50.0,
         ),
         participants=ParticipantMetadata(
-            n_subjects=35, health_status="healthy", species="homo sapiens"
+            n_subjects=35,
+            health_status="healthy",
+            gender={"female": 20, "male": 15},
+            age_mean=21.5,
+            age_std=1.9,
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             paradigm="imagery",
