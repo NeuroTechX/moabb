@@ -47,13 +47,16 @@ _DOWNLOAD_ATTEMPTS = 3
 class Iwama2023(OpenNeuroMirrorMixin, BaseBIDSDataset):
     """High-density (128ch) SMR-BMI motor imagery dataset, Dataset 1 [1]_.
 
-    Dataset 1 of the BMI-HDEEG collection: 30 healthy participants, 128-channel
-    EGI HydroCel net at 1000 Hz (the EDF carries 129 EEG channels, the extra one
-    being the Cz reference). Each trial of the SMR neurofeedback task is rest
-    (6 s, ``value = 1``), ready (1 s), task (6 s kinesthetic right-hand motor
-    imagery with ERD feedback, ``value = 3``) and interval (8 s). MOABB exposes
-    **right_hand** vs **rest**; each session (``ses-01`` .. ``ses-16``, fewer
-    for some subjects) has 20 trials.
+    Dataset 1 of the BMI-HDEEG collection: 30 healthy right-handed
+    participants (25 males, 5 females), 128-channel EGI HydroCel net at
+    1000 Hz (the EDF carries 129 EEG channels, the extra one being the Cz
+    reference; CPz was the ground). Each trial of the SMR neurofeedback task
+    is rest (6 s, ``value = 1``), ready (1 s), task (6 s kinesthetic right-hand
+    motor imagery with ERD feedback, ``value = 3``) and interval (8 s). MOABB
+    exposes **right_hand** vs **rest**; each session (``ses-01`` .. ``ses-16``,
+    fewer for some subjects) has 20 trials. The paper describes, per day, a
+    pre-evaluation block, 6 neurofeedback blocks and a post-evaluation block
+    over two consecutive days (16 blocks, stored one EDF per block).
 
     .. note::
         The BIDS ``events.tsv`` onsets are in milliseconds; this loader
@@ -80,7 +83,7 @@ class Iwama2023(OpenNeuroMirrorMixin, BaseBIDSDataset):
             cap_manufacturer="Magstim EGI",
             cap_model="HydroCel Geodesic Sensor Net",
             reference="Cz",
-            ground="FCz",
+            ground="CPz",
             filters={"highpass": 0.1, "lowpass": 100, "notch": 50},
             line_freq=50.0,
             software="EGI NetStation",
@@ -89,6 +92,10 @@ class Iwama2023(OpenNeuroMirrorMixin, BaseBIDSDataset):
             n_subjects=30,
             health_status="healthy",
             species="human",
+            gender={"male": 25, "female": 5},
+            handedness="right-handed",
+            age_mean=21.23,
+            age_std=2.2,
             age_min=18.0,
             age_max=27.0,
         ),
@@ -116,9 +123,9 @@ class Iwama2023(OpenNeuroMirrorMixin, BaseBIDSDataset):
             investigators=[
                 "Seitaro Iwama",
                 "Masumi Morishige",
+                "Midori Kodama",
                 "Yoshikazu Takahashi",
                 "Ryotaro Hirose",
-                "Midori Kodama",
                 "Junichi Ushiba",
             ],
             institution="Keio University",
