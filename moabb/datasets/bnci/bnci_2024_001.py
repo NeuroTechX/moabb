@@ -437,7 +437,7 @@ class BNCI2024_001(BNCIBaseDataset):
             description="Classification of handwritten letters from EEG through continuous kinematic decoding",
             investigators=["Markus R. Crell", "Gernot R. Müller-Putz"],
             institution="Graz University of Technology",
-            country="Austria",
+            country="AT",
             repository="BNCI Horizon 2020",
             publication_year=2024,
             senior_author="Gernot R. Müller-Putz",

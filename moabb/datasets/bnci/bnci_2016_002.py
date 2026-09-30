@@ -463,7 +463,7 @@ class BNCI2016_002(BNCIBaseDataset):
                 "Benjamin Blankertz",
             ],
             institution="Berlin Institute of Technology",
-            country="Germany",
+            country="DE",
             publication_year=2011,
             senior_author="Benjamin Blankertz",
             contact_info=["stefan.haufe@tu-berlin.de"],

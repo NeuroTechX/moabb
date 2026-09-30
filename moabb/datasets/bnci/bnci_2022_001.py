@@ -559,7 +559,7 @@ class BNCI2022_001(BNCIBaseDataset):
             doi="10.1109/TAFFC.2021.3059688",
             investigators=["Ping-Keng Jao", "Ricardo Chavarriaga", "Jose del R. Millan"],
             institution="Ecole Polytechnique Federale de Lausanne",
-            country="Switzerland",
+            country="CH",
             publication_year=2021,
             senior_author="Jose del R. Millan",
             contact_info=[

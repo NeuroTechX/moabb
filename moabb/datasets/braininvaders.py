@@ -1640,7 +1640,7 @@ class BI2015b(BaseDataset):
                 "Marco Congedo",
             ],
             institution="GIPSA-lab, CNRS, University Grenoble-Alpes, Grenoble INP",
-            country="France",
+            country="FR",
             repository="Zenodo",
             data_url="https://doi.org/10.5281/zenodo.3267307",
             publication_year=2019,
