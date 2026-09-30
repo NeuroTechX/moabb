@@ -57,6 +57,15 @@ class Yilmaz2024(BaseDataset):
     imagery, 96-120 trials per session); the EEGLAB ``.set`` files carry no
     events, so labels come from the separate ``*_labels.mat`` files.
 
+    Acquisition notes from the paper: subjects were aged 25-35 (two female,
+    one left-handed); the headset's CMS/DRL references were placed at P9/P10,
+    the built-in bandwidth was 0.2-45 Hz with 50/60 Hz notch filters, and the
+    authors subtracted the channel mean from every channel (average reference)
+    and applied a first-order 0.16 Hz high-pass filter. Subject D01 was
+    recorded from the 13 positions exposed here, while D02-D08 were recorded
+    with four extra sensors (FC1, CP1, FC2, CP2); the loader reads the same 13
+    channels for every subject from the released ``.set`` files.
+
     The loader rebuilds one continuous ``Raw`` per session by concatenating the
     epochs with a 0.5 s zero gap and a stim event at each imagery onset
     (1 = ``tap``, 2 = ``swipe``); the interval ends at 2.5 - 1/128 s so the gap
@@ -67,8 +76,12 @@ class Yilmaz2024(BaseDataset):
 
     .. [1] Yilmaz, C. M., Yilmaz, B. H., and Kose, C. (2024). MI-BMPI motor
            imagery brain-mobile phone dataset and performance evaluation of
-           voting ensembles utilizing QPDM. Neural Computing and Applications.
+           voting ensembles utilizing QPDM. Neural Computing and Applications,
+           37, 4679-4696 (published online 24 December 2024; issue dated 2025).
            DOI: https://doi.org/10.1007/s00521-024-10917-5
+           Open-access preprint (Research Square, 16 April 2024; also the DOI
+           registered on the Zenodo data record 13626922, released 2 September
+           2024 under CC BY-NC 4.0): https://doi.org/10.21203/rs.3.rs-4268007/v1
 
     Notes
     -----
@@ -87,14 +100,24 @@ class Yilmaz2024(BaseDataset):
             cap_model="EPOC Flex",
             sensor_type="saline",
             electrode_type="passive",
-            reference="average",
+            reference="average (channel mean subtracted); CMS/DRL at P9/P10",
             ground=None,
             software="Emotiv Pro 2.5.1.227",
+            filters=(
+                "Emotiv EPOC Flex 0.2-45 Hz bandwidth, 5th-order Sinc and 50/60 Hz "
+                "notch filters; first-order 0.16 Hz high-pass"
+            ),
             sensors=list(_CH_NAMES),
             line_freq=50.0,
         ),
         participants=ParticipantMetadata(
-            n_subjects=8, health_status="healthy", species="homo sapiens"
+            n_subjects=8,
+            health_status="healthy",
+            age_min=25.0,
+            age_max=35.0,
+            gender={"male": 6, "female": 2},
+            handedness={"right": 7, "left": 1},
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             paradigm="imagery",
@@ -124,11 +147,16 @@ class Yilmaz2024(BaseDataset):
                 "mobile-phone gestures (screen tap and thumb swipe-down) over 2 "
                 "sessions, recorded with an Emotiv EPOC Flex headset at 128 Hz."
             ),
-            investigators=["Cagatay Murat Yilmaz", "Beyda H. Yilmaz", "Cemal Kose"],
+            investigators=[
+                "Cagatay Murat Yilmaz",
+                "Bahar Hatipoglu Yilmaz",
+                "Cemal Kose",
+            ],
             institution="Karadeniz Technical University",
             country="TR",
             data_url=f"https://zenodo.org/records/{_ZENODO_RECORD}",
             publication_year=2024,
+            related_paper_dois=["10.21203/rs.3.rs-4268007/v1"],
             keywords=[
                 "motor imagery",
                 "BCI",
