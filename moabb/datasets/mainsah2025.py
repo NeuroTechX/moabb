@@ -509,7 +509,11 @@ def _make_study_metadata(study):
 
 
 class Mainsah2025_A(Mainsah2025):
-    """BigP3BCI Study A — 6x6 checkerboard/row-column/random (13 healthy subjects)."""
+    """BigP3BCI Study A — 9x8 grid, row-column/checkerboard/random paradigms, 1 session.
+
+    PhysioNet Table 1: 13 participants, no target end users; related
+    publication: Throckmorton et al., 4th International BCI Meeting, 2010.
+    """
 
     nemar_id = "nm000269"
     __init__ = partialmethod(Mainsah2025.__init__, "A")
@@ -517,7 +521,15 @@ class Mainsah2025_A(Mainsah2025):
 
 
 class Mainsah2025_B(Mainsah2025):
-    """BigP3BCI Study B — 6x6 checkerboard, multi-session (19 healthy subjects)."""
+    """BigP3BCI Study B — 6x6 checkerboard, multi-session, ALS end users.
+
+    PhysioNet Table 1: 18 participants, "Has Target End User? Yes", number of
+    sessions "Var" (variable); the loader exposes 19 subject IDs and declares 8
+    sessions per subject (maximum, not verified against the release). Related
+    publication: Gates, Hauser & Sellers, "A longitudinal study of P300
+    brain-computer interface and progression of amyotrophic lateral
+    sclerosis", 2011.
+    """
 
     nemar_id = "nm000157"
     __init__ = partialmethod(Mainsah2025.__init__, "B")
@@ -525,7 +537,11 @@ class Mainsah2025_B(Mainsah2025):
 
 
 class Mainsah2025_C(Mainsah2025):
-    """BigP3BCI Study C — 6x6 checkerboard with ERN (19 healthy subjects)."""
+    """BigP3BCI Study C — 9x8 checkerboard with error-related potentials, 1 session.
+
+    PhysioNet Table 1: 19 participants; related publication: Mainsah et al.,
+    IEEE TNSRE 23(5), 2015 ("Moving away from error-related potentials...").
+    """
 
     nemar_id = "nm000326"
     __init__ = partialmethod(Mainsah2025.__init__, "C")
@@ -533,7 +549,11 @@ class Mainsah2025_C(Mainsah2025):
 
 
 class Mainsah2025_D(Mainsah2025):
-    """BigP3BCI Study D — 6x6 dynamic/row-column (17 healthy subjects)."""
+    """BigP3BCI Study D — 9x8 row-column paradigm, 1 session.
+
+    PhysioNet Table 1: 17 participants; related publication: Mainsah et al.,
+    IEEE TNSRE 22(4), 2014 (language-model dynamic data collection).
+    """
 
     nemar_id = "nm000301"
     __init__ = partialmethod(Mainsah2025.__init__, "D")
@@ -541,7 +561,11 @@ class Mainsah2025_D(Mainsah2025):
 
 
 class Mainsah2025_E(Mainsah2025):
-    """BigP3BCI Study E — 6x6 checkerboard (8 healthy subjects)."""
+    """BigP3BCI Study E — 9x8 checkerboard, 1 session.
+
+    PhysioNet Table 1: 8 participants; "The experiment protocol of study E is
+    similar to that of study D" (no dedicated publication).
+    """
 
     nemar_id = "nm000186"
     __init__ = partialmethod(Mainsah2025.__init__, "E")
@@ -549,7 +573,12 @@ class Mainsah2025_E(Mainsah2025):
 
 
 class Mainsah2025_F(Mainsah2025):
-    """BigP3BCI Study F — 6x6 multi-paradigm, 3 sessions (10 healthy subjects)."""
+    """BigP3BCI Study F — 9x8 checkerboard, 3 sessions, ALS end users.
+
+    PhysioNet Table 1: 10 participants, "Has Target End User? Yes"; related
+    publication: Mainsah et al., J. Neural Eng. 12(1), 2015 ("Increasing BCI
+    communication rates with dynamic stopping ... An ALS study").
+    """
 
     nemar_id = "nm000191"
     __init__ = partialmethod(Mainsah2025.__init__, "F")
@@ -557,7 +586,11 @@ class Mainsah2025_F(Mainsah2025):
 
 
 class Mainsah2025_G(Mainsah2025):
-    """BigP3BCI Study G — 9x8 checkerboard/dynamic (20 healthy subjects)."""
+    """BigP3BCI Study G — 9x8 checkerboard, 1 session.
+
+    PhysioNet Table 1: 20 participants; related publication: Mainsah et al.,
+    6th International BCI Conference, Graz, 2014.
+    """
 
     nemar_id = "nm000277"
     __init__ = partialmethod(Mainsah2025.__init__, "G")
@@ -565,7 +598,11 @@ class Mainsah2025_G(Mainsah2025):
 
 
 class Mainsah2025_H(Mainsah2025):
-    """BigP3BCI Study H — 9x8 checkerboard with gaze conditions (16 healthy subjects)."""
+    """BigP3BCI Study H — 9x8 checkerboard with eye-tracker data, 1 session.
+
+    PhysioNet Table 1: 16 participants; related publication: Kalika et al.,
+    J. Neural Eng. 14(5), 2017 (fusion of P300 and eye-tracker data).
+    """
 
     nemar_id = "nm000218"
     __init__ = partialmethod(Mainsah2025.__init__, "H")
@@ -573,7 +610,11 @@ class Mainsah2025_H(Mainsah2025):
 
 
 class Mainsah2025_I(Mainsah2025):
-    """BigP3BCI Study I — 9x8 checkerboard/performance-based (13 healthy subjects)."""
+    """BigP3BCI Study I — 9x8 checkerboard/performance-based paradigms, 1 session.
+
+    PhysioNet Table 1: 13 participants; "The experiment protocol of study I is
+    similar to that of study J".
+    """
 
     nemar_id = "nm000200"
     __init__ = partialmethod(Mainsah2025.__init__, "I")
@@ -581,7 +622,11 @@ class Mainsah2025_I(Mainsah2025):
 
 
 class Mainsah2025_J(Mainsah2025):
-    """BigP3BCI Study J — 9x8 performance-based/row-column (20 healthy subjects)."""
+    """BigP3BCI Study J — 6x6 row-column/performance-based paradigms, 1 session.
+
+    PhysioNet Table 1: 20 participants; related publication: Mainsah et al.,
+    J. Neural Eng. 14(4), 2017 (performance-prediction paradigm design).
+    """
 
     nemar_id = "nm000340"
     __init__ = partialmethod(Mainsah2025.__init__, "J")
@@ -589,7 +634,12 @@ class Mainsah2025_J(Mainsah2025):
 
 
 class Mainsah2025_K(Mainsah2025):
-    """BigP3BCI Study K — 9x8 adaptive/checkerboard, 2 sessions (5 healthy subjects)."""
+    """BigP3BCI Study K — 9x8 checkerboard/adaptive paradigms, 1 or 2 sessions.
+
+    PhysioNet Table 1: 5 participants, "1 or 2" sessions (the loader declares
+    2); related publication: Mainsah et al., NeurIPS 31, 2018
+    (information-based adaptive stimulus selection).
+    """
 
     nemar_id = "nm000176"
     __init__ = partialmethod(Mainsah2025.__init__, "K")
