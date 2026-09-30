@@ -105,6 +105,17 @@ class PardoGarcia2026(BaseDataset):
     trial and excluding overt movement. Control recordings hold 50 trials per
     class, patient recordings about 70.
 
+    Paper-vs-release note: the record description reports "7 right-handed
+    healthy controls" and "a 64-channel system (10-20 international system)",
+    while the released files hold eight control recordings (``C01``, ``02``,
+    ``C03``, ``CONTROL04``-``CONTROL08``) and 63 channels in their BrainVision
+    headers (59 EEG incl. ``A1`` + 4 EOG). The companion preprint on the same
+    cohort describes "a 64-channel Ag/AgCl electrode cap (Electro-Cap
+    International), following the international 10-20 system, with A2 as
+    reference" and four ocular electrodes, sampled at 1000 Hz; the record's
+    "140 trials per subject" matches the patient recordings. Recordings were
+    made at the Instituto Pluridisciplinar, Universidad Complutense de Madrid.
+
     References
     ----------
 
@@ -127,9 +138,12 @@ class PardoGarcia2026(BaseDataset):
             channel_types={"eeg": 59, "eog": 4},
             montage="10-10",
             hardware="BrainVision (Brain Products GmbH)",
-            reference=None,
+            cap_manufacturer="Electro-Cap International",
+            sensor_type="Ag/AgCl",
+            reference="A2 (right mastoid)",
             ground=None,
             sensors=list(PARDOGARCIA2026_CHANNELS),
+            line_freq=50.0,
         ),
         participants=ParticipantMetadata(
             n_subjects=18,
@@ -177,9 +191,10 @@ class PardoGarcia2026(BaseDataset):
                 "M. A. Pozo",
             ],
             institution=(
-                "Universidad Complutense de Madrid; Universidad Politecnica de "
-                "Madrid; Universidad Nacional de Educacion a Distancia"
+                "Instituto Pluridisciplinar, Universidad Complutense de Madrid; "
+                "Universidad Politecnica de Madrid; Hospital Clinico San Carlos"
             ),
+            related_paper_dois=["10.21203/rs.3.rs-6958817/v1", "10.31428/10317/13645"],
             country="ES",
             data_url="https://doi.org/10.5281/zenodo.19599465",
             publication_year=2026,

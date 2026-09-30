@@ -1,6 +1,6 @@
 {
     "_metadata": {
-        "total": 164
+        "total": 166
     },
     "10.1038/s41467-026-75435-5": {
         "title": "Sensory-guided human-machine joint learning accelerates the acquisition of motor imagery brain computer interface control",
@@ -1042,6 +1042,22 @@
         "year": 2016,
         "doi": "10.1515/bmt-2014-0117"
     },
+    "10.21203/rs.3.rs-6958817/v1": {
+        "title": "Resting-State Theta Oscillations as Biomarkers of Adaptive Neuroplasticity in Chronic Stroke: A Pilot EEG Study",
+        "authors": [
+            "Pardo-Garcia Rebeca",
+            "Ruiz-Izquierdo Maria",
+            "Mart\u00edn Garc\u00eda Vega Mercedes",
+            "Calvillo-Torres Rocio",
+            "Kontaxakis George",
+            "Barca Fernandez Idoya",
+            "Eva M. Moreno",
+            "Lucia Garvin Ocampos",
+            "Miguel A. Pozo"
+        ],
+        "year": 2025,
+        "doi": "10.21203/rs.3.rs-6958817/v1"
+    },
     "10.21203/rs.3.rs-9347306/v1": {
         "title": "A steady-state visual evoked potential-based brain-computer interface dataset in children and adolescents",
         "authors": [
@@ -1072,6 +1088,18 @@
         ],
         "year": 2023,
         "doi": "10.26599/BSA.2023.9050020"
+    },
+    "10.31428/10317/13645": {
+        "title": "Metodolog\u00eda de an\u00e1lisis de la actividad cerebral en pacientes con  ictus en fase de rehabilitaci\u00f3n",
+        "authors": [
+            "Mart\u00edn Garc\u00eda de la Vega M.",
+            "Pardo Garc\u00eda R.",
+            "Moreno Montes E. M.",
+            "Pozo Garc\u00eda M. A.",
+            "Kontaxakis G."
+        ],
+        "year": null,
+        "doi": "10.31428/10317/13645"
     },
     "10.3217/978-3-85125-378-8-61": {
         "title": "Motor Imagery Brain-Computer Interfaces: Random Forests Vs Regularized Lda - Non-Linear Beats Linear",
