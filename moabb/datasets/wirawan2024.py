@@ -58,6 +58,15 @@ class Wirawan2024(BaseDataset):
     Signals are stored in Emotiv raw microvolts (DC offset ~4200 uV) and are
     rescaled to volts on load.
 
+    The Data in Brief article reports 30 participants (16 men, 14 women)
+    recorded at the Data Science Laboratories, Engineering and Vocational
+    Faculty, Universitas Pendidikan Ganesha (Bali, Indonesia), on two
+    different days with two scenarios per day, and four imagery repetitions
+    per activity (six activities, "twenty-four trials"); the loader exposes
+    four blocks per scenario folder, i.e. 12 windows per subject, because the
+    ``.mat`` files carry no per-repetition activity label. The Emotiv
+    CMS/DRL reference is a device property and is not stated in the article.
+
     Notes
     -----
     An earlier revision derived a 6-class up/down labelling from the
@@ -89,7 +98,10 @@ class Wirawan2024(BaseDataset):
             line_freq=50.0,
         ),
         participants=ParticipantMetadata(
-            n_subjects=30, health_status="healthy", species="homo sapiens"
+            n_subjects=30,
+            health_status="healthy",
+            gender={"male": 16, "female": 14},
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             paradigm="imagery",
@@ -117,6 +129,8 @@ class Wirawan2024(BaseDataset):
                 "Yamin Thwe",
                 "Ni Nyoman Mestri Agustini",
             ],
+            institution="Universitas Pendidikan Ganesha",
+            institution_department="Data Science Laboratories, Engineering and Vocational Faculty",
             country="ID",
             data_url="https://doi.org/10.17632/zs25xxjkm9.3",
             publication_year=2024,
