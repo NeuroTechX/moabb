@@ -1,4 +1,4 @@
-"""neuroTUM-BCI Cybathlon motor imagery dataset."""
+"""NeuroTUMBCI2025: neuroTUM-BCI Cybathlon motor imagery dataset."""
 
 import mne
 import numpy as np
@@ -39,7 +39,7 @@ NEUROTUMBCI_LABELS = {
 }
 
 
-class neuroTUMBCI(BaseDataset):
+class NeuroTUMBCI2025(BaseDataset):
     """Motor imagery dataset from the neuroTUM 2024 Cybathlon BCI [1]_, [2]_.
 
     Recorded by the neuroTUM student team (Technical University of Munich)
@@ -166,7 +166,7 @@ class neuroTUMBCI(BaseDataset):
             subjects=[1, 2],
             sessions_per_subject=3,
             events={"rest": 1, "left_hand": 2, "right_hand": 3, "feet": 4},
-            code="neuroTUM-BCI",
+            code="NeuroTUMBCI2025",
             interval=(0, 3),
             paradigm="imagery",
             doi="10.5281/zenodo.18087806",

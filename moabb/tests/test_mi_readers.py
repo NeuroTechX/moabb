@@ -8,7 +8,7 @@ from unittest.mock import Mock
 import numpy as np
 import pytest
 
-from moabb.datasets import Shin2022, neuroTUMBCI, neurotumbci, shin2022
+from moabb.datasets import NeuroTUMBCI2025, Shin2022, neurotumbci2025, shin2022
 
 
 def test_shin_feedback_edges_and_units(monkeypatch):
@@ -52,8 +52,8 @@ def test_shin_download_flags_and_live_only(monkeypatch, tmp_path):
 @pytest.mark.parametrize("subject,count", [(1, 6), (2, 4)])
 def test_neurotum_download_flags(monkeypatch, tmp_path, subject, count):
     data_dl = Mock(return_value="fetched")
-    monkeypatch.setattr(neurotumbci.dl, "data_dl", data_dl)
-    paths = neuroTUMBCI().data_path(
+    monkeypatch.setattr(neurotumbci2025.dl, "data_dl", data_dl)
+    paths = NeuroTUMBCI2025().data_path(
         subject, path=str(tmp_path), force_update=True, verbose=False
     )
     assert len(paths) == count == data_dl.call_count
@@ -66,7 +66,7 @@ def test_neurotum_download_flags(monkeypatch, tmp_path, subject, count):
 def test_neurotum_mapping_timing_and_units(monkeypatch, tmp_path):
     mapping = tmp_path / "mapping.yaml"
     mapping.write_text("mapping:\n  L: LEFT HAND MI\n  R: REST\n")
-    dataset = neuroTUMBCI()
+    dataset = NeuroTUMBCI2025()
     monkeypatch.setattr(
         dataset, "data_path", Mock(return_value=["session.xdf", str(mapping)])
     )
@@ -84,12 +84,12 @@ def test_neurotum_mapping_timing_and_units(monkeypatch, tmp_path):
 
 
 def test_neurotum_missing_stream_fails(monkeypatch):
-    monkeypatch.setattr(neurotumbci, "read_xdf", Mock(return_value=([], {})))
+    monkeypatch.setattr(neurotumbci2025, "read_xdf", Mock(return_value=([], {})))
     with pytest.raises(RuntimeError, match="EEG or Marker"):
-        neuroTUMBCI._load_xdf("synthetic.xdf")
+        NeuroTUMBCI2025._load_xdf("synthetic.xdf")
 
 
-@pytest.mark.parametrize("dataset", [Shin2022, neuroTUMBCI])
+@pytest.mark.parametrize("dataset", [Shin2022, NeuroTUMBCI2025])
 def test_invalid_subject(dataset):
     with pytest.raises(ValueError, match="Invalid subject"):
         dataset().data_path(999)
