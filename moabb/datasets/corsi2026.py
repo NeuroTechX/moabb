@@ -184,8 +184,11 @@ class Corsi2026(BaseBIDSDataset):
     grasping (``right_hand``), the *down* target by resting with eyes open
     (``rest``). A trial is a 1 s inter-stimulus interval then a 5 s target
     presentation; ``events.tsv`` onsets mark the target and the epoch covers
-    those 5 s. Only the 74-channel EEG (recorded with simultaneous MEG, both
-    downsampled to 250 Hz) is exposed.
+    those 5 s. Only the 74-channel EEG (recorded at 1 kHz with simultaneous
+    MEG, both released downsampled to 250 Hz) is exposed. The six runs are
+    the protocol's *testing* phase (the paper also describes five
+    feedback-free training runs per session used to calibrate the
+    classifier); the resting-state recordings (``task-rest``) are not loaded.
 
     The released events keep the authors' checked trials (29-32 per run,
     14,431 in total). The last ``rest`` cue of sub-03 ses-01 run-03 ends after
@@ -220,7 +223,10 @@ class Corsi2026(BaseBIDSDataset):
             sampling_rate=250.0,
             channel_types={"eeg": 74},
             montage="standard_1005",
-            hardware="Easycap 74-channel passive Ag/AgCl EEG with Elekta Neuromag MEG",
+            hardware=(
+                "Easycap 74-channel passive Ag/AgCl EEG amplified by the MEGIN "
+                "TRIUX MEG acquisition system (102 magnetometers, 204 gradiometers)"
+            ),
             cap_manufacturer="Easycap",
             electrode_type="passive",
             electrode_material="Ag/AgCl",
