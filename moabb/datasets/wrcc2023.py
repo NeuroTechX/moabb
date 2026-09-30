@@ -122,6 +122,14 @@ class WRCC2023_MI_A(_WRCC2023):
     without synthetic zero padding. Channel order and physical calibration
     follow the reconciled source loaders and still require source verification.
 
+    The Harvard Dataverse record (V1, released 2024-07-05, CC0 1.0) lists nine
+    files ``subject1.mat``..``subject9.mat``; its description only states that
+    two of the individuals are stroke patients ("data from stroke patients
+    (number unknown) for two individuals and from healthy individuals for the
+    others"). Channel count, sampling rate and trial structure are read from
+    the files, not from the record; no paper is linked (paper audit,
+    2026-09-30).
+
     .. versionadded:: 1.8
 
     """
@@ -174,6 +182,7 @@ class WRCC2023_MI_A(_WRCC2023):
             doi="10.7910/DVN/J9JFES",
             description="MI-A three-class (left hand, right hand, feet) motor "
             "imagery EEG dataset from the 2023 World Robot Contest BCI competition.",
+            investigators=["WRCC2023"],
             institution="World Robot Contest (WRCC2023) BCI competition",
             country="CN",
             data_url="https://doi.org/10.7910/DVN/J9JFES",
@@ -232,6 +241,11 @@ class WRCC2023_MI_B(_WRCC2023):
     loader applies the WRCC/Neuracle 59-channel order shared with MI-A and MI-C
     and their 1000 Hz rate. Each stored trial is exposed as a separate run; the
     inclusive epoch endpoint is 3.999 s (4000 samples), without zero padding.
+
+    The Harvard Dataverse record (V1, released 2024-07-05, CC0 1.0) lists nine
+    files ``subject1.mat``..``subject9.mat``; its description only states that
+    two of the individuals are stroke patients. No paper is linked (paper
+    audit, 2026-09-30).
 
     .. versionadded:: 1.8
 
@@ -338,6 +352,11 @@ class WRCC2023_MI_C(_WRCC2023):
     without synthetic zero padding. Channel order and physical calibration
     follow the reconciled source loaders and still require source verification.
 
+    The Harvard Dataverse record (V1, released 2024-07-05, CC0 1.0) lists eight
+    files ``subject1.mat``..``subject8.mat``; its description only states that
+    two of the individuals are stroke patients. No paper is linked (paper
+    audit, 2026-09-30).
+
     .. versionadded:: 1.8
 
     """
@@ -384,6 +403,7 @@ class WRCC2023_MI_C(_WRCC2023):
             description="Three-class (left hand, right hand, feet) motor imagery "
             "EEG dataset from the 2023 World Robot Contest BCI competition (MI-C "
             "track); 8 subjects including 2 stroke patients, 90 trials each.",
+            investigators=["WRCC2023"],
             institution="World Robot Contest (BCI-Controlled Robot Contest)",
             country="CN",
             data_url="https://doi.org/10.7910/DVN/G8FBHH",
