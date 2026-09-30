@@ -61,7 +61,7 @@ NEMAR_ID_EXEMPT = {
     "Lenaig2026",
     "Wang2026",
     "Batista2022",  # no public NEMAR mirror yet; tracked in #1194
-    "DFKI2023",  # no public NEMAR mirror yet; tracked in #1194
+    "Kueper2024",  # no public NEMAR mirror yet; tracked in #1194
     "Farabbi2020",  # no public NEMAR mirror yet; tracked in #1194
     "Han2026",  # no public NEMAR mirror yet; tracked in #1194
     "Kodera2023",  # no public NEMAR mirror yet; tracked in #1194

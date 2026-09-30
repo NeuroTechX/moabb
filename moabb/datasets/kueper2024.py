@@ -1,4 +1,4 @@
-"""DFKI2023 unilateral vs bilateral movement-execution dataset (Kueper 2024)."""
+"""Kueper2024 unilateral vs bilateral movement-execution dataset (Kueper et al. 2024)."""
 
 import warnings
 from pathlib import Path
@@ -23,7 +23,7 @@ from .utils import download_and_extract_subject_zip
 
 
 # Single zip on Zenodo (record 10229480), ~3.1 GB, BrainVision format.
-DFKI2023_URL = "https://zenodo.org/api/records/10229480/files/EEG_dataset.zip/content"
+Kueper2024_URL = "https://zenodo.org/api/records/10229480/files/EEG_dataset.zip/content"
 
 # Subject pseudo-codes (alphabetical) mapped to subjects 1..8.
 SUBJECT_CODES = ["AV82", "JD68", "JV43", "QS70", "RA12", "UP28", "XP01", "ZS27"]
@@ -44,7 +44,7 @@ ACCEL_CHANNELS = ["x_dir", "y_dir", "z_dir"]
 ONSET_MARKER = {"unilateral": "S100", "bilateral": "S101"}
 
 
-class DFKI2023(BaseDataset):
+class Kueper2024(BaseDataset):
     """Unilateral vs bilateral movement-execution EEG dataset [1]_, [2]_.
 
     Eight healthy participants performed self-initiated, self-paced reaching
@@ -170,7 +170,7 @@ class DFKI2023(BaseDataset):
             subjects=list(range(1, len(SUBJECT_CODES) + 1)),
             sessions_per_subject=1,
             events={"unilateral": 1, "bilateral": 2},
-            code="DFKI2023",
+            code="Kueper2024",
             interval=(-2.0, 1.0),
             paradigm="imagery",
             doi="10.1038/s41598-024-65910-8",
@@ -190,7 +190,7 @@ class DFKI2023(BaseDataset):
         root = data_dir / "EEG_dataset"
         if force_update or not root.exists():
             download_and_extract_subject_zip(
-                DFKI2023_URL,
+                Kueper2024_URL,
                 self.code,
                 data_dir,
                 path,

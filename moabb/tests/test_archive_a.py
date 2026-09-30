@@ -9,11 +9,11 @@ import numpy as np
 import pytest
 
 from moabb.datasets import (
-    DFKI2023,
     Batista2022,
     Farabbi2020,
     Han2026,
     Kodera2023,
+    Kueper2024,
     download,
     farabbi2020,
     kodera2023,
@@ -40,7 +40,7 @@ def _assert_invalid_subject_rejected(dataset):
 
 @pytest.mark.parametrize(
     "cls,folder",
-    [(Batista2022, "sub-01"), (Farabbi2020, "01"), (DFKI2023, "EEG_dataset")],
+    [(Batista2022, "sub-01"), (Farabbi2020, "01"), (Kueper2024, "EEG_dataset")],
 )
 def test_download_flags_and_extraction(cls, folder, tmp_path, monkeypatch):
     archive = tmp_path / "data.zip"
@@ -87,8 +87,8 @@ def test_batista_annotations_units_and_bads(monkeypatch):
     np.testing.assert_allclose(result.get_data(), 2e-6)
 
 
-def test_dfki_exact_markers_and_run_classes(monkeypatch):
-    ds = DFKI2023()
+def test_kueper2024_exact_markers_and_run_classes(monkeypatch):
+    ds = Kueper2024()
     monkeypatch.setattr(
         ds,
         "data_path",
