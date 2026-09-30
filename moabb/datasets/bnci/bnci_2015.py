@@ -1623,15 +1623,20 @@ class BNCI2015_008(MNEBNCI):
 
     **Participants**
 
-    - 13 healthy subjects
-    - BCI experience: Previous experience with P300-based BCIs
+    - 13 healthy subjects (eight males and five females, aged 16-45 years,
+      mean age 27)
+    - BCI experience: all but two participants were naive with respect to BCIs
     - Location: Machine Learning Laboratory, TU Berlin, Germany
 
     **Recording Details**
 
+    - Equipment: Brain Products actiCAP active electrode system, recorded at
+      1000 Hz with a 0.016-250 Hz hardware bandpass; the BNCI release is
+      stored at 250 Hz
     - Channels: 63 EEG electrodes (standard 10-10 system)
     - Sampling rate: 250 Hz
-    - Reference: Nose reference
+    - Reference: left mastoid (forehead ground); re-referenced to linked
+      mastoids for the offline analysis in the paper
 
     **Data Organization**
 
