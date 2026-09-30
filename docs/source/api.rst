@@ -72,6 +72,9 @@ Motor Imagery Datasets
     Dreyer2023A
     Dreyer2023B
     Dreyer2023C
+    Daly2020
+    Damm2026
+    Peterson2020
     Lee2019_MI
     GrosseWentrup2009
     Ofner2017

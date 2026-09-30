@@ -1,6 +1,6 @@
 {
     "_metadata": {
-        "total": 156
+        "total": 160
     },
     "10.1038/s41467-026-75435-5": {
         "title": "Sensory-guided human-machine joint learning accelerates the acquisition of motor imagery brain computer interface control",
@@ -1849,5 +1849,51 @@
         ],
         "year": 2026,
         "doi": "10.5281/zenodo.20848097"
+    },
+    "10.1016/j.heliyon.2020.e03425": {
+        "title": "A feasibility study of a complete low-cost consumer-grade brain-computer interface system",
+        "authors": [
+            "Victoria Peterson",
+            "Catalina Maria Galvan",
+            "Hugo Sacha Hernadez",
+            "Ruben Spies"
+        ],
+        "year": 2020,
+        "doi": "10.1016/j.heliyon.2020.e03425"
+    },
+    "10.18112/openneuro.ds002720.v1.0.1": {
+        "title": "A dataset recorded during development of a tempo-based brain-computer music interface",
+        "authors": [
+            "Ian Daly",
+            "Nicoletta Nicolaou",
+            "Duncan Williams",
+            "Faustina Hwang",
+            "Alexis Kirke",
+            "Eduardo Miranda",
+            "Slawomir J. Nasuto"
+        ],
+        "year": 2018,
+        "doi": "10.18112/openneuro.ds002720.v1.0.1"
+    },
+    "10.18112/openneuro.ds008446.v1.0.1": {
+        "title": "Random and Sequential Order Finger Motor Imagery",
+        "authors": [
+            "Laura Marie Damm",
+            "Dai Jiang",
+            "Andreas Demosthenous"
+        ],
+        "year": 2026,
+        "doi": "10.18112/openneuro.ds008446.v1.0.1"
+    },
+    "10.18112/openneuro.ds003810.v2.0.2": {
+        "title": "Motor Imagery vs Rest - Low-Cost EEG System",
+        "authors": [
+            "Victoria Peterson",
+            "Catalina Maria Galvan",
+            "Hugo Sacha Hernadez",
+            "Ruben Spies"
+        ],
+        "year": 2021,
+        "doi": "10.18112/openneuro.ds003810.v2.0.2"
     }
 }
