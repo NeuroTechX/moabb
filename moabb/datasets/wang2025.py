@@ -1,4 +1,4 @@
-"""ZJU-MI-EEG (MI4) four-class motor imagery dataset from Zhejiang University."""
+"""Wang2025: four-class MI dataset (ZJU-MI-EEG ``MI4`` release, Zhejiang University)."""
 
 import numpy as np
 import scipy.io as sio
@@ -23,7 +23,7 @@ from moabb.datasets.metadata.schema import (
 # "resolve/main" endpoint serves the raw file bytes. The per-subject folder
 # ("sub-NN") is preserved in the local cache path, so the shared file names
 # ("s1_calibration.mat", ...) do not collide between subjects.
-ZJU_MI2025_BASE_URL = (
+WANG2025_BASE_URL = (
     "https://huggingface.co/datasets/Jiaheng-Wang/ZJU-MI-EEG/resolve/main/MI4"
 )
 
@@ -50,7 +50,7 @@ EVENT_ID = {"left_hand": 1, "right_hand": 2, "tongue": 3, "feet": 4}
 RUN_KEYS = ("0calibration", "1feedback")
 
 
-class ZjuMI2025(BaseDataset):
+class Wang2025(BaseDataset):
     """Four-class motor imagery dataset (ZJU-MI-EEG / MI4) [1]_.
 
     **Dataset description**
@@ -165,7 +165,7 @@ class ZjuMI2025(BaseDataset):
             subjects=list(range(1, 15 + 1)),
             sessions_per_subject=2,
             events=dict(EVENT_ID),
-            code="ZjuMI2025",
+            code="Wang2025",
             interval=[0, 4 - 1 / SFREQ],
             paradigm="imagery",
             selected_subjects=subjects,
@@ -183,7 +183,7 @@ class ZjuMI2025(BaseDataset):
         paths = []
         for day in (1, 2):
             for run_kind in ("calibration", "feedback"):
-                url = f"{ZJU_MI2025_BASE_URL}/sub-{subject:02d}/s{day}_{run_kind}.mat"
+                url = f"{WANG2025_BASE_URL}/sub-{subject:02d}/s{day}_{run_kind}.mat"
                 paths.append(dl.data_dl(url, self.code, path, force_update, verbose))
         return paths
 

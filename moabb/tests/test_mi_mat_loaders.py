@@ -9,13 +9,13 @@ import numpy as np
 import pytest
 from scipy.io import savemat
 
-from moabb.datasets import Jia2019, Ortiz2023, Yilmaz2024, ZjuMI2025
+from moabb.datasets import Jia2019, Ortiz2023, Wang2025, Yilmaz2024
 from moabb.datasets import download as dl
 from moabb.datasets.preprocessing import SetRawAnnotations
 
 
 @pytest.mark.parametrize(
-    "cls,count", [(Jia2019, 2), (Ortiz2023, 1), (Yilmaz2024, 4), (ZjuMI2025, 4)]
+    "cls,count", [(Jia2019, 2), (Ortiz2023, 1), (Yilmaz2024, 4), (Wang2025, 4)]
 )
 def test_invalid_subject_and_download_flags(cls, count, monkeypatch, tmp_path):
     with pytest.raises(ValueError, match="Invalid subject"):
@@ -67,13 +67,13 @@ def test_jia_first_last_and_units():
         Jia2019._build_raw([trial[:, :200]], [trial])
 
 
-def test_zju_first_last_and_units(tmp_path):
+def test_wang2025_first_last_and_units(tmp_path):
     path = tmp_path / "run.mat"
     savemat(path, {"EEG_data": np.full((62, 1280, 2), 8.0), "labels": [1, 4]})
-    _check_epochs(ZjuMI2025(), ZjuMI2025._load_raw(path), [1, 4], 8e-6)
+    _check_epochs(Wang2025(), Wang2025._load_raw(path), [1, 4], 8e-6)
     savemat(path, {"EEG_data": np.ones((62, 1280, 2)), "labels": [1]})
     with pytest.raises(ValueError, match="label"):
-        ZjuMI2025._load_raw(path)
+        Wang2025._load_raw(path)
 
 
 def test_yilmaz_first_last_and_units(tmp_path):
@@ -117,7 +117,7 @@ def test_ortiz_missing_duplicate_sessions(monkeypatch, tmp_path):
         ds._get_single_subject_data(1)
 
 
-@pytest.mark.parametrize("cls,count", [(Yilmaz2024, 4), (ZjuMI2025, 4)])
+@pytest.mark.parametrize("cls,count", [(Yilmaz2024, 4), (Wang2025, 4)])
 def test_session_mapping(cls, count, monkeypatch):
     ds = cls()
     monkeypatch.setattr(ds, "data_path", Mock(return_value=list(range(count))))

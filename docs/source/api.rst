@@ -56,8 +56,8 @@ Motor Imagery Datasets
     AlexMI
     Jia2019
     Ortiz2023
+    Wang2025
     Yilmaz2024
-    ZjuMI2025
     BNCI2003_004
     BNCI2014_001
     BNCI2014_002
