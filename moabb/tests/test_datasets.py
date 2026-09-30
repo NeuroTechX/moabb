@@ -62,7 +62,7 @@ NEMAR_ID_EXEMPT = {
     "Wang2026",
     "Jia2019",  # no public NEMAR mirror yet; tracked in #1190
     "Ortiz2023",  # no public NEMAR mirror yet; tracked in #1190
-    "Yilmaz2024",  # no public NEMAR mirror yet; tracked in #1190
+    "MIBMPI2024",  # no public NEMAR mirror yet; tracked in #1190
     "Wang2025",  # no public NEMAR mirror yet; tracked in #1190
 }
 # Datasets whose NEMAR deposit is assigned but not yet public (private,

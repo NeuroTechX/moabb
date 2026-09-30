@@ -9,13 +9,13 @@ import numpy as np
 import pytest
 from scipy.io import savemat
 
-from moabb.datasets import Jia2019, Ortiz2023, Wang2025, Yilmaz2024
+from moabb.datasets import MIBMPI2024, Jia2019, Ortiz2023, Wang2025
 from moabb.datasets import download as dl
 from moabb.datasets.preprocessing import SetRawAnnotations
 
 
 @pytest.mark.parametrize(
-    "cls,count", [(Jia2019, 2), (Ortiz2023, 1), (Yilmaz2024, 4), (Wang2025, 4)]
+    "cls,count", [(Jia2019, 2), (Ortiz2023, 1), (MIBMPI2024, 4), (Wang2025, 4)]
 )
 def test_invalid_subject_and_download_flags(cls, count, monkeypatch, tmp_path):
     with pytest.raises(ValueError, match="Invalid subject"):
@@ -76,15 +76,15 @@ def test_wang2025_first_last_and_units(tmp_path):
         Wang2025._load_raw(path)
 
 
-def test_yilmaz_first_last_and_units(tmp_path):
+def test_mibmpi_first_last_and_units(tmp_path):
     data, labels = tmp_path / "data.set", tmp_path / "labels.mat"
     with h5py.File(data, "w") as f:
         f["data"] = np.full((2, 448, 13), 9.0)
     savemat(labels, {"labels": [1, 2]})
-    _check_epochs(Yilmaz2024(), Yilmaz2024._reconstruct_raw(data, labels), [1, 2], 9e-6)
+    _check_epochs(MIBMPI2024(), MIBMPI2024._reconstruct_raw(data, labels), [1, 2], 9e-6)
     savemat(labels, {"labels": [1]})
     with pytest.raises(ValueError, match="label"):
-        Yilmaz2024._reconstruct_raw(data, labels)
+        MIBMPI2024._reconstruct_raw(data, labels)
 
 
 def test_ortiz_codes_units(monkeypatch):
@@ -117,11 +117,11 @@ def test_ortiz_missing_duplicate_sessions(monkeypatch, tmp_path):
         ds._get_single_subject_data(1)
 
 
-@pytest.mark.parametrize("cls,count", [(Yilmaz2024, 4), (Wang2025, 4)])
+@pytest.mark.parametrize("cls,count", [(MIBMPI2024, 4), (Wang2025, 4)])
 def test_session_mapping(cls, count, monkeypatch):
     ds = cls()
     monkeypatch.setattr(ds, "data_path", Mock(return_value=list(range(count))))
-    if cls is Yilmaz2024:
+    if cls is MIBMPI2024:
         reader = Mock(side_effect=["s0", "s1"])
         monkeypatch.setattr(ds, "_reconstruct_raw", reader)
         assert ds._get_single_subject_data(1) == {"0": {"0": "s0"}, "1": {"0": "s1"}}

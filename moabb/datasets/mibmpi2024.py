@@ -1,4 +1,4 @@
-"""MI-BMPI motor-imagery brain-mobile phone interface dataset (Yilmaz 2024)."""
+"""MIBMPI2024: MI-BMPI motor-imagery brain-mobile phone dataset (Yilmaz et al., 2024)."""
 
 import h5py
 import mne
@@ -45,7 +45,7 @@ _BASELINE_S = 1.0
 _LABEL_TO_EVENT = {1: "tap", 2: "swipe"}
 
 
-class Yilmaz2024(BaseDataset):
+class MIBMPI2024(BaseDataset):
     """MI-BMPI motor-imagery brain-mobile phone interface dataset [1]_.
 
     **Dataset description**
@@ -207,7 +207,7 @@ class Yilmaz2024(BaseDataset):
             subjects=list(range(1, 9)),
             sessions_per_subject=2,
             events={"tap": 1, "swipe": 2},
-            code="Yilmaz2024",
+            code="MIBMPI2024",
             interval=[0, 2.5 - 1 / _SFREQ],
             paradigm="imagery",
             doi=_DOI,
