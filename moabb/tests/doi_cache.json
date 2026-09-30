@@ -1,6 +1,6 @@
 {
     "_metadata": {
-        "total": 156
+        "total": 160
     },
     "10.1038/s41467-026-75435-5": {
         "title": "Sensory-guided human-machine joint learning accelerates the acquisition of motor imagery brain computer interface control",
@@ -1849,5 +1849,52 @@
         ],
         "year": 2026,
         "doi": "10.5281/zenodo.20848097"
+    },
+    "10.1038/s41597-026-07287-z": {
+        "title": "An EEG-EMG-kinematics dataset of wrist movements with a rehabilitation exoskeleton",
+        "authors": [
+            "Jorge German Perez Blanco",
+            "Javier Mauricio Antelis Ortiz",
+            "Luis Guillermo Hernandez Rojas",
+            "Hector Lizarraga Torreblanca"
+        ],
+        "year": 2026,
+        "doi": "10.1038/s41597-026-07287-z"
+    },
+    "10.6084/m9.figshare.29666735": {
+        "title": "An EEG-EMG-kinematics dataset of wrist movements with a rehabilitation exoskeleton (data)",
+        "authors": [
+            "Jorge German Perez Blanco",
+            "Javier Mauricio Antelis Ortiz",
+            "Luis Guillermo Hernandez Rojas",
+            "Hector Lizarraga Torreblanca"
+        ],
+        "year": 2026,
+        "doi": "10.6084/m9.figshare.29666735"
+    },
+    "10.5281/zenodo.20348444": {
+        "title": "EEG-Based Dataset Explicitly Targeting the Transitions between Sitting and Standing for Exploring Neural Activation Patterns in Motor Imagery and Execution",
+        "authors": [
+            "Benjakarn Uengsawapak",
+            "Supavit Kongwudhikunakorn",
+            "Suktipol Kiatthaveephong",
+            "Wipamas Polpakdee",
+            "Rattanaphon Chaisaen",
+            "Poramate Manoonpong",
+            "Chanitsada Chuenchit",
+            "Gun Bhakdisongkhram",
+            "Theerawit Wilaiprasitporn"
+        ],
+        "year": 2025,
+        "doi": "10.5281/zenodo.20348444"
+    },
+    "10.5281/zenodo.8086086": {
+        "title": "Electrophysiological Signals of Embodiment and MI-BCI Training in VR",
+        "authors": [
+            "Katarina Vagaja",
+            "Athanasios Vourvopoulos"
+        ],
+        "year": 2023,
+        "doi": "10.5281/zenodo.8086086"
     }
 }
