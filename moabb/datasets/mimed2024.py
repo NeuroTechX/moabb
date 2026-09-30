@@ -1,4 +1,4 @@
-"""Wirawan2024 MIMED Motor Imagery / Motor Execution dataset."""
+"""MIMED2024 Motor Imagery / Motor Execution dataset (Wirawan et al. 2024)."""
 
 from pathlib import Path
 
@@ -23,25 +23,25 @@ from .utils import download_and_extract_subject_zip
 # Direct download URL of the "Motor Imagery.zip" archive of the Mendeley
 # record 10.17632/zs25xxjkm9.3 (version 3). It contains only the motor
 # imagery .mat files (~19.5 MB), avoiding the ~1.2 GB full-record download.
-WIRAWAN2024_MI_URL = (
+MIMED2024_MI_URL = (
     "https://data.mendeley.com/public-files/datasets/zs25xxjkm9/files/"
     "3dc41eb1-8999-4e0d-a77a-0394b53ba04e/file_downloaded"
 )
 
 # The 14 Emotiv EPOC X electrodes, in the channel order stored in each .mat.
-WIRAWAN2024_CHANNELS = "AF3 F7 F3 FC5 T7 P7 O1 O2 P8 T8 FC6 F4 F8 AF4".split()
+MIMED2024_CHANNELS = "AF3 F7 F3 FC5 T7 P7 O1 O2 P8 T8 FC6 F4 F8 AF4".split()
 
 # Scenario folder -> class (the .mat files carry no per-repetition label).
-WIRAWAN2024_SCENARIOS = {
+MIMED2024_SCENARIOS = {
     "Left Hand Up-Down Imagine": "left_hand",
     "Right Hand Up-Down Imagine": "right_hand",
     "Stand Up-Down Imagine": "trunk",
 }
 
-WIRAWAN2024_SFREQ = 128
+MIMED2024_SFREQ = 128
 
 
-class Wirawan2024(BaseDataset):
+class MIMED2024(BaseDataset):
     """Motor Imagery MIMED dataset from Wirawan et al. 2024 [1]_.
 
     **Dataset description**
@@ -94,7 +94,7 @@ class Wirawan2024(BaseDataset):
             reference="CMS/DRL (P3/P4)",
             ground="DRL",
             sensor_type="saline felt (Ag/AgCl)",
-            sensors=list(WIRAWAN2024_CHANNELS),
+            sensors=list(MIMED2024_CHANNELS),
             line_freq=50.0,
         ),
         participants=ParticipantMetadata(
@@ -157,7 +157,7 @@ class Wirawan2024(BaseDataset):
             subjects=list(range(1, 30 + 1)),
             sessions_per_subject=2,
             events={"left_hand": 1, "right_hand": 2, "trunk": 3},
-            code="Wirawan2024",
+            code="MIMED2024",
             interval=[0, 4],
             paradigm="imagery",
             doi="10.1016/j.dib.2024.110833",
@@ -176,7 +176,7 @@ class Wirawan2024(BaseDataset):
         root = data_dir / "Motor Imagery"
         if force_update or not root.exists():
             download_and_extract_subject_zip(
-                WIRAWAN2024_MI_URL,
+                MIMED2024_MI_URL,
                 self.code,
                 data_dir,
                 path,
@@ -185,7 +185,7 @@ class Wirawan2024(BaseDataset):
                 redownload_corrupted=True,
             )
         sub = f"P{subject:02d}"
-        return [str(root / scenario / f"{sub}.mat") for scenario in WIRAWAN2024_SCENARIOS]
+        return [str(root / scenario / f"{sub}.mat") for scenario in MIMED2024_SCENARIOS]
 
     def _get_single_subject_data(self, subject):
         """Return two day sessions of six scenario-block runs each."""
@@ -193,14 +193,14 @@ class Wirawan2024(BaseDataset):
         if len(set(file_paths)) != len(file_paths):
             raise ValueError("Duplicate MIMED scenario files")
 
-        if len(file_paths) != len(WIRAWAN2024_SCENARIOS):
+        if len(file_paths) != len(MIMED2024_SCENARIOS):
             raise ValueError("Expected one file for each of the three scenarios")
         sessions = {"0": {}, "1": {}}
         for scenario_idx, (scenario_file, scenario) in enumerate(
-            zip(file_paths, WIRAWAN2024_SCENARIOS)
+            zip(file_paths, MIMED2024_SCENARIOS)
         ):
             mat = sio.loadmat(scenario_file)
-            if float(np.asarray(mat["Fs"]).ravel()[0]) != WIRAWAN2024_SFREQ:
+            if float(np.asarray(mat["Fs"]).ravel()[0]) != MIMED2024_SFREQ:
                 raise ValueError("Expected MIMED sampling rate of 128 Hz")
             joined = mat["joined_data"]
             if joined.shape != (1, 4):
@@ -209,11 +209,11 @@ class Wirawan2024(BaseDataset):
                 trial = np.asarray(joined[0, trial_idx], dtype=float)
                 if trial.ndim != 2 or trial.shape[1] != 14 or trial.shape[0] < 897:
                     raise ValueError("Malformed or truncated MIMED recording block")
-                info = mne.create_info(WIRAWAN2024_CHANNELS, 128, "eeg")
+                info = mne.create_info(MIMED2024_CHANNELS, 128, "eeg")
                 raw = mne.io.RawArray(trial.T * 1e-6, info, verbose=False)
                 raw.set_montage("colin27_1020")
                 raw.set_annotations(
-                    mne.Annotations([3.0], [0.0], [WIRAWAN2024_SCENARIOS[scenario]])
+                    mne.Annotations([3.0], [0.0], [MIMED2024_SCENARIOS[scenario]])
                 )
                 # The paper identifies blocks 1-2 as day one and 3-4 as
                 # day two. Separate runs prevent filtering across blocks.

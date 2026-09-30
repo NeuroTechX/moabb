@@ -169,7 +169,7 @@ from .zhou2020 import Zhou2020
 from .zuo2025 import Zuo2025
 
 
-from .wirawan2024 import Wirawan2024
+from .mimed2024 import MIMED2024
 from .wrcc2023 import WRCC2023_MI_A, WRCC2023_MI_B, WRCC2023_MI_C
 
 

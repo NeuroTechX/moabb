@@ -7,7 +7,7 @@ import numpy as np
 import pytest
 from scipy.io import savemat
 
-from moabb.datasets import WRCC2023_MI_A, WRCC2023_MI_B, WRCC2023_MI_C, Wirawan2024
+from moabb.datasets import MIMED2024, WRCC2023_MI_A, WRCC2023_MI_B, WRCC2023_MI_C
 from moabb.datasets.preprocessing import SetRawAnnotations
 
 
@@ -77,7 +77,7 @@ def test_download_flags_and_subject_validation(tmp_path, monkeypatch, cls):
 
 
 def test_mimed_sessions_runs_units_and_missing_blocks(tmp_path, monkeypatch):
-    ds = Wirawan2024()
+    ds = MIMED2024()
     files = []
     for scenario in range(3):
         joined = np.empty((1, 4), dtype=object)
@@ -103,21 +103,21 @@ def test_mimed_sessions_runs_units_and_missing_blocks(tmp_path, monkeypatch):
 def test_mimed_download_flags(tmp_path, monkeypatch):
     import zipfile
 
-    from moabb.datasets.wirawan2024 import WIRAWAN2024_MI_URL
+    from moabb.datasets.mimed2024 import MIMED2024_MI_URL
 
     archive = tmp_path / "fixture.zip"
     with zipfile.ZipFile(archive, "w") as z:
         z.writestr("Motor Imagery/fixture.txt", "fixture")
     data_dl = Mock(return_value=str(archive))
     monkeypatch.setattr("moabb.datasets.download.data_dl", data_dl)
-    paths = Wirawan2024().data_path(1, tmp_path, True, False, False)
+    paths = MIMED2024().data_path(1, tmp_path, True, False, False)
     assert len(paths) == 3
-    extracted = tmp_path / "MNE-wirawan2024-data" / "Motor Imagery" / "fixture.txt"
+    extracted = tmp_path / "MNE-mimed2024-data" / "Motor Imagery" / "fixture.txt"
     assert extracted.read_text() == "fixture"
     assert data_dl.call_count == 1
     assert data_dl.call_args.args == (
-        WIRAWAN2024_MI_URL,
-        "Wirawan2024",
+        MIMED2024_MI_URL,
+        "MIMED2024",
         tmp_path,
         True,
         False,
@@ -125,7 +125,7 @@ def test_mimed_download_flags(tmp_path, monkeypatch):
 
 
 def test_mimed_duplicate_scenarios_rejected(monkeypatch):
-    ds = Wirawan2024()
+    ds = MIMED2024()
     monkeypatch.setattr(ds, "data_path", Mock(return_value=["same.mat"] * 3))
     with pytest.raises(ValueError, match="Duplicate"):
         ds._get_single_subject_data(1)
