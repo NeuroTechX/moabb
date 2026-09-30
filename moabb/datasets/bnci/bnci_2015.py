@@ -2120,6 +2120,11 @@ class BNCI2015_010(MNEBNCI):
     visual presentation (RSVP) task. Subjects were instructed to attend to target
     images in a continuous stream of stimuli, eliciting P300 responses.
 
+    The BNCI release provides one ``RSVP_VPxxx.mat`` file per subject; its
+    recordings are loaded as runs of a single session (the primary publication
+    [1]_ is not open access, so the original session structure could not be
+    re-verified against the paper).
+
     References
     ----------
     .. [1] Acqualagna, L., & Blankertz, B. (2013). Gaze-independent BCI-spelling
@@ -2325,9 +2330,9 @@ class BNCI2015_010(MNEBNCI):
             trials_context="per sequence",
             n_blocks=3,
         ),
-        sessions_per_subject=3,
+        sessions_per_subject=1,
         runs_per_session=2,
-        sessions=["calibration", "copy-spelling", "free-spelling"],
+        sessions=["0"],
         data_processed=True,
         file_format="EEG",
         abstract="A Brain Computer Interface (BCI) speller using rapid serial visual presentation (RSVP) paradigm for gaze-independent mental typewriting. Twelve healthy participants successfully operated the RSVP speller with mean online spelling rate of 1.43 symb/min and mean symbol selection accuracy of 94.8%. The RSVP speller does not require gaze shifts and can be operated by non-spatial visual attention, making it suitable for patients with impaired oculo-motor control.",
