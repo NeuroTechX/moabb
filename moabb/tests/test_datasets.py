@@ -60,6 +60,11 @@ NEMAR_ID_EXEMPT = {
     "Schrag2026Pediatric",
     "Lenaig2026",
     "Wang2026",
+    "Leeuwis2021",  # no public NEMAR mirror yet; tracked in #1193
+    "IMUMIA2026",  # no public NEMAR mirror yet; tracked in #1193
+    "MartinezPeon2024",  # no public NEMAR mirror yet; tracked in #1193
+    "Brodu2012",  # no public NEMAR mirror yet; tracked in #1193
+    "PardoGarcia2026",  # no public NEMAR mirror yet; tracked in #1193
 }
 # Datasets whose NEMAR deposit is assigned but not yet public (private,
 # pending publication). Their ids are valid and still checked; tracked here
