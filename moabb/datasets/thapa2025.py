@@ -83,7 +83,8 @@ class Thapa2025(BaseDataset):
     - **Tgt1** / **Tgt3**: water-filled cups
     - **Tgt2** / **Tgt4**: empty cups
 
-    Data were recorded with a 31-channel extended 10-20 montage
+    Data were recorded with a Brain Products actiCHamp Plus amplifier and a
+    gel-based actiCAP snap cap, 31-channel extended 10-20 montage
     (Cz reference, separate ground) plus 4 EOG channels, a single audio-cue
     trigger channel, and a 3-axis accelerometer at the distal ulna to mark
     movement onset. The sampling rate is 250 Hz for 21 subjects but 1000 Hz
@@ -116,6 +117,10 @@ class Thapa2025(BaseDataset):
             sampling_rate=250.0,
             channel_types={"eeg": 31, "eog": 4, "misc": 4},
             montage="standard_1020",
+            hardware="Brain Products actiCHamp Plus (actiCAP snap, gel-based active electrodes)",
+            cap_manufacturer="Brain Products",
+            cap_model="actiCAP snap",
+            electrode_type="active",
             reference="Cz",
             ground="GND",
             sensors=list(_EEG_CHANNELS),
