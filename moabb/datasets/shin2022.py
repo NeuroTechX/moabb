@@ -65,6 +65,15 @@ class Shin2022(BaseDataset):
 
     Reading the ``.dat`` files requires ``pip install "moabb[bci2000]"``.
 
+    Paper-vs-release note: the paper describes each session as "10 runs of 24
+    1D LR center-out discrete trials", because "the 'NT = 0 trials' run
+    ... was jointly represented by the 'BW = 60 s (default)' run, thus forming
+    10 runs (4 + 2 + 4)". The archive's ``NT`` folder is documented here with
+    three files (``NT0``, ``NT24``, ``NT48``), i.e. 11 runs; the loader
+    enumerates whatever ``.dat`` files the archive holds, so the declared 11
+    runs / 2640 trials remain to be confirmed against the release. The
+    online pipeline used a "Notch filtered 58-62 Hz" stage (60 Hz mains).
+
     Notes
     -----
     The BCI2000 headers store no electrode labels, so the channels are named
