@@ -48,14 +48,18 @@ SFREQ = 250.0
 class PoloHortiguela2025(BaseDataset):
     """Motor imagery of ankle dorsiflexion/plantarflexion dataset [1]_.
 
-    Six healthy participants alternated kinesthetic motor imagery of ankle
-    dorsiflexion/plantarflexion with relaxation while wearing a lower-limb
-    exoskeleton. The two exoskeleton models are exposed as sessions: ``static``
-    (the exoskeleton stays still) and ``motion`` (it performs the movement). Each
-    session holds 11 continuous repetitions (15 s baseline, 15 s rest, 28 s motor
-    imagery, 15 s rest, 5 s return); the loader annotates the ``rest`` and
-    ``motor_imagery`` phases from the sample-wise task codes, accepting both the
-    STATIC and MOTION code variants, and converts EEG/EOG from microvolts to volts.
+    Six participants alternated kinesthetic motor imagery of ankle
+    dorsiflexion/plantarflexion of the dominant foot with relaxation while
+    wearing a low-cost ankle exoskeleton, in an open-loop (no control) protocol
+    with auditory cues. The Zenodo description records a single recording
+    session per participant; the two exoskeleton models are exposed here as
+    MOABB sessions: ``static`` (the exoskeleton stays still) and ``motion`` (it
+    performs plantar/dorsal flexion). Each session holds 11 continuous
+    repetitions (15 s baseline, 15 s rest, 28 s motor imagery, 15 s rest, 5 s
+    return); the loader annotates the ``rest`` and ``motor_imagery`` phases from
+    the sample-wise task codes, accepting both the STATIC and MOTION code
+    variants, and converts EEG/EOG from microvolts to volts. Signals were
+    recorded at 250 Hz with 28 EEG, 4 EOG and 3 inertial channels.
 
     References
     ----------
@@ -110,12 +114,18 @@ class PoloHortiguela2025(BaseDataset):
                 "Eduardo Ianez",
                 "Jose M. Azorin",
             ],
-            institution="Universitas Miguel Hernandez de Elche",
+            institution="Universidad Miguel Hernandez de Elche",
             country="ES",
             repository="Zenodo",
             data_url="https://doi.org/10.5281/zenodo.14672334",
             license="CC-BY-4.0",
             publication_year=2025,
+            funding=[
+                "PID2021-124111OB-C31 (MICIU/AEI/10.13039/501100011033, ERDF EU)",
+                "PRE2022-103336 (MICIU/AEI/10.13039/501100011033)",
+                "ValgrAI (Generalitat Valenciana, European Union)",
+                "Neurokit (ICAR)",
+            ],
         ),
         sessions_per_subject=2,
         runs_per_session=11,
