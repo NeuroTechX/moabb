@@ -170,7 +170,7 @@ from .zuo2025 import Zuo2025
 
 
 from .perdikis2018 import Perdikis2018
-from .spinalstim2025 import SpinalStim2025
+from .alawieh2025 import Alawieh2025
 
 
 # Call this last in order to make sure the dataset list, dict are populated with

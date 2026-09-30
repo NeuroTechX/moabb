@@ -1,4 +1,4 @@
-"""SpinalStim2025 longitudinal motor-imagery BCI dataset (TESS neuromodulation)."""
+"""Alawieh2025 longitudinal motor-imagery BCI dataset (TESS neuromodulation)."""
 
 import warnings
 from pathlib import Path
@@ -21,7 +21,7 @@ from moabb.datasets.utils import download_and_extract_subject_zip
 
 
 # Zenodo record 15454355 (concept DOI 10.5281/zenodo.15454354)
-SPINALSTIM2025_BASE = "https://zenodo.org/records/15454355/files/{name}?download=1"
+ALAWIEH2025_BASE = "https://zenodo.org/records/15454355/files/{name}?download=1"
 
 # Per-cohort archives with the 27 participants. The d2 "SlowLearners" archive
 # (6-month follow-up of four d1 subjects) is intentionally excluded.
@@ -59,10 +59,10 @@ _CLASS_CODES = {"769": "left_hand", "770": "right_hand"}
 
 # MNE does not interpret the GDF unit metadata, so the payload stays in
 # microvolts; the same scale applies to EEG and auxiliary channels.
-SPINALSTIM2025_EEG_SCALE_TO_VOLTS = 1e-6
+ALAWIEH2025_EEG_SCALE_TO_VOLTS = 1e-6
 
 
-class SpinalStim2025(BaseDataset):
+class Alawieh2025(BaseDataset):
     """Motor-imagery BCI dataset with transcutaneous spinal stimulation [1]_.
 
     **Dataset description**
@@ -151,7 +151,7 @@ class SpinalStim2025(BaseDataset):
             subjects=list(range(1, 27 + 1)),
             sessions_per_subject=1,
             events={"left_hand": 1, "right_hand": 2},
-            code="SpinalStim2025",
+            code="Alawieh2025",
             interval=(0, 4),
             paradigm="imagery",
             doi="10.5281/zenodo.15454354",
@@ -166,7 +166,7 @@ class SpinalStim2025(BaseDataset):
 
         archive_key, token = _SUBJECT_MAP[subject]
         zip_name, root_name = _ARCHIVES[archive_key]
-        url = SPINALSTIM2025_BASE.format(name=zip_name)
+        url = ALAWIEH2025_BASE.format(name=zip_name)
 
         data_dir = (
             Path(dl.get_dataset_path(self.code, path)) / f"MNE-{self.code.lower()}-data"
@@ -224,11 +224,11 @@ class SpinalStim2025(BaseDataset):
         missing_eeg = [ch for ch in _EEG_CHANNELS if ch not in raw.ch_names]
         if missing_eeg:
             raise ValueError(
-                "SpinalStim2025 recording is missing required EEG channels: "
+                "Alawieh2025 recording is missing required EEG channels: "
                 f"{missing_eeg}; available channels: {raw.ch_names}"
             )
         raw.apply_function(
-            lambda data: data * SPINALSTIM2025_EEG_SCALE_TO_VOLTS,
+            lambda data: data * ALAWIEH2025_EEG_SCALE_TO_VOLTS,
             picks=[*_EEG_CHANNELS, *aux_present],
             channel_wise=False,
         )
