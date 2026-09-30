@@ -345,9 +345,9 @@ class BNCI2020_001(BNCIBaseDataset):
             electrode_material=None,
         ),
         participants=ParticipantMetadata(
-            n_subjects=15,
+            n_subjects=45,
             health_status="healthy",
-            gender={"male": 10, "female": 5},
+            gender={"male": 25, "female": 20},
             age_mean=None,
             age_std=None,
             age_min=15,
