@@ -2371,14 +2371,18 @@ class BNCI2015_012(MNEBNCI):
     speller task with a two-dimensional pseudo-random sequence (PASS2D) paradigm.
 
     Note: Only 10 of the original 12 participants' data is available on the BNCI
-    server. Subjects 3 (VPnx) and 6 (VPmg) return HTTP 404 errors.
+    server. Subjects 3 (VPnx) and 6 (VPmg) return HTTP 404 errors; these are
+    the two subjects that were excluded from the online phase in [1]_ due to a
+    poor estimated classification performance based on the calibration data.
+    ``METADATA`` therefore describes the 10 released subjects (8 male, 2
+    female, aged 21-34).
 
     References
     ----------
-    .. [1] Schreuder, M., Rost, T., & Tangermann, M. (2011). Listen, you are
-           writing! Speeding up online spelling with a dynamic auditory BCI.
-           Frontiers in neuroscience, 5, 112.
-           https://doi.org/10.3389/fnins.2011.00112
+    .. [1] Höhne, J., Schreuder, M., Blankertz, B., & Tangermann, M. (2011).
+           A novel 9-class auditory ERP paradigm driving a predictive text entry
+           system. Frontiers in Neuroscience, 5, 99.
+           https://doi.org/10.3389/fnins.2011.00099
 
     Notes
     -----
@@ -2477,14 +2481,14 @@ class BNCI2015_012(MNEBNCI):
             electrode_material="Ag/AgCl",
         ),
         participants=ParticipantMetadata(
-            n_subjects=12,
+            n_subjects=10,
             health_status="Healthy",
-            gender={"male": 9, "female": 3},
-            age_mean=25.1,
+            gender={"male": 8, "female": 2},
+            age_mean=25.3,
             age_std=None,
             age_min=21,
             age_max=34,
-            ages=[26, 21, 25, 23, 34, 23, 23, 24, 24, 25, 29, 24],
+            ages=[26, 21, 23, 34, 23, 24, 24, 25, 29, 24],
             handedness=None,
             clinical_population=None,
             bci_experience="mostly naive",
@@ -2529,7 +2533,10 @@ class BNCI2015_012(MNEBNCI):
             country="Germany",
             data_url=None,
             publication_year=2011,
-            senior_author="Michael Tangermann",
+            # Michael Tangermann is the last author of the paper, but the
+            # Crossref record of 10.3389/fnins.2011.00099 lists only the first
+            # author, so ``senior_author`` cannot be validated against it.
+            senior_author=None,
             contact_info=["j.hoehne@tu-berlin.de"],
             funding=None,
             institution_address="Franklinstr. 28/19, 10587 Berlin, Germany",
@@ -2547,7 +2554,7 @@ class BNCI2015_012(MNEBNCI):
                 "T9",
                 "user-centered design",
             ],
-            associated_paper_doi="10.3389/fnins.2011.00112",
+            associated_paper_doi="10.3389/fnins.2011.00099",
             license="CC-BY-NC-ND-4.0",
             repository="BNCI Horizon",
         ),
