@@ -97,7 +97,7 @@ class Damm2026(OpenNeuroMirrorMixin, BaseDataset):
         participants=ParticipantMetadata(
             n_subjects=20,
             health_status="healthy",
-            gender={"female": 13, "male": 4, "unknown": 3},
+            gender={"female": 13, "male": 4, "non_binary": 3},
             age_min=19.0,
             age_max=57.0,
             handedness={"right": 18, "left": 2},
@@ -128,7 +128,14 @@ class Damm2026(OpenNeuroMirrorMixin, BaseDataset):
             country="GB",
             data_url="https://openneuro.org/datasets/ds008446",
             publication_year=2026,
-            funding=["Engineering and Physical Sciences Research Council (EPSRC)"],
+            funding=[
+                "Engineering and Physical Sciences Research Council (EPSRC) grant "
+                "EP/S022139/1"
+            ],
+            ethics_approval=[
+                "UCL Humanities, Arts and Sciences Research Ethics Committee; "
+                "Approval Number: 26907/001"
+            ],
             license="CC0",
         ),
         sessions_per_subject=1,
