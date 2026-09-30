@@ -33,19 +33,30 @@ PAN2025_FILE_IDS = {
 class Pan2025(_PanDataverse):
     """Cross-session motor imagery dataset from Pan et al. 2025.
 
-    EEG from 10 healthy subjects performing cued left- vs right-hand motor imagery
-    on two separate days (D1, D2 -> sessions ``"0"``, ``"1"``), 180 trials per
-    session, 28 sensorimotor channels at 250 Hz. The MATLAB ``.mat`` files store
-    epochs from -1.5 s to 4 s around the cue plus an ``Info`` struct (channel
-    names, sampling rate, epoch period); the loader concatenates the epochs,
-    converts microvolts to volts, places each class event at the cue and marks
-    every trial join with a non-rejecting ``EDGE boundary`` annotation.
+    EEG from 10 healthy subjects (3 females, 2 left-handed, aged 22-25)
+    performing cued left- vs right-hand motor imagery on two separate days (D1,
+    D2 -> sessions ``"0"``, ``"1"``), about 180 trials per session (4 s rest,
+    4 s task), 28 sensorimotor channels recorded with a Neuroscan SynAmps2 at
+    1000 Hz (0.01-200 Hz band-pass, 50 Hz notch) and released downsampled to
+    250 Hz. The deposit notes that trial counts vary across sessions and
+    subjects, so the 90/90 per-class figure is nominal; in session 2 the first
+    30 trials are training and the remaining trials are testing with online
+    feedback. The paradigm follows [2]_ (closed access), which the deposit
+    references. The MATLAB ``.mat`` files store epochs from -1.5 s to 4 s around
+    the cue plus an ``Info`` struct (channel names, sampling rate, epoch
+    period); the loader concatenates the epochs, converts microvolts to volts,
+    places each class event at the cue and marks every trial join with a
+    non-rejecting ``EDGE boundary`` annotation.
 
     References
     ----------
 
     .. [1] Pan, Lincong (2025). Cross-Session Motor Imagery EEG dataset.
        Harvard Dataverse, V1. DOI: https://doi.org/10.7910/DVN/GH74ZG
+    .. [2] Pan, L. et al. (2023). Riemannian geometric and ensemble learning for
+       decoding cross-session motor imagery electroencephalography signals.
+       Journal of Neural Engineering, 20(6), 066011.
+       DOI: https://doi.org/10.1088/1741-2552/ad0a01
 
     Notes
     -----
@@ -61,18 +72,36 @@ class Pan2025(_PanDataverse):
             sampling_rate=250.0,
             channel_types={"eeg": 28},
             montage="10-10",
+            hardware="Neuroscan SynAmps2",
             reference=None,
             ground=None,
             sensors=PAN2023_CHANNELS,
+            filters={"bandpass": [0.01, 200.0], "notch": 50.0},
+            line_freq=50.0,
         ),
-        participants=ParticipantMetadata(n_subjects=10, species="homo sapiens"),
+        participants=ParticipantMetadata(
+            n_subjects=10,
+            health_status="healthy",
+            gender={"female": 3, "male": 7},
+            age_min=22,
+            age_max=25,
+            handedness={"right": 8, "left": 2},
+            species="homo sapiens",
+        ),
         experiment=ExperimentMetadata(
             paradigm="imagery",
             n_classes=2,
             class_labels=["left_hand", "right_hand"],
             trials_per_class={"left_hand": 90, "right_hand": 90},
+            trial_duration=4.0,
+            study_design="Cued left- vs right-hand motor imagery, about 180 trials "
+            "per session (4 s rest, 4 s task); trial counts vary across sessions "
+            "and subjects. Session 2: first 30 trials training, remaining trials "
+            "testing with online feedback.",
+            feedback_type="online feedback in session 2 test trials",
+            stimulus_type="cue",
             synchronicity="cue-based",
-            mode="offline",
+            mode="both",
             events={"left_hand": 1, "right_hand": 2},
         ),
         documentation=DocumentationMetadata(
@@ -83,6 +112,7 @@ class Pan2025(_PanDataverse):
             institution="Tianjin University",
             country="CN",
             data_url="https://doi.org/10.7910/DVN/GH74ZG",
+            related_paper_dois=["10.1088/1741-2552/ad0a01"],
             publication_year=2025,
             license="CC0-1.0",
             repository="Harvard Dataverse",
