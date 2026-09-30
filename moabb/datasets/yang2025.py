@@ -66,9 +66,18 @@ class Yang2025(BaseDataset):
     (59 EEG + 1 ECG + 4 EOG) across 3 sessions on different days.
     Two paradigms were used:
 
-    - **2C paradigm** (subjects 1-51): left hand vs right hand MI
-    - **3C paradigm** (subjects 52-62): left hand, right hand, and
+    - **2C paradigm** (51 subjects): left hand vs right hand MI
+    - **3C paradigm** (11 subjects): left hand, right hand, and
       foot-hooking MI
+
+    Both paradigms number their subjects from 1 in the release ("xxx
+    represents for the subject number (2 C dataset: 001, 002, ..., 051;
+    3 C dataset: 001, 002, ..., 011)" [1]_), so ``Yang2025(paradigm_type="3C")``
+    exposes subjects 1-11, not 52-62. The participant statistics in
+    ``METADATA`` describe the whole cohort ("62 healthy, right-handed
+    participants (aged 17-30, including 18 females), all naive BCI users"
+    [1]_); the paper does not split them per paradigm, while ``n_subjects``
+    follows the default 2C loader (51).
 
     Each session contains 5 blocks of 40 trials (2C) or 60 trials
     (3C), giving 200 or 300 trials per session.
