@@ -605,7 +605,7 @@ class Mainsah2025_L(Mainsah2025):
 
 
 class Mainsah2025_M(Mainsah2025):
-    """BigP3BCI Study M — 9x8 adaptive/checkerboard (21 ALS subjects)."""
+    """BigP3BCI Study M — 9x8 checkerboard/adaptive-diffuse (21 healthy subjects)."""
 
     nemar_id = "nm000197"
     __init__ = partialmethod(Mainsah2025.__init__, "M")
@@ -613,7 +613,7 @@ class Mainsah2025_M(Mainsah2025):
 
 
 class Mainsah2025_N(Mainsah2025):
-    """BigP3BCI Study N — 9x8 dry/wet electrode comparison (8 ALS subjects)."""
+    """BigP3BCI Study N — 6x6 dry/wet electrode comparison (8 ALS subjects)."""
 
     nemar_id = "nm000187"
     __init__ = partialmethod(Mainsah2025.__init__, "N")
@@ -621,7 +621,7 @@ class Mainsah2025_N(Mainsah2025):
 
 
 class Mainsah2025_O(Mainsah2025):
-    """BigP3BCI Study O — 9x8 supervised/checkerboard (18 ALS subjects)."""
+    """BigP3BCI Study O — 9x8 checkerboard with/without suppressed characters (18 healthy subjects)."""
 
     nemar_id = "nm000303"
     __init__ = partialmethod(Mainsah2025.__init__, "O")
@@ -629,7 +629,7 @@ class Mainsah2025_O(Mainsah2025):
 
 
 class Mainsah2025_P(Mainsah2025):
-    """BigP3BCI Study P — 9x8 predictive/non-predictive spelling (19 ALS subjects)."""
+    """BigP3BCI Study P — 9x8 predictive/non-predictive spelling (19 healthy subjects)."""
 
     nemar_id = "nm000351"
     __init__ = partialmethod(Mainsah2025.__init__, "P")
@@ -637,7 +637,7 @@ class Mainsah2025_P(Mainsah2025):
 
 
 class Mainsah2025_Q(Mainsah2025):
-    """BigP3BCI Study Q — 6x6 color intensification (36 ALS subjects)."""
+    """BigP3BCI Study Q — 9x8 checkerboard/checkerboard-colour (36 healthy subjects)."""
 
     nemar_id = "nm000321"
     __init__ = partialmethod(Mainsah2025.__init__, "Q")
@@ -645,7 +645,7 @@ class Mainsah2025_Q(Mainsah2025):
 
 
 class Mainsah2025_R(Mainsah2025):
-    """BigP3BCI Study R — 9x8 multi-face paradigms (20 ALS subjects)."""
+    """BigP3BCI Study R — 9x8 multi-face paradigms (20 healthy subjects)."""
 
     nemar_id = "nm000336"
     __init__ = partialmethod(Mainsah2025.__init__, "R")
