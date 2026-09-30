@@ -52,14 +52,19 @@ _EVENTS = {"reaching": 1, "grasping": 2, "lifting": 3, "twisting": 4}
 class Lee2022(OpenNeuroMirrorMixin, BaseDataset):
     """Upper-limb motor imagery dataset from Lee et al. 2022 (ds004022).
 
-    Seven patients with orthopedic impairment performed visually cued motor
-    imagery of four right-upper-limb movements (**reaching**, **grasping**,
-    **lifting**, **twisting**), 3 runs x 40 trials, each trial 3 s fixation,
-    4 s cue, 3 s ready and 5 s imagery [1]_. The EEGLAB ``.set`` recordings
-    are loaded; the fNIRS modality in the archive is not.
+    Seven patients with orthopedic impairment (3 males, 4 females, 48-83
+    years, six right-handed) performed visually cued motor imagery of four
+    right-upper-limb movements (**reaching**, **grasping**, **lifting**,
+    **twisting**), 3 runs x 40 trials, each trial 3 s fixation, 4 s cue, 3 s
+    ready and 5 s imagery [1]_. The EEGLAB ``.set`` recordings are loaded;
+    the fNIRS modality in the archive is not.
 
     Notes
     -----
+    The OpenNeuro README describes the 3 x 40 trials as "three sessions";
+    the release stores them as ``run-1`` .. ``run-3`` of a single BIDS
+    session, which MOABB exposes as three runs of session ``"0"``.
+
     Trial labels live in the EEGLAB event structure (no ``events.tsv``). Each
     ``S  8`` imagery-onset marker is relabelled with the preceding class cue
     and the 5 s imagery window is epoched from it. EEGLAB channel names are
@@ -97,6 +102,9 @@ class Lee2022(OpenNeuroMirrorMixin, BaseDataset):
             gender={"male": 3, "female": 4},
             age_min=48.0,
             age_max=83.0,
+            ages=[75, 48, 78, 83, 77, 79, 55],
+            sexes=["male", "female", "female", "female", "male", "male", "female"],
+            handedness={"right": 6, "left": 1},
             species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
