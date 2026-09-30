@@ -739,12 +739,19 @@ class BNCI2015_004(MNEBNCI):
     mental tasks: mental multiplication, mental letter composing, mental
     rotation, mental counting, and a baseline task.
 
+    The experiment was conducted on two different days (two sessions). In the
+    original study each screening session consisted of 8 runs resulting in
+    40 trials of each class per day [1]_; the BNCI release stores each
+    session as a single continuous recording, which this loader exposes as one
+    run per session.
+
     References
     ----------
-    .. [1] Zhang, X., Yao, L., Zhang, Q., Kanhere, S., Sheng, M., & Liu, Y.
-           (2017). A survey on deep learning based brain computer interface:
-           Recent advances and new frontiers. IEEE Transactions on Cognitive
-           and Developmental Systems, 10(2), 145-163.
+    .. [1] Scherer, R., Faller, J., Friedrich, E. V. C., Opisso, E., Costa, U.,
+           Kübler, A., & Müller-Putz, G. R. (2015). Individually Adapted Imagery
+           Improves Brain-Computer Interface Performance in End-Users with
+           Disability. PLoS ONE, 10(5), e0123727.
+           https://doi.org/10.1371/journal.pone.0123727
 
     Notes
     -----
