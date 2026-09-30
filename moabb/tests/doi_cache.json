@@ -1,6 +1,6 @@
 {
     "_metadata": {
-        "total": 156
+        "total": 161
     },
     "10.1038/s41467-026-75435-5": {
         "title": "Sensory-guided human-machine joint learning accelerates the acquisition of motor imagery brain computer interface control",
@@ -1849,5 +1849,73 @@
         ],
         "year": 2026,
         "doi": "10.5281/zenodo.20848097"
+    },
+    "10.18112/openneuro.ds004022.v1.0.0": {
+        "title": "Multimodal EEG and fNIRS Biosignal Acquisition during Motor Imagery Tasks in Patients with Orthopedic Impairment",
+        "authors": [
+            "Seho Lee",
+            "Hee Ra Jung",
+            "In-Nea Wang",
+            "Min-Kyung Jung",
+            "Hakseung Kim",
+            "Dong-Joo Kim"
+        ],
+        "year": 2022,
+        "doi": "10.18112/openneuro.ds004022.v1.0.0"
+    },
+    "10.1101/862375": {
+        "title": "Simultaneous MRI-EEG during a motor imagery neurofeedback task: an open access brain imaging dataset for multi-modal data integration",
+        "authors": [
+            "Giulia Lioi",
+            "Claire Cury",
+            "Lorraine Perronnet",
+            "Marsel Mano",
+            "Elise Bannier",
+            "Anatole Lecuyer",
+            "Christian Barillot"
+        ],
+        "year": 2019,
+        "doi": "10.1101/862375"
+    },
+    "10.1038/s41597-020-0498-3": {
+        "title": "Simultaneous EEG-fMRI during a neurofeedback task, a brain imaging dataset for multimodal data integration",
+        "authors": [
+            "Giulia Lioi",
+            "Claire Cury",
+            "Lorraine Perronnet",
+            "Marsel Mano",
+            "Elise Bannier",
+            "Anatole Lecuyer",
+            "Christian Barillot"
+        ],
+        "year": 2020,
+        "doi": "10.1038/s41597-020-0498-3"
+    },
+    "10.1038/s41597-023-02260-6": {
+        "title": "High-density scalp electroencephalogram dataset during sensorimotor rhythm-based brain-computer interfacing",
+        "authors": [
+            "Seitaro Iwama",
+            "Masumi Morishige",
+            "Yoshikazu Takahashi",
+            "Ryotaro Hirose",
+            "Midori Kodama",
+            "Junichi Ushiba"
+        ],
+        "year": 2023,
+        "doi": "10.1038/s41597-023-02260-6"
+    },
+    "10.3389/fnhum.2017.00193": {
+        "title": "Unimodal versus bimodal EEG-fMRI neurofeedback of a motor imagery task",
+        "authors": [
+            "Lorraine Perronnet",
+            "Anatole Lecuyer",
+            "Marsel Mano",
+            "Elise Bannier",
+            "Fabien Lotte",
+            "Maureen Clerc",
+            "Christian Barillot"
+        ],
+        "year": 2017,
+        "doi": "10.3389/fnhum.2017.00193"
     }
 }

@@ -1,0 +1,361 @@
+"""Lioi 2020 EEG-fMRI motor imagery neurofeedback dataset (XP2, OpenNeuro ds002338)."""
+
+import logging
+from pathlib import Path
+
+import mne_bids
+import requests
+
+from ._openneuro_mirror import OpenNeuroMirrorMixin
+from .base import BaseBIDSDataset
+from .download import get_dataset_path
+from .metadata.schema import (
+    AcquisitionMetadata,
+    BCIApplicationMetadata,
+    CrossValidationMetadata,
+    DatasetMetadata,
+    DataStructureMetadata,
+    DocumentationMetadata,
+    ExperimentMetadata,
+    ParadigmSpecificMetadata,
+    ParticipantMetadata,
+    Tags,
+)
+from .utils import stim_channels_with_selected_ids
+
+
+log = logging.getLogger(__name__)
+
+_S3_BASE = "https://s3.amazonaws.com/openneuro.org/ds002338"
+
+# The 17 XP2 subjects (non-contiguous OpenNeuro IDs) and the 2D-NF group;
+# every other subject ran 1D neurofeedback.
+# fmt: off
+_SUBJECT_IDS = [
+    "xp201", "xp202", "xp203", "xp204", "xp205", "xp206", "xp207",
+    "xp210", "xp211", "xp213", "xp216", "xp217", "xp218", "xp219",
+    "xp220", "xp221", "xp222",
+]
+_SUBJECTS_2DNF = {
+    "xp204", "xp205", "xp207", "xp210", "xp213", "xp216", "xp217", "xp221",
+}
+# Table 3 of the data paper (participant_id, age, sex), in _SUBJECT_IDS order.
+_AGES = [41, 39, 32, 34, 28, 31, 39, 26, 50, 31, 31, 36, 46, 26, 66, 42, 32]
+_SEXES = [
+    "female", "male", "male", "female", "female", "male", "male", "female",
+    "male", "male", "male", "female", "female", "female", "male", "male",
+    "female",
+]
+# fmt: on
+
+# Shared with the sibling XP1 loader (Lioi2020_XP1, same team, cap and protocol).
+_AUTHORS = [
+    "Giulia Lioi",
+    "Claire Cury",
+    "Lorraine Perronnet",
+    "Marsel Mano",
+    "Elise Bannier",
+    "Anatole Lecuyer",
+    "Christian Barillot",
+]
+# 63 EEG channels of the BrainCap MR (Ch32 = ECG is typed separately).
+# fmt: off
+_CH_NAMES = [
+    "Fp1", "Fp2", "F3", "F4", "C3", "C4", "P3", "P4", "O1", "O2",
+    "F7", "F8", "T7", "T8", "P7", "P8", "Fz", "Cz", "Pz", "Oz",
+    "FC1", "FC2", "CP1", "CP2", "FC5", "FC6", "CP5", "CP6", "TP9", "TP10",
+    "POz", "F1", "F2", "C1", "C2", "P1", "P2", "AF3", "AF4", "FC3",
+    "FC4", "CP3", "CP4", "PO3", "PO4", "F5", "F6", "C5", "C6", "P5",
+    "P6", "AF7", "AF8", "FT7", "FT8", "TP7", "TP8", "PO7", "PO8", "FT9",
+    "FT10", "Fpz", "CPz",
+]
+# fmt: on
+
+# Pure-MI ("Task-MI") and neurofeedback ("Task-NF") blocks are the same
+# right-hand motor imagery; "Rest" is the baseline block.
+_TRIALTYPE_TO_LABEL = {"Task-MI": "right_hand", "Task-NF": "right_hand", "Rest": "rest"}
+
+# Per-subject runs as (task, run entity, run key); "{nf}" is 1dNF or 2dNF.
+_RUN_PLAN = [
+    ("MIpre", None, "0MIpre"),
+    ("{nf}", "01", "1NF01"),
+    ("{nf}", "02", "2NF02"),
+    ("{nf}", "03", "3NF03"),
+    ("MIpost", None, "4MIpost"),
+]
+
+
+class Lioi2020_XP2(OpenNeuroMirrorMixin, BaseBIDSDataset):
+    """Right-hand motor imagery EEG-fMRI neurofeedback dataset (XP2) [1]_.
+
+    EEG recorded inside an MR scanner (fMRI is not loaded) from 17 healthy
+    subjects (9 males, 8 females, 26-66 years) in 20 s rest / right-hand
+    kinesthetic MI blocks [2]_. Each subject has five runs: ``MIpre``, three
+    neurofeedback runs (``1dNF`` or ``2dNF``) and ``MIpost``; the data paper
+    gives 5 min 20 s (8 rest + 8 task blocks) for ``MIpre`` and each NF run
+    and does not state the ``MIpost`` duration. ``Task-MI`` and ``Task-NF``
+    blocks both map to ``right_hand`` and ``Rest`` to ``rest``. The ECG
+    channel is typed ``ecg`` and dropped unless ``return_all_modalities=True``.
+    Ragged rows in the released ``events.tsv`` files are normalised before
+    mne-bids reads them.
+
+    .. note::
+       The data paper's XP2 paragraph says the 1d group imagined moving
+       their *left* hand, but its calibration, EEG feature (Laplacian around
+       C3, left motor cortex ROI) and source results ("sensory-motor cortex
+       of the right upper limb") all describe right-hand imagery, as in XP1;
+       the loader labels every task block ``right_hand``.
+
+    Parameters
+    ----------
+    imagery_only : bool
+        If True, expose only the ``MIpre`` and ``MIpost`` runs (no feedback).
+
+    References
+    ----------
+    .. [1] Lioi, G., Cury, C., Perronnet, L., Mano, M., Bannier, E.,
+           Lecuyer, A., & Barillot, C. (2020). Simultaneous EEG-fMRI during a
+           neurofeedback task, a brain imaging dataset for multimodal data
+           integration. Scientific Data, 7, 173.
+           https://doi.org/10.1038/s41597-020-0498-3
+    .. [2] Perronnet, L., Lecuyer, A., Mano, M., Bannier, E., Lotte, F.,
+           Clerc, M., & Barillot, C. (2017). Unimodal versus bimodal EEG-fMRI
+           neurofeedback of a motor imagery task. Frontiers in Human
+           Neuroscience, 11, 193.
+    """
+
+    nemar_id = "on002338"
+    METADATA = DatasetMetadata(
+        acquisition=AcquisitionMetadata(
+            sampling_rate=5000.0,
+            channel_types={"eeg": 63, "ecg": 1},
+            montage="standard_1005",
+            hardware="BrainProducts BrainAmp MR plus",
+            cap_manufacturer="BrainProducts",
+            cap_model="BrainCap MR",
+            reference="FCz",
+            ground="AFz",
+            sensors=list(_CH_NAMES),
+            line_freq=50.0,
+        ),
+        participants=ParticipantMetadata(
+            n_subjects=17,
+            health_status="healthy",
+            species="human",
+            gender={"male": 9, "female": 8},
+            age_min=26.0,
+            age_max=66.0,
+            ages=list(_AGES),
+            sexes=list(_SEXES),
+        ),
+        experiment=ExperimentMetadata(
+            events={"rest": 1, "right_hand": 2},
+            paradigm="imagery",
+            n_classes=2,
+            class_labels=["rest", "right_hand"],
+            trial_duration=20.0,
+            study_design=(
+                "Block design alternating 20 s rest and 20 s right-hand "
+                "kinesthetic motor imagery, recorded simultaneously with fMRI. "
+                "Five EEG runs per subject: MIpre, three neurofeedback runs "
+                "(1dNF or 2dNF), and MIpost."
+            ),
+            feedback_type="EEG-fMRI",
+            stimulus_type="visual",
+            stimulus_modalities=["visual"],
+            synchronicity="synchronous",
+            mode="online",
+        ),
+        documentation=DocumentationMetadata(
+            doi="10.1038/s41597-020-0498-3",
+            investigators=list(_AUTHORS),
+            institution="Univ Rennes, Inria, CNRS, Inserm, IRISA",
+            country="FR",
+            data_url="https://openneuro.org/datasets/ds002338",
+            publication_year=2020,
+            license="CC0",
+        ),
+        sessions_per_subject=1,
+        runs_per_session=5,
+        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Motor Imagery"]),
+        paradigm_specific=ParadigmSpecificMetadata(
+            detected_paradigm="imagery",
+            imagery_tasks=["right_hand"],
+            imagery_duration_s=20.0,
+        ),
+        data_structure=DataStructureMetadata(
+            n_trials=1360,
+            trials_context=(
+                "Per subject: 5 runs x (8 rest + 8 right_hand) 20 s blocks = 80 "
+                "blocks (40 per class); 17 subjects -> 1360 blocks. The paper "
+                "states 5 min 20 s (8 task blocks) for MIpre and each NF run; the "
+                "MIpost duration is not stated and is assumed equal."
+            ),
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="within_subject", evaluation_type=["within_subject"]
+        ),
+        bci_application=BCIApplicationMetadata(
+            applications=["neurofeedback", "rehabilitation"],
+            environment="MR scanner",
+            online_feedback=True,
+        ),
+        data_processed=False,
+        file_format="BrainVision (BIDS)",
+    )
+
+    def _nemar_subject(self, subject):
+        return self._sid(subject)
+
+    def __init__(
+        self,
+        imagery_only=False,
+        subjects=None,
+        sessions=None,
+        *,
+        return_all_modalities=False,
+    ):
+        self.imagery_only = imagery_only
+        super().__init__(
+            subjects=list(range(1, len(_SUBJECT_IDS) + 1)),
+            sessions_per_subject=1,
+            events={"rest": 1, "right_hand": 2},
+            code="Lioi2020-XP2",
+            interval=[0, 20],
+            paradigm="imagery",
+            doi="10.1038/s41597-020-0498-3",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
+            return_all_modalities=return_all_modalities,
+        )
+
+    def _sid(self, subject):
+        if subject not in self.subject_list:
+            raise ValueError("Invalid subject number")
+        return _SUBJECT_IDS[subject - 1]
+
+    def _run_plan(self, subject):
+        """Return the (task, run_entity, run_key) plan for a subject."""
+        nf = "2dNF" if self._sid(subject) in _SUBJECTS_2DNF else "1dNF"
+        plan = [(task.format(nf=nf), run, key) for task, run, key in _RUN_PLAN]
+        if self.imagery_only:
+            plan = [entry for entry in plan if "NF" not in entry[2]]
+        return plan
+
+    def _get_path_search_params(self, subject):
+        out = {"extensions": [".vhdr"]}
+        if subject is not None:
+            out["subjects"] = self._sid(subject)
+        return out
+
+    @staticmethod
+    def _sanitize_events_tsv(events_path):
+        """Rewrite ``events.tsv`` so every row has the header's column count.
+
+        Some ``task-MIpre``/``task-MIpost`` files carry a spurious trailing tab,
+        which makes mne-bids' ``numpy.loadtxt`` reader fail. Extra fields are
+        dropped, missing ones padded with ``n/a`` and blank lines removed; the
+        rewrite is idempotent and runs on the already downloaded file.
+        """
+        events_path = Path(events_path)
+        if not events_path.exists():
+            return
+        original = events_path.read_text(encoding="utf-8")
+        lines = [ln for ln in original.splitlines() if ln != ""]
+        if not lines:
+            return
+        ncol = len(lines[0].split("\t"))
+        fixed = []
+        for line in lines:
+            fields = line.split("\t")[:ncol]
+            fixed.append("\t".join(fields + ["n/a"] * (ncol - len(fields))))
+        new = "\n".join(fixed) + "\n"
+        if new != original:
+            events_path.write_text(new, encoding="utf-8")
+
+    def _get_single_subject_data(self, subject):
+        """Load BrainVision runs and map block labels to MI-vs-rest classes."""
+        bids_paths = self.bids_paths(subject)
+        for bids_path in bids_paths:
+            self._sanitize_events_tsv(
+                Path(bids_path.root) / f"task-{bids_path.task}_events.tsv"
+            )
+
+        key_by_entity = {(task, run): key for task, run, key in self._run_plan(subject)}
+        result = {}
+        for bids_path in bids_paths:
+            key = key_by_entity.get((bids_path.task, bids_path.run))
+            if key is None:
+                continue
+            raw = mne_bids.read_raw_bids(
+                bids_path, extra_params=self._get_read_extra_params(subject)
+            )
+            raw.load_data()
+            if "ECG" in raw.ch_names:
+                raw.set_channel_types({"ECG": "ecg"})
+            raw.annotations.rename(
+                {
+                    k: v
+                    for k, v in _TRIALTYPE_TO_LABEL.items()
+                    if k in raw.annotations.description
+                }
+            )
+            raw.set_montage("colin27_1005", on_missing="ignore", verbose=False)
+            if not self.return_all_modalities:
+                raw.pick("eeg")
+            result.setdefault("0", {})[key] = stim_channels_with_selected_ids(
+                raw, self.event_id
+            )
+        return result
+
+    def _download_subject(self, subject, path, force_update, update_path, verbose):
+        """Download BIDS BrainVision data from OpenNeuro S3, return BIDS root."""
+        mirror_root = self._mirror_root(subject, path, force_update, update_path, verbose)
+        if mirror_root is not None:
+            return mirror_root
+
+        sid = self._sid(subject)
+        bids_root = Path(get_dataset_path("Lioi2020-XP2", path)) / "MNE-lioi2020-xp2-data"
+        bids_root.mkdir(parents=True, exist_ok=True)
+        mne_bids.make_dataset_description(
+            path=bids_root,
+            name="A multi-modal human neuroimaging dataset for data integration: "
+            "simultaneous EEG and fMRI acquisition during a motor imagery "
+            "neurofeedback task: XP2",
+            authors=list(_AUTHORS),
+            doi="doi:10.18112/openneuro.ds002338.v2.0.1",
+            data_license="CC0",
+            overwrite=False,
+            verbose=False,
+        )
+
+        subj_dir = bids_root / f"sub-{sid}" / "eeg"
+        for task, run, _ in self._run_plan(subject):
+            run_ent = f"_run-{run}" if run is not None else ""
+            stem = f"sub-{sid}_task-{task}{run_ent}_eeg"
+            for ext in (".vhdr", ".vmrk", ".eeg"):
+                rel = f"sub-{sid}/eeg/{stem}{ext}"
+                self._download_file(rel, subj_dir / f"{stem}{ext}", force_update)
+            # Shared top-level sidecars needed by mne-bids (events + json).
+            for shared in (f"task-{task}_events.tsv", f"task-{task}_eeg.json"):
+                self._download_file(shared, bids_root / shared, force_update)
+
+        return str(bids_root)
+
+    @staticmethod
+    def _download_file(rel_path, local_path, force_update):
+        """Download a single OpenNeuro S3 object; skip missing (404) files."""
+        local_path = Path(local_path)
+        if local_path.exists() and not force_update:
+            return
+        local_path.parent.mkdir(parents=True, exist_ok=True)
+        url = f"{_S3_BASE}/{rel_path}"
+        log.info("Downloading %s ...", rel_path)
+        resp = requests.get(url, stream=True, timeout=300)
+        if resp.status_code == 404:
+            log.warning("Not found: %s (skipping)", url)
+            return
+        resp.raise_for_status()
+        with open(local_path, "wb") as fout:
+            for chunk in resp.iter_content(chunk_size=8192):
+                fout.write(chunk)
