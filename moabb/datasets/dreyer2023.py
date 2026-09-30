@@ -6,6 +6,7 @@ URL PATH: https://zenodo.org/record/7554429
 
 import warnings
 import zipfile
+from dataclasses import replace
 from pathlib import Path
 
 import numpy as np
@@ -104,7 +105,6 @@ class _Dreyer2023Base(BaseDataset):
                 eog_type=["horizontal", "vertical"],
                 has_emg=True,
                 emg_channels=2,
-                other_physiological=["gsr"],
             ),
         ),
         participants=ParticipantMetadata(
@@ -565,6 +565,20 @@ class Dreyer2023A(_Dreyer2023Base):
     """
 
     nemar_id = "nm000250"
+    # Dataset A subset of the shared root METADATA (paper, Participants):
+    # "60 participants (Dataset A; 29 women; age 19-59, M = 29, SD = 9.32)".
+    METADATA = replace(
+        _Dreyer2023Base.METADATA,
+        participants=replace(
+            _Dreyer2023Base.METADATA.participants,
+            n_subjects=60,
+            gender={"female": 29, "male": 31},
+            age_mean=29.0,
+            age_std=9.32,
+            age_min=19,
+            age_max=59,
+        ),
+    )
 
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
@@ -660,6 +674,20 @@ class Dreyer2023B(_Dreyer2023Base):
     """
 
     nemar_id = "nm000250"
+    # Dataset B subset (paper, Participants): "21 participants (Dataset B;
+    # 8 women; age 19-37, M = 29, SD = 9.318)".
+    METADATA = replace(
+        _Dreyer2023Base.METADATA,
+        participants=replace(
+            _Dreyer2023Base.METADATA.participants,
+            n_subjects=21,
+            gender={"female": 8, "male": 13},
+            age_mean=29.0,
+            age_std=9.318,
+            age_min=19,
+            age_max=37,
+        ),
+    )
 
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
@@ -751,6 +779,20 @@ class Dreyer2023C(_Dreyer2023Base):
     """
 
     nemar_id = "nm000250"
+    # Dataset C subset (paper, Participants): "6 additional participants
+    # (Dataset C; 4 women; age 20-26, M = 22; SD = 2.34)".
+    METADATA = replace(
+        _Dreyer2023Base.METADATA,
+        participants=replace(
+            _Dreyer2023Base.METADATA.participants,
+            n_subjects=6,
+            gender={"female": 4, "male": 2},
+            age_mean=22.0,
+            age_std=2.34,
+            age_min=20,
+            age_max=26,
+        ),
+    )
 
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(

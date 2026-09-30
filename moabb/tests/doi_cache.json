@@ -1,6 +1,6 @@
 {
     "_metadata": {
-        "total": 156
+        "total": 159
     },
     "10.1038/s41467-026-75435-5": {
         "title": "Sensory-guided human-machine joint learning accelerates the acquisition of motor imagery brain computer interface control",
@@ -1849,5 +1849,33 @@
         ],
         "year": 2026,
         "doi": "10.5281/zenodo.20848097"
+    },
+    "10.5281/zenodo.8089820": {
+        "title": "A large EEG database with users' profile information for motor imagery Brain-Computer Interface research",
+        "authors": [
+            "",
+            "",
+            "Rimbert S\u00e9bastien",
+            "",
+            "Lotte Fabien"
+        ],
+        "year": 2023,
+        "doi": "10.5281/zenodo.8089820"
+    },
+    "10.5281/zenodo.21156618": {
+        "title": "EEG responses to natural and artificial auditory stimuli: a 40 Hz amplitude-modulated paradigm study",
+        "authors": [
+            ""
+        ],
+        "year": 2026,
+        "doi": "10.5281/zenodo.21156618"
+    },
+    "10.6084/m9.figshare.3413851.v3": {
+        "title": "MAMEM EEG SSVEP Dataset III (14 channels, 11 subjects, 5 frequencies presented simultaneously)",
+        "authors": [
+            "Spiros Nikolopoulos"
+        ],
+        "year": 2021,
+        "doi": "10.6084/m9.figshare.3413851.v3"
     }
 }
