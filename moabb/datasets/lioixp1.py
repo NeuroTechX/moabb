@@ -43,11 +43,19 @@ class LioiXP1(OpenNeuroMirrorMixin, BaseDataset):
 
     Ten healthy subjects performed right-hand kinaesthetic motor imagery
     inside an MR scanner in 20 s rest / task blocks. Five runs are exposed as
-    runs of one session: ``MIpre`` and ``MIpost`` (no feedback, absent for
-    subject 1), ``eegNF``, ``fmriNF`` and ``eegfmriNF`` (neurofeedback); the
-    ``task-motorloc`` motor-execution localizer is excluded. Only the EEG is
-    loaded (fMRI ignored); it is raw and still contains MR gradient and
-    ballistocardiogram artifacts. Channel ``ECG`` is typed ``ecg``.
+    runs of one session: ``MIpre`` and ``MIpost`` (no feedback, 5 task blocks
+    each), ``eegNF``, ``fmriNF`` and ``eegfmriNF`` (neurofeedback, 10 task
+    blocks each); the ``task-motorloc`` motor-execution localizer is
+    excluded. Only the EEG is loaded (fMRI ignored); it is raw and still
+    contains MR gradient and ballistocardiogram artifacts. Channel ``ECG`` is
+    typed ``ecg``.
+
+    .. note::
+       The original study [2]_ reports that ``MI_pre``/``MI_post`` could not
+       be acquired for two of the ten participants and that the EEG of those
+       runs was lost for a third; the loader skips any run missing from the
+       release (subject 1 is known to lack ``MIpre``/``MIpost``). Per-subject
+       run and trial counts are therefore not uniform.
 
     References
     ----------
@@ -109,7 +117,7 @@ class LioiXP1(OpenNeuroMirrorMixin, BaseDataset):
             doi="10.1101/862375",
             related_paper_dois=["10.3389/fnhum.2017.00193"],
             investigators=list(_AUTHORS),
-            institution="Inria Rennes / University of Rennes",
+            institution="Univ Rennes, Inria, CNRS, Inserm, IRISA",
             country="FR",
             data_url="https://openneuro.org/datasets/ds002336",
             publication_year=2019,
@@ -129,7 +137,9 @@ class LioiXP1(OpenNeuroMirrorMixin, BaseDataset):
                 "Per subject: 3 NF runs x 10 MI blocks + 2 MI runs x 5 blocks "
                 "= 40 right-hand MI blocks (30 for sub 1, missing MIpre/MIpost), "
                 "each paired with a 20 s rest block. Total right-hand blocks 390, "
-                "matched by 390 rest blocks -> 780 blocks."
+                "matched by 390 rest blocks -> 780 blocks. The original study "
+                "reports MIpre/MIpost missing or lost for up to three subjects, so "
+                "the released total may be lower."
             ),
         ),
         file_format="BrainVision (BIDS)",
