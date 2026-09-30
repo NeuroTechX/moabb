@@ -789,7 +789,7 @@ class BI2013a(BaseDataset):
             data_url="https://doi.org/10.5281/zenodo.1494163",
             publication_year=2019,
             senior_author="M. Congedo",
-            associated_paper_doi="10.5281/zenodo.2649006",
+            associated_paper_doi="hal-02103098",
             institution_address="GIPSA-lab, 11 rue des Mathématiques, Grenoble Campus BP46, F-38402, France",
             ethics_approval=[
                 "Approved by the Ethical Committee of the University of Grenoble Alpes (Comité d'Ethique pour la Recherche Non-Interventionnelle)"
