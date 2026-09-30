@@ -1,6 +1,6 @@
 {
     "_metadata": {
-        "total": 156
+        "total": 161
     },
     "10.1038/s41467-026-75435-5": {
         "title": "Sensory-guided human-machine joint learning accelerates the acquisition of motor imagery brain computer interface control",
@@ -471,6 +471,20 @@
             "Yuriy Mishchenko"
         ]
     },
+    "10.1073/pnas.2418920122": {
+        "title": "Electrical spinal cord stimulation promotes focal sensorimotor activation that accelerates brain\u2013computer interface skill learning",
+        "authors": [
+            "Hussein Alawieh",
+            "Deland Liu",
+            "Jonathan Madera",
+            "Satyam Kumar",
+            "Frigyes Samuel Racz",
+            "Ann Majewicz Fey",
+            "Jos\u00e9 del R. Mill\u00e1n"
+        ],
+        "year": 2025,
+        "doi": "10.1073/pnas.2418920122"
+    },
     "10.1088/1741-2552/aa8235": {
         "title": "Inferring imagined speech using EEG signals: a new approach using Riemannian manifold features",
         "authors": [
@@ -660,6 +674,20 @@
             "Rawan Fakhreddine",
             "Jose del R. Millan"
         ]
+    },
+    "10.1101/2024.06.10.24308723": {
+        "title": "Transcutaneous Electrical Spinal Cord Stimulation Promotes Focal Sensorimotor Activation that Accelerates Brain-Computer Interface Skill Learning",
+        "authors": [
+            "Hussein Alawieh",
+            "Deland Liu",
+            "Jonathan Madera",
+            "Satyam Kumar",
+            "Frigyes Samuel Racz",
+            "Ann Majewicz Fey",
+            "Jos\u00e9 del R. Mill\u00e1n"
+        ],
+        "year": 2024,
+        "doi": "10.1101/2024.06.10.24308723"
     },
     "10.1109/MCI.2018.2807039": {
         "title": "Unsupervised Learning for Brain-Computer Interfaces Based on Event-Related Potentials: Review and Online Comparison [Research Frontier]",
@@ -1849,5 +1877,43 @@
         ],
         "year": 2026,
         "doi": "10.5281/zenodo.20848097"
+    },
+    "10.5281/zenodo.841764": {
+        "title": "The Cybathlon BCI race: Successful longitudinal mutual learning with two tetraplegic users (data)",
+        "authors": [
+            "Serafeim Perdikis",
+            "Luca Tonin",
+            "Sareh Saeedi",
+            "Christoph Schneider",
+            "Jose del R. Millan"
+        ],
+        "year": 2018,
+        "doi": "10.5281/zenodo.841764"
+    },
+    "10.1371/journal.pbio.2003787": {
+        "title": "The Cybathlon BCI race: Successful longitudinal mutual learning with two tetraplegic users",
+        "authors": [
+            "Serafeim Perdikis",
+            "Luca Tonin",
+            "Sareh Saeedi",
+            "Christoph Schneider",
+            "Jose del R. Millan"
+        ],
+        "year": 2018,
+        "doi": "10.1371/journal.pbio.2003787"
+    },
+    "10.5281/zenodo.15454354": {
+        "title": "A Multi-Session EEG Dataset of Longitudinal Motor Imagery BCI Training with Transcutaneous Spinal Stimulation in Able-Bodied and Spinal Cord Injury Participants",
+        "authors": [
+            "Hussein Alawieh",
+            "Liu Deland",
+            "Jonathan Madera",
+            "Satyam Kumar",
+            "Frigyes Samuel Racz",
+            "Ann Majewicz Fey",
+            "Jos\u00e9 del R. Mill\u00e1n"
+        ],
+        "year": 2025,
+        "doi": "10.5281/zenodo.15454354"
     }
 }
