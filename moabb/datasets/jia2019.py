@@ -85,10 +85,11 @@ class Jia2019(BaseDataset):
     .. [1] Jia, T. (2019). EEG data of motor imagery for stroke. Figshare.
        DOI: https://doi.org/10.6084/m9.figshare.7636301
 
-    .. [2] Wang, K., Zhao, Y., He, D., Xia, Q., Li, G., Wang, N., Peng, N., &
+    .. [2] Wang, X., Zhao, Y., He, D., Xia, Q., Li, G., Wang, N., Peng, N., &
        Jiang, B. (2026). PA-TCNet: Pathology-Aware Temporal Calibration with
        Physiology-Guided Target Refinement for Cross-Subject Motor Imagery EEG
        Decoding in Stroke Patients. arXiv:2604.16554.
+       DOI: https://doi.org/10.48550/arXiv.2604.16554
 
     Notes
     -----
@@ -138,6 +139,7 @@ class Jia2019(BaseDataset):
             publication_year=2019,
             license="CC-BY-4.0",
             repository="Figshare",
+            related_paper_dois=["10.48550/arXiv.2604.16554"],
             keywords=[
                 "motor imagery",
                 "BCI",

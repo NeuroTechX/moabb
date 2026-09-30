@@ -1,6 +1,6 @@
 {
     "_metadata": {
-        "total": 161
+        "total": 163
     },
     "10.1038/s41467-026-75435-5": {
         "title": "Sensory-guided human-machine joint learning accelerates the acquisition of motor imagery brain computer interface control",
@@ -1042,6 +1042,16 @@
         "year": 2016,
         "doi": "10.1515/bmt-2014-0117"
     },
+    "10.21203/rs.3.rs-4268007/v1": {
+        "title": "MI-BMPI Motor Imagery Brain--Mobile Phone Dataset and Performance Evaluation of Voting Ensembles Utilizing QPDM",
+        "authors": [
+            "Cagatay Murat Yilmaz",
+            "Bahar Hatipoglu Yilmaz",
+            "Cemal Kose"
+        ],
+        "year": 2024,
+        "doi": "10.21203/rs.3.rs-4268007/v1"
+    },
     "10.21203/rs.3.rs-9347306/v1": {
         "title": "A steady-state visual evoked potential-based brain-computer interface dataset in children and adolescents",
         "authors": [
@@ -1398,6 +1408,21 @@
         ],
         "year": 2025,
         "doi": "10.48550/arXiv.2510.10169"
+    },
+    "10.48550/arXiv.2604.16554": {
+        "title": "PA-TCNet: Pathology-Aware Temporal Calibration with Physiology-Guided Target Refinement for Cross-Subject Motor Imagery EEG Decoding in Stroke Patients",
+        "authors": [
+            "Xiangkai Wang",
+            "Yun Zhao",
+            "Dongyi He",
+            "Qingling Xia",
+            "Gen Li",
+            "Nizhuan Wang",
+            "Ningxiao Peng",
+            "Bin Jiang"
+        ],
+        "year": 2026,
+        "doi": "10.48550/arXiv.2604.16554"
     },
     "10.5061/dryad.6qs86": {
         "title": "Data from: Classifying three imaginary states of the same upper extremity using time-domain features",
