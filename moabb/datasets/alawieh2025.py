@@ -63,28 +63,39 @@ ALAWIEH2025_EEG_SCALE_TO_VOLTS = 1e-6
 
 
 class Alawieh2025(BaseDataset):
-    """Motor-imagery BCI dataset with transcutaneous spinal stimulation [1]_.
+    """Motor-imagery BCI dataset with transcutaneous spinal stimulation [1]_ [2]_.
 
     **Dataset description**
 
     Longitudinal two-class (left vs right hand) motor-imagery BCI training of 27
     participants (25 able-bodied, 2 with spinal cord injury) studying
-    transcutaneous electrical spinal stimulation (TESS) [1]_; 32 EEG + 3
+    transcutaneous electrical spinal stimulation (TESS) [1]_ [2]_; 32 EEG + 3
     auxiliary channels at 512 Hz, GDF (CNBI/Graz convention). Zenodo cohorts:
     ``d1_Main_Group_n20`` (REST and TESS groups, n=10 each), ``d3_SinglePulse_n5``
     and ``d4_SCI_patients`` (n=2); the ``d2`` follow-up of four d1 subjects is
-    not loaded.
+    not loaded. The record describes an ANT Neuro eego system with Ag/AgCl
+    electrodes (ground AFz, reference CPz), a 32-channel 10-10 cap for the
+    healthy participants and a 64-channel cap for the SCI and sub-group
+    participants, and a session format of 3-4 runs of 20 trials.
 
     Only the offline cue-based recordings are exposed, one session per
     participant with one run per GDF; the online closed-loop recordings have no
-    discrete class cues. Events are the class cues and the interval is the 4 s
-    after the cue. The microvolt payload (unscaled by MNE) is converted to volts,
-    and the O2/OZ order swapped in d3/d4 recordings is restored.
+    discrete class cues, and the record's multi-day session labels (offline,
+    online baseline, post-conditioning, follow-up) are not mapped to MOABB
+    sessions. Events are the class cues and the interval is the 4 s after the
+    cue. The microvolt payload (unscaled by MNE) is converted to volts, and the
+    O2/OZ order swapped in d3/d4 recordings is restored.
 
     References
     ----------
 
-    .. [1] Alawieh, H., Deland, L., Madera, J., Kumar, S., Racz, F. S.,
+    .. [1] Alawieh, H., Liu, D., Madera, J., Kumar, S., Racz, F. S., Fey, A. M.,
+       & Millán, J. del R. (2025). Electrical spinal cord stimulation promotes
+       focal sensorimotor activation that accelerates brain-computer interface
+       skill learning. Proceedings of the National Academy of Sciences, 122(24).
+       DOI: https://doi.org/10.1073/pnas.2418920122
+
+    .. [2] Alawieh, H., Liu, D., Madera, J., Kumar, S., Racz, F. S.,
        Majewicz Fey, A., & Millán, J. del R. (2025). A Multi-Session EEG Dataset
        of Longitudinal Motor Imagery BCI Training with Transcutaneous Spinal
        Stimulation in Able-Bodied and Spinal Cord Injury Participants. Zenodo.
@@ -99,7 +110,10 @@ class Alawieh2025(BaseDataset):
             sampling_rate=512.0,
             channel_types={"eeg": 32, "eog": 3},
             montage="10-20",
-            reference="mastoids (M1, M2)",
+            hardware="ANT Neuro eego with Ag/AgCl-coated electrodes",
+            sensor_type="Ag/AgCl",
+            reference="CPz",
+            ground="AFz",
             sensors=[*_EEG_CHANNELS, *_AUX_CHANNELS],
             auxiliary_channels=AuxiliaryChannelsMetadata(has_eog=True, eog_channels=3),
         ),
@@ -128,7 +142,7 @@ class Alawieh2025(BaseDataset):
             ),
             investigators=[
                 "Hussein Alawieh",
-                "Liu Deland",
+                "Deland Liu",
                 "Jonathan Madera",
                 "Satyam Kumar",
                 "Frigyes Samuel Racz",
@@ -140,9 +154,20 @@ class Alawieh2025(BaseDataset):
             publication_year=2025,
             license="CC-BY-4.0",
             repository="Zenodo",
+            associated_paper_doi="10.1073/pnas.2418920122",
+            related_paper_dois=["10.1101/2024.06.10.24308723"],
+            institution="The University of Texas at Austin",
+            ethics_approval=[
+                "University of Texas at Austin IRB Protocol #2020-03-0073",
+                "ClinicalTrials.gov NCT05183152",
+            ],
         ),
         sessions_per_subject=1,
-        tags=Tags(modality=["Motor"], type=["Motor Imagery"]),
+        tags=Tags(
+            pathology=["healthy", "spinal cord injury"],
+            modality=["Motor"],
+            type=["Motor Imagery"],
+        ),
         file_format="GDF",
     )
 
