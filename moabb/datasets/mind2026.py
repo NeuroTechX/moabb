@@ -111,6 +111,10 @@ class MIND2026(BaseDataset):
        Curry export is not used because its scidb V3 copy omits the ``.rs3``
        sensor-position files that ``read_raw_curry`` requires.
 
+    The ScienceDB record (DOI 10.57760/sciencedb.34326) is licensed CC BY-NC
+    4.0 ("Creative Commons Attribution Non Commercial 4.0 International"),
+    not CC BY 4.0 (paper audit, 2026-09-30).
+
     References
     ----------
     .. [1] Feng, L., Xu, B., Zhang, H., Lin, B., Deng, Z., Tao, S., Liu, C.,
@@ -185,7 +189,7 @@ class MIND2026(BaseDataset):
             repository="ScienceDB",
             data_url=MIND2026_URL,
             publication_year=2026,
-            license="CC-BY-4.0",
+            license="CC-BY-NC-4.0",
             keywords=[
                 "motor imagery",
                 "directional motor imagery",
