@@ -1199,15 +1199,20 @@ class BNCI2014_009(MNEBNCI):
 
     - Channels: 16 EEG channels
     - Sampling rate: 256 Hz
-    - Reference: Linked mastoids
+    - Reference: Linked earlobes, ground on the right mastoid
+
+    .. note::
+        The BNCI description of this dataset mentions four recording sessions
+        per subject; the released ``A0XS.mat`` files contain three recordings
+        per subject, which this loader exposes as three sessions.
 
     References
     ----------
-    .. [1] Riccio, A., Simione, L., Schettini, F., Pizzimenti, A., Inghilleri,
-           M., Belardinelli, M. O., & Mattia, D. (2013). Attention and P300-based
-           BCI performance in people with amyotrophic lateral sclerosis. Frontiers
-           in human neuroscience, 7, 732.
-           https://doi.org/10.3389/fnhum.2013.00732
+    .. [1] Aricò, P., Aloise, F., Schettini, F., Salinari, S., Mattia, D., &
+           Cincotti, F. (2014). Influence of P300 latency jitter on event
+           related potential-based brain–computer interface performance.
+           Journal of Neural Engineering, 11(3), 035008.
+           https://doi.org/10.1088/1741-2560/11/3/035008
 
     Notes
     -----
@@ -1311,9 +1316,9 @@ class BNCI2014_009(MNEBNCI):
                 "wavelet analysis",
                 "single epoch",
             ],
-            associated_paper_doi="10.3389/fnhum.2013.00732",
+            associated_paper_doi="10.1088/1741-2560/11/3/035008",
         ),
-        sessions_per_subject=4,
+        sessions_per_subject=3,
         runs_per_session=1,
         preprocessing=PreprocessingMetadata(
             data_state="preprocessed",
