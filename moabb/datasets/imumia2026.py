@@ -1,4 +1,4 @@
-"""Li2026 multi-paradigm motor-imagery EEG dataset (IMU-MI_A)."""
+"""IMUMIA2026: the IMU-MI_A multi-paradigm motor-imagery EEG dataset (Li et al. 2026)."""
 
 import logging
 import re
@@ -30,7 +30,7 @@ log = logging.getLogger(__name__)
 # Public Zenodo release "MI_A_Dataset.zip" (~2.0 GB). This is a 5-subject sample
 # (Sub_01, Sub_50, Sub_100, Sub_150, Sub_200) of a larger on-request dataset of
 # 244 participants (Zenodo description) collected at Inner Mongolia University.
-LI2026_URL = "https://zenodo.org/records/20421767/files/MI_A_Dataset.zip"
+IMUMIA2026_URL = "https://zenodo.org/records/20421767/files/MI_A_Dataset.zip"
 
 # Archive task folder -> (MOABB run name, class for cue code 1, class for code 2).
 # Run names start with the recording order. The two Classic-Arrow cue codes map
@@ -90,7 +90,7 @@ def _dpa_labels(dpa, section):
     return [line.strip() for line in match.group(1).splitlines() if line.strip()]
 
 
-class Li2026(BaseDataset):
+class IMUMIA2026(BaseDataset):
     """Multi-paradigm motor-imagery EEG dataset (IMU-MI_A) [1]_.
 
     **Dataset description**
@@ -219,7 +219,7 @@ class Li2026(BaseDataset):
             subjects=list(range(1, 6)),
             sessions_per_subject=1,
             events=dict(_EVENTS),
-            code="Li2026",
+            code="IMUMIA2026",
             interval=[0, 4],
             paradigm="imagery",
             doi="10.5281/zenodo.20421767",
@@ -242,7 +242,7 @@ class Li2026(BaseDataset):
         raw_dir = data_dir / "MI_A_Dataset" / "MI_A_Dataset" / "Raw_data"
         if force_update or not raw_dir.exists():
             download_and_extract_subject_zip(
-                LI2026_URL, self.code, data_dir, path, force_update, verbose
+                IMUMIA2026_URL, self.code, data_dir, path, force_update, verbose
             )
 
         paths = []
@@ -273,7 +273,7 @@ class Li2026(BaseDataset):
             if "curryreader" not in str(exc):
                 raise
             log.info("curryreader unavailable; using the Curry sidecar fallback")
-            raw = Li2026._read_legacy_curry(cdt_path)
+            raw = IMUMIA2026._read_legacy_curry(cdt_path)
 
         # Mark the trailing non-EEG channels (EOG/ECG/EMG/Trigger) by type.
         present = {ch: t for ch, t in _MISC_TYPES.items() if ch in raw.ch_names}
@@ -299,7 +299,7 @@ class Li2026(BaseDataset):
     def _read_legacy_curry(cdt_path):
         """Read this release's float32 Curry recording without curryreader.
 
-        MNE 1.11 delegates Curry files to an optional dependency.  The Li2026
+        MNE 1.11 delegates Curry files to an optional dependency.  The IMUMIA2026
         release instead has a simple sample-major float32 ``.cdt`` payload and
         text ``.dpa``/``.ceo`` sidecars, which can be read losslessly here.
         """

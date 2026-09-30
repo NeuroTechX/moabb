@@ -55,8 +55,8 @@ Motor Imagery Datasets
 
     AlexMI
     Brodu2012
+    IMUMIA2026
     Leeuwis2021
-    Li2026
     MartinezPeon2024
     PardoGarcia2026
     BNCI2003_004

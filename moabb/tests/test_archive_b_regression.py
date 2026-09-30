@@ -12,13 +12,13 @@ import pandas as pd
 import pytest
 
 from moabb.datasets import (
+    IMUMIA2026,
     Brodu2012,
     Leeuwis2021,
-    Li2026,
     MartinezPeon2024,
     PardoGarcia2026,
     brodu2012,
-    li2026,
+    imumia2026,
 )
 from moabb.datasets import download as dl
 from moabb.datasets.leeuwis2021 import LEEUWIS2021_EEG_CHANNELS
@@ -54,24 +54,26 @@ def test_transport_flags(cls, count, tmp_path, monkeypatch):
         dataset.data_path(0)
 
 
-def test_li2026_archive_transport_and_missing_task(tmp_path, monkeypatch):
+def test_imumia2026_archive_transport_and_missing_task(tmp_path, monkeypatch):
     archive = tmp_path / "MI_A_Dataset.zip"
     with zipfile.ZipFile(archive, "w") as stream:
-        for task in li2026._TASKS:
+        for task in imumia2026._TASKS:
             for subject in ("01", "50", "100", "150", "200"):
                 stream.writestr(
                     f"MI_A_Dataset/MI_A_Dataset/Raw_data/{task}/Sub_{subject}.cdt", b""
                 )
     data_dl = _capture_transport(monkeypatch, archive)
-    paths = Li2026().data_path(5, path=tmp_path, force_update=True, verbose="ERROR")
+    paths = IMUMIA2026().data_path(5, path=tmp_path, force_update=True, verbose="ERROR")
     assert len(paths) == 5
     assert all(path.endswith("Sub_200.cdt") for path in paths)
-    assert all(Path(path).is_relative_to(tmp_path / "MNE-li2026-data") for path in paths)
+    assert all(
+        Path(path).is_relative_to(tmp_path / "MNE-imumia2026-data") for path in paths
+    )
     assert _flags(data_dl) == [(tmp_path, True, "ERROR")]
 
     Path(paths[-1]).unlink()
     with pytest.raises(FileNotFoundError, match="Expected at least"):
-        Li2026().data_path(5, path=tmp_path)
+        IMUMIA2026().data_path(5, path=tmp_path)
 
 
 def test_leeuwis_first_last_si_and_discontinuities(tmp_path):
@@ -137,7 +139,7 @@ def test_brodu2012_reference_header_variants(reference, tmp_path, monkeypatch):
     assert list(raw.annotations.description) == ["left_hand", "right_hand"]
 
 
-def test_li2026_legacy_curry_fallback_reads_float32_sidecars(tmp_path):
+def test_imumia2026_legacy_curry_fallback_reads_float32_sidecars(tmp_path):
     cdt = tmp_path / "recording.cdt"
     np.array([[1, 2, 3], [4, 5, 6]], dtype="<f4").tofile(cdt)
     cdt.with_suffix(".cdt.dpa").write_text(
@@ -161,7 +163,7 @@ NUMBER_LIST END_LIST
         encoding="utf-8",
     )
 
-    raw = Li2026._read_legacy_curry(cdt)
+    raw = IMUMIA2026._read_legacy_curry(cdt)
 
     assert raw.ch_names == ["Cz", "C3", "C4"]
     np.testing.assert_allclose(raw.get_data()[:, 0], [1e-6, 2e-6, 3e-6])
@@ -206,19 +208,19 @@ def test_pardo_load_raw_standardizes_channels_and_cues(monkeypatch):
     assert not np.isnan(out.get_montage().get_positions()["ch_pos"]["FCz"]).any()
 
 
-def test_li2026_labels_each_task_side_cues(monkeypatch):
+def test_imumia2026_labels_each_task_side_cues(monkeypatch):
     monkeypatch.setattr(
         mne.io,
         "read_raw_curry",
         Mock(
             side_effect=[
-                _named_raw(["Cz", "HEO"], ["1", "2", "3"]) for _ in li2026._TASKS
+                _named_raw(["Cz", "HEO"], ["1", "2", "3"]) for _ in imumia2026._TASKS
             ]
         ),
     )
-    ds = Li2026()
-    monkeypatch.setattr(ds, "data_path", Mock(return_value=list(li2026._TASKS)))
+    ds = IMUMIA2026()
+    monkeypatch.setattr(ds, "data_path", Mock(return_value=list(imumia2026._TASKS)))
     runs = ds._get_single_subject_data(1)["0"]
-    assert list(runs) == [run for run, *_ in li2026._TASKS.values()]
+    assert list(runs) == [run for run, *_ in imumia2026._TASKS.values()]
     assert list(runs["1foot"].annotations.description) == ["left_foot", "right_foot", "3"]
     assert runs["1foot"].get_channel_types() == ["eeg", "eog"]
