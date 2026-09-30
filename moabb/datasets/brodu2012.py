@@ -1,4 +1,4 @@
-"""OpenViBE motor imagery dataset (Brodu, Lotte & Lecuyer, 2012)."""
+"""Brodu2012: OpenViBE motor imagery dataset #1 (Brodu, Lotte & Lecuyer, 2012)."""
 
 import bz2
 
@@ -38,8 +38,8 @@ CODE_RIGHT = 770  # OVTK_GDF_Right (0x302)
 _CHANNELS = "C3 C4 Nz FC3 FC4 C5 C1 C2 C6 CP3 CP4".split()
 
 
-class OpenViBE(BaseDataset):
-    """Motor imagery dataset from the OpenViBE project [1]_.
+class Brodu2012(BaseDataset):
+    """Motor imagery dataset of Brodu et al. (2012), OpenViBE dataset #1 [1]_.
 
     **Dataset description**
 
@@ -118,7 +118,7 @@ class OpenViBE(BaseDataset):
             subjects=[1],
             sessions_per_subject=1,
             events={"left_hand": CODE_LEFT, "right_hand": CODE_RIGHT},
-            code="OpenViBE",
+            code="Brodu2012",
             interval=[0, 4],
             paradigm="imagery",
             doi="10.1016/j.neucom.2011.10.010",

@@ -12,13 +12,13 @@ import pandas as pd
 import pytest
 
 from moabb.datasets import (
+    Brodu2012,
     Leeuwis2021,
     Li2026,
     MartinezPeon2024,
-    OpenViBE,
     PardoGarcia2026,
+    brodu2012,
     li2026,
-    openvibe,
 )
 from moabb.datasets import download as dl
 from moabb.datasets.leeuwis2021 import LEEUWIS2021_EEG_CHANNELS
@@ -43,7 +43,7 @@ def _flags(data_dl):
 
 @pytest.mark.parametrize(
     "cls,count",
-    [(Leeuwis2021, 4), (MartinezPeon2024, 6), (OpenViBE, 14), (PardoGarcia2026, 6)],
+    [(Leeuwis2021, 4), (MartinezPeon2024, 6), (Brodu2012, 14), (PardoGarcia2026, 6)],
 )
 def test_transport_flags(cls, count, tmp_path, monkeypatch):
     data_dl = _capture_transport(monkeypatch, tmp_path / "file")
@@ -113,18 +113,18 @@ def test_martinez_units_and_first_last_cue(tmp_path):
 
 
 @pytest.mark.parametrize("reference", ["Ref_Nose", "Nz"])
-def test_openvibe_reference_header_variants(reference, tmp_path, monkeypatch):
+def test_brodu2012_reference_header_variants(reference, tmp_path, monkeypatch):
     """Records 01-04 name the nasion ``Ref_Nose``, records 05-14 ``Nz``."""
-    columns = [reference if ch == "Nz" else ch for ch in openvibe._CHANNELS]
+    columns = [reference if ch == "Nz" else ch for ch in brodu2012._CHANNELS]
     frame = pd.DataFrame(
         {column: np.arange(3, dtype=float) for column in columns}
-        | {"Event Id": [np.nan, str(openvibe.CODE_LEFT), str(openvibe.CODE_RIGHT)]}
+        | {"Event Id": [np.nan, str(brodu2012.CODE_LEFT), str(brodu2012.CODE_RIGHT)]}
     )
     path = tmp_path / "signal.csv.bz2"
     with bz2.open(path, "wt") as fout:
         frame.to_csv(fout, index=False)
 
-    dataset = OpenViBE()
+    dataset = Brodu2012()
     monkeypatch.setattr(dataset, "data_path", Mock(return_value=[str(path)] * 2))
     sessions = dataset._get_single_subject_data(1)
 
@@ -132,7 +132,7 @@ def test_openvibe_reference_header_variants(reference, tmp_path, monkeypatch):
     assert dataset.subject_list == [1]
     assert list(sessions) == ["0"] and list(sessions["0"]) == ["0", "1"]
     raw = sessions["0"]["0"]
-    assert raw.ch_names == openvibe._CHANNELS
+    assert raw.ch_names == brodu2012._CHANNELS
     np.testing.assert_allclose(raw.get_data()[2], np.arange(3) * 1e-6)
     assert list(raw.annotations.description) == ["left_hand", "right_hand"]
 
