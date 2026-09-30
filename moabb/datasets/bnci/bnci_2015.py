@@ -1310,7 +1310,8 @@ class BNCI2015_007(MNEBNCI):
     - Equipment: BrainProducts actiCap active electrode system
     - Channels: 63 EEG electrodes (standard 10-10 system)
     - Sampling rate: 100 Hz (downsampled from original recording)
-    - Reference: Nose reference
+    - Reference: linked mastoids (as declared in ``METADATA``; the primary
+      paper is closed access, so this could not be re-verified)
     - Montage: standard_1005
     - Filters: Bandpass filtered during preprocessing
     - Units: uV (converted to V during loading)
@@ -1337,14 +1338,17 @@ class BNCI2015_007(MNEBNCI):
 
     References
     ----------
-    .. [1] Treder, M. S., Purwins, H., Miklody, D., Sturm, I., & Blankertz, B.
-           (2012). Decoding auditory attention to instruments in polyphonic music
-           using single-trial EEG classification. Journal of Neural Engineering,
-           11(2), 026009. https://doi.org/10.1088/1741-2560/11/2/026009
+    .. [1] Schaeff, S., Treder, M. S., Venthur, B., & Blankertz, B. (2012).
+           Exploring motion VEPs for gaze-independent communication. Journal of
+           Neural Engineering, 9(4), 045006.
+           https://doi.org/10.1088/1741-2560/9/4/045006
 
     Notes
     -----
     .. versionadded:: 1.2.0
+
+    The primary publication [1]_ is not open access; the acquisition values
+    above (sampling rate, channel count) describe the released BNCI files.
 
     See Also
     --------
@@ -1496,8 +1500,7 @@ class BNCI2015_007(MNEBNCI):
                 "N200",
             ],
             ethics_approval=["Declaration of Helsinki"],
-            associated_paper_doi="10.1088/1741-2560/11/2/026009",
-            funding=["DFG grant", "grant nos s", "BMBF grant", "grant no MU MU"],
+            associated_paper_doi="10.1088/1741-2560/9/4/045006",
             license="CC-BY-NC-ND-4.0",
             repository="BNCI Horizon",
         ),
