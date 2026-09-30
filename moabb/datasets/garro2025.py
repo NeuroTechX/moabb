@@ -113,6 +113,14 @@ class Garro2025(BaseDataset):
     11-muscle surface EMG is not returned. Subject 28 has no released
     recording, so 39 of 40 subjects are usable.
 
+    The data descriptor reports 40 healthy participants (20 males and 20
+    females, 44.6 +/- 13.2 years; recruitment range 25-80 years), 10
+    repetitions of 3 tasks under 3 conditions (90 trials per subject), FCz
+    reference and Fpz ground at 1000 Hz. ``n_subjects`` follows the release
+    (39); the demographics above describe the 40-participant cohort of the
+    paper. The Figshare record licence was not verified during the paper
+    audit (the article itself is CC BY-NC-ND 4.0).
+
     References
     ----------
     .. [1] Garro, F., Fenoglio, E., Ceroni, I., Forsiuk, I., Canepa, M.,
@@ -136,6 +144,7 @@ class Garro2025(BaseDataset):
             cap_manufacturer="Brain Products",
             sensor_type="active electrodes",
             reference="FCz",
+            ground="Fpz",
             line_freq=50.0,
             sensors=list(_CH_NAMES),
             auxiliary_channels=AuxiliaryChannelsMetadata(has_emg=True, emg_channels=11),
@@ -143,6 +152,9 @@ class Garro2025(BaseDataset):
         participants=ParticipantMetadata(
             n_subjects=39,
             health_status="healthy",
+            gender={"male": 20, "female": 20},
+            age_mean=44.6,
+            age_std=13.2,
             age_min=25.0,
             age_max=71.0,
             handedness="right",
