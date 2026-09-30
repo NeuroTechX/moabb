@@ -39,6 +39,13 @@ _SUBJECT_IDS = [
 _SUBJECTS_2DNF = {
     "xp204", "xp205", "xp207", "xp210", "xp213", "xp216", "xp217", "xp221",
 }
+# Table 3 of the data paper (participant_id, age, sex), in _SUBJECT_IDS order.
+_AGES = [41, 39, 32, 34, 28, 31, 39, 26, 50, 31, 31, 36, 46, 26, 66, 42, 32]
+_SEXES = [
+    "female", "male", "male", "female", "female", "male", "male", "female",
+    "male", "male", "male", "female", "female", "female", "male", "male",
+    "female",
+]
 # fmt: on
 
 # Shared with the sibling XP1 loader (LioiXP1, same team, cap and protocol).
@@ -82,12 +89,22 @@ class Lioi2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
     """Right-hand motor imagery EEG-fMRI neurofeedback dataset (XP2) [1]_.
 
     EEG recorded inside an MR scanner (fMRI is not loaded) from 17 healthy
-    subjects in 20 s rest / right-hand kinesthetic MI blocks [2]_. Each subject
-    has five runs: ``MIpre``, three neurofeedback runs (``1dNF`` or ``2dNF``)
-    and ``MIpost``. ``Task-MI`` and ``Task-NF`` blocks both map to
-    ``right_hand`` and ``Rest`` to ``rest``. The ECG channel is typed ``ecg``
-    and dropped unless ``return_all_modalities=True``. Ragged rows in the
-    released ``events.tsv`` files are normalised before mne-bids reads them.
+    subjects (9 males, 8 females, 26-66 years) in 20 s rest / right-hand
+    kinesthetic MI blocks [2]_. Each subject has five runs: ``MIpre``, three
+    neurofeedback runs (``1dNF`` or ``2dNF``) and ``MIpost``; the data paper
+    gives 5 min 20 s (8 rest + 8 task blocks) for ``MIpre`` and each NF run
+    and does not state the ``MIpost`` duration. ``Task-MI`` and ``Task-NF``
+    blocks both map to ``right_hand`` and ``Rest`` to ``rest``. The ECG
+    channel is typed ``ecg`` and dropped unless ``return_all_modalities=True``.
+    Ragged rows in the released ``events.tsv`` files are normalised before
+    mne-bids reads them.
+
+    .. note::
+       The data paper's XP2 paragraph says the 1d group imagined moving
+       their *left* hand, but its calibration, EEG feature (Laplacian around
+       C3, left motor cortex ROI) and source results ("sensory-motor cortex
+       of the right upper limb") all describe right-hand imagery, as in XP1;
+       the loader labels every task block ``right_hand``.
 
     Parameters
     ----------
@@ -117,11 +134,19 @@ class Lioi2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
             cap_manufacturer="BrainProducts",
             cap_model="BrainCap MR",
             reference="FCz",
+            ground="AFz",
             sensors=list(_CH_NAMES),
             line_freq=50.0,
         ),
         participants=ParticipantMetadata(
-            n_subjects=17, health_status="healthy", species="human"
+            n_subjects=17,
+            health_status="healthy",
+            species="human",
+            gender={"male": 9, "female": 8},
+            age_min=26.0,
+            age_max=66.0,
+            ages=list(_AGES),
+            sexes=list(_SEXES),
         ),
         experiment=ExperimentMetadata(
             events={"rest": 1, "right_hand": 2},
@@ -159,8 +184,13 @@ class Lioi2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
             imagery_duration_s=20.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials=8,
-            trials_context="~8 right-hand MI blocks and ~8 rest blocks per run.",
+            n_trials=1360,
+            trials_context=(
+                "Per subject: 5 runs x (8 rest + 8 right_hand) 20 s blocks = 80 "
+                "blocks (40 per class); 17 subjects -> 1360 blocks. The paper "
+                "states 5 min 20 s (8 task blocks) for MIpre and each NF run; the "
+                "MIpost duration is not stated and is assumed equal."
+            ),
         ),
         cross_validation=CrossValidationMetadata(
             cv_method="within_subject", evaluation_type=["within_subject"]
