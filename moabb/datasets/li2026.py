@@ -29,7 +29,7 @@ log = logging.getLogger(__name__)
 
 # Public Zenodo release "MI_A_Dataset.zip" (~2.0 GB). This is a 5-subject sample
 # (Sub_01, Sub_50, Sub_100, Sub_150, Sub_200) of a larger on-request dataset of
-# 242 participants collected at Inner Mongolia University.
+# 244 participants (Zenodo description) collected at Inner Mongolia University.
 LI2026_URL = "https://zenodo.org/records/20421767/files/MI_A_Dataset.zip"
 
 # Archive task folder -> (MOABB run name, class for cue code 1, class for code 2).
@@ -98,8 +98,10 @@ class Li2026(BaseDataset):
     Motor-imagery EEG covering diverse cognitive states, recorded with a
     64-channel Neuroscan system at 1000 Hz plus HEO/VEO (EOG), EKG, EMG and
     Trigger channels. The public Zenodo release is a five-subject sample
-    (Sub_01, Sub_50, Sub_100, Sub_150, Sub_200) of a 242-participant dataset
-    available on request. Each subject performed five left/right tasks (hand,
+    (Sub_01, Sub_50, Sub_100, Sub_150, Sub_200) of a 244-participant dataset
+    (the record: "synchronized EEG and EMG data from 244 participants";
+    named ``IMU-MI_A`` by its authors) available on request; ``n_subjects``
+    counts the released sample. Each subject performed five left/right tasks (hand,
     foot, thumb, index finger, index-thumb pinch), exposed as five runs of one
     session; trials are labelled by body part and side (ten classes).
 
@@ -179,7 +181,7 @@ class Li2026(BaseDataset):
             description="Human motor-imagery EEG covering diverse cognitive states: "
             "five body-part tasks (hand, foot, thumb, index finger, pinch) under "
             "two paradigms, 64-channel Neuroscan at 1000 Hz. Public five-subject "
-            "sample of a 242-participant dataset.",
+            "sample of a 244-participant dataset.",
             investigators=["Jianxiu Li", "Changming Wang", "Chao Chen"],
             institution="Inner Mongolia University",
             institution_address="Inner Mongolia, China",
