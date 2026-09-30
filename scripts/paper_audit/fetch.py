@@ -206,32 +206,44 @@ def _resolve_record(client: HttpClient, doi: str) -> tuple[dict, bool]:
 
 def _fetch_paper_text(
     client: HttpClient, doi: str, record: dict, store: _DoiStore
-) -> tuple[str | None, str | None]:
-    """Try Unpaywall PDF -> Europe PMC -> arXiv. Returns (source, error)."""
-    error = None
+) -> tuple[str | None, list[str]]:
+    """Try Unpaywall PDF -> Europe PMC -> arXiv. Returns (source, errors).
+
+    Each step is attempted even when a previous one raised, so a transient
+    Europe PMC 500 does not hide an arXiv copy; errors are all recorded.
+    """
+    errors: list[str] = []
     try:
         for url in sources.unpaywall_pdf_urls(client, doi)[:3]:
             if sources.download_pdf(client, url, store.paper_pdf):
                 if sources.pdf_to_text(store.paper_pdf, store.paper_txt):
-                    return "unpaywall", None
+                    return "unpaywall", errors
                 client.mark("pdf_no_text")
                 store.paper_txt.unlink(missing_ok=True)
+    except FetchError as exc:
+        errors.append(str(exc))
+        log.warning("unpaywall step failed for %s: %s", doi, exc)
+    try:
         pmcid = sources.europepmc_pmcid(client, doi)
         if pmcid:
             text = sources.europepmc_fulltext(client, pmcid)
             if text and text.strip():
                 store.paper_txt.write_text(text, encoding="utf-8")
-                return "europepmc", None
+                return "europepmc", errors
+    except FetchError as exc:
+        errors.append(str(exc))
+        log.warning("europepmc step failed for %s: %s", doi, exc)
+    try:
         arxiv_id = record.get("arxiv_id")
         if arxiv_id and sources.arxiv_pdf(client, arxiv_id, store.paper_pdf):
             if sources.pdf_to_text(store.paper_pdf, store.paper_txt):
-                return "arxiv", None
+                return "arxiv", errors
             client.mark("pdf_no_text")
             store.paper_txt.unlink(missing_ok=True)
     except FetchError as exc:
-        error = str(exc)
-        log.warning("full-text lookup failed for %s: %s", doi, exc)
-    return None, error
+        errors.append(str(exc))
+        log.warning("arxiv step failed for %s: %s", doi, exc)
+    return None, errors
 
 
 def resolve_doi(
@@ -291,15 +303,15 @@ def resolve_doi(
         elif offline or client is None:
             status["access"] = "missing"
         else:
-            src, err = _fetch_paper_text(client, doi, rec, store)
+            src, errs = _fetch_paper_text(client, doi, rec, store)
+            status["errors"].extend(errs)
             if src:
                 status.update(
                     access="open", paper_source=src, paper_path=str(store.paper_txt)
                 )
-            elif err:
-                status["access"] = "missing"
-                status["errors"].append(err)
             else:
+                # All lookups were consulted; a transient error only marks the
+                # DOI incomplete (retried next run); the paper is closed for now.
                 status["access"] = "closed"
     else:  # dataset DOI
         if offline or client is None:

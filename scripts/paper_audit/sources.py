@@ -106,6 +106,7 @@ class HttpClient:
         min_interval: float = 1.0,
         retries: int = 3,
         timeout: float = 45.0,
+        connect_timeout: float = 15.0,
         sleep=time.sleep,
         clock=time.monotonic,
     ):
@@ -114,6 +115,7 @@ class HttpClient:
         self.min_interval = min_interval
         self.retries = retries
         self.timeout = timeout
+        self.connect_timeout = connect_timeout
         self._sleep = sleep
         self._clock = clock
         self._last_by_host: dict[str, float] = {}
@@ -163,7 +165,7 @@ class HttpClient:
                     url,
                     params=params,
                     headers=hdrs,
-                    timeout=timeout or self.timeout,
+                    timeout=(self.connect_timeout, timeout or self.timeout),
                     json=json_body,
                     allow_redirects=True,
                 )
@@ -171,6 +173,8 @@ class HttpClient:
                 last_error = exc
                 entry.update(status=None, error=f"{type(exc).__name__}: {exc}")
                 self.calls.append(entry)
+                if isinstance(exc, requests.ConnectionError) and attempt >= 1:
+                    break  # unreachable host: two attempts are enough
                 self._sleep(2.0**attempt)
                 continue
             entry.update(status=resp.status_code, bytes=len(resp.content or b""))

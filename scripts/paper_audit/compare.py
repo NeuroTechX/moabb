@@ -361,6 +361,8 @@ def _hardware_phrases(declared: str) -> list[str]:
 
 
 def _compare_filters(declared, sources):
+    if declared in ({}, [], ""):
+        declared = None
     nums = _numbers_in(declared)
 
     def eq(v, _d):
@@ -732,8 +734,7 @@ _NAME_STOPWORDS = {
     "References",
 }
 _OFFICIAL_RE = re.compile(
-    r"(?:\bthe\s+([A-Z][A-Za-z0-9]{2,}(?:[-_][A-Za-z0-9]+)?)\s+(?:dataset|database|corpus|benchmark)\b"
-    r"|(?:^|\n)\s*([A-Z][A-Za-z0-9]{2,}(?:[-_][A-Za-z0-9]+)?):\s+[A-Za-z])"
+    r"\bthe\s+([A-Z][A-Za-z0-9]{2,}(?:[-_][A-Za-z0-9]+)?)\s+(?:dataset|database|corpus|benchmark)\b"
 )
 
 
@@ -741,6 +742,34 @@ def _camel(surname: str) -> str:
     ascii_name = unicodedata.normalize("NFKD", surname).encode("ascii", "ignore").decode()
     parts = [p for p in re.split(r"[\s\-']+", ascii_name) if p]
     return "".join(p[:1].upper() + p[1:] for p in parts)
+
+
+_PARTICLES = {
+    "de",
+    "da",
+    "das",
+    "do",
+    "dos",
+    "del",
+    "della",
+    "di",
+    "du",
+    "la",
+    "le",
+    "van",
+    "von",
+    "der",
+    "den",
+    "ter",
+    "el",
+    "al",
+    "bin",
+    "ibn",
+    "st",
+    "san",
+    "y",
+    "e",
+}
 
 
 def _first_author_surname(author: str) -> str:
@@ -752,7 +781,7 @@ def _first_author_surname(author: str) -> str:
     if not tokens:
         return ""
     idx = len(tokens) - 1
-    while idx > 0 and tokens[idx - 1][:1].islower():  # "de la Cruz" -> DeLaCruz
+    while idx > 0 and tokens[idx - 1].lower() in _PARTICLES:  # "de la Cruz" -> DeLaCruz
         idx -= 1
     return " ".join(tokens[idx:])
 
@@ -774,7 +803,7 @@ def propose_class_name(
     # Rule 1: official name explicitly presented as the dataset's name.
     for name, text, _kind in sources:
         for m in _OFFICIAL_RE.finditer(text):
-            cand = m.group(1) or m.group(2)
+            cand = m.group(1)
             if not cand or cand.lower() in lowered_stop:
                 continue
             if not re.search(r"[A-Z]", cand[1:]) and not re.search(r"\d", cand):
