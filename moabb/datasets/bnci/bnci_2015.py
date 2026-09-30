@@ -2666,6 +2666,10 @@ class BNCI2015_013(MNEBNCI):
     cursor control task with error-related potentials. The dataset includes
     both correct and error responses.
 
+    The BNCI release provides two ``.mat`` files per subject (``s1`` and
+    ``s2``), each holding 10 blocks. The loader exposes every block as its
+    own session with a single run, hence ``sessions_per_subject=20``.
+
     References
     ----------
     .. [1] Chavarriaga, R., & Millán, J. D. R. (2010). Learning from EEG
