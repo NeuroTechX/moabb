@@ -169,7 +169,7 @@ from .zhou2020 import Zhou2020
 from .zuo2025 import Zuo2025
 
 
-from .kmi_handgrip2025 import KMIHandGrip2025
+from .martinezpeon2025 import MartinezPeon2025
 from .milimbeeg import MILimbEEG
 
 # Call this last in order to make sure the dataset list, dict are populated with

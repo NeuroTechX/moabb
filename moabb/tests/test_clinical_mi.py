@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from moabb.datasets import KMIHandGrip2025, MILimbEEG
+from moabb.datasets import MartinezPeon2025, MILimbEEG
 from moabb.datasets.preprocessing import SetRawAnnotations
 
 
@@ -64,7 +64,7 @@ def test_kmi_si_and_protocol(tmp_path):
     pd.DataFrame({"C3": np.full(42000, 25), "C4": np.full(42000, -12)}).to_csv(
         path, index=False
     )
-    ds = KMIHandGrip2025()
+    ds = MartinezPeon2025()
     raw = ds._read_run(path, "grip_10")
     np.testing.assert_allclose(raw.get_data()[0], 25e-6)
     np.testing.assert_allclose(raw.annotations.onset, np.arange(4, 84, 8))
@@ -91,10 +91,10 @@ def test_kmi_metadata_and_signal_transport_flags(tmp_path):
         )
     )
     with patch(
-        "moabb.datasets.kmi_handgrip2025.dl.data_dl",
+        "moabb.datasets.martinezpeon2025.dl.data_dl",
         side_effect=[str(path)] + ["synthetic"] * 4,
     ) as download:
-        assert KMIHandGrip2025().data_path(1, **FLAGS) == ["synthetic"] * 4
+        assert MartinezPeon2025().data_path(1, **FLAGS) == ["synthetic"] * 4
     assert [call.kwargs for call in download.call_args_list] == [FLAGS] * 5
 
 

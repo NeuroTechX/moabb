@@ -54,7 +54,7 @@ Motor Imagery Datasets
     :template: class.rst
 
     AlexMI
-    KMIHandGrip2025
+    MartinezPeon2025
     MILimbEEG
     BNCI2003_004
     BNCI2014_001

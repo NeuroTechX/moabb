@@ -60,7 +60,7 @@ NEMAR_ID_EXEMPT = {
     "Schrag2026Pediatric",
     "Lenaig2026",
     "Wang2026",
-    "KMIHandGrip2025",  # no public NEMAR mirror yet; tracked in #1198
+    "MartinezPeon2025",  # no public NEMAR mirror yet; tracked in #1198
     "MILimbEEG",  # no public NEMAR mirror yet; tracked in #1198
 }
 # Datasets whose NEMAR deposit is assigned but not yet public (private,
