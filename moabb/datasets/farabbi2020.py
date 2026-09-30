@@ -47,6 +47,9 @@ class Farabbi2020(BaseDataset):
     drops the resting-state recording. GDF events 769/770 mark the left/right cue,
     followed by the 4 s imagery period. Channels are renamed positionally to the
     10-20 labels; only EEG is returned unless ``return_all_modalities=True``.
+    Each run holds 20 left- and 20 right-hand trials (40 per run, 480 per
+    subject). The Zenodo record names no institution; its ethics approval is
+    from the Faculty of Medicine, University of Lisbon (reference 245/19).
 
     References
     ----------
@@ -151,8 +154,10 @@ class Farabbi2020(BaseDataset):
             imagery_duration_s=4.0,
         ),
         data_structure=DataStructureMetadata(
+            n_trials=480,
+            n_trials_per_class={"left_hand": 240, "right_hand": 240},
             n_blocks=4,
-            trials_context="Three sessions per subject, each with four motor-imagery runs (first-person training/online, third-person training/online) plus an ignored resting-state recording. Each trial: 2 s baseline + 4 s imagery.",
+            trials_context="Three sessions per subject, each with four motor-imagery runs (first-person training/online, third-person training/online) plus an ignored resting-state recording. Each run: 20 left + 20 right trials (40); 160 per session, 480 per subject. Each trial: 2 s baseline + 4 s imagery.",
         ),
         file_format="GDF",
         data_processed=False,
