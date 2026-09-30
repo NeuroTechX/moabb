@@ -66,18 +66,30 @@ class SitStand2026(BaseDataset):
 
     First public EEG dataset targeting transitions between sitting and
     standing during motor execution and motor imagery. 23 healthy participants
-    (22-28 years) were recorded; S05 is excluded for poor signal quality,
-    leaving 22 subjects with two sessions each (``S<ID>_S1.mat``,
-    ``S<ID>_S2.mat``). Each ``eeg`` matrix has 63 rows at 1200 Hz: 60 EEG
-    channels, hEOG (right temple), vEOG (right infra-orbital) and a trigger row
-    (EMG, sampled at 2000 Hz, is not loaded). EEG/EOG are converted from uV to V.
+    with no known neurophysiological abnormalities were recorded; S05 is
+    excluded for poor signal quality, leaving 22 subjects with two sessions
+    each (``S<ID>_S1.mat``, ``S<ID>_S2.mat``). The readme text gives the
+    cohort as aged 22-28 with fifteen males, whereas its per-subject
+    demographics table spans 18-30 years with 16 males and 7 females (15 M /
+    7 F, 19 right-, 2 left- and 1 both-handed, 6 with prior EEG experience
+    after excluding S05); the metadata follows the table. Each ``eeg`` matrix
+    has 63 rows at 1200 Hz: 60 EEG channels, hEOG (right temple), vEOG (right
+    infra-orbital) and a trigger row (six EMG channels, sampled at 2000 Hz,
+    are not loaded). EEG/EOG are converted from uV to V.
 
     The trigger row codes rest (1, 2), executed transitions (10-13) and
     imagery blocks while sitting (20-23) and standing (30-33). This loader
     exposes the two imagined transitions, sit-to-stand (21) and stand-to-sit
     (32). They are recorded in different starting postures/blocks, so
     classification can reflect posture or block differences, not solely
-    imagined movement. The readme reports ~70% EEGNet accuracy for MI.
+    imagined movement. Per the readme index table of the preprocessed
+    release, each MI task has two rounds of 10 trials per session (20 per
+    class per session). The readme reports ~70% EEGNet accuracy for MI.
+
+    The Zenodo record (issued 2025, CC0) links no paper; the readme lists
+    Benjakarn Uengsawapak as first author while the Zenodo creator list gives
+    Benjakarn Leelakittisin, so the first-author surname is ambiguous for
+    naming purposes.
 
     References
     ----------
@@ -113,21 +125,25 @@ class SitStand2026(BaseDataset):
         participants=ParticipantMetadata(
             n_subjects=22,
             health_status="healthy",
-            gender={"male": 14, "female": 8},
+            gender={"male": 15, "female": 7},
             age_min=18.0,
             age_max=30.0,
+            handedness={"right": 19, "left": 2, "both": 1},
+            bci_experience="mixed (6 of 22 with prior EEG experience)",
             species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             paradigm="imagery",
             n_classes=2,
             class_labels=["sit_stand", "stand_sit"],
+            trials_per_class={"sit_stand": 20, "stand_sit": 20},
             trial_duration=4.0,
             events={"sit_stand": 21, "stand_sit": 32},
             study_design=(
                 "Sit-to-stand and stand-to-sit transitions performed under both "
                 "motor execution and motor imagery conditions; trigger codes at "
-                "channel 63 mark each transition/rest event."
+                "channel 63 mark each transition/rest event. MI: two rounds of "
+                "10 trials per task per session (readme index table)."
             ),
             mode="offline",
         ),
