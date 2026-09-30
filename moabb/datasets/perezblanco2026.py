@@ -51,13 +51,25 @@ class PerezBlanco2026(BaseDataset):
 
     **Dataset description**
 
-    EEG, EMG and wrist-kinematic data from 45 healthy participants performing a
+    EEG, EMG and wrist-kinematic data from 45 healthy participants (20-83
+    years, mean 38.5 +/- 19.9; 26 female; 40 right-handed) performing a
     cursor-control wrist-pointing task with the *Biomech Wrist*, a 3-DoF wrist
-    rehabilitation exoskeleton worn on the right forearm. Wrist flexion-extension
-    moved the cursor horizontally and radial-ulnar deviation moved it vertically.
-    On each 10 s trial a target appeared in one of four cardinal directions and
-    the participant moved the cursor to it, yielding four balanced movement
-    classes: **flexion, extension, radial deviation, ulnar deviation**.
+    rehabilitation exoskeleton worn on the right forearm (motors de-energized,
+    encoders only). Wrist flexion-extension moved the cursor horizontally and
+    radial-ulnar deviation moved it vertically. On each 10 s trial a target
+    appeared in one of four cardinal directions and the participant moved the
+    cursor to it, yielding four balanced movement classes: **flexion,
+    extension, radial deviation, ulnar deviation**. This is an overt
+    **motor-execution** task (no imagery condition); the loader declares
+    ``paradigm="imagery"`` only so that it runs under MOABB's ``MotorImagery``
+    paradigm, as other execution datasets do.
+
+    The paper recommends excluding subject 31 from EEG analyses because of
+    persistently high noise across all channels. Recordings took place at
+    Tecnologico de Monterrey in Guadalajara, Mexico (the BIDS sidecar gives
+    the institution address of the Monterrey campus). The Figshare record
+    licenses the data CC BY 4.0, while ``dataset_description.json`` states
+    ``"License": "PD"``.
 
     Each trial is 3 s fixation, 2 s target preview, 2.5 s movement execution
     and 2.5 s return-to-center. Participants completed at least 8 runs of 40
@@ -113,6 +125,8 @@ class PerezBlanco2026(BaseDataset):
             n_subjects=45,
             health_status="healthy",
             gender={"female": 26, "male": 19},
+            age_mean=38.5,
+            age_std=19.87,
             age_min=20.0,
             age_max=83.0,
             handedness={"right": 40, "left": 5},
@@ -121,6 +135,7 @@ class PerezBlanco2026(BaseDataset):
         experiment=ExperimentMetadata(
             events=dict(_EVENTS),
             paradigm="imagery",
+            task_type="motor_execution",
             n_classes=4,
             class_labels=list(_EVENTS.keys()),
             trial_duration=10.0,
@@ -155,9 +170,9 @@ class PerezBlanco2026(BaseDataset):
         ),
         sessions_per_subject=1,
         runs_per_session=8,
-        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Research"]),
+        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Motor Execution"]),
         paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="imagery",
+            detected_paradigm="motor_execution",
             imagery_tasks=list(_EVENTS.keys()),
             imagery_duration_s=2.5,
         ),
