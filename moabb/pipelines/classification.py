@@ -605,17 +605,15 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
 
         # Estimate covariance between every trial and the rest of the trials (excluding itself)
         for trial_i in range(n_trials - 1):
-            x1 = np.squeeze(data[trial_i, :, :])
-
-            # Mean centering for the selected trial
-            x1 -= np.mean(x1, 0)
+            # Mean centering (over time, per channel) on a copy, so the
+            # caller's array is left untouched
+            x1 = np.squeeze(data[trial_i, :, :]).astype(float)
+            x1 = x1 - np.mean(x1, axis=-1, keepdims=True)
 
             # Select a second trial that is different
             for trial_j in range(trial_i + 1, n_trials):
-                x2 = np.squeeze(data[trial_j, :, :])
-
-                # Mean centering for the selected trial
-                x2 -= np.mean(x2, 0)
+                x2 = np.squeeze(data[trial_j, :, :]).astype(float)
+                x2 = x2 - np.mean(x2, axis=-1, keepdims=True)
 
                 # Put the two trials together
                 X = np.concatenate((x1, x2), axis=0)
