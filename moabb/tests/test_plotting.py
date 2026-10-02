@@ -144,6 +144,14 @@ def test_plot_critical_difference_rejects_incomplete_benchmarks():
         plot_critical_difference(data)
 
 
+def test_plot_critical_difference_rejects_unbalanced_subject_sets():
+    data = _make_df(pipelines=("P0", "P1", "P2"))
+    data = data.query("not (dataset == 'D0' and pipeline == 'P1' and subject == 3)")
+
+    with pytest.raises(ValueError, match="same subjects"):
+        plot_critical_difference(data)
+
+
 def test_plot_critical_difference_handles_identical_pipelines():
     data = _make_df(pipelines=("P0", "P1", "P2"))
     data["score"] = 0.5
