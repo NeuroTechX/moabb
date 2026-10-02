@@ -328,22 +328,21 @@ class TestWithinSess:
 
     def test_within_session_evaluation_save_model(self):
         res_test_path = "./res_test"
-
-        # Get a list of all subdirectories inside 'res_test'
-        subdirectories = [
-            d
-            for d in os.listdir(res_test_path)
-            if os.path.isdir(os.path.join(res_test_path, d))
-        ]
-
-        # Check if any of the subdirectories contain the partial name 'Model'
-        model_folder_exists = any("Model" in folder for folder in subdirectories)
-
-        # Assert that at least one folder with the partial name 'Model' exists
-        assert model_folder_exists, (
-            "No folder with partial name 'Model' found inside 'res_test' directory",
+        process_pipeline = self.eval.paradigm.make_process_pipelines(dataset)[0]
+        list(
+            self.eval.evaluate(
+                dataset, pipelines, param_grid=None, process_pipeline=process_pipeline
+            )
         )
 
+        model_path = os.path.join(
+            res_test_path,
+            "Models_WithinSession",
+            type(self.eval.paradigm).__name__,
+        )
+        assert os.path.isdir(model_path), (
+            "Saved models should be namespaced under their paradigm.",
+        )
     def test_lambda_warning(self):
         def explicit_kernel(x):
             return x**3
