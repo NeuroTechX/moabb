@@ -503,7 +503,9 @@ class CrossSubjectEvaluation(BaseEvaluation):
         Optional top-level cross-subject splitter. It must follow MOABB's
         ``split(y, metadata)`` contract and yields the train/test (or
         train/calibration/test) indices consumed by the existing evaluation
-        engine. When provided, it replaces ``CrossSubjectSplitter`` and cannot
+        engine. Each test fold must contain exactly one subject, matching
+        MOABB's per-subject result-row semantics. When provided, it replaces
+        ``CrossSubjectSplitter`` and cannot
         be combined with ``cv_class``, ``cv_kwargs``, ``n_splits``,
         ``groups``, or a non-default ``cs_mode``. Defaults to ``None``.
 
@@ -594,6 +596,18 @@ class CrossSubjectEvaluation(BaseEvaluation):
         super().__init__(*args, **kwargs)
         self._cv_internal_keys = internal_cv_keys
         self._cv_explicit_keys = frozenset(self.cv_kwargs) - internal_cv_keys
+
+    def _validate_test_fold_metadata(self, test_metadata):
+        if self.splitter is None:
+            return
+        test_subjects = test_metadata["subject"].unique()
+        if len(test_subjects) != 1:
+            raise ValueError(
+                "A top-level CrossSubjectEvaluation splitter must hold out "
+                "exactly one subject per test fold because MOABB records one "
+                "subject identity per result row; got test subjects "
+                f"{test_subjects.tolist()}."
+            )
 
     def _create_splitter(self):
         """Create the top-level splitter for parallel evaluation.
