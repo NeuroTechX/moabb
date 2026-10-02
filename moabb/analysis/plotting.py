@@ -390,9 +390,7 @@ def _extract_color_dict(handles, labels):
 def _nemenyi_critical_difference(n_pipelines, n_datasets, alpha):
     """Return the Nemenyi critical difference for complete benchmark blocks."""
     q_alpha = studentized_range.ppf(1 - alpha, n_pipelines, np.inf) / np.sqrt(2)
-    return q_alpha * np.sqrt(
-        n_pipelines * (n_pipelines + 1) / (6 * n_datasets)
-    )
+    return q_alpha * np.sqrt(n_pipelines * (n_pipelines + 1) / (6 * n_datasets))
 
 
 def plot_critical_difference(
@@ -492,9 +490,7 @@ def plot_critical_difference(
         friedman_p = friedmanchisquare(
             *[score_values[:, i] for i in range(n_pipelines)]
         ).pvalue
-    critical_difference = _nemenyi_critical_difference(
-        n_pipelines, n_datasets, alpha
-    )
+    critical_difference = _nemenyi_critical_difference(n_pipelines, n_datasets, alpha)
 
     if figsize is None:
         figsize = (max(8.0, 1.2 * n_pipelines), max(4.5, 0.34 * n_pipelines + 2.5))

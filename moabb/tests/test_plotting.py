@@ -83,9 +83,7 @@ def test_paired_plot():
 def test_nemenyi_critical_difference_matches_demsar_2006():
     # Demšar (2006), Sec. 3.2: k=4 classifiers on N=14 datasets at
     # alpha=0.05 gives a Nemenyi critical difference of 1.25.
-    assert _nemenyi_critical_difference(4, 14, 0.05) == pytest.approx(
-        1.25, abs=0.01
-    )
+    assert _nemenyi_critical_difference(4, 14, 0.05) == pytest.approx(1.25, abs=0.01)
 
 
 def test_plot_critical_difference_uses_subject_balanced_complete_blocks():
