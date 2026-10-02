@@ -774,6 +774,8 @@ class BaseEvaluation(ABC):
 
     def _validate_test_fold_metadata(self, test_metadata):
         """Validate metadata assumptions made by the parallel task builder."""
+        if test_metadata.empty:
+            raise ValueError("Cross-validation split produced an empty test fold.")
 
     def _build_task_list(
         self, dataset, X, y, metadata, splitter, work_plan, pipelines, param_grid
