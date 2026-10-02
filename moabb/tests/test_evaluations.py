@@ -89,6 +89,19 @@ class HeldOutSubjectSplitter(BaseCrossValidator):
         return self._metadata
 
 
+class MultiSubjectTestSplitter(BaseCrossValidator):
+    """Deliberately invalid splitter with two subjects in one test fold."""
+
+    def split(self, y, metadata):
+        del y
+        index = metadata.index.to_numpy()
+        test_mask = metadata["subject"].isin([2, 3]).to_numpy()
+        yield index[~test_mask], index[test_mask]
+
+    def get_n_splits(self, *args, **kwargs):
+        return 1
+
+
 def _group_run(metadata):
     return metadata["run"].to_numpy()
 
@@ -706,6 +719,22 @@ def test_cross_subject_top_level_splitter_rejects_protocol_conflicts(
             splitter=HeldOutSubjectSplitter(subject=2),
             **protocol_kwargs,
         )
+
+
+def test_cross_subject_top_level_splitter_rejects_multi_subject_test_fold(tmp_path):
+    ds = FakeDataset(["left_hand", "right_hand"], n_subjects=3, n_sessions=2, seed=18)
+    evaluation = ev.CrossSubjectEvaluation(
+        paradigm=FakeImageryParadigm(),
+        datasets=[ds],
+        hdf5_path=tmp_path,
+        overwrite=True,
+        n_jobs=1,
+        splitter=MultiSubjectTestSplitter(),
+    )
+    pipe = make_pipeline(Covariances("oas"), CSP(8), LDA())
+
+    with pytest.raises(ValueError, match="exactly one subject"):
+        evaluation.process(OrderedDict([("P", pipe)]))
 
 
 def test_cross_subject_top_level_splitter_type_is_validated(tmp_path):
