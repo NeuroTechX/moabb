@@ -32,6 +32,11 @@ API changes
   folds that hold out multiple sessions now emit one result row per held-out
   session instead of one aggregate row per fold. The default leave-one-session-out
   behavior is unchanged (:gh:`1210` by `lindicaphxag-tech`_).
+- Saved evaluation model paths now include the paradigm and optional suffix to
+  prevent artifacts from separate BCI benchmark runs overwriting each other.
+  Existing artifacts remain at their original paths and are not automatically
+  migrated because their missing paradigm/suffix provenance makes a safe target
+  ambiguous (:gh:`1182` by `lindicaphxag-tech`_).
 
 Requirements
 ~~~~~~~~~~~~

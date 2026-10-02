@@ -1144,6 +1144,54 @@ class TestUtilEvaluation:
         )
         assert grid_save_path == expected_grid_path
 
+    def test_create_save_path_is_namespaced_by_paradigm_and_suffix(self):
+        save_path = create_save_path(
+            "base_path",
+            "evaluation_code",
+            1,
+            "0",
+            "evaluation_name",
+            eval_type="WithinSession",
+            paradigm="MotorImagery",
+            suffix="run_a",
+        )
+
+        expected_path = os.path.join(
+            "base_path",
+            "Models_WithinSession",
+            "MotorImagery",
+            "run_a",
+            "evaluation_code",
+            "1",
+            "0",
+            "evaluation_name",
+        )
+        assert save_path == expected_path
+
+        other_run_path = create_save_path(
+            "base_path",
+            "evaluation_code",
+            1,
+            "0",
+            "evaluation_name",
+            eval_type="WithinSession",
+            paradigm="SSVEP",
+            suffix="run_a",
+        )
+        assert other_run_path != save_path
+
+        other_suffix_path = create_save_path(
+            "base_path",
+            "evaluation_code",
+            1,
+            "0",
+            "evaluation_name",
+            eval_type="WithinSession",
+            paradigm="MotorImagery",
+            suffix="run_b",
+        )
+        assert other_suffix_path != save_path
+
     def test_save_model_cv_with_pytorch_model(self):
         try:
             import torch
