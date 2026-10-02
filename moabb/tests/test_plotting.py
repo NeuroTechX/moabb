@@ -123,6 +123,12 @@ def test_plot_critical_difference_uses_subject_balanced_complete_blocks():
     plt.close(fig)
 
 
+def test_plot_critical_difference_requires_three_pipelines():
+    data = _make_df().query("pipeline != 'P2'")
+    with pytest.raises(ValueError, match="At least three pipelines"):
+        plot_critical_difference(data)
+
+
 def test_plot_critical_difference_rejects_incomplete_benchmarks():
     data = _make_df().query("not (dataset == 'D0' and pipeline == 'P1')")
     with pytest.raises(ValueError, match="requires every pipeline"):
