@@ -719,12 +719,7 @@ def test_cross_subject_top_level_splitter_type_is_validated(tmp_path):
 
 
 def test_cross_subject_top_level_splitter_runs_end_to_end(tmp_path):
-    ds = FakeDataset(
-        ["left_hand", "right_hand"],
-        n_subjects=3,
-        n_sessions=2,
-        seed=18,
-    )
+    ds = FakeDataset(["left_hand", "right_hand"], n_subjects=3, n_sessions=2, seed=18)
     splitter = HeldOutSubjectSplitter(subject=3)
     evaluation = ev.CrossSubjectEvaluation(
         paradigm=FakeImageryParadigm(),
@@ -738,7 +733,8 @@ def test_cross_subject_top_level_splitter_runs_end_to_end(tmp_path):
 
     results = evaluation.process(OrderedDict([("P", pipe)]))
 
-    assert set(results["subject"]) == {3}
+    # Result tables serialize dataset metadata values as strings.
+    assert set(results["subject"]) == {"3"}
     assert set(results["held_out_subject"]) == {3}
 
 
