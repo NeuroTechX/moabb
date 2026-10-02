@@ -13,6 +13,7 @@ from pyriemann.spatialfilters import CSP
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.dummy import DummyClassifier as Dummy
 from sklearn.model_selection import (
+    BaseCrossValidator,
     GroupKFold,
     GroupShuffleSplit,
     LeaveOneGroupOut,
@@ -63,6 +64,29 @@ class PositionalOnlyGroupKFold(GroupKFold):
 
     def __init__(self, n_splits=2, /, **kwargs):
         super().__init__(n_splits=n_splits, **kwargs)
+
+
+class HeldOutSubjectSplitter(BaseCrossValidator):
+    """Minimal top-level splitter that holds out one chosen subject."""
+
+    metadata_columns = ("held_out_subject",)
+
+    def __init__(self, subject):
+        self.subject = subject
+        self._metadata = None
+
+    def split(self, y, metadata):
+        del y
+        index = metadata.index.to_numpy()
+        test_mask = metadata["subject"].to_numpy() == self.subject
+        self._metadata = {"held_out_subject": self.subject}
+        yield index[~test_mask], index[test_mask]
+
+    def get_n_splits(self, *args, **kwargs):
+        return 1
+
+    def get_metadata(self):
+        return self._metadata
 
 
 def _group_run(metadata):
@@ -637,6 +661,85 @@ def test_custom_cv_receives_compatible_defaults_and_overrides(tmp_path):
     splitter = evaluation._create_splitter()
     assert splitter._cv_kwargs["n_splits"] == 3
     assert splitter.random_state == 17
+
+
+def test_cross_subject_accepts_top_level_splitter(tmp_path):
+    splitter = HeldOutSubjectSplitter(subject=2)
+    evaluation = ev.CrossSubjectEvaluation(
+        paradigm=FakeImageryParadigm(),
+        datasets=[dataset],
+        hdf5_path=tmp_path,
+        splitter=splitter,
+    )
+
+    assert evaluation._create_splitter() is splitter
+    assert "held_out_subject" in evaluation.additional_columns
+
+    _, y, metadata = FakeImageryParadigm().get_data(dataset)
+    folds = list(evaluation._create_splitter().split(y, metadata))
+
+    assert len(folds) == 1
+    train, test = folds[0]
+    assert set(metadata.loc[train, "subject"]) == {1}
+    assert set(metadata.loc[test, "subject"]) == {2}
+    assert splitter.get_metadata() == {"held_out_subject": 2}
+
+
+@pytest.mark.parametrize(
+    "protocol_kwargs",
+    [
+        {"cv_class": GroupKFold},
+        {"cv_kwargs": {"random_state": 17}},
+        {"n_splits": 2},
+        {"groups": "session"},
+        {"cs_mode": ev.CrossSubjectMode.TRAIN_TRIALWISE},
+    ],
+)
+def test_cross_subject_top_level_splitter_rejects_protocol_conflicts(
+    tmp_path, protocol_kwargs
+):
+    with pytest.raises(ValueError, match="splitter cannot be combined"):
+        ev.CrossSubjectEvaluation(
+            paradigm=FakeImageryParadigm(),
+            datasets=[dataset],
+            hdf5_path=tmp_path,
+            splitter=HeldOutSubjectSplitter(subject=2),
+            **protocol_kwargs,
+        )
+
+
+def test_cross_subject_top_level_splitter_type_is_validated(tmp_path):
+    with pytest.raises(TypeError, match="BaseCrossValidator"):
+        ev.CrossSubjectEvaluation(
+            paradigm=FakeImageryParadigm(),
+            datasets=[dataset],
+            hdf5_path=tmp_path,
+            splitter=object(),
+        )
+
+
+def test_cross_subject_top_level_splitter_runs_end_to_end(tmp_path):
+    ds = FakeDataset(
+        ["left_hand", "right_hand"],
+        n_subjects=3,
+        n_sessions=2,
+        seed=18,
+    )
+    splitter = HeldOutSubjectSplitter(subject=3)
+    evaluation = ev.CrossSubjectEvaluation(
+        paradigm=FakeImageryParadigm(),
+        datasets=[ds],
+        hdf5_path=tmp_path,
+        overwrite=True,
+        n_jobs=1,
+        splitter=splitter,
+    )
+    pipe = make_pipeline(Covariances("oas"), CSP(8), LDA())
+
+    results = evaluation.process(OrderedDict([("P", pipe)]))
+
+    assert set(results["subject"]) == {3}
+    assert set(results["held_out_subject"]) == {3}
 
 
 @pytest.fixture(scope="module")

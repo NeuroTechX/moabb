@@ -3,7 +3,12 @@ from typing import TYPE_CHECKING, Optional
 
 import numpy as np
 from sklearn.base import clone
-from sklearn.model_selection import GroupKFold, LeaveOneGroupOut, StratifiedKFold
+from sklearn.model_selection import (
+    BaseCrossValidator,
+    GroupKFold,
+    LeaveOneGroupOut,
+    StratifiedKFold,
+)
 from sklearn.preprocessing import LabelEncoder
 from tqdm import tqdm
 
@@ -494,6 +499,13 @@ class CrossSubjectEvaluation(BaseEvaluation):
         ``"roc_auc"`` metrics. Cannot be combined with manual
         ``calibration_size`` or ``calibration_labeled`` in ``cv_kwargs``, except
         for the default ``TRAIN`` mode.
+    splitter : BaseCrossValidator or None
+        Optional top-level cross-subject splitter. It must follow MOABB's
+        ``split(y, metadata)`` contract and yields the train/test (or
+        train/calibration/test) indices consumed by the existing evaluation
+        engine. When provided, it replaces ``CrossSubjectSplitter`` and cannot
+        be combined with ``cv_class``, ``cv_kwargs``, ``n_splits``,
+        ``groups``, or a non-default ``cs_mode``. Defaults to ``None``.
 
     Notes
     -----
@@ -505,14 +517,54 @@ class CrossSubjectEvaluation(BaseEvaluation):
     _score_per_session = True
     _needs_all_subjects = True
 
-    def __init__(self, *args, cs_mode=CrossSubjectMode.TRAIN, **kwargs):
-        cv_kwargs = dict(kwargs.get("cv_kwargs") or {})
-        internal_cv_keys = frozenset()
-
+    def __init__(
+        self,
+        *args,
+        cs_mode=CrossSubjectMode.TRAIN,
+        splitter: Optional[BaseCrossValidator] = None,
+        **kwargs,
+    ):
         if cs_mode is None:
             cs_mode = CrossSubjectMode.TRAIN
-
         cs_mode = CrossSubjectMode(cs_mode)
+
+        if splitter is not None:
+            if not isinstance(splitter, BaseCrossValidator):
+                raise TypeError("splitter must be a sklearn BaseCrossValidator instance.")
+
+            conflicts = []
+            if kwargs.get("cv_class") is not None:
+                conflicts.append("cv_class")
+            if kwargs.get("cv_kwargs"):
+                conflicts.append("cv_kwargs")
+            if kwargs.get("n_splits") is not None:
+                conflicts.append("n_splits")
+            if kwargs.get("groups") is not None:
+                conflicts.append("groups")
+            if cs_mode != CrossSubjectMode.TRAIN:
+                conflicts.append("cs_mode")
+            if conflicts:
+                names = ", ".join(conflicts)
+                raise ValueError(
+                    f"splitter cannot be combined with protocol options: {names}."
+                )
+
+            self.splitter = splitter
+            self.cs_mode = cs_mode
+            self.trialwise = False
+            additional_columns = list(kwargs.get("additional_columns") or ())
+            for column in getattr(splitter, "metadata_columns", ()):
+                if column not in additional_columns:
+                    additional_columns.append(column)
+            kwargs["additional_columns"] = additional_columns
+            super().__init__(*args, **kwargs)
+            self._cv_internal_keys = frozenset()
+            self._cv_explicit_keys = frozenset()
+            return
+
+        self.splitter = None
+        cv_kwargs = dict(kwargs.get("cv_kwargs") or {})
+        internal_cv_keys = frozenset()
         self.cs_mode = cs_mode
 
         # Manual cv_kwargs still work when the default train-only blockwise
@@ -544,13 +596,15 @@ class CrossSubjectEvaluation(BaseEvaluation):
         self._cv_explicit_keys = frozenset(self.cv_kwargs) - internal_cv_keys
 
     def _create_splitter(self):
-        """Create the CrossSubjectSplitter for parallel evaluation.
+        """Create the top-level splitter for parallel evaluation.
 
+        An explicit ``splitter`` is used directly. Otherwise,
         ``calibration_size`` and ``calibration_labeled`` passed via
-        ``cv_kwargs`` turn each fold into a transfer split:
-
-        ``(train, calibration, test)``.
+        ``cv_kwargs`` configure the default ``CrossSubjectSplitter``.
         """
+        if self.splitter is not None:
+            return self.splitter
+
         if self.n_splits is None:
             default_class = LeaveOneGroupOut
             default_kwargs = {}
