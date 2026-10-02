@@ -455,8 +455,10 @@ def plot_critical_difference(
     )
     if scores.shape[0] < 2:
         raise ValueError("At least two datasets are required")
-    if scores.shape[1] < 2:
-        raise ValueError("At least two pipelines are required")
+    if scores.shape[1] < 3:
+        raise ValueError(
+            "At least three pipelines are required for Friedman/Nemenyi analysis"
+        )
     if scores.isna().any().any():
         missing_pairs = [
             (dataset, pipeline)
