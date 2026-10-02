@@ -447,9 +447,29 @@ def plot_critical_difference(
     if not isinstance(higher_is_better, bool):
         raise TypeError("higher_is_better must be a bool")
 
+    identifier_columns = ["dataset", "pipeline", "subject"]
+    missing_identifiers = [
+        column for column in identifier_columns if data[column].isna().any()
+    ]
+    if missing_identifiers:
+        raise ValueError(
+            "Critical-difference analysis does not allow missing values in "
+            f"identifier columns: {missing_identifiers}"
+        )
+
     selected = data.copy()
     if pipelines is not None:
-        selected = selected[selected["pipeline"].isin(pipelines)]
+        requested = list(dict.fromkeys(pipelines))
+        available = set(selected["pipeline"].unique())
+        missing_pipelines = [
+            pipeline for pipeline in requested if pipeline not in available
+        ]
+        if missing_pipelines:
+            raise ValueError(
+                "Requested pipelines are missing from the results: "
+                f"{missing_pipelines}"
+            )
+        selected = selected[selected["pipeline"].isin(requested)]
     if selected.empty:
         raise ValueError("No result rows remain after filtering pipelines")
 
