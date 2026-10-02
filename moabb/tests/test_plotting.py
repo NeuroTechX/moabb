@@ -82,23 +82,31 @@ def test_paired_plot():
 def test_plot_critical_difference_uses_subject_balanced_complete_blocks():
     rows = []
     scores = {
-        "D0": {"P0": 0.9, "P1": 0.7, "P2": 0.5},
+        "D0": {"P0": 0.65, "P1": 0.7, "P2": 0.5},
         "D1": {"P0": 0.7, "P1": 0.9, "P2": 0.5},
         "D2": {"P0": 0.9, "P1": 0.5, "P2": 0.7},
         "D3": {"P0": 0.7, "P1": 0.5, "P2": 0.9},
     }
     for dataset, pipelines in scores.items():
         for pipeline, score in pipelines.items():
-            for subject, offset in (("0", -0.1), ("1", 0.1)):
-                rows.append(
-                    {
-                        "dataset": dataset,
-                        "pipeline": pipeline,
-                        "subject": subject,
-                        "session": "0",
-                        "score": score + offset,
-                    }
-                )
+            if (dataset, pipeline) == ("D0", "P0"):
+                session_scores = {
+                    "0": [score + 0.3, score + 0.3, score + 0.3],
+                    "1": [score - 0.3],
+                }
+            else:
+                session_scores = {"0": [score], "1": [score]}
+            for subject, subject_scores in session_scores.items():
+                for session, session_score in enumerate(subject_scores):
+                    rows.append(
+                        {
+                            "dataset": dataset,
+                            "pipeline": pipeline,
+                            "subject": subject,
+                            "session": str(session),
+                            "score": session_score,
+                        }
+                    )
 
     fig = plot_critical_difference(pd.DataFrame(rows))
     assert isinstance(fig, Figure)
@@ -111,7 +119,7 @@ def test_plot_critical_difference_uses_subject_balanced_complete_blocks():
         and len(collection.get_offsets()) == 1
         and collection.get_offsets()[0][1] == 0
     )
-    np.testing.assert_allclose([rank for rank, _ in ranks], [1.5, 2.25, 2.25])
+    np.testing.assert_allclose([rank for rank, _ in ranks], [1.75, 2.0, 2.25])
     plt.close(fig)
 
 
