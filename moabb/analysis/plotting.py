@@ -454,6 +454,33 @@ def plot_critical_difference(
         raise ValueError("No result rows remain after filtering pipelines")
 
     selected = collapse_session_scores(selected)
+
+    # A dataset-level block is comparable only if every pipeline was scored on
+    # the same subjects. A rectangular dataset-by-pipeline matrix alone is not
+    # enough: silently averaging different subject cohorts can bias the ranks.
+    for dataset, dataset_scores in selected.groupby(
+        "dataset", sort=False, observed=True
+    ):
+        subject_sets = {
+            pipeline: frozenset(pipeline_scores["subject"])
+            for pipeline, pipeline_scores in dataset_scores.groupby(
+                "pipeline", sort=False, observed=True
+            )
+        }
+        if subject_sets:
+            reference_pipeline, reference_subjects = next(iter(subject_sets.items()))
+            mismatched = [
+                pipeline
+                for pipeline, subjects in subject_sets.items()
+                if subjects != reference_subjects
+            ]
+            if mismatched:
+                raise ValueError(
+                    "Critical-difference analysis requires the same subjects "
+                    f"for every pipeline within dataset {dataset!r}; "
+                    f"{reference_pipeline!r} differs from {mismatched}."
+                )
+
     scores = (
         selected.groupby(["dataset", "pipeline"], observed=True)["score"]
         .mean()
