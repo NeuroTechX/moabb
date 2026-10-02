@@ -43,7 +43,7 @@ def test_get_dataset_parameters(dataset_class):
     assert isinstance(trial_len, float)
 
 
-def _make_df():
+def _make_df(pipelines=("P0", "P1")):
     rng = np.random.RandomState(42)
     rows = [
         {
@@ -59,7 +59,7 @@ def _make_df():
             "n_classes": 2,
         }
         for ds in ["D0", "D1"]
-        for pipe in ["P0", "P1"]
+        for pipe in pipelines
         for subj in range(1, 4)
     ]
     return pd.DataFrame(rows)
@@ -131,19 +131,21 @@ def test_plot_critical_difference_uses_subject_balanced_complete_blocks():
 
 
 def test_plot_critical_difference_requires_three_pipelines():
-    data = _make_df().query("pipeline != 'P2'")
+    data = _make_df(pipelines=("P0", "P1"))
     with pytest.raises(ValueError, match="At least three pipelines"):
         plot_critical_difference(data)
 
 
 def test_plot_critical_difference_rejects_incomplete_benchmarks():
-    data = _make_df().query("not (dataset == 'D0' and pipeline == 'P1')")
+    data = _make_df(pipelines=("P0", "P1", "P2")).query(
+        "not (dataset == 'D0' and pipeline == 'P1')"
+    )
     with pytest.raises(ValueError, match="requires every pipeline"):
         plot_critical_difference(data)
 
 
 def test_plot_critical_difference_handles_identical_pipelines():
-    data = _make_df()
+    data = _make_df(pipelines=("P0", "P1", "P2"))
     data["score"] = 0.5
     fig = plot_critical_difference(data)
     assert any("Friedman p = 1" in text.get_text() for text in fig.texts)
