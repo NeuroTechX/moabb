@@ -336,13 +336,12 @@ class TestWithinSess:
         )
 
         model_path = os.path.join(
-            res_test_path,
-            "Models_WithinSession",
-            type(self.eval.paradigm).__name__,
+            res_test_path, "Models_WithinSession", type(self.eval.paradigm).__name__
         )
         assert os.path.isdir(model_path), (
             "Saved models should be namespaced under their paradigm.",
         )
+
     def test_lambda_warning(self):
         def explicit_kernel(x):
             return x**3
