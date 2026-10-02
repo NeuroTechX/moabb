@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import pytest
 from matplotlib import pyplot as plt
+from matplotlib.collections import PathCollection
 from matplotlib.pyplot import Figure
 
 
@@ -15,6 +16,7 @@ from moabb.analysis.plotting import (
     dataset_bubble_plot,
     distribution_plot,
     paired_plot,
+    plot_critical_difference,
     score_plot,
 )
 from moabb.datasets.utils import dataset_list
@@ -75,6 +77,56 @@ def test_distribution_plot():
 def test_paired_plot():
     fig = paired_plot(_make_df(), "P0", "P1", chance_level="auto")
     assert isinstance(fig, Figure)
+
+
+def test_plot_critical_difference_uses_subject_balanced_complete_blocks():
+    rows = []
+    scores = {
+        "D0": {"P0": 0.9, "P1": 0.7, "P2": 0.5},
+        "D1": {"P0": 0.7, "P1": 0.9, "P2": 0.5},
+        "D2": {"P0": 0.9, "P1": 0.5, "P2": 0.7},
+        "D3": {"P0": 0.7, "P1": 0.5, "P2": 0.9},
+    }
+    for dataset, pipelines in scores.items():
+        for pipeline, score in pipelines.items():
+            for subject, offset in (("0", -0.1), ("1", 0.1)):
+                rows.append(
+                    {
+                        "dataset": dataset,
+                        "pipeline": pipeline,
+                        "subject": subject,
+                        "session": "0",
+                        "score": score + offset,
+                    }
+                )
+
+    fig = plot_critical_difference(pd.DataFrame(rows))
+    assert isinstance(fig, Figure)
+    ax = fig.axes[0]
+    assert any("Friedman p" in text.get_text() for text in fig.texts)
+    ranks = sorted(
+        tuple(collection.get_offsets()[0])
+        for collection in ax.collections
+        if isinstance(collection, PathCollection)
+        and len(collection.get_offsets()) == 1
+        and collection.get_offsets()[0][1] == 0
+    )
+    np.testing.assert_allclose([rank for rank, _ in ranks], [1.5, 2.25, 2.25])
+    plt.close(fig)
+
+
+def test_plot_critical_difference_rejects_incomplete_benchmarks():
+    data = _make_df().query("not (dataset == 'D0' and pipeline == 'P1')")
+    with pytest.raises(ValueError, match="requires every pipeline"):
+        plot_critical_difference(data)
+
+
+def test_plot_critical_difference_handles_identical_pipelines():
+    data = _make_df()
+    data["score"] = 0.5
+    fig = plot_critical_difference(data)
+    assert any("Friedman p = 1" in text.get_text() for text in fig.texts)
+    plt.close(fig)
 
 
 def test_hexa_grid_is_reproducible():

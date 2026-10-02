@@ -12,7 +12,7 @@ import seaborn as sea
 from matplotlib.collections import PatchCollection
 from matplotlib.colors import LinearSegmentedColormap
 from matplotlib.patches import Circle, RegularPolygon
-from scipy.stats import t
+from scipy.stats import friedmanchisquare, rankdata, studentized_range, t
 
 from moabb.analysis._utils import _compute_n_trials, _match_float, _match_int
 from moabb.analysis.meta_analysis import (
@@ -385,6 +385,192 @@ def _extract_color_dict(handles, labels):
         else:
             color_dict[lb] = "C0"
     return color_dict
+
+
+def plot_critical_difference(
+    data, pipelines=None, alpha=0.05, higher_is_better=True, figsize=None
+):
+    """Plot average pipeline ranks and Nemenyi critical-difference groups.
+
+    Scores are first macro-averaged over sessions per subject, then averaged
+    over subjects within each dataset. Each dataset therefore contributes one
+    score per pipeline and one rank to the cross-dataset comparison.
+
+    Parameters
+    ----------
+    data : pandas.DataFrame
+        Output of ``Results.to_dataframe()``. Must contain ``dataset``,
+        ``pipeline``, ``subject``, and ``score`` columns.
+    pipelines : list of str | None
+        Pipelines to include. If None, all pipelines are included.
+    alpha : float
+        Significance level for the Nemenyi post-hoc critical difference.
+    higher_is_better : bool
+        If True, larger scores receive better (lower) ranks. If False, smaller
+        scores receive better ranks.
+    figsize : tuple of (float, float) | None
+        Figure size. If None, the width and height scale with the number of
+        pipelines.
+
+    Returns
+    -------
+    fig : matplotlib.figure.Figure
+        Critical-difference diagram. Horizontal bars connect maximal groups
+        of pipelines whose mean-rank differences do not exceed the Nemenyi
+        critical difference.
+
+    Notes
+    -----
+    The comparison uses a Friedman test followed by the Nemenyi critical
+    difference for complete blocks (the same pipelines evaluated on every
+    dataset). Incomplete dataset-by-pipeline score matrices are rejected
+    rather than silently changing the set of benchmark datasets per pair.
+
+    References
+    ----------
+    .. [1] Demšar, J. (2006). Statistical Comparisons of Classifiers over
+           Multiple Data Sets. *Journal of Machine Learning Research*, 7,
+           1–30. https://www.jmlr.org/papers/v7/demsar06a.html
+    """
+    required = {"dataset", "pipeline", "subject", "score"}
+    missing = required.difference(data.columns)
+    if missing:
+        raise ValueError(f"data is missing required columns: {sorted(missing)}")
+    if not isinstance(alpha, (int, float)) or not 0 < alpha < 1:
+        raise ValueError("alpha must be between 0 and 1")
+    if not isinstance(higher_is_better, bool):
+        raise TypeError("higher_is_better must be a bool")
+
+    selected = data.copy()
+    if pipelines is not None:
+        selected = selected[selected["pipeline"].isin(pipelines)]
+    if selected.empty:
+        raise ValueError("No result rows remain after filtering pipelines")
+
+    selected = collapse_session_scores(selected)
+    scores = (
+        selected.groupby(["dataset", "pipeline"], observed=True)["score"]
+        .mean()
+        .unstack("pipeline")
+    )
+    if scores.shape[0] < 2:
+        raise ValueError("At least two datasets are required")
+    if scores.shape[1] < 2:
+        raise ValueError("At least two pipelines are required")
+    if scores.isna().any().any():
+        missing_pairs = [
+            (dataset, pipeline)
+            for dataset, row in scores.iterrows()
+            for pipeline in scores.columns[row.isna()]
+        ]
+        raise ValueError(
+            "Critical-difference analysis requires every pipeline on every "
+            f"dataset; missing pairs: {missing_pairs}"
+        )
+    score_values = scores.to_numpy(dtype=float)
+    if not np.isfinite(score_values).all():
+        raise ValueError("score values must be finite")
+
+    ranks = rankdata(-score_values if higher_is_better else score_values, axis=1)
+    mean_ranks = pd.Series(ranks.mean(axis=0), index=scores.columns).sort_values()
+    n_datasets = scores.shape[0]
+    n_pipelines = scores.shape[1]
+    if np.all(score_values == score_values[:, [0]]):
+        # scipy returns NaN for Friedman when all measurements are identical.
+        friedman_p = 1.0
+    else:
+        friedman_p = friedmanchisquare(
+            *[score_values[:, i] for i in range(n_pipelines)]
+        ).pvalue
+    q_alpha = studentized_range.ppf(1 - alpha, n_pipelines, np.inf) / np.sqrt(2)
+    critical_difference = q_alpha * np.sqrt(
+        n_pipelines * (n_pipelines + 1) / (6 * n_datasets)
+    )
+
+    if figsize is None:
+        figsize = (max(8.0, 1.2 * n_pipelines), max(4.5, 0.34 * n_pipelines + 2.5))
+    fig, ax = plt.subplots(figsize=figsize)
+    ax.set_xlim(0.5, n_pipelines + 0.5)
+    ax.set_ylim(-0.8, max(2.8, 0.28 * n_pipelines + 2.3))
+    ax.set_xticks(np.arange(1, n_pipelines + 1))
+    ax.set_yticks([])
+    ax.set_xlabel("Mean rank (lower is better)", fontsize=FONT_SIZES["axis_label"])
+    ax.set_title("Pipeline comparison across datasets", fontsize=FONT_SIZES["title"])
+    ax.axhline(0, color=MOABB_DARK_TEXT, linewidth=1.4)
+    ax.tick_params(axis="x", length=5, color=MOABB_DARK_TEXT)
+
+    # Alternate label lanes so similar mean ranks do not obscure each other.
+    ordered = list(mean_ranks.items())
+    lane_step = 0.22
+    for i, (pipeline, rank) in enumerate(ordered):
+        y = 0.65 + (i // 2) * lane_step
+        ax.vlines(rank, 0, y - 0.08, color=MOABB_NAVY, linewidth=0.8, alpha=0.7)
+        ax.text(
+            rank,
+            y,
+            str(pipeline),
+            rotation=30,
+            ha="left" if rank <= (n_pipelines + 1) / 2 else "right",
+            va="bottom",
+            fontsize=FONT_SIZES["source"],
+            color=MOABB_DARK_TEXT,
+        )
+        ax.scatter(rank, 0, s=28, color=MOABB_TEAL, zorder=3)
+
+    # In rank order, non-significant Nemenyi groups form contiguous intervals.
+    rank_values = mean_ranks.to_numpy()
+    groups = []
+    for start in range(n_pipelines - 1):
+        for end in range(start + 1, n_pipelines):
+            if rank_values[end] - rank_values[start] > critical_difference:
+                break
+            extends_left = start > 0 and (
+                rank_values[end] - rank_values[start - 1] <= critical_difference
+            )
+            extends_right = end < n_pipelines - 1 and (
+                rank_values[end + 1] - rank_values[start] <= critical_difference
+            )
+            if not extends_left and not extends_right:
+                groups.append((start, end))
+
+    group_base = max(1.9, 0.65 + ((n_pipelines + 1) // 2) * lane_step + 0.25)
+    for i, (start, end) in enumerate(groups):
+        y = group_base + i * 0.18
+        x0, x1 = rank_values[start], rank_values[end]
+        ax.plot(
+            [x0, x1], [y, y], color=MOABB_CORAL, linewidth=2.0, solid_capstyle="round"
+        )
+        ax.vlines([x0, x1], y - 0.07, y + 0.07, color=MOABB_CORAL, linewidth=1.2)
+
+    cd_y = -0.48
+    cd_x0 = 1
+    cd_x1 = cd_x0 + critical_difference
+    ax.set_xlim(0.5, max(n_pipelines + 0.5, cd_x1 + 0.8))
+    ax.plot([cd_x0, cd_x1], [cd_y, cd_y], color=MOABB_DARK_TEXT, linewidth=2)
+    ax.vlines([cd_x0, cd_x1], cd_y - 0.08, cd_y + 0.08, color=MOABB_DARK_TEXT)
+    ax.text(
+        cd_x1 + 0.08,
+        cd_y,
+        f"CD = {critical_difference:.2f}",
+        va="center",
+        fontsize=FONT_SIZES["source"],
+        color=MOABB_DARK_TEXT,
+    )
+    apply_moabb_style(
+        ax, title="Pipeline comparison across datasets", subtitle="", grid_axis="none"
+    )
+    fig.text(
+        0.08,
+        0.875,
+        f"Friedman p = {friedman_p:.3g}  ·  N = {n_datasets} datasets  ·  α = {alpha:g}  ·  "
+        "connected groups: not significantly different",
+        fontsize=FONT_SIZES["subtitle"],
+        color=GRID_COLOR,
+        ha="left",
+        va="top",
+    )
+    fig.subplots_adjust(top=0.82, bottom=0.17, left=0.08, right=0.95)
+    return fig
 
 
 def score_plot(data, pipelines=None, orientation="vertical", chance_level=None):
