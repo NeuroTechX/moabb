@@ -466,8 +466,7 @@ def plot_critical_difference(
         ]
         if missing_pipelines:
             raise ValueError(
-                "Requested pipelines are missing from the results: "
-                f"{missing_pipelines}"
+                f"Requested pipelines are missing from the results: {missing_pipelines}"
             )
         selected = selected[selected["pipeline"].isin(requested)]
     if selected.empty:
