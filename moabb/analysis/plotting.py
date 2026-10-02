@@ -458,7 +458,9 @@ def plot_critical_difference(
     # A dataset-level block is comparable only if every pipeline was scored on
     # the same subjects. A rectangular dataset-by-pipeline matrix alone is not
     # enough: silently averaging different subject cohorts can bias the ranks.
-    for dataset, dataset_scores in selected.groupby("dataset", sort=False, observed=True):
+    for dataset, dataset_scores in selected.groupby(
+        "dataset", sort=False, observed=True
+    ):
         subject_sets = {
             pipeline: frozenset(pipeline_scores["subject"])
             for pipeline, pipeline_scores in dataset_scores.groupby(
