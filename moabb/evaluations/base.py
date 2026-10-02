@@ -772,6 +772,9 @@ class BaseEvaluation(ABC):
             preview.append((cv_ind, train_idx, calib_idx, test_idx, split_metadata))
         return preview
 
+    def _validate_test_fold_metadata(self, test_metadata):
+        """Validate metadata assumptions made by the parallel task builder."""
+
     def _build_task_list(
         self, dataset, X, y, metadata, splitter, work_plan, pipelines, param_grid
     ):
@@ -782,6 +785,7 @@ class BaseEvaluation(ABC):
 
         for cv_ind, train_idx, calib_idx, test_idx, split_meta in fold_preview:
             test_meta = metadata.iloc[test_idx]
+            self._validate_test_fold_metadata(test_meta)
             subject = test_meta["subject"].iloc[0]
 
             if subject not in work_plan:
