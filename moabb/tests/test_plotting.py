@@ -152,6 +152,21 @@ def test_plot_critical_difference_rejects_unbalanced_subject_sets():
         plot_critical_difference(data)
 
 
+def test_plot_critical_difference_rejects_missing_identifiers():
+    data = _make_df(pipelines=("P0", "P1", "P2"))
+    data.loc[data.index[0], "subject"] = np.nan
+
+    with pytest.raises(ValueError, match="identifier columns"):
+        plot_critical_difference(data)
+
+
+def test_plot_critical_difference_rejects_missing_requested_pipeline():
+    data = _make_df(pipelines=("P0", "P1", "P2"))
+
+    with pytest.raises(ValueError, match="Requested pipelines are missing"):
+        plot_critical_difference(data, pipelines=["P0", "P1", "P2", "P3"])
+
+
 def test_plot_critical_difference_handles_identical_pipelines():
     data = _make_df(pipelines=("P0", "P1", "P2"))
     data["score"] = 0.5
