@@ -27,7 +27,7 @@ Enhancements
 
 API changes
 ~~~~~~~~~~~
-- None yet.
+- Saved evaluation model paths now include the paradigm and optional suffix to prevent artifacts from separate BCI benchmark runs overwriting each other; consumers of the previous path layout must update.
 
 Requirements
 ~~~~~~~~~~~~
