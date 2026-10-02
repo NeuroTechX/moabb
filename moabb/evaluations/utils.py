@@ -209,6 +209,8 @@ def _create_save_path(
     name: str,
     grid=False,
     eval_type="WithinSession",
+    paradigm=None,
+    suffix="",
 ):
     """Create a save path based on evaluation parameters.
 
@@ -229,6 +231,10 @@ def _create_save_path(
     eval_type : str, optional
        The type of evaluation, either 'WithinSession', 'CrossSession' or 'CrossSubject'.
        Defaults to WithinSession.
+    paradigm : str, optional
+       The paradigm name. When provided, it namespaces saved models by paradigm.
+    suffix : str, optional
+       An optional run suffix used as an additional namespace for saved models.
     Returns
     -------
     path_save: str
@@ -238,24 +244,13 @@ def _create_save_path(
         if eval_type != "WithinSession":
             session = ""
 
-        if grid:
-            path_save = (
-                Path(hdf5_path)
-                / f"GridSearch_{eval_type}"
-                / code
-                / f"{str(subject)}"
-                / str(session)
-                / str(name)
-            )
-        else:
-            path_save = (
-                Path(hdf5_path)
-                / f"Models_{eval_type}"
-                / code
-                / f"{str(subject)}"
-                / str(session)
-                / str(name)
-            )
+        model_type = f"GridSearch_{eval_type}" if grid else f"Models_{eval_type}"
+        path_save = Path(hdf5_path) / model_type
+        if paradigm is not None:
+            path_save /= str(paradigm)
+            if suffix:
+                path_save /= str(suffix)
+        path_save /= Path(code) / str(subject) / str(session) / str(name)
 
         return str(path_save)
     else:

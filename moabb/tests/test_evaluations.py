@@ -328,20 +328,18 @@ class TestWithinSess:
 
     def test_within_session_evaluation_save_model(self):
         res_test_path = "./res_test"
+        process_pipeline = self.eval.paradigm.make_process_pipelines(dataset)[0]
+        list(
+            self.eval.evaluate(
+                dataset, pipelines, param_grid=None, process_pipeline=process_pipeline
+            )
+        )
 
-        # Get a list of all subdirectories inside 'res_test'
-        subdirectories = [
-            d
-            for d in os.listdir(res_test_path)
-            if os.path.isdir(os.path.join(res_test_path, d))
-        ]
-
-        # Check if any of the subdirectories contain the partial name 'Model'
-        model_folder_exists = any("Model" in folder for folder in subdirectories)
-
-        # Assert that at least one folder with the partial name 'Model' exists
-        assert model_folder_exists, (
-            "No folder with partial name 'Model' found inside 'res_test' directory",
+        model_path = os.path.join(
+            res_test_path, "Models_WithinSession", type(self.eval.paradigm).__name__
+        )
+        assert os.path.isdir(model_path), (
+            "Saved models should be namespaced under their paradigm.",
         )
 
     def test_lambda_warning(self):
@@ -1143,6 +1141,54 @@ class TestUtilEvaluation:
             hdf5_path, "GridSearch_WithinSession", code, "1", "0", "evaluation_name"
         )
         assert grid_save_path == expected_grid_path
+
+    def test_create_save_path_is_namespaced_by_paradigm_and_suffix(self):
+        save_path = create_save_path(
+            "base_path",
+            "evaluation_code",
+            1,
+            "0",
+            "evaluation_name",
+            eval_type="WithinSession",
+            paradigm="MotorImagery",
+            suffix="run_a",
+        )
+
+        expected_path = os.path.join(
+            "base_path",
+            "Models_WithinSession",
+            "MotorImagery",
+            "run_a",
+            "evaluation_code",
+            "1",
+            "0",
+            "evaluation_name",
+        )
+        assert save_path == expected_path
+
+        other_run_path = create_save_path(
+            "base_path",
+            "evaluation_code",
+            1,
+            "0",
+            "evaluation_name",
+            eval_type="WithinSession",
+            paradigm="SSVEP",
+            suffix="run_a",
+        )
+        assert other_run_path != save_path
+
+        other_suffix_path = create_save_path(
+            "base_path",
+            "evaluation_code",
+            1,
+            "0",
+            "evaluation_name",
+            eval_type="WithinSession",
+            paradigm="MotorImagery",
+            suffix="run_b",
+        )
+        assert other_suffix_path != save_path
 
     def test_save_model_cv_with_pytorch_model(self):
         try:
