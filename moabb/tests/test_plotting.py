@@ -96,11 +96,16 @@ def test_plot_critical_difference_uses_subject_balanced_complete_blocks():
     }
     for dataset, pipelines in scores.items():
         for pipeline, score in pipelines.items():
-            if (dataset, pipeline) == ("D0", "P0"):
-                session_scores = {
-                    "0": [score + 0.3, score + 0.3, score + 0.3],
-                    "1": [score - 0.3],
-                }
+            if dataset == "D0":
+                # Keep the same session identities for every pipeline while
+                # making P0's subject/session imbalance visible to the macro-average.
+                if pipeline == "P0":
+                    session_scores = {
+                        "0": [score + 0.3, score + 0.3, score + 0.3],
+                        "1": [score - 0.3],
+                    }
+                else:
+                    session_scores = {"0": [score, score, score], "1": [score]}
             else:
                 session_scores = {"0": [score], "1": [score]}
             for subject, subject_scores in session_scores.items():
