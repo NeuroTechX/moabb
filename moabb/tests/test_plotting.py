@@ -147,9 +147,7 @@ def test_plot_critical_difference_rejects_incomplete_benchmarks():
 def test_plot_critical_difference_rejects_unbalanced_session_sets():
     data = _make_df(pipelines=("P0", "P1", "P2"))
     extra = data[
-        (data["dataset"] == "D0")
-        & (data["pipeline"] != "P1")
-        & (data["subject"] == 1)
+        (data["dataset"] == "D0") & (data["pipeline"] != "P1") & (data["subject"] == 1)
     ].copy()
     extra["session"] = "1"
     data = pd.concat([data, extra], ignore_index=True)
