@@ -169,8 +169,7 @@ def get_benchmark_pipelines(paradigm=None):
         (
             resource
             for resource in config_dir.iterdir()
-            if resource.name != "__init__.py"
-            and resource.name.endswith((".yml", ".py"))
+            if resource.name != "__init__.py" and resource.name.endswith((".yml", ".py"))
         ),
         key=lambda resource: resource.name,
     )
@@ -185,9 +184,7 @@ def get_benchmark_pipelines(paradigm=None):
 
     if paradigm is not None:
         pipeline_configs = [
-            config
-            for config in pipeline_configs
-            if paradigm in config["paradigms"]
+            config for config in pipeline_configs if paradigm in config["paradigms"]
         ]
 
     return pipeline_configs

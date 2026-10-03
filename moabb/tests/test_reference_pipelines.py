@@ -11,8 +11,7 @@ def test_reference_pipeline_resources_are_shipped():
     resources = [
         resource
         for resource in config_dir.iterdir()
-        if resource.name != "__init__.py"
-        and resource.name.endswith((".yml", ".py"))
+        if resource.name != "__init__.py" and resource.name.endswith((".yml", ".py"))
     ]
     assert len(resources) == 28
 
