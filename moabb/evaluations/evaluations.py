@@ -503,6 +503,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
 
     _eval_type = "CrossSubject"
     _score_per_session = True
+    _score_per_subject = True
     _needs_all_subjects = True
 
     def __init__(self, *args, cs_mode=CrossSubjectMode.TRAIN, **kwargs):
