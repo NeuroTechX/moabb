@@ -1421,7 +1421,7 @@ class TestParallelProcess:
         metadata = metadata.copy()
         metadata["subject"] = metadata["subject"].astype(str)
         expected_sizes = metadata.groupby(["subject", "session"], observed=True).size()
-        actual_sizes = results.set_index(["subject", "session"])["n_samples_test"]
+        actual_sizes = results.set_index(["subject", "session"])["samples_test"]
         actual_sizes = actual_sizes.reindex(expected_sizes.index)
         np.testing.assert_array_equal(actual_sizes.to_numpy(), expected_sizes.to_numpy())
 
