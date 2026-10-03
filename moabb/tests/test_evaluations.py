@@ -1414,10 +1414,12 @@ class TestParallelProcess:
         results = evaluation.process(pipelines)
 
         assert len(results) == 8
-        assert set(results["subject"]) == set(ds.subject_list)
+        assert set(results["subject"]) == {str(subject) for subject in ds.subject_list}
         assert (results.groupby(["subject", "session"], observed=True).size() == 1).all()
 
         _, _, metadata = paradigm.get_data(ds)
+        metadata = metadata.copy()
+        metadata["subject"] = metadata["subject"].astype(str)
         expected_sizes = metadata.groupby(["subject", "session"], observed=True).size()
         actual_sizes = results.set_index(["subject", "session"])["n_samples_test"]
         actual_sizes = actual_sizes.reindex(expected_sizes.index)
