@@ -144,6 +144,20 @@ def test_plot_critical_difference_rejects_incomplete_benchmarks():
         plot_critical_difference(data)
 
 
+def test_plot_critical_difference_rejects_unbalanced_session_sets():
+    data = _make_df(pipelines=("P0", "P1", "P2"))
+    extra = data[
+        (data["dataset"] == "D0")
+        & (data["pipeline"] != "P1")
+        & (data["subject"] == 1)
+    ].copy()
+    extra["session"] = "1"
+    data = pd.concat([data, extra], ignore_index=True)
+
+    with pytest.raises(ValueError, match="same sessions"):
+        plot_critical_difference(data)
+
+
 def test_plot_critical_difference_rejects_unbalanced_subject_sets():
     data = _make_df(pipelines=("P0", "P1", "P2"))
     data = data.query("not (dataset == 'D0' and pipeline == 'P1' and subject == 3)")
