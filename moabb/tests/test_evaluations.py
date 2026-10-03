@@ -141,6 +141,34 @@ class MultiSubjectTestSplitter(BaseCrossValidator):
         return 1
 
 
+class ReusedNestedMetadataSplitter(BaseCrossValidator):
+    """Reuse and mutate one nested metadata object across folds."""
+
+    metadata_columns = ("fold_trace",)
+
+    def __init__(self):
+        self._metadata = {"fold_trace": {"fold": None, "history": []}}
+
+    def split(self, y, metadata):
+        del y
+        positions = np.arange(len(metadata))
+        midpoint = max(1, len(positions) // 2)
+        folds = (
+            (positions[midpoint:], positions[:midpoint]),
+            (positions[:midpoint], positions[midpoint:]),
+        )
+        for fold, (train, test) in enumerate(folds):
+            self._metadata["fold_trace"]["fold"] = fold
+            self._metadata["fold_trace"]["history"].append(fold)
+            yield train, test
+
+    def get_n_splits(self, *args, **kwargs):
+        return 2
+
+    def get_metadata(self):
+        return self._metadata
+
+
 class MalformedTopLevelSplitter(BaseCrossValidator):
     """Top-level splitter used to exercise fold-index validation."""
 
@@ -834,6 +862,23 @@ def test_cross_subject_top_level_splitter_rejects_invalid_fold_indices(
 
     with pytest.raises((TypeError, ValueError), match=message):
         evaluation._preview_splits(splitter, y, metadata)
+
+
+def test_cross_subject_top_level_splitter_metadata_is_snapshotted(tmp_path):
+    splitter = ReusedNestedMetadataSplitter()
+    evaluation = ev.CrossSubjectEvaluation(
+        paradigm=FakeImageryParadigm(),
+        datasets=[dataset],
+        hdf5_path=tmp_path,
+        splitter=splitter,
+    )
+    _, y, metadata = FakeImageryParadigm().get_data(dataset)
+
+    preview = evaluation._preview_splits(splitter, y, metadata)
+
+    assert preview[0][4]["fold_trace"] == {"fold": 0, "history": [0]}
+    assert preview[1][4]["fold_trace"] == {"fold": 1, "history": [0, 1]}
+    assert preview[0][4]["fold_trace"] is not preview[1][4]["fold_trace"]
 
 
 def test_cross_subject_top_level_splitter_indices_are_positional(tmp_path):
