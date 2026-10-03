@@ -749,6 +749,7 @@ def test_cross_subject_top_level_splitter_indices_are_positional(tmp_path):
     assert set(metadata.iloc[test]["subject"]) == {2}
     assert not np.intersect1d(train, test).size
 
+
 def test_cross_subject_top_level_splitter_type_is_validated(tmp_path):
     with pytest.raises(TypeError, match="BaseCrossValidator"):
         ev.CrossSubjectEvaluation(
