@@ -1569,11 +1569,7 @@ class TestParallelLegacyEquivalence:
         """Custom folds spanning sessions keep per-session result provenance."""
         paradigm = FakeImageryParadigm()
         ds = FakeDataset(["left_hand", "right_hand"], n_subjects=2, n_sessions=4, seed=12)
-        kwargs = {
-            "cv_class": GroupKFold,
-            "cv_kwargs": {"n_splits": 2},
-            "overwrite": True,
-        }
+        kwargs = {"cv_class": GroupKFold, "cv_kwargs": {"n_splits": 2}, "overwrite": True}
 
         eval_parallel = ev.CrossSessionEvaluation(
             paradigm=paradigm,
