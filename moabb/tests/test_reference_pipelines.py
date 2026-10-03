@@ -43,7 +43,6 @@ def test_parse_single_python_pipeline_config():
     assert configs[0]["name"] == "FBCSP + optSVM"
 
 
-
 def test_packaged_reference_configs_match_repository_sources():
     """Keep packaged mirrors byte-identical to the canonical repo configs."""
 
@@ -64,4 +63,6 @@ def test_packaged_reference_configs_match_repository_sources():
     assert packaged == canonical
     for name in canonical:
         with as_file(package_dir.joinpath(name)) as packaged_path:
-            assert packaged_path.read_bytes() == (repository_dir / name).read_bytes(), name
+            assert packaged_path.read_bytes() == (repository_dir / name).read_bytes(), (
+                name
+            )
