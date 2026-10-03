@@ -598,6 +598,49 @@ class CrossSubjectEvaluation(BaseEvaluation):
         self._cv_internal_keys = internal_cv_keys
         self._cv_explicit_keys = frozenset(self.cv_kwargs) - internal_cv_keys
 
+    def _validate_fold_indices(
+        self, train_idx, calib_idx, test_idx, *, n_samples, cv_ind
+    ):
+        if self.splitter is None:
+            return
+
+        named_indices = {
+            "train": np.asarray(train_idx),
+            "calibration": np.asarray(calib_idx),
+            "test": np.asarray(test_idx),
+        }
+        for name, indices in named_indices.items():
+            if indices.ndim != 1 or not np.issubdtype(indices.dtype, np.integer):
+                raise TypeError(
+                    "A top-level CrossSubjectEvaluation splitter must return "
+                    f"one-dimensional integer positional indices; fold {cv_ind} "
+                    f"{name} indices have shape {indices.shape} and dtype "
+                    f"{indices.dtype}."
+                )
+            if indices.size and (indices.min() < 0 or indices.max() >= n_samples):
+                raise ValueError(
+                    "A top-level CrossSubjectEvaluation splitter returned "
+                    f"out-of-range {name} indices in fold {cv_ind} for "
+                    f"{n_samples} samples."
+                )
+            if np.unique(indices).size != indices.size:
+                raise ValueError(
+                    "A top-level CrossSubjectEvaluation splitter returned "
+                    f"duplicate {name} indices in fold {cv_ind}."
+                )
+
+        for left, right in (
+            ("train", "calibration"),
+            ("train", "test"),
+            ("calibration", "test"),
+        ):
+            if np.intersect1d(named_indices[left], named_indices[right]).size:
+                raise ValueError(
+                    "A top-level CrossSubjectEvaluation splitter must return "
+                    "disjoint train/calibration/test slices; "
+                    f"fold {cv_ind} has overlapping {left} and {right} indices."
+                )
+
     def _validate_test_fold_metadata(self, test_metadata):
         if self.splitter is None:
             return
