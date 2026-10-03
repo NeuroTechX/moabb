@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import pytest
 from matplotlib import pyplot as plt
+from matplotlib.collections import PathCollection
 from matplotlib.pyplot import Figure
 
 
@@ -12,9 +13,11 @@ from moabb.analysis.plotting import (
     _get_bubble_coordinates,
     _get_dataset_parameters,
     _get_hexa_grid,
+    _nemenyi_critical_difference,
     dataset_bubble_plot,
     distribution_plot,
     paired_plot,
+    plot_critical_difference,
     score_plot,
 )
 from moabb.datasets.utils import dataset_list
@@ -40,7 +43,7 @@ def test_get_dataset_parameters(dataset_class):
     assert isinstance(trial_len, float)
 
 
-def _make_df():
+def _make_df(pipelines=("P0", "P1")):
     rng = np.random.RandomState(42)
     rows = [
         {
@@ -56,7 +59,7 @@ def _make_df():
             "n_classes": 2,
         }
         for ds in ["D0", "D1"]
-        for pipe in ["P0", "P1"]
+        for pipe in pipelines
         for subj in range(1, 4)
     ]
     return pd.DataFrame(rows)
@@ -75,6 +78,137 @@ def test_distribution_plot():
 def test_paired_plot():
     fig = paired_plot(_make_df(), "P0", "P1", chance_level="auto")
     assert isinstance(fig, Figure)
+
+
+def test_nemenyi_critical_difference_matches_demsar_2006():
+    # Demšar (2006), Sec. 3.2: k=4 classifiers on N=14 datasets at
+    # alpha=0.05 gives a Nemenyi critical difference of 1.25.
+    assert _nemenyi_critical_difference(4, 14, 0.05) == pytest.approx(1.25, abs=0.01)
+
+
+def test_plot_critical_difference_uses_subject_balanced_complete_blocks():
+    rows = []
+    scores = {
+        "D0": {"P0": 0.65, "P1": 0.7, "P2": 0.5},
+        "D1": {"P0": 0.7, "P1": 0.9, "P2": 0.5},
+        "D2": {"P0": 0.9, "P1": 0.5, "P2": 0.7},
+        "D3": {"P0": 0.7, "P1": 0.5, "P2": 0.9},
+    }
+    for dataset, pipelines in scores.items():
+        for pipeline, score in pipelines.items():
+            if dataset == "D0":
+                # Keep the same session identities for every pipeline while
+                # making P0's subject/session imbalance visible to the macro-average.
+                if pipeline == "P0":
+                    session_scores = {
+                        "0": [score + 0.3, score + 0.3, score + 0.3],
+                        "1": [score - 0.3],
+                    }
+                else:
+                    session_scores = {"0": [score, score, score], "1": [score]}
+            else:
+                session_scores = {"0": [score], "1": [score]}
+            for subject, subject_scores in session_scores.items():
+                for session, session_score in enumerate(subject_scores):
+                    rows.append(
+                        {
+                            "dataset": dataset,
+                            "pipeline": pipeline,
+                            "subject": subject,
+                            "session": str(session),
+                            "score": session_score,
+                        }
+                    )
+
+    fig = plot_critical_difference(pd.DataFrame(rows))
+    assert isinstance(fig, Figure)
+    ax = fig.axes[0]
+    assert any("Friedman p" in text.get_text() for text in fig.texts)
+    ranks = sorted(
+        tuple(collection.get_offsets()[0])
+        for collection in ax.collections
+        if isinstance(collection, PathCollection)
+        and len(collection.get_offsets()) == 1
+        and collection.get_offsets()[0][1] == 0
+    )
+    np.testing.assert_allclose([rank for rank, _ in ranks], [1.75, 2.0, 2.25])
+    plt.close(fig)
+
+
+def test_plot_critical_difference_requires_three_pipelines():
+    data = _make_df(pipelines=("P0", "P1"))
+    with pytest.raises(ValueError, match="At least three pipelines"):
+        plot_critical_difference(data)
+
+
+def test_plot_critical_difference_rejects_incomplete_benchmarks():
+    data = _make_df(pipelines=("P0", "P1", "P2")).query(
+        "not (dataset == 'D0' and pipeline == 'P1')"
+    )
+    with pytest.raises(ValueError, match="requires every pipeline"):
+        plot_critical_difference(data)
+
+
+def test_plot_critical_difference_rejects_mismatched_session_sets():
+    data = _make_df(pipelines=("P0", "P1", "P2"))
+    extra = data[
+        (data["dataset"] == "D0") & (data["pipeline"] == "P0") & (data["subject"] == 1)
+    ].copy()
+    extra["session"] = "1"
+    extra["score"] = 1.0 - extra["score"]
+    data = pd.concat([data, extra], ignore_index=True)
+
+    with pytest.raises(ValueError, match="same sessions"):
+        plot_critical_difference(data)
+
+
+def test_plot_critical_difference_rejects_unbalanced_subject_sets():
+    data = _make_df(pipelines=("P0", "P1", "P2"))
+    data = data.query("not (dataset == 'D0' and pipeline == 'P1' and subject == 3)")
+
+    with pytest.raises(ValueError, match="same subjects"):
+        plot_critical_difference(data)
+
+
+def test_plot_critical_difference_rejects_missing_identifiers():
+    data = _make_df(pipelines=("P0", "P1", "P2"))
+    data.loc[data.index[0], "subject"] = np.nan
+
+    with pytest.raises(ValueError, match="identifier columns"):
+        plot_critical_difference(data)
+
+
+def test_plot_critical_difference_rejects_mixed_evaluation_protocols():
+    data = _make_df(pipelines=("P0", "P1", "P2"))
+    data["evaluation"] = "WithinSession"
+    data.loc[data["dataset"] == "D1", "evaluation"] = "CrossSubject"
+
+    with pytest.raises(ValueError, match="single evaluation protocol"):
+        plot_critical_difference(data)
+
+
+def test_plot_critical_difference_rejects_missing_evaluation_identity():
+    data = _make_df(pipelines=("P0", "P1", "P2"))
+    data["evaluation"] = "WithinSession"
+    data.loc[data.index[0], "evaluation"] = np.nan
+
+    with pytest.raises(ValueError, match="evaluation must not contain missing"):
+        plot_critical_difference(data)
+
+
+def test_plot_critical_difference_rejects_missing_requested_pipeline():
+    data = _make_df(pipelines=("P0", "P1", "P2"))
+
+    with pytest.raises(ValueError, match="Requested pipelines are missing"):
+        plot_critical_difference(data, pipelines=["P0", "P1", "P2", "P3"])
+
+
+def test_plot_critical_difference_handles_identical_pipelines():
+    data = _make_df(pipelines=("P0", "P1", "P2"))
+    data["score"] = 0.5
+    fig = plot_critical_difference(data)
+    assert any("Friedman p = 1" in text.get_text() for text in fig.texts)
+    plt.close(fig)
 
 
 def test_hexa_grid_is_reproducible():
