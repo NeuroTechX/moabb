@@ -457,6 +457,19 @@ def plot_critical_difference(
             f"identifier columns: {missing_identifiers}"
         )
 
+    # Results from different evaluation protocols are not exchangeable
+    # benchmark blocks. Averaging them before ranking would erase protocol
+    # identity (for example, WithinSession vs CrossSubject).
+    if "evaluation" in data.columns:
+        if data["evaluation"].isna().any():
+            raise ValueError("evaluation must not contain missing values")
+        evaluations = data["evaluation"].unique()
+        if len(evaluations) != 1:
+            raise ValueError(
+                "Critical-difference analysis requires a single evaluation "
+                f"protocol; got {evaluations.tolist()}."
+            )
+
     selected = data.copy()
     if pipelines is not None:
         requested = list(dict.fromkeys(pipelines))
