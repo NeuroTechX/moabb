@@ -139,6 +139,7 @@ def _evaluate_fold(
     cv_ind,
     split_metadata=None,
     calib_idx=None,
+    score_subjects=None,
 ):
     """Evaluate a single CV fold. Pure function, no shared mutable state.
 
@@ -177,6 +178,7 @@ def _evaluate_fold(
     param_grid = config["param_grid"]
     additional_columns = config["additional_columns"]
     score_per_session = config["score_per_session"]
+    score_per_subject = config["score_per_subject"]
     mne_labels = config["mne_labels"]
     codecarbon_config = config["codecarbon_config"]
     trialwise = config.get("trialwise", False)
@@ -257,35 +259,74 @@ def _evaluate_fold(
     if tracker is not None:
         tracker.stop()
 
-    # Optionally save model
+    # Optionally save model. A multi-subject cross-subject fold still trains
+    # exactly one model, but each held-out subject owns its result/cache path.
     hdf5_path = config["hdf5_path"]
     eval_type = config["eval_type"]
+    result_subjects = (
+        list(score_subjects)
+        if score_per_subject and score_subjects is not None
+        else [subject]
+    )
     if hdf5_path is not None and config["save_model"]:
-        model_save_path = _create_save_path(
-            hdf5_path=hdf5_path,
-            code=dataset.code,
-            subject=subject,
-            session="" if score_per_session else session,
-            name=pipeline_name,
-            grid=is_search,
-            eval_type=eval_type,
-        )
-        _save_model_cv(model=cvclf, save_path=model_save_path, cv_index=str(cv_ind))
+        for save_subject in result_subjects:
+            model_save_path = _create_save_path(
+                hdf5_path=hdf5_path,
+                code=dataset.code,
+                subject=save_subject,
+                session="" if score_per_session else session,
+                name=pipeline_name,
+                grid=is_search,
+                eval_type=eval_type,
+            )
+            _save_model_cv(model=cvclf, save_path=model_save_path, cv_index=str(cv_ind))
 
     scorer = None if trialwise else _create_scorer(cvclf, scoring)
 
-    # Build score groups: per-session or full test set
-    if score_per_session:
-        test_sessions = metadata.iloc[test_idx]["session"].values
-        score_groups = [
-            (test_idx[test_sessions == s], y_test[test_sessions == s], s)
-            for s in np.unique(test_sessions)
-        ]
+    # Build score groups. Cross-subject folds can contain multiple held-out
+    # subjects when using GroupKFold or another custom grouped splitter.
+    test_meta = metadata.iloc[test_idx]
+    test_sessions = test_meta["session"].to_numpy()
+    test_subjects = test_meta["subject"].to_numpy()
+    score_groups = []
+
+    if score_per_subject:
+        selected_subjects = (
+            np.asarray(score_subjects)
+            if score_subjects is not None
+            else np.unique(test_subjects)
+        )
+        for group_subject in selected_subjects:
+            subject_mask = test_subjects == group_subject
+            if score_per_session:
+                for group_session in np.unique(test_sessions[subject_mask]):
+                    mask = subject_mask & (test_sessions == group_session)
+                    score_groups.append(
+                        (
+                            test_idx[mask],
+                            y_test[mask],
+                            group_subject,
+                            group_session,
+                        )
+                    )
+            else:
+                score_groups.append(
+                    (
+                        test_idx[subject_mask],
+                        y_test[subject_mask],
+                        group_subject,
+                        session,
+                    )
+                )
+    elif score_per_session:
+        for group_session in np.unique(test_sessions):
+            mask = test_sessions == group_session
+            score_groups.append((test_idx[mask], y_test[mask], subject, group_session))
     else:
-        score_groups = [(test_idx, y_test, session)]
+        score_groups = [(test_idx, y_test, subject, session)]
 
     results = []
-    for group_idx, group_y, group_session in score_groups:
+    for group_idx, group_y, group_subject, group_session in score_groups:
         is_error = False
         try:
             if trialwise:
@@ -301,7 +342,7 @@ def _evaluate_fold(
         res = {
             "time": duration,
             "dataset": dataset,
-            "subject": subject,
+            "subject": group_subject,
             "session": group_session,
             "n_samples": len(train_idx),
             "n_samples_test": len(group_y),
@@ -414,6 +455,7 @@ class BaseEvaluation(ABC):
     search = False
     _eval_type = None
     _score_per_session = False
+    _score_per_subject = False
     _needs_all_subjects = False
     _aggregate_folds = False
 
@@ -752,6 +794,7 @@ class BaseEvaluation(ABC):
                 self.emissions.codecarbon_config if _carbonfootprint else None
             ),
             "score_per_session": self._score_per_session,
+            "score_per_subject": self._score_per_subject,
             "trialwise": getattr(self, "trialwise", False),
             "param_grid": None,  # overridden per-task below if needed
         }
@@ -782,14 +825,38 @@ class BaseEvaluation(ABC):
 
         for cv_ind, train_idx, calib_idx, test_idx, split_meta in fold_preview:
             test_meta = metadata.iloc[test_idx]
-            subject = test_meta["subject"].iloc[0]
-
-            if subject not in work_plan:
-                continue
-            run_pipes = work_plan[subject]
             session = test_meta["session"].iloc[0]
 
-            for name, clf in run_pipes.items():
+            if self._score_per_subject:
+                test_subjects = np.unique(test_meta["subject"].to_numpy())
+                pipeline_subjects = {
+                    name: [
+                        subject
+                        for subject in test_subjects
+                        if name in work_plan.get(subject, {})
+                    ]
+                    for name in pipelines
+                }
+                task_specs = [
+                    (
+                        name,
+                        work_plan[subjects[0]][name],
+                        subjects[0],
+                        subjects,
+                    )
+                    for name, subjects in pipeline_subjects.items()
+                    if subjects
+                ]
+            else:
+                subject = test_meta["subject"].iloc[0]
+                if subject not in work_plan:
+                    continue
+                task_specs = [
+                    (name, clf, subject, None)
+                    for name, clf in work_plan[subject].items()
+                ]
+
+            for name, clf, subject, score_subjects in task_specs:
                 task_config = dict(config)
                 if param_grid is not None and name in param_grid:
                     task_param_grid = {name: deepcopy(param_grid[name])}
@@ -809,6 +876,7 @@ class BaseEvaluation(ABC):
                         "cv_ind": cv_ind,
                         "split_metadata": split_meta,
                         "calib_idx": calib_idx,
+                        "score_subjects": score_subjects,
                     }
                 )
         return tasks
