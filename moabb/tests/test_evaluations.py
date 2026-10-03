@@ -102,6 +102,40 @@ class MultiSubjectTestSplitter(BaseCrossValidator):
         return 1
 
 
+class MalformedTopLevelSplitter(BaseCrossValidator):
+    """Top-level splitter used to exercise fold-index validation."""
+
+    def __init__(self, failure):
+        self.failure = failure
+
+    def split(self, y, metadata):
+        del y
+        positions = np.arange(len(metadata))
+        test_mask = metadata["subject"].to_numpy() == 2
+        train = positions[~test_mask]
+        test = positions[test_mask]
+
+        if self.failure == "overlap":
+            train = np.concatenate([train, test[:1]])
+            yield train, test
+        elif self.failure == "duplicate":
+            yield np.concatenate([train, train[:1]]), test
+        elif self.failure == "float":
+            yield train.astype(float), test
+        elif self.failure == "out_of_range":
+            bad_test = test.copy()
+            bad_test[0] = len(metadata)
+            yield train, bad_test
+        elif self.failure == "four_way":
+            empty = train[:0]
+            yield train, empty, empty, test
+        else:
+            raise AssertionError(f"unknown failure mode {self.failure!r}")
+
+    def get_n_splits(self, *args, **kwargs):
+        return 1
+
+
 def _group_run(metadata):
     return metadata["run"].to_numpy()
 
@@ -735,6 +769,32 @@ def test_cross_subject_top_level_splitter_rejects_multi_subject_test_fold(tmp_pa
 
     with pytest.raises(ValueError, match="exactly one subject"):
         evaluation.process(OrderedDict([("P", pipe)]))
+
+
+@pytest.mark.parametrize(
+    "failure, message",
+    [
+        ("overlap", "disjoint"),
+        ("duplicate", "duplicate train"),
+        ("float", "integer positional indices"),
+        ("out_of_range", "out-of-range test"),
+        ("four_way", "either \\(train, test\\) or \\(train, calibration, test\\)"),
+    ],
+)
+def test_cross_subject_top_level_splitter_rejects_invalid_fold_indices(
+    tmp_path, failure, message
+):
+    splitter = MalformedTopLevelSplitter(failure)
+    evaluation = ev.CrossSubjectEvaluation(
+        paradigm=FakeImageryParadigm(),
+        datasets=[dataset],
+        hdf5_path=tmp_path,
+        splitter=splitter,
+    )
+    _, y, metadata = FakeImageryParadigm().get_data(dataset)
+
+    with pytest.raises((TypeError, ValueError), match=message):
+        evaluation._preview_splits(splitter, y, metadata)
 
 
 def test_cross_subject_top_level_splitter_indices_are_positional(tmp_path):
