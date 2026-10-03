@@ -177,6 +177,7 @@ def test_plot_critical_difference_rejects_missing_evaluation_identity():
     with pytest.raises(ValueError, match="evaluation must not contain missing"):
         plot_critical_difference(data)
 
+
 def test_plot_critical_difference_rejects_missing_requested_pipeline():
     data = _make_df(pipelines=("P0", "P1", "P2"))
 
