@@ -1572,7 +1572,6 @@ class TestParallelLegacyEquivalence:
         kwargs = {
             "cv_class": GroupKFold,
             "cv_kwargs": {"n_splits": 2},
-            "random_state": 42,
             "overwrite": True,
         }
 
