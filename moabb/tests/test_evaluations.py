@@ -89,14 +89,53 @@ class HeldOutSubjectSplitter(BaseCrossValidator):
         return self._metadata
 
 
+class ThreeWayHeldOutSubjectSplitter(BaseCrossValidator):
+    """Hold out one subject and split its labels into calibration/test slices."""
+
+    metadata_columns = ("calibration_size", "calibration_labeled")
+
+    def __init__(self, subject):
+        self.subject = subject
+        self._metadata = None
+
+    def split(self, y, metadata):
+        positions = np.arange(len(metadata))
+        target = positions[metadata["subject"].to_numpy() == self.subject]
+        train = positions[metadata["subject"].to_numpy() != self.subject]
+
+        calibration_parts = []
+        test_parts = []
+        target_y = np.asarray(y)[target]
+        for label in np.unique(target_y):
+            label_positions = target[target_y == label]
+            split_at = max(1, len(label_positions) // 2)
+            split_at = min(split_at, len(label_positions) - 1)
+            calibration_parts.append(label_positions[:split_at])
+            test_parts.append(label_positions[split_at:])
+
+        calibration = np.sort(np.concatenate(calibration_parts))
+        test = np.sort(np.concatenate(test_parts))
+        self._metadata = {
+            "calibration_size": len(calibration) / (len(calibration) + len(test)),
+            "calibration_labeled": False,
+        }
+        yield train, calibration, test
+
+    def get_n_splits(self, *args, **kwargs):
+        return 1
+
+    def get_metadata(self):
+        return self._metadata
+
+
 class MultiSubjectTestSplitter(BaseCrossValidator):
     """Deliberately invalid splitter with two subjects in one test fold."""
 
     def split(self, y, metadata):
         del y
-        index = metadata.index.to_numpy()
+        positions = np.arange(len(metadata))
         test_mask = metadata["subject"].isin([2, 3]).to_numpy()
-        yield index[~test_mask], index[test_mask]
+        yield positions[~test_mask], positions[test_mask]
 
     def get_n_splits(self, *args, **kwargs):
         return 1
@@ -838,6 +877,37 @@ def test_cross_subject_top_level_splitter_runs_end_to_end(tmp_path):
     # Result tables serialize dataset metadata values as strings.
     assert set(results["subject"]) == {"3"}
     assert set(results["held_out_subject"]) == {3}
+
+
+def test_cross_subject_top_level_three_way_splitter_routes_calibration(tmp_path):
+    from sklearn import config_context
+
+    _TRANSFER_CAPTURE.clear()
+    with config_context(enable_metadata_routing=True):
+        step = _TransferRecorder().set_fit_request(
+            subjects=True, X_target_unlabeled=True
+        )
+    pipe = make_pipeline(Covariances("oas"), step, CSP(8), LDA())
+    ds = FakeDataset(
+        ["left_hand", "right_hand"], n_subjects=3, n_sessions=2, seed=19
+    )
+    splitter = ThreeWayHeldOutSubjectSplitter(subject=3)
+    evaluation = ev.CrossSubjectEvaluation(
+        paradigm=FakeImageryParadigm(),
+        datasets=[ds],
+        hdf5_path=tmp_path,
+        overwrite=True,
+        n_jobs=1,
+        splitter=splitter,
+    )
+
+    results = evaluation.process(OrderedDict([("T", pipe)]))
+
+    assert len(results) > 0
+    assert set(results["subject"]) == {"3"}
+    assert _TRANSFER_CAPTURE, "transfer step was never fitted"
+    assert all(capture["n_subjects"] > 0 for capture in _TRANSFER_CAPTURE)
+    assert all(capture["n_target"] > 0 for capture in _TRANSFER_CAPTURE)
 
 
 @pytest.fixture(scope="module")
