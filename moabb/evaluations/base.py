@@ -789,6 +789,7 @@ class BaseEvaluation(ABC):
         self, train_idx, calib_idx, test_idx, *, n_samples, cv_ind
     ):
         """Hook for evaluation-specific validation of materialized fold indices."""
+        return None
 
     def _validate_test_fold_metadata(self, test_metadata):
         """Validate metadata assumptions made by the parallel task builder."""
