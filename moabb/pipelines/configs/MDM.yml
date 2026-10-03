@@ -1,0 +1,19 @@
+name: MDM
+
+paradigms:
+  - LeftRightImagery
+  - MotorImagery
+
+citations:
+  - https://doi.org/10.1109/TBME.2011.2172210
+
+pipeline:
+  - name: Covariances
+    from: pyriemann.estimation
+    parameters:
+      estimator: oas
+
+  - name: MDM
+    from: pyriemann.classification
+    parameters:
+      metric: "riemann"
