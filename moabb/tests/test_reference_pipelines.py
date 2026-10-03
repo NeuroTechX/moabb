@@ -1,4 +1,5 @@
 from importlib.resources import as_file, files
+from pathlib import Path
 
 import pytest
 
@@ -40,3 +41,27 @@ def test_parse_single_python_pipeline_config():
         configs = parse_pipelines_from_directory(config_path)
     assert len(configs) == 1
     assert configs[0]["name"] == "FBCSP + optSVM"
+
+
+
+def test_packaged_reference_configs_match_repository_sources():
+    """Keep packaged mirrors byte-identical to the canonical repo configs."""
+
+    package_dir = files("moabb.pipelines").joinpath("configs")
+    repository_dir = Path(__file__).resolve().parents[2] / "pipelines"
+
+    packaged = sorted(
+        resource.name
+        for resource in package_dir.iterdir()
+        if resource.name != "__init__.py" and resource.name.endswith((".yml", ".py"))
+    )
+    canonical = sorted(
+        path.name
+        for path in repository_dir.iterdir()
+        if path.name.endswith((".yml", ".py"))
+    )
+
+    assert packaged == canonical
+    for name in canonical:
+        with as_file(package_dir.joinpath(name)) as packaged_path:
+            assert packaged_path.read_bytes() == (repository_dir / name).read_bytes(), name
