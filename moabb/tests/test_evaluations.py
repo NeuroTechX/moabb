@@ -77,10 +77,10 @@ class HeldOutSubjectSplitter(BaseCrossValidator):
 
     def split(self, y, metadata):
         del y
-        index = metadata.index.to_numpy()
+        positions = np.arange(len(metadata))
         test_mask = metadata["subject"].to_numpy() == self.subject
         self._metadata = {"held_out_subject": self.subject}
-        yield index[~test_mask], index[test_mask]
+        yield positions[~test_mask], positions[test_mask]
 
     def get_n_splits(self, *args, **kwargs):
         return 1
@@ -736,6 +736,18 @@ def test_cross_subject_top_level_splitter_rejects_multi_subject_test_fold(tmp_pa
     with pytest.raises(ValueError, match="exactly one subject"):
         evaluation.process(OrderedDict([("P", pipe)]))
 
+
+def test_cross_subject_top_level_splitter_indices_are_positional(tmp_path):
+    splitter = HeldOutSubjectSplitter(subject=2)
+    _, y, metadata = FakeImageryParadigm().get_data(dataset)
+    metadata = metadata.copy()
+    metadata.index = np.arange(100, 100 + len(metadata))
+
+    train, test = next(splitter.split(y, metadata))
+
+    assert np.array_equal(test, np.flatnonzero(metadata["subject"].to_numpy() == 2))
+    assert set(metadata.iloc[test]["subject"]) == {2}
+    assert not np.intersect1d(train, test).size
 
 def test_cross_subject_top_level_splitter_type_is_validated(tmp_path):
     with pytest.raises(TypeError, match="BaseCrossValidator"):
