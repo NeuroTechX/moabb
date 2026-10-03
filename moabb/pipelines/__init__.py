@@ -18,7 +18,7 @@ from .classification import (
     SSVEP_MsetCCA,
 )
 from .features import FM, AugmentedDataset, ExtendedSSVEPSignal, LogVariance
-from .utils import FilterBank, create_pipeline_from_config
+from .utils import FilterBank, create_pipeline_from_config, get_benchmark_pipelines
 
 
 def __getattr__(name):

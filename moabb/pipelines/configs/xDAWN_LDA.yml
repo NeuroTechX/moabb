@@ -1,0 +1,19 @@
+name: xDAWN + LDA
+
+paradigms:
+  - P300
+
+citations:
+  - https://doi.org/10.1109/TBME.2009.2012869
+
+pipeline:
+  - name: Xdawn
+    from: pyriemann.spatialfilters
+    parameters:
+      estimator: oas
+
+  - name: Vectorizer
+    from: mne.decoding
+
+  - name: LinearDiscriminantAnalysis
+    from: sklearn.discriminant_analysis
