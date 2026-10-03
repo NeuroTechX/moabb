@@ -306,21 +306,11 @@ def _evaluate_fold(
                 for group_session in np.unique(test_sessions[subject_mask]):
                     mask = subject_mask & (test_sessions == group_session)
                     score_groups.append(
-                        (
-                            test_idx[mask],
-                            y_test[mask],
-                            group_subject,
-                            group_session,
-                        )
+                        (test_idx[mask], y_test[mask], group_subject, group_session)
                     )
             else:
                 score_groups.append(
-                    (
-                        test_idx[subject_mask],
-                        y_test[subject_mask],
-                        group_subject,
-                        session,
-                    )
+                    (test_idx[subject_mask], y_test[subject_mask], group_subject, session)
                 )
     elif score_per_session:
         for group_session in np.unique(test_sessions):
@@ -842,12 +832,7 @@ class BaseEvaluation(ABC):
                     for name in pipelines
                 }
                 task_specs = [
-                    (
-                        name,
-                        work_plan[subjects[0]][name],
-                        subjects[0],
-                        subjects,
-                    )
+                    (name, work_plan[subjects[0]][name], subjects[0], subjects)
                     for name, subjects in pipeline_subjects.items()
                     if subjects
                 ]
@@ -856,8 +841,7 @@ class BaseEvaluation(ABC):
                 if subject not in work_plan:
                     continue
                 task_specs = [
-                    (name, clf, subject, None)
-                    for name, clf in work_plan[subject].items()
+                    (name, clf, subject, None) for name, clf in work_plan[subject].items()
                 ]
 
             for name, clf, subject, score_subjects in task_specs:

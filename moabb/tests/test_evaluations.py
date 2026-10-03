@@ -1401,12 +1401,7 @@ class TestParallelProcess:
 
     def test_cross_subject_multisubject_fold_preserves_provenance(self, tmp_path):
         """A fold holding out multiple subjects is scored per subject/session."""
-        ds = FakeDataset(
-            ["left_hand", "right_hand"],
-            n_subjects=4,
-            n_sessions=2,
-            seed=23,
-        )
+        ds = FakeDataset(["left_hand", "right_hand"], n_subjects=4, n_sessions=2, seed=23)
         paradigm = FakeImageryParadigm()
         evaluation = ev.CrossSubjectEvaluation(
             paradigm=paradigm,
@@ -1420,18 +1415,13 @@ class TestParallelProcess:
 
         assert len(results) == 8
         assert set(results["subject"]) == set(ds.subject_list)
-        assert (
-            results.groupby(["subject", "session"], observed=True).size() == 1
-        ).all()
+        assert (results.groupby(["subject", "session"], observed=True).size() == 1).all()
 
         _, _, metadata = paradigm.get_data(ds)
         expected_sizes = metadata.groupby(["subject", "session"], observed=True).size()
         actual_sizes = results.set_index(["subject", "session"])["n_samples_test"]
         actual_sizes = actual_sizes.reindex(expected_sizes.index)
-        np.testing.assert_array_equal(
-            actual_sizes.to_numpy(),
-            expected_sizes.to_numpy(),
-        )
+        np.testing.assert_array_equal(actual_sizes.to_numpy(), expected_sizes.to_numpy())
 
     def test_learning_curve_parallel(self, tmp_path):
         """LearningCurve evaluation via parallel process()."""
