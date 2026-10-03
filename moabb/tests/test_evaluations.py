@@ -1568,12 +1568,7 @@ class TestParallelLegacyEquivalence:
     def test_cross_session_multisession_fold_equivalence(self, tmp_path):
         """Custom folds spanning sessions keep per-session result provenance."""
         paradigm = FakeImageryParadigm()
-        ds = FakeDataset(
-            ["left_hand", "right_hand"],
-            n_subjects=2,
-            n_sessions=4,
-            seed=12,
-        )
+        ds = FakeDataset(["left_hand", "right_hand"], n_subjects=2, n_sessions=4, seed=12)
         kwargs = {
             "cv_class": GroupKFold,
             "cv_kwargs": {"n_splits": 2},
@@ -1616,14 +1611,10 @@ class TestParallelLegacyEquivalence:
         assert set(left["session"]) == {"0", "1", "2", "3"}
         assert (left["n_samples_test"] > 0).all()
         np.testing.assert_allclose(
-            left["score"].to_numpy(),
-            right["score"].to_numpy(),
-            rtol=1e-10,
-            atol=1e-10,
+            left["score"].to_numpy(), right["score"].to_numpy(), rtol=1e-10, atol=1e-10
         )
         np.testing.assert_array_equal(
-            left["n_samples_test"].to_numpy(),
-            right["n_samples_test"].to_numpy(),
+            left["n_samples_test"].to_numpy(), right["n_samples_test"].to_numpy()
         )
 
     def test_cross_subject_equivalence(self, tmp_path):
