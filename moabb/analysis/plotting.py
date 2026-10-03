@@ -399,8 +399,10 @@ def plot_critical_difference(
     """Plot average pipeline ranks and Nemenyi critical-difference groups.
 
     Scores are first macro-averaged over sessions per subject, then averaged
-    over subjects within each dataset. Each dataset therefore contributes one
-    score per pipeline and one rank to the cross-dataset comparison.
+    over subjects within each dataset. When session identity is available, all
+    pipelines must cover the same sessions for each subject. Each dataset
+    therefore contributes one comparable score per pipeline and one rank to the
+    cross-dataset comparison.
 
     Parameters
     ----------
@@ -486,6 +488,37 @@ def plot_critical_difference(
         selected = selected[selected["pipeline"].isin(requested)]
     if selected.empty:
         raise ValueError("No result rows remain after filtering pipelines")
+
+    # When session identity is available, every pipeline must cover the same
+    # sessions for a given subject. Otherwise collapsing sessions can hide an
+    # incomplete benchmark: two pipelines may retain the same subject set while
+    # one of them is missing a session for that subject.
+    if "session" in selected.columns:
+        if selected["session"].isna().any():
+            raise ValueError("session must not contain missing values")
+        for (dataset, subject), subject_scores in selected.groupby(
+            ["dataset", "subject"], sort=False, observed=True
+        ):
+            session_sets = {
+                pipeline: frozenset(pipeline_scores["session"])
+                for pipeline, pipeline_scores in subject_scores.groupby(
+                    "pipeline", sort=False, observed=True
+                )
+            }
+            if session_sets:
+                reference_pipeline, reference_sessions = next(iter(session_sets.items()))
+                mismatched = [
+                    pipeline
+                    for pipeline, sessions in session_sets.items()
+                    if sessions != reference_sessions
+                ]
+                if mismatched:
+                    raise ValueError(
+                        "Critical-difference analysis requires the same sessions "
+                        f"for every pipeline within dataset {dataset!r}, subject "
+                        f"{subject!r}; {reference_pipeline!r} differs from "
+                        f"{mismatched}."
+                    )
 
     selected = collapse_session_scores(selected)
 
