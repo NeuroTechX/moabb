@@ -781,7 +781,7 @@ class BaseEvaluation(ABC):
             if hasattr(splitter, "get_metadata"):
                 split_metadata = splitter.get_metadata()
                 if split_metadata is not None:
-                    split_metadata = dict(split_metadata)
+                    split_metadata = deepcopy(dict(split_metadata))
             preview.append((cv_ind, train_idx, calib_idx, test_idx, split_metadata))
         return preview
 
