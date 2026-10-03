@@ -508,9 +508,7 @@ def plot_critical_difference(
                 )
             }
             if session_sets:
-                reference_pipeline, reference_sessions = next(
-                    iter(session_sets.items())
-                )
+                reference_pipeline, reference_sessions = next(iter(session_sets.items()))
                 mismatched = [
                     pipeline
                     for pipeline, sessions in session_sets.items()
