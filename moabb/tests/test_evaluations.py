@@ -884,13 +884,9 @@ def test_cross_subject_top_level_three_way_splitter_routes_calibration(tmp_path)
 
     _TRANSFER_CAPTURE.clear()
     with config_context(enable_metadata_routing=True):
-        step = _TransferRecorder().set_fit_request(
-            subjects=True, X_target_unlabeled=True
-        )
+        step = _TransferRecorder().set_fit_request(subjects=True, X_target_unlabeled=True)
     pipe = make_pipeline(Covariances("oas"), step, CSP(8), LDA())
-    ds = FakeDataset(
-        ["left_hand", "right_hand"], n_subjects=3, n_sessions=2, seed=19
-    )
+    ds = FakeDataset(["left_hand", "right_hand"], n_subjects=3, n_sessions=2, seed=19)
     splitter = ThreeWayHeldOutSubjectSplitter(subject=3)
     evaluation = ev.CrossSubjectEvaluation(
         paradigm=FakeImageryParadigm(),
