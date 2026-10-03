@@ -160,6 +160,23 @@ def test_plot_critical_difference_rejects_missing_identifiers():
         plot_critical_difference(data)
 
 
+def test_plot_critical_difference_rejects_mixed_evaluation_protocols():
+    data = _make_df(pipelines=("P0", "P1", "P2"))
+    data["evaluation"] = "WithinSession"
+    data.loc[data["dataset"] == "D1", "evaluation"] = "CrossSubject"
+
+    with pytest.raises(ValueError, match="single evaluation protocol"):
+        plot_critical_difference(data)
+
+
+def test_plot_critical_difference_rejects_missing_evaluation_identity():
+    data = _make_df(pipelines=("P0", "P1", "P2"))
+    data["evaluation"] = "WithinSession"
+    data.loc[data.index[0], "evaluation"] = np.nan
+
+    with pytest.raises(ValueError, match="evaluation must not contain missing"):
+        plot_critical_difference(data)
+
 def test_plot_critical_difference_rejects_missing_requested_pipeline():
     data = _make_df(pipelines=("P0", "P1", "P2"))
 
