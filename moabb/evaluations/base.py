@@ -774,11 +774,7 @@ class BaseEvaluation(ABC):
                 )
 
             self._validate_fold_indices(
-                train_idx,
-                calib_idx,
-                test_idx,
-                n_samples=len(metadata),
-                cv_ind=cv_ind,
+                train_idx, calib_idx, test_idx, n_samples=len(metadata), cv_ind=cv_ind
             )
 
             split_metadata = None
