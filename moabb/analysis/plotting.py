@@ -398,12 +398,13 @@ def plot_critical_difference(
 ):
     """Plot average pipeline ranks and Nemenyi critical-difference groups.
 
-    Scores are first macro-averaged over sessions per subject, then averaged
-    over subjects within each dataset. Session counts may differ across
-    pipelines for the same subject: the subject-level macro-average prevents
-    pipelines with more sessions from receiving extra weight. Each dataset
-    therefore contributes one comparable score per pipeline and one rank to the
-    cross-dataset comparison.
+    Session identity is checked before aggregation: within each
+    dataset-and-subject block, every pipeline must contain the same sessions.
+    Scores are then macro-averaged over sessions per subject and averaged over
+    subjects within each dataset. This prevents a missing session from being
+    silently averaged away while still giving every subject equal weight. Each
+    dataset therefore contributes one comparable score per pipeline and one
+    rank to the cross-dataset comparison.
 
     Parameters
     ----------
@@ -490,14 +491,38 @@ def plot_critical_difference(
     if selected.empty:
         raise ValueError("No result rows remain after filtering pipelines")
 
-    # Session identity is validated but not required to match across pipelines.
-    # collapse_session_scores() macro-averages sessions within each
-    # (dataset, pipeline, subject) cell before subject balancing. Requiring
-    # identical session sets here would incorrectly reject valid benchmarks
-    # where pipelines expose different repeated-session counts while each
-    # subject still contributes exactly one score per pipeline.
-    if "session" in selected.columns and selected["session"].isna().any():
-        raise ValueError("session must not contain missing values")
+    # Validate session coverage before collapse_session_scores() removes
+    # session identity. Otherwise a pipeline that is missing one session can
+    # still produce a subject-level mean and silently enter the rank comparison
+    # against pipelines evaluated on the complete subject record.
+    if "session" in selected.columns:
+        if selected["session"].isna().any():
+            raise ValueError("session must not contain missing values")
+        for (dataset, subject), subject_scores in selected.groupby(
+            ["dataset", "subject"], sort=False, observed=True
+        ):
+            session_sets = {
+                pipeline: frozenset(pipeline_scores["session"])
+                for pipeline, pipeline_scores in subject_scores.groupby(
+                    "pipeline", sort=False, observed=True
+                )
+            }
+            if session_sets:
+                reference_pipeline, reference_sessions = next(
+                    iter(session_sets.items())
+                )
+                mismatched = [
+                    pipeline
+                    for pipeline, sessions in session_sets.items()
+                    if sessions != reference_sessions
+                ]
+                if mismatched:
+                    raise ValueError(
+                        "Critical-difference analysis requires the same sessions "
+                        "for every pipeline within each dataset/subject block; "
+                        f"dataset={dataset!r}, subject={subject!r}, "
+                        f"{reference_pipeline!r} differs from {mismatched}."
+                    )
 
     selected = collapse_session_scores(selected)
 
