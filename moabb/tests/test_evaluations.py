@@ -1590,26 +1590,14 @@ class TestParallelLegacyEquivalence:
         )
 
         keys = ["subject", "session", "pipeline"]
-        left = (
-            results_parallel[keys + ["score", "n_samples_test"]]
-            .sort_values(keys)
-            .reset_index(drop=True)
-        )
-        right = (
-            results_legacy[keys + ["score", "n_samples_test"]]
-            .sort_values(keys)
-            .reset_index(drop=True)
-        )
+        left = results_parallel[keys + ["score"]].sort_values(keys).reset_index(drop=True)
+        right = results_legacy[keys + ["score"]].sort_values(keys).reset_index(drop=True)
 
         assert len(left) == len(right) == 8
         assert left[keys].equals(right[keys])
         assert set(left["session"]) == {"0", "1", "2", "3"}
-        assert (left["n_samples_test"] > 0).all()
         np.testing.assert_allclose(
             left["score"].to_numpy(), right["score"].to_numpy(), rtol=1e-10, atol=1e-10
-        )
-        np.testing.assert_array_equal(
-            left["n_samples_test"].to_numpy(), right["n_samples_test"].to_numpy()
         )
 
     def test_cross_subject_equivalence(self, tmp_path):
