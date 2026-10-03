@@ -501,8 +501,9 @@ class CrossSubjectEvaluation(BaseEvaluation):
         for the default ``TRAIN`` mode.
     splitter : BaseCrossValidator or None
         Optional top-level cross-subject splitter. It must follow MOABB's
-        ``split(y, metadata)`` contract and yields the train/test (or
-        train/calibration/test) indices consumed by the existing evaluation
+        ``split(y, metadata)`` contract and yield positional integer indices
+        into ``y`` and ``metadata`` for the train/test (or
+        train/calibration/test) slices consumed by the existing evaluation
         engine. Each test fold must contain exactly one subject, matching
         MOABB's per-subject result-row semantics. When provided, it replaces
         ``CrossSubjectSplitter`` and cannot
