@@ -431,6 +431,8 @@ def plot_critical_difference(
     difference for complete blocks (the same pipelines evaluated on every
     dataset). Incomplete dataset-by-pipeline score matrices are rejected
     rather than silently changing the set of benchmark datasets per pair.
+    If an ``evaluation`` column is present, all rows must belong to the same
+    evaluation protocol; protocol identity is never averaged away.
 
     References
     ----------
