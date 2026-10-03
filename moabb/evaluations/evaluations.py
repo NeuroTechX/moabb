@@ -643,6 +643,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
                 )
 
     def _validate_test_fold_metadata(self, test_metadata):
+        super()._validate_test_fold_metadata(test_metadata)
         if self.splitter is None:
             return
         test_subjects = test_metadata["subject"].unique()
