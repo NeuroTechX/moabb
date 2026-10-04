@@ -179,9 +179,24 @@ class MartinezCagigal2023Pary(BaseDataset):
     """
 
     METADATA = DatasetMetadata(
-        acquisition=AcquisitionMetadata(sampling_rate=256.0, channel_types={"eeg": 16}),
-        participants=ParticipantMetadata(n_subjects=16),
+        acquisition=AcquisitionMetadata(
+            sampling_rate=256.0,
+            channel_types={"eeg": 16},
+            reference="earlobe",
+            ground="AFz",
+            hardware="g.USBamp (g.tec)",
+            software="MEDUSA",
+        ),
+        participants=ParticipantMetadata(
+            n_subjects=16,
+            health_status="healthy",
+            gender={"male": 11, "female": 5},
+            age_mean=28.8,
+            age_std=5.0,
+        ),
         experiment=ExperimentMetadata(paradigm="cvep"),
+        sessions_per_subject=5,
+        runs_per_session=8,
         documentation=DocumentationMetadata(
             doi="10.71569/025s-eq10",
             associated_paper_doi="10.1016/j.eswa.2023.120815",
