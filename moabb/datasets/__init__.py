@@ -186,6 +186,12 @@ from .daly2020 import Daly2020
 from .damm2026 import Damm2026
 from .peterson2020 import Peterson2020
 
+from .brodu2012 import Brodu2012
+from .imumia2026 import IMUMIA2026
+from .leeuwis2021 import Leeuwis2021
+from .martinezpeon2024 import MartinezPeon2024
+from .pardogarcia2026 import PardoGarcia2026
+
 
 # Call this last in order to make sure the dataset list, dict are populated with
 # the datasets imported in this file.

@@ -1,6 +1,6 @@
 {
     "_metadata": {
-        "total": 188
+        "total": 198
     },
     "10.1002/hbm.23730": {
         "title": "Deep learning with convolutional neural networks for EEG decoding and visualization",
@@ -2262,5 +2262,111 @@
         ],
         "year": 2026,
         "doi": "10.48550/arXiv.2511.23384"
+    },
+    "10.21203/rs.3.rs-6958817/v1": {
+        "title": "Resting-State Theta Oscillations as Biomarkers of Adaptive Neuroplasticity in Chronic Stroke: A Pilot EEG Study",
+        "authors": [
+            "Pardo-Garcia Rebeca",
+            "Ruiz-Izquierdo Maria",
+            "Mart\u00edn Garc\u00eda Vega Mercedes",
+            "Calvillo-Torres Rocio",
+            "Kontaxakis George",
+            "Barca Fernandez Idoya",
+            "Eva M. Moreno",
+            "Lucia Garvin Ocampos",
+            "Miguel A. Pozo"
+        ],
+        "year": 2025,
+        "doi": "10.21203/rs.3.rs-6958817/v1"
+    },
+    "10.31428/10317/13645": {
+        "title": "Metodolog\u00eda de an\u00e1lisis de la actividad cerebral en pacientes con  ictus en fase de rehabilitaci\u00f3n",
+        "authors": [
+            "Mart\u00edn Garc\u00eda de la Vega M.",
+            "Pardo Garc\u00eda R.",
+            "Moreno Montes E. M.",
+            "Pozo Garc\u00eda M. A.",
+            "Kontaxakis G."
+        ],
+        "year": null,
+        "doi": "10.31428/10317/13645"
+    },
+    "10.1016/j.neucom.2011.10.010": {
+        "title": "Exploring two novel features for EEG-based brain-computer interfaces: Multifractal cumulants and predictive complexity",
+        "authors": [
+            "Nicolas Brodu",
+            "Fabien Lotte",
+            "Anatole Lecuyer"
+        ],
+        "year": 2012,
+        "doi": "10.1016/j.neucom.2011.10.010"
+    },
+    "10.1088/1741-2552/ad5f27": {
+        "title": "Classification of kinesthetic motor imagery levels from EEG (associated article)",
+        "authors": [
+            "Dulce Martinez-Peon"
+        ],
+        "year": 2024,
+        "doi": "10.1088/1741-2552/ad5f27"
+    },
+    "10.3389/fnhum.2021.634748": {
+        "title": "Vividness of Visual Imagery and Personality Impact Motor-Imagery Brain Computer Interfaces",
+        "authors": [
+            "Nikki Leeuwis",
+            "Alissa Paas",
+            "Maryam Alimardani"
+        ],
+        "year": 2021,
+        "doi": "10.3389/fnhum.2021.634748"
+    },
+    "10.34894/Z7ZVOD": {
+        "title": "Psychological and Cognitive Factors in Motor Imagery Brain Computer Interfaces",
+        "authors": [
+            "Nikki Leeuwis",
+            "Alissa Paas",
+            "Maryam Alimardani"
+        ],
+        "year": 2021,
+        "doi": "10.34894/Z7ZVOD"
+    },
+    "10.5281/zenodo.19599465": {
+        "title": "Mu and Beta Oscillatory Changes during a motor task following Rehabilitation in Chronic MCA Stroke: Insights from EEG",
+        "authors": [
+            "Rebeca Pardo-Garcia",
+            "Maria Ruiz-Izquierdo",
+            "Mercedes Garcia de la Vega",
+            "Rocio Calvillo",
+            "George Kontaxakis",
+            "Eva M. Moreno",
+            "M. A. Pozo"
+        ],
+        "year": 2026,
+        "doi": "10.5281/zenodo.19599465"
+    },
+    "10.5281/zenodo.20421767": {
+        "title": "A Human Motor Imagery EEG Dataset Covering Diverse Cognitive States and Neural Response Patterns",
+        "authors": [
+            "Jianxiu Li",
+            "Changming Wang",
+            "Chao Chen"
+        ],
+        "year": 2026,
+        "doi": "10.5281/zenodo.20421767"
+    },
+    "10.6084/m9.figshare.25773342": {
+        "title": "EEG Kinesthetic motor imagery levels (data)",
+        "authors": [
+            "Dulce Martinez-Peon"
+        ],
+        "year": 2024,
+        "doi": "10.6084/m9.figshare.25773342"
+    },
+    "10.6084/m9.figshare.25773342.v1": {
+        "title": "EEG Kinesthetic motor imagery levels",
+        "authors": [
+            "Dulce Martinez-Peon"
+        ],
+        "year": 2024,
+        "doi": "10.6084/m9.figshare.25773342.v1"
     }
 }

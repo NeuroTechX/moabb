@@ -54,6 +54,11 @@ Motor Imagery Datasets
     :template: class.rst
 
     AlexMI
+    Brodu2012
+    IMUMIA2026
+    Leeuwis2021
+    MartinezPeon2024
+    PardoGarcia2026
     Jia2019
     MIBMPI2024
     Ortiz2023
