@@ -1,0 +1,23 @@
+name: SSVEP Tangent Space SVM
+
+paradigms:
+  - FilterBankSSVEP
+
+pipeline:
+  - name: ExtendedSSVEPSignal
+    from: moabb.pipelines
+
+  - name: Covariances
+    from: pyriemann.estimation
+    parameters:
+      estimator: oas
+
+  - name: TangentSpace
+    from: pyriemann.tangentspace
+    parameters:
+      metric: "riemann"
+
+  - name: SVC
+    from: sklearn.svm
+    parameters:
+      kernel: "linear"

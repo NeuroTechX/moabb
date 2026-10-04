@@ -1,0 +1,20 @@
+name: MDM-SSVEP
+paradigms:
+  - FilterBankSSVEP
+
+citations:
+  - https://dx.doi.org/10.1007/978-3-319-25040-3_64
+
+pipeline:
+  - name: ExtendedSSVEPSignal
+    from: moabb.pipelines
+
+  - name: Covariances
+    from: pyriemann.estimation
+    parameters:
+      estimator: oas
+
+  - name: MDM
+    from: pyriemann.classification
+    parameters:
+      metric: "riemann"

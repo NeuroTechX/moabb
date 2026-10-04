@@ -140,6 +140,9 @@ all = [
 py-modules = []
 include-package-data = true
 
+[tool.setuptools.package-data]
+"moabb.pipelines.configs" = ["*.yml", "*.py"]
+
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["moabb*"]

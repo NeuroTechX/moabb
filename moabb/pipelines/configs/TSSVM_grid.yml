@@ -1,0 +1,33 @@
+name: Tangent Space SVM Grid
+
+paradigms:
+  - LeftRightImagery
+  - MotorImagery
+
+citations:
+  - https://doi.org/10.1016/j.neucom.2012.12.039
+
+pipeline:
+  - name: Covariances
+    from: pyriemann.estimation
+    parameters:
+      estimator: oas
+
+  - name: TangentSpace
+    from: pyriemann.tangentspace
+    parameters:
+      metric: "riemann"
+
+  - name: SVC
+    from: sklearn.svm
+    parameters:
+      kernel: "linear"
+
+param_grid:
+  svc__C:
+    - 0.5
+    - 1
+    - 1.5
+  svc__kernel:
+    - "rbf"
+    - "linear"
