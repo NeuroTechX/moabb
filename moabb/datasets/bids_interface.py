@@ -631,17 +631,28 @@ def _build_sidecar_enrichment(metadata):
         if hw_filters:
             entries["HardwareFilters"] = hw_filters
 
-    # HardwareFilters fallback: use acq.filters when prep filters are absent
+    # HardwareFilters fallback: use acq.filters when prep filters are absent.
+    # The @bids/validator v2 schema requires every top-level value of
+    # HardwareFilters to be an object (or the whole field to be the string
+    # "n/a"), so free-text or flat dicts must be nested.
     if "HardwareFilters" not in entries and acq and acq.filters:
         if isinstance(acq.filters, dict):
-            # BIDS requires nested structure: {"FilterName": {"key": "value"}}
-            # If the dict is flat (no nested dicts), wrap it under a filter name.
-            if acq.filters and not any(isinstance(v, dict) for v in acq.filters.values()):
-                entries["HardwareFilters"] = {"HardwareFilter": acq.filters}
-            else:
+            if acq.filters and all(isinstance(v, dict) for v in acq.filters.values()):
+                # Already nested ({"Bandpass": {...}, "Notch": {...}}): keep as-is.
                 entries["HardwareFilters"] = acq.filters
+            else:
+                # Flat dict with non-dict values: wrap under a single
+                # ``HardwareFilter`` key whose value is itself an object.
+                # Values are stringified to keep the sub-object JSON-friendly.
+                entries["HardwareFilters"] = {
+                    "HardwareFilter": {k: str(v) for k, v in acq.filters.items()}
+                }
         else:
-            entries["HardwareFilters"] = {"HardwareFilter": str(acq.filters)}
+            # Free-text description: wrap under Description so the
+            # ``HardwareFilter`` value is an object as the schema requires.
+            entries["HardwareFilters"] = {
+                "HardwareFilter": {"Description": str(acq.filters)}
+            }
 
     # HardwareFilters (RECOMMENDED) — "n/a" when not described
     entries.setdefault("HardwareFilters", "n/a")
@@ -2144,20 +2155,36 @@ def subject_bids_to_moabb(subject: str):
 
 
 def run_moabb_to_bids(run: str):
-    """Convert the run to run index plus eventually description."""
+    """Convert the run to run index plus eventually description.
+
+    MOABB run labels can carry a non-numeric suffix (e.g. ``"1feedback1"``,
+    ``"3A"``). That suffix is stored in the BIDS ``acquisition`` (``acq-``)
+    entity, which is valid for ``_eeg``/``_events``/``_channels`` files.
+
+    Older MOABB versions used the ``recording`` (``rec-``) entity, which
+    the official bids-validator rejects for EEG core files
+    (``ALL_FILENAME_RULES_HAVE_ISSUES``). ``run_bids_to_moabb`` still
+    accepts caches written with ``recording-`` for backwards compatibility.
+    """
     p = r"([0-9]+)(|[a-zA-Z]+[a-zA-Z0-9]*)"
     idx, desc = re.fullmatch(p, run).groups()
     out = {"run": idx}
     if desc:
-        out["recording"] = desc
+        out["acquisition"] = desc
     return out
 
 
 def run_bids_to_moabb(path: mne_bids.BIDSPath):
-    """Extracts the run index plus eventually description from a path."""
-    if path.recording is None:
+    """Extracts the run index plus eventually description from a path.
+
+    Accepts both the new ``acq-`` entity (written by current MOABB) and the
+    legacy ``rec-`` entity (written by older MOABB versions) so pre-existing
+    caches keep reading back to the same MOABB run label.
+    """
+    desc = path.acquisition if path.acquisition is not None else path.recording
+    if desc is None:
         return path.run
-    return f"{path.run}{path.recording}"
+    return f"{path.run}{desc}"
 
 
 @dataclass

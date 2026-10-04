@@ -211,6 +211,7 @@ def _nguyen_docs(keywords_suffix, description):
         repository="Zenodo",
         senior_author="Panagiotis Artemiadis",
         contact_info=["chuong.h.nguyen@asu.edu", "panagiotis.artemiadis@asu.edu"],
+        ethics_approval=["ASU IRB (Protocols: 1309009601, STUDY00001345)"],
         associated_paper_doi=_DOI,
         keywords=[
             "imagined speech",

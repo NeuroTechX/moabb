@@ -321,6 +321,16 @@ class Shin2017A(BaseShin2017):
     subsequent blocks randomly consisting of one of two conditions: Either
     first left and then right hand motor imagery or vice versa.
 
+    **Participants**
+
+    The paper reports "Twenty-nine right-handed and one left-handed healthy
+    subjects" (30) but also "14 males and 15 females" (29); the release exposes
+    29 subjects (1-29), so the handedness split declared below (29 right, 1 left)
+    follows the paper and cannot be reconciled with the 29 released subjects.
+    The data are hosted by the TU Berlin machine-learning group
+    ("Both, the raw datasets are available for free download via:
+    http://doc.ml.tu-berlin.de/hBCI").
+
     References
     ----------
 
@@ -465,7 +475,7 @@ class Shin2017A(BaseShin2017):
                 "near-infrared spectroscopy (NIRS)",
                 "open access dataset",
             ],
-            repository="GitHub",
+            repository="TU Berlin ML group (doc.ml.tu-berlin.de/hBCI)",
             data_url="http://doc.ml.tu-berlin.de/hBCI",
             license="GPL-3.0",
         ),
@@ -649,6 +659,16 @@ class Shin2017B(BaseShin2017):
     1 s on the screen. The fixation cross was displayed again during the rest
     period. MA and baseline trials were randomized in the same way as MI.
 
+    **Participants**
+
+    The paper reports "Twenty-nine right-handed and one left-handed healthy
+    subjects" (30) but also "14 males and 15 females" (29); the release exposes
+    29 subjects (1-29), so the handedness split declared below (29 right, 1 left)
+    follows the paper and cannot be reconciled with the 29 released subjects.
+    The data are hosted by the TU Berlin machine-learning group
+    ("Both, the raw datasets are available for free download via:
+    http://doc.ml.tu-berlin.de/hBCI").
+
     References
     ----------
     .. [1] Shin, J., von Lühmann, A., Blankertz, B., Kim, D.W., Jeong, J.,
@@ -783,7 +803,7 @@ class Shin2017B(BaseShin2017):
                 "NIRS",
                 "open access dataset",
             ],
-            repository="GitHub",
+            repository="TU Berlin ML group (doc.ml.tu-berlin.de/hBCI)",
             data_url="http://doc.ml.tu-berlin.de/hBCI",
             license="GPL-3.0",
         ),

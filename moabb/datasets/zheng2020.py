@@ -83,7 +83,12 @@ class Zheng2020(BaseDataset):
     task across 2 sessions separated by ~23 days. EEG was recorded
     at 1000 Hz from 62 channels using two synchronized Neuroscan
     Synamps2 systems. Each session contains 3 blocks of 14 RSVP
-    trials (100 images at 10 Hz), with 4 target images per trial.
+    trials (100 images at 10 Hz), with 4 target images per trial, i.e.
+    168 target and 4032 non-target images per session ("Each session
+    consisted of three blocks and each block contained 14 trials (1,400
+    images" [1]_). "The reference electrode was at the vertex" [1]_; the
+    common average reference of the paper is an analysis step, not the
+    released data.
 
     Events: Target (image containing a human) = 2,
     NonTarget (no human) = 1.
@@ -160,7 +165,11 @@ class Zheng2020(BaseDataset):
         ),
         data_structure=DataStructureMetadata(
             n_trials={"target": 168, "nontarget": 4032},
-            trials_context="per subject across both sessions",
+            trials_context=(
+                "per session: 3 blocks x 14 trials x 100 images, 4 targets per "
+                "trial (168 target + 4032 non-target images); x2 sessions per "
+                "subject"
+            ),
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=["HDCA"],
