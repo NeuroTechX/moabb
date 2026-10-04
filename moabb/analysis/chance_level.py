@@ -24,8 +24,17 @@ def chance_by_chance(
         alpha = [alpha]
     result = {}
     for dname, grp in data.groupby("dataset"):
-        n_classes = int(grp["n_classes"].iloc[0])
-        n_trials = int(grp["samples_test"].iloc[0])
+        n_classes_values = grp["n_classes"].dropna().unique()
+        n_trials_values = grp["samples_test"].dropna().unique()
+        if len(n_classes_values) != 1 or len(n_trials_values) != 1:
+            raise ValueError(
+                "Adjusted chance level requires one n_classes and one samples_test "
+                f"value per dataset, but {dname!r} has "
+                f"n_classes={n_classes_values.tolist()} and "
+                f"samples_test={n_trials_values.tolist()}."
+            )
+        n_classes = int(n_classes_values[0])
+        n_trials = int(n_trials_values[0])
         result[dname] = {
             # theoretical chance level: 1 / n_classes
             "theoretical": 1.0 / n_classes,
