@@ -8,6 +8,11 @@ on datasets (electrodes, number of trials, sessions, etc.)
 """
 
 from . import compound_dataset
+from .batista2022 import Batista2022
+from .farabbi2020 import Farabbi2020
+from .han2026 import Han2026
+from .kodera2023 import Kodera2023
+from .kueper2024 import Kueper2024
 
 # flake8: noqa
 from .aguilera_rodriguez2025 import AguileraRodriguez2025

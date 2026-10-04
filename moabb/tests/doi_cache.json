@@ -1,6 +1,6 @@
 {
     "_metadata": {
-        "total": 198
+        "total": 205
     },
     "10.1002/hbm.23730": {
         "title": "Deep learning with convolutional neural networks for EEG decoding and visualization",
@@ -2368,5 +2368,91 @@
         ],
         "year": 2024,
         "doi": "10.6084/m9.figshare.25773342.v1"
+    },
+    "10.5281/zenodo.7664068": {
+        "title": "Physiological Signals During Motor Imagery Brain-Computer Interface Training Using Virtual Reality and Haptics",
+        "authors": [
+            "Diogo Batista",
+            "Gustavo Caetano",
+            "Mathis Fleury",
+            "Patricia Figueiredo",
+            "Athanasios Vourvopoulos"
+        ],
+        "year": 2022,
+        "doi": "10.5281/zenodo.7664068"
+    },
+    "10.5281/zenodo.5882500": {
+        "title": "Motor-Imagery EEG Dataset During Robot-Arm Control",
+        "authors": [
+            "Andrea Farabbi",
+            "Fabiola Ghiringhelli",
+            "Luca Mainardi",
+            "Joao Miguel Sanches",
+            "Plinio Moreno",
+            "Jose Santos-Victor",
+            "Patricia Figueiredo",
+            "Athanasios Vourvopoulos"
+        ],
+        "year": 2020,
+        "doi": "10.5281/zenodo.5882500"
+    },
+    "10.1038/s41598-024-65910-8": {
+        "title": "Avoidance of specific calibration sessions in motor intention recognition for exoskeleton-supported rehabilitation through transfer learning on EEG data",
+        "authors": [
+            "Niklas Kueper",
+            "Su Kyoung Kim",
+            "Elsa Andrea Kirchner"
+        ],
+        "year": 2024,
+        "doi": "10.1038/s41598-024-65910-8"
+    },
+    "10.18112/openneuro.ds007327.v1.1.0": {
+        "title": "Basketball Motor Observation and Motor Imagery EEG Dataset",
+        "authors": [
+            "Jiahui Han",
+            "Jiaqi Wang",
+            "Lingrong Jia",
+            "Ming Tang"
+        ],
+        "year": 2026,
+        "doi": "10.18112/openneuro.ds007327.v1.1.0"
+    },
+    "10.5281/zenodo.10229480": {
+        "title": "EEG Dataset of Unilateral and Bilateral Movement Executions (data)",
+        "authors": [
+            "Niklas Kueper",
+            "Su Kyoung Kim",
+            "Elsa Andrea Kirchner"
+        ],
+        "year": 2023,
+        "doi": "10.5281/zenodo.10229480"
+    },
+    "10.5281/zenodo.7893846": {
+        "title": "EEG motor imagery",
+        "authors": [
+            "Jakub Kodera",
+            "Roman Moucek",
+            "Pavel Moutner",
+            "Pavel Mochura",
+            "Josef Yassin Saleh",
+            "Petr Bruha",
+            "Jana Solcova",
+            "Lukas Vareka",
+            "Pavel Snejdar"
+        ],
+        "year": 2023,
+        "doi": "10.5281/zenodo.7893846"
+    },
+    "10.5281/zenodo.7664069": {
+        "title": "Physiological Signals During Motor Imagery Brain-Computer Interface Training Using Virtual Reality and Haptics",
+        "authors": [
+            "Diogo Batista",
+            "Gustavo Caetano",
+            "Mathis Fleury",
+            "Patricia Figueiredo",
+            "Athanasios Vourvopoulos"
+        ],
+        "year": 2022,
+        "doi": "10.5281/zenodo.7664069"
     }
 }
