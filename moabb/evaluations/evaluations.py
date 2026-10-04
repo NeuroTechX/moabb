@@ -302,6 +302,7 @@ class CrossSessionEvaluation(BaseEvaluation):
     """
 
     _eval_type = "CrossSession"
+    _score_per_session = True
 
     def _create_splitter(self):
         """Create the CrossSessionSplitter for parallel evaluation."""
@@ -391,24 +392,27 @@ class CrossSessionEvaluation(BaseEvaluation):
                         eval_type="CrossSession",
                     )
 
-                    res = self._build_scored_result(
-                        dataset,
-                        subject,
-                        groups[test][0],
-                        name,
-                        len(train),
-                        nchan,
-                        duration,
-                        scorer,
-                        cvclf,
-                        X[test],
-                        y[test],
-                    )
+                    test_sessions = groups[test]
+                    for session in np.unique(test_sessions):
+                        session_test = test[test_sessions == session]
+                        res = self._build_scored_result(
+                            dataset,
+                            subject,
+                            session,
+                            name,
+                            len(train),
+                            nchan,
+                            duration,
+                            scorer,
+                            cvclf,
+                            X[session_test],
+                            y[session_test],
+                        )
 
-                    if _carbonfootprint:
-                        self._attach_emissions(res, emissions, task_name)
+                        if _carbonfootprint:
+                            self._attach_emissions(res, emissions, task_name)
 
-                    yield res
+                        yield res
 
                 if _carbonfootprint:
                     tracker.stop()
