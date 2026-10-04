@@ -26,21 +26,12 @@ def test_chance_by_chance():
     assert levels["B"]["theoretical"] == 0.25
 
 
-
 @pytest.mark.parametrize(
-    ("column", "values"),
-    [
-        ("samples_test", [50, 100]),
-        ("n_classes", [2, 3]),
-    ],
+    ("column", "values"), [("samples_test", [50, 100]), ("n_classes", [2, 3])]
 )
 def test_chance_by_chance_rejects_ambiguous_dataset_level_threshold(column, values):
     data = pd.DataFrame(
-        {
-            "dataset": ["A", "A"],
-            "samples_test": [50, 50],
-            "n_classes": [2, 2],
-        }
+        {"dataset": ["A", "A"], "samples_test": [50, 50], "n_classes": [2, 2]}
     )
     data[column] = values
 
@@ -65,15 +56,10 @@ def test_chance_by_chance_is_row_order_invariant_for_valid_input():
     assert forward == reversed_rows
 
 
-
 @pytest.mark.parametrize("column", ["samples_test", "n_classes"])
 def test_chance_by_chance_rejects_missing_metadata(column):
     data = pd.DataFrame(
-        {
-            "dataset": ["A", "A"],
-            "samples_test": [50.0, 50.0],
-            "n_classes": [2.0, 2.0],
-        }
+        {"dataset": ["A", "A"], "samples_test": [50.0, 50.0], "n_classes": [2.0, 2.0]}
     )
     data.loc[1, column] = float("nan")
 
