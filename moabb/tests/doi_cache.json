@@ -1,6 +1,6 @@
 {
     "_metadata": {
-        "total": 205
+        "total": 211
     },
     "10.1002/hbm.23730": {
         "title": "Deep learning with convolutional neural networks for EEG decoding and visualization",
@@ -2454,5 +2454,88 @@
         ],
         "year": 2022,
         "doi": "10.5281/zenodo.7664069"
+    },
+    "10.1038/s41597-025-05042-4": {
+        "title": "An EEG-EMG dataset from a standardized reaching task for biomarker research in upper limb assessment",
+        "authors": [
+            "Federica Garro",
+            "Elisa Fenoglio",
+            "Ilaria Ceroni",
+            "Iryna Forsiuk",
+            "Michela Canepa",
+            "Marta Mozzon",
+            "Alessandro Bruschi",
+            "Fabio Zippo",
+            "Matteo Laffranchi",
+            "Lorenzo De Michieli",
+            "Stefano Buccelli",
+            "Michela Chiappalone",
+            "Marianna Semprini"
+        ],
+        "year": 2025,
+        "doi": "10.1038/s41597-025-05042-4"
+    },
+    "10.57760/sciencedb.34326": {
+        "title": "MIND: A Multimodal fNIRS-EEG Dataset for Unilateral Limb Motor Imagery",
+        "authors": [
+            "Lufeng Feng",
+            "Baomin Xu",
+            "Haoran Zhang",
+            "Bihai Lin",
+            "Zuxuan Deng",
+            "Sidi Tao",
+            "Chenyu Liu",
+            "Shifan Jia",
+            "Li Duan",
+            "Ziyu Jia"
+        ],
+        "year": 2026,
+        "doi": "10.57760/sciencedb.34326"
+    },
+    "10.1038/s41597-025-06039-9": {
+        "title": "A large electroencephalogram database of freewill reaching and grasping tasks for brain machine interfaces",
+        "authors": [
+            "Bhoj Raj Thapa",
+            "John Boggess",
+            "Jihye Bae"
+        ],
+        "year": 2025,
+        "doi": "10.1038/s41597-025-06039-9"
+    },
+    "10.6084/m9.figshare.28632599": {
+        "title": "A large electroencephalogram database of freewill reaching and grasping tasks for brain machine interfaces (dataset)",
+        "authors": [
+            "Bhoj Raj Thapa",
+            "John Boggess",
+            "Jihye Bae"
+        ],
+        "year": 2025,
+        "doi": "10.6084/m9.figshare.28632599"
+    },
+    "10.3390/s24165207": {
+        "title": "MOVING: A Multi-Modal Dataset of EEG Signals and Virtual Glove Hand Tracking",
+        "authors": [
+            "Enrico Mattei",
+            "Daniele Lozzi",
+            "Alessandro Di Matteo",
+            "Alessia Cipriani",
+            "Costanzo Manes",
+            "Giuseppe Placidi"
+        ],
+        "year": 2024,
+        "doi": "10.3390/s24165207"
+    },
+    "10.5281/zenodo.12804784": {
+        "title": "MOVING: A Multi-Modal Dataset of EEG Signals and Virtual Glove Hand Tracking (data)",
+        "authors": [
+            "Enrico Mattei",
+            "Daniele Lozzi",
+            "Alessandro Di Matteo",
+            "Alessia Cipriani",
+            "Costanzo Manes",
+            "Giuseppe Placidi"
+        ],
+        "year": 2024,
+        "doi": "10.5281/zenodo.12804784"
     }
 }

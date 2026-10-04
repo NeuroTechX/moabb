@@ -23,6 +23,7 @@ Version 1.8  (Source - GitHub)
 
 Enhancements
 ~~~~~~~~~~~~
+- Add :class:`moabb.datasets.MIND2026`, :class:`moabb.datasets.MOVING2024`, :class:`moabb.datasets.NeBULA2025`, and :class:`moabb.datasets.Thapa2025` large-recording motor-imagery and motor-execution datasets. Preserve the MIND acquisition-restart guard and document execution-only tasks (:gh:`1195` by `Bruno Aristimunha`_).
 - Add Batista2022, Farabbi2020, Han2026, Kodera2023 and Kueper2024 dataset loaders (:gh:`1194`).
 - Add Brodu2012, IMUMIA2026, Leeuwis2021, MartinezPeon2024 and PardoGarcia2026 motor-imagery dataset loaders by `Bruno Aristimunha`_ in :gh:`1193`.
 - Add the continuous-recording :class:`datasets.Shin2022` and :class:`datasets.NeuroTUMBCI2025` motor-imagery datasets (:gh:`1192`, by `Bruno Aristimunha`_).
