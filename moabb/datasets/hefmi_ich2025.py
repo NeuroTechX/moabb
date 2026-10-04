@@ -77,6 +77,12 @@ class HefmiIch2025(BaseDataset):
     The data is pre-epoched in .mat format on Figshare.
     Only the EEG portion is loaded (fNIRS is excluded).
 
+    Licence: the paper states "This dataset is licensed under the Creative
+    Commons Attribution (CC-BY) terms" and the figshare record is CC BY 4.0
+    (the article itself is CC BY-NC-ND 4.0). Note that the figshare
+    description also says the data "can only be used for research and
+    learning purposes, and commercial applications are prohibited".
+
     Parameters
     ----------
     group : str
@@ -153,7 +159,7 @@ class HefmiIch2025(BaseDataset):
             country="CN",
             data_url="https://figshare.com/articles/dataset/28955456",
             publication_year=2025,
-            license="CC-BY-NC-ND-4.0",
+            license="CC-BY-4.0",
         ),
         sessions_per_subject=3,
         runs_per_session=1,
