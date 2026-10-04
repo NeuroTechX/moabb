@@ -35,6 +35,7 @@ Requirements
 
 Bugs
 ~~~~
+- Make :func:`moabb.analysis.chance_level.chance_by_chance` reject dataset-level adjusted chance thresholds when ``n_classes`` or ``samples_test`` varies across result rows, instead of silently using the first fold and making the threshold depend on row order (by `lindicaphxag-tech`_).
 - Use ``gmean`` in TRCA and TRCSP for compatibility with pyRiemann 0.12 and 0.13, and pass the TRCSP mean metric by keyword (by `Bruno Aristimunha`_).
 - Fix the ``-e``/``--evaluations`` flag of ``python -m moabb.run``, which used ``type=list`` and so split its value into single characters: ``-e WithinSession`` reached :func:`moabb.benchmark` as ``['W', 'i', 't', ...]`` and raised ``KeyError: 'W'``. It now takes one or more evaluation names, space separated (by `Iain`_)
 - Fix the two install pages asking for optional extras MOABB does not have: the pip install page gave ``pip install moabb[deepleaning,carbonemission,docs]``, which is missing the ``r`` of ``deeplearning``, and pip only warns about an unrecognised extra, so following that page left ``braindecode`` uninstalled. The from-sources page asked for ``external``, removed in 1.2.0 (by `Iain`_).
@@ -1063,3 +1064,5 @@ API changes
 .. _Iain: https://github.com/NotAFlightRisk
 .. _Anna Sokolova: https://github.com/ZyntZ
 .. _Arthur031221: https://github.com/Arthur031221
+
+.. _lindicaphxag-tech: https://github.com/lindicaphxag-tech
