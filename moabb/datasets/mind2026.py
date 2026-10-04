@@ -3,6 +3,7 @@
 import csv
 import logging
 import re
+import zipfile
 from collections import Counter
 from operator import itemgetter
 from pathlib import Path
@@ -438,8 +439,6 @@ class MIND2026(BaseDataset):
         # once and extract only the per-subject EEG BrainVision BIDS files
         # (.vhdr/.vmrk/.eeg + *_events.tsv); the raw Curry ``sourcedata`` and the
         # fNIRS recordings are intentionally skipped.
-        import zipfile
-
         data_dir.mkdir(parents=True, exist_ok=True)
         archive = dl.data_dl(
             MIND2026_DOWNLOAD_URL,

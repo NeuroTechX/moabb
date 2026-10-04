@@ -256,9 +256,6 @@ class MOVING2024(BaseDataset):
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             raw = mne.io.read_raw_edf(file_path, preload=True, verbose=False)
-
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
             # Mark the three accelerometer axes as non-EEG.
             raw.set_channel_types(
                 {ch: "misc" for ch in ("X", "Y", "Z") if ch in raw.ch_names}
