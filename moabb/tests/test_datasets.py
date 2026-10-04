@@ -64,61 +64,61 @@ NEMAR_ID_EXEMPT = {
     "Schrag2026Pediatric",
     "Lenaig2026",
     "Wang2026",
-    "PerezBlanco2026",  # no public NEMAR mirror yet; tracked in #1199
     "Leelakittisin2025",  # no public NEMAR mirror yet; tracked in #1199
-    "Vagaja2023",  # no public NEMAR mirror yet; tracked in #1199
     "MartinezPeon2025",  # no public NEMAR mirror yet; tracked in #1198
     "MILimbEEG",  # no public NEMAR mirror yet; tracked in #1198
-    "Pan2023",  # no public NEMAR mirror yet; tracked in #1197
-    "Pan2025",  # no public NEMAR mirror yet; tracked in #1197
-    "PoloHortiguela2025",  # no public NEMAR mirror yet; tracked in #1197
-    "WRCC2023_MI_A",  # no public NEMAR mirror yet; tracked in #1196
-    "WRCC2023_MI_B",  # no public NEMAR mirror yet; tracked in #1196
-    "WRCC2023_MI_C",  # no public NEMAR mirror yet; tracked in #1196
-    "MIMED2024",  # no public NEMAR mirror yet; tracked in #1196
-    "NeBULA2025",  # no public NEMAR mirror yet; tracked in #1195
     "MIND2026",  # no public NEMAR mirror yet; tracked in #1195
-    "MOVING2024",  # no public NEMAR mirror yet; tracked in #1195
-    "Thapa2025",  # no public NEMAR mirror yet; tracked in #1195
-    "Batista2022",  # no public NEMAR mirror yet; tracked in #1194
-    "Kueper2024",  # no public NEMAR mirror yet; tracked in #1194
-    "Farabbi2020",  # no public NEMAR mirror yet; tracked in #1194
     "Han2026",  # no public NEMAR mirror yet; tracked in #1194
-    "Kodera2023",  # no public NEMAR mirror yet; tracked in #1194
     "Leeuwis2021",  # no public NEMAR mirror yet; tracked in #1193
-    "IMUMIA2026",  # no public NEMAR mirror yet; tracked in #1193
-    "MartinezPeon2024",  # no public NEMAR mirror yet; tracked in #1193
     "Brodu2012",  # no public NEMAR mirror yet; tracked in #1193
-    "PardoGarcia2026",  # no public NEMAR mirror yet; tracked in #1193
-    "Shin2022",  # no public NEMAR mirror yet; tracked in #1192
-    "NeuroTUMBCI2025",  # no public NEMAR mirror yet; tracked in #1192
-    "Perdikis2018",  # no public NEMAR mirror yet; tracked in #1191
-    "Alawieh2025",  # no public NEMAR mirror yet; tracked in #1191
-    "Jia2019",  # no public NEMAR mirror yet; tracked in #1190
-    "Ortiz2023",  # no public NEMAR mirror yet; tracked in #1190
     "MIBMPI2024",  # no public NEMAR mirror yet; tracked in #1190
     "Wang2025",  # no public NEMAR mirror yet; tracked in #1190
-    "NETBCI2026",  # CC-BY 4.0 on Recherche Data Gouv; NEMAR rehost not done yet
 }
 # Datasets whose NEMAR deposit is assigned but not yet public (private,
 # pending publication). Their ids are valid and still checked; tracked here
 # so we know which deposits remain to be published.
 NEMAR_ID_PENDING = {
     "AguileraRodriguez2025": "nm000174",
+    "Alawieh2025": "nm000312",
     "BCIComp2020UpperLimb": "nm000233",
     "BCIComp2020WalkingERP": "nm000184",
     "BNCI2020_001": "nm000178",
+    "Batista2022": "nm000318",
     "Beetl2021_A": "nm000220",
     "Beetl2021_B": "nm000274",
+    "Farabbi2020": "nm000294",
+    "IMUMIA2026": "nm000316",
+    "Jia2019": "nm000306",
     "Kaneshiro2015": "nm000263",
+    "Kodera2023": "nm000295",
+    "Kueper2024": "nm000319",
     "Kumar2024": "nm000177",
     "Lee2019_SSVEP": "nm000273",
+    "MIMED2024": "nm000296",
+    "MOVING2024": "nm000293",
     "Mainsah2025_A": "nm000269",
+    "MartinezPeon2024": "nm000314",
+    "NETBCI2026": "nm000305",
+    "NeBULA2025": "nm000322",
+    "NeuroTUMBCI2025": "nm000308",
     "Nguyen2017_L": "nm000252",
     "Nguyen2017_S": "nm000257",
     "Nguyen2017_SL": "nm000224",
     "Nguyen2017_V": "nm000261",
+    "Ortiz2023": "nm000320",
+    "Pan2023": "nm000291",
+    "Pan2025": "nm000300",
+    "PardoGarcia2026": "nm000309",
+    "Perdikis2018": "nm000307",
+    "PerezBlanco2026": "nm000304",
+    "PoloHortiguela2025": "nm000302",
     "Pressel2016": "nm000258",
+    "Shin2022": "nm000315",
+    "Thapa2025": "nm000324",
+    "Vagaja2023": "nm000292",
+    "WRCC2023_MI_A": "nm000297",
+    "WRCC2023_MI_B": "nm000298",
+    "WRCC2023_MI_C": "nm000299",
 }
 
 
