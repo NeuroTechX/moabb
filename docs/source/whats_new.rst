@@ -36,6 +36,7 @@ Requirements
 
 Bugs
 ~~~~
+- Make :func:`moabb.analysis.chance_level.chance_by_chance` independent of result-row order when test-fold sizes vary: dataset-level adjusted thresholds now take the strictest exact-binomial cutoff across the fold sizes actually present (the cutoff is discrete and not strictly monotone in fold size), while inconsistent class counts are rejected (by `lindicaphxag-tech`_).
 - Fix ``SSVEP_TRCA`` trial centering: the inter-trial covariance step subtracted the mean across channels at each sample instead of each channel's mean over time, and did it in place on the filterbank data it received, which also fed ``Q`` and the class templates. Centering is now per channel over time, on a copy (:gh:`1183` by `Arthur031221`_).
 - Use ``gmean`` in TRCA and TRCSP for compatibility with pyRiemann 0.12 and 0.13, and pass the TRCSP mean metric by keyword (by `Bruno Aristimunha`_).
 - Fix the ``-e``/``--evaluations`` flag of ``python -m moabb.run``, which used ``type=list`` and so split its value into single characters: ``-e WithinSession`` reached :func:`moabb.benchmark` as ``['W', 'i', 't', ...]`` and raised ``KeyError: 'W'``. It now takes one or more evaluation names, space separated (by `Iain`_)
@@ -1067,4 +1068,5 @@ API changes
 .. _Iain: https://github.com/NotAFlightRisk
 .. _Anna Sokolova: https://github.com/ZyntZ
 .. _Arthur031221: https://github.com/Arthur031221
+
 .. _lindicaphxag-tech: https://github.com/lindicaphxag-tech
