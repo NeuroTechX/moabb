@@ -36,14 +36,20 @@ def chance_by_chance(
                 f"but {dname!r} has {n_classes_values.tolist()}."
             )
         n_classes = int(n_classes_values[0])
-        # A dataset-level line must be valid for every result row. Smaller test
-        # sets have the stricter exact-binomial threshold, so use the minimum
-        # fold size as a conservative envelope rather than whichever row happens
-        # to appear first.
-        n_trials = int(grp["samples_test"].min())
+        # Exact-binomial thresholds are discrete and are not strictly monotone
+        # in the number of trials. Build a dataset-level envelope by evaluating
+        # every fold size that actually occurs and taking the strictest
+        # threshold for each alpha, rather than assuming the smallest fold wins.
+        n_trials_values = [int(value) for value in grp["samples_test"].unique()]
         result[dname] = {
             # theoretical chance level: 1 / n_classes
             "theoretical": 1.0 / n_classes,
-            "adjusted": {a: adjusted_chance_level(n_classes, n_trials, a) for a in alpha},
+            "adjusted": {
+                a: max(
+                    adjusted_chance_level(n_classes, n_trials, a)
+                    for n_trials in n_trials_values
+                )
+                for a in alpha
+            },
         }
     return result
