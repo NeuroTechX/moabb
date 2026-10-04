@@ -448,7 +448,7 @@ class TestMetadataCatalog:
     def test_nakanishi2015_metadata(self):
         """Test Nakanishi2015 SSVEP metadata."""
         metadata = get_dataset_metadata("Nakanishi2015")
-        assert metadata.participants.n_subjects == 9
+        assert metadata.participants.n_subjects == 10
         assert metadata.experiment.paradigm == "ssvep"
         assert metadata.experiment.n_classes == 12
         assert len(metadata.acquisition.sensors) == 8

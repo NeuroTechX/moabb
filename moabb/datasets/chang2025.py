@@ -167,9 +167,13 @@ class Chang2025(BaseDataset):
             imagery_duration_s=4.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials=13440,
+            n_trials=120,
+            n_trials_per_class={"left_hand": 40, "right_hand": 40, "both_hands": 40},
             trials_context=(
-                "28 subjects x 4 MI sessions x 3 classes x 40 trials = 13440"
+                "per subject, MI paradigm: 4 sessions x 3 classes x 10 trials "
+                "(each 3-minute session has 10 trials per class; the experiment "
+                "is repeated 4 times, resulting in 40 trials per class); "
+                "28 subjects x 120 = 3360 MI trials in total"
             ),
         ),
         signal_processing=SignalProcessingMetadata(
