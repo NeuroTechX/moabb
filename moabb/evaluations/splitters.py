@@ -1,4 +1,5 @@
 import inspect
+import json
 import logging
 from dataclasses import dataclass
 from typing import Optional, Union
@@ -112,7 +113,13 @@ def _resolve_groups(groups, metadata):
     if callable(groups):
         return np.asarray(groups(metadata))
     if isinstance(groups, (list, tuple)):
-        return metadata[list(groups)].astype(str).agg("-".join, axis=1).to_numpy()
+        values = metadata[list(groups)].astype(str)
+        return np.asarray(
+            [
+                json.dumps(row, ensure_ascii=False, separators=(",", ":"))
+                for row in values.itertuples(index=False, name=None)
+            ]
+        )
     return metadata[groups].to_numpy()
 
 

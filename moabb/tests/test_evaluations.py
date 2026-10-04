@@ -3,6 +3,7 @@ import os.path as osp
 import platform
 import warnings
 from collections import OrderedDict
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -13,6 +14,7 @@ from pyriemann.spatialfilters import CSP
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.dummy import DummyClassifier as Dummy
 from sklearn.model_selection import (
+    BaseCrossValidator,
     GroupKFold,
     GroupShuffleSplit,
     LeaveOneGroupOut,
@@ -63,6 +65,143 @@ class PositionalOnlyGroupKFold(GroupKFold):
 
     def __init__(self, n_splits=2, /, **kwargs):
         super().__init__(n_splits=n_splits, **kwargs)
+
+
+class HeldOutSubjectSplitter(BaseCrossValidator):
+    """Minimal top-level splitter that holds out one chosen subject."""
+
+    metadata_columns = ("held_out_subject",)
+
+    def __init__(self, subject):
+        self.subject = subject
+        self._metadata = None
+
+    def split(self, y, metadata):
+        del y
+        positions = np.arange(len(metadata))
+        test_mask = metadata["subject"].to_numpy() == self.subject
+        self._metadata = {"held_out_subject": self.subject}
+        yield positions[~test_mask], positions[test_mask]
+
+    def get_n_splits(self, *args, **kwargs):
+        return 1
+
+    def get_metadata(self):
+        return self._metadata
+
+
+class ThreeWayHeldOutSubjectSplitter(BaseCrossValidator):
+    """Hold out one subject and split its labels into calibration/test slices."""
+
+    metadata_columns = ("calibration_size", "calibration_labeled")
+
+    def __init__(self, subject):
+        self.subject = subject
+        self._metadata = None
+
+    def split(self, y, metadata):
+        positions = np.arange(len(metadata))
+        target = positions[metadata["subject"].to_numpy() == self.subject]
+        train = positions[metadata["subject"].to_numpy() != self.subject]
+
+        calibration_parts = []
+        test_parts = []
+        target_y = np.asarray(y)[target]
+        for label in np.unique(target_y):
+            label_positions = target[target_y == label]
+            split_at = max(1, len(label_positions) // 2)
+            split_at = min(split_at, len(label_positions) - 1)
+            calibration_parts.append(label_positions[:split_at])
+            test_parts.append(label_positions[split_at:])
+
+        calibration = np.sort(np.concatenate(calibration_parts))
+        test = np.sort(np.concatenate(test_parts))
+        self._metadata = {
+            "calibration_size": len(calibration) / (len(calibration) + len(test)),
+            "calibration_labeled": False,
+        }
+        yield train, calibration, test
+
+    def get_n_splits(self, *args, **kwargs):
+        return 1
+
+    def get_metadata(self):
+        return self._metadata
+
+
+class MultiSubjectTestSplitter(BaseCrossValidator):
+    """Deliberately invalid splitter with two subjects in one test fold."""
+
+    def split(self, y, metadata):
+        del y
+        positions = np.arange(len(metadata))
+        test_mask = metadata["subject"].isin([2, 3]).to_numpy()
+        yield positions[~test_mask], positions[test_mask]
+
+    def get_n_splits(self, *args, **kwargs):
+        return 1
+
+
+class ReusedNestedMetadataSplitter(BaseCrossValidator):
+    """Reuse and mutate one nested metadata object across folds."""
+
+    metadata_columns = ("fold_trace",)
+
+    def __init__(self):
+        self._metadata = {"fold_trace": {"fold": None, "history": []}}
+
+    def split(self, y, metadata):
+        del y
+        positions = np.arange(len(metadata))
+        midpoint = max(1, len(positions) // 2)
+        folds = (
+            (positions[midpoint:], positions[:midpoint]),
+            (positions[:midpoint], positions[midpoint:]),
+        )
+        for fold, (train, test) in enumerate(folds):
+            self._metadata["fold_trace"]["fold"] = fold
+            self._metadata["fold_trace"]["history"].append(fold)
+            yield train, test
+
+    def get_n_splits(self, *args, **kwargs):
+        return 2
+
+    def get_metadata(self):
+        return self._metadata
+
+
+class MalformedTopLevelSplitter(BaseCrossValidator):
+    """Top-level splitter used to exercise fold-index validation."""
+
+    def __init__(self, failure):
+        self.failure = failure
+
+    def split(self, y, metadata):
+        del y
+        positions = np.arange(len(metadata))
+        test_mask = metadata["subject"].to_numpy() == 2
+        train = positions[~test_mask]
+        test = positions[test_mask]
+
+        if self.failure == "overlap":
+            train = np.concatenate([train, test[:1]])
+            yield train, test
+        elif self.failure == "duplicate":
+            yield np.concatenate([train, train[:1]]), test
+        elif self.failure == "float":
+            yield train.astype(float), test
+        elif self.failure == "out_of_range":
+            bad_test = test.copy()
+            bad_test[0] = len(metadata)
+            yield train, bad_test
+        elif self.failure == "four_way":
+            empty = train[:0]
+            yield train, empty, empty, test
+        else:
+            raise AssertionError(f"unknown failure mode {self.failure!r}")
+
+    def get_n_splits(self, *args, **kwargs):
+        return 1
 
 
 def _group_run(metadata):
@@ -328,21 +467,24 @@ class TestWithinSess:
 
     def test_within_session_evaluation_save_model(self):
         res_test_path = "./res_test"
-
-        # Get a list of all subdirectories inside 'res_test'
-        subdirectories = [
-            d
-            for d in os.listdir(res_test_path)
-            if os.path.isdir(os.path.join(res_test_path, d))
-        ]
-
-        # Check if any of the subdirectories contain the partial name 'Model'
-        model_folder_exists = any("Model" in folder for folder in subdirectories)
-
-        # Assert that at least one folder with the partial name 'Model' exists
-        assert model_folder_exists, (
-            "No folder with partial name 'Model' found inside 'res_test' directory",
+        self.eval.suffix = "run_a"
+        process_pipeline = self.eval.paradigm.make_process_pipelines(dataset)[0]
+        list(
+            self.eval.evaluate(
+                dataset, pipelines, param_grid=None, process_pipeline=process_pipeline
+            )
         )
+
+        model_path = os.path.join(
+            res_test_path,
+            "Models_WithinSession",
+            type(self.eval.paradigm).__name__,
+            "run_a",
+        )
+        assert os.path.isdir(model_path), (
+            "Saved models should be namespaced under their paradigm and suffix.",
+        )
+        assert any(Path(model_path).rglob("fitted_model_*.pkl"))
 
     def test_lambda_warning(self):
         def explicit_kernel(x):
@@ -637,6 +779,180 @@ def test_custom_cv_receives_compatible_defaults_and_overrides(tmp_path):
     splitter = evaluation._create_splitter()
     assert splitter._cv_kwargs["n_splits"] == 3
     assert splitter.random_state == 17
+
+
+def test_cross_subject_accepts_top_level_splitter(tmp_path):
+    splitter = HeldOutSubjectSplitter(subject=2)
+    evaluation = ev.CrossSubjectEvaluation(
+        paradigm=FakeImageryParadigm(),
+        datasets=[dataset],
+        hdf5_path=tmp_path,
+        splitter=splitter,
+    )
+
+    assert evaluation._create_splitter() is splitter
+    assert "held_out_subject" in evaluation.additional_columns
+
+    _, y, metadata = FakeImageryParadigm().get_data(dataset)
+    folds = list(evaluation._create_splitter().split(y, metadata))
+
+    assert len(folds) == 1
+    train, test = folds[0]
+    assert set(metadata.loc[train, "subject"]) == {1}
+    assert set(metadata.loc[test, "subject"]) == {2}
+    assert splitter.get_metadata() == {"held_out_subject": 2}
+
+
+@pytest.mark.parametrize(
+    "protocol_kwargs",
+    [
+        {"cv_class": GroupKFold},
+        {"cv_kwargs": {"random_state": 17}},
+        {"n_splits": 2},
+        {"groups": "session"},
+        {"cs_mode": ev.CrossSubjectMode.TRAIN_TRIALWISE},
+    ],
+)
+def test_cross_subject_top_level_splitter_rejects_protocol_conflicts(
+    tmp_path, protocol_kwargs
+):
+    with pytest.raises(ValueError, match="splitter cannot be combined"):
+        ev.CrossSubjectEvaluation(
+            paradigm=FakeImageryParadigm(),
+            datasets=[dataset],
+            hdf5_path=tmp_path,
+            splitter=HeldOutSubjectSplitter(subject=2),
+            **protocol_kwargs,
+        )
+
+
+def test_cross_subject_top_level_splitter_rejects_multi_subject_test_fold(tmp_path):
+    ds = FakeDataset(["left_hand", "right_hand"], n_subjects=3, n_sessions=2, seed=18)
+    evaluation = ev.CrossSubjectEvaluation(
+        paradigm=FakeImageryParadigm(),
+        datasets=[ds],
+        hdf5_path=tmp_path,
+        overwrite=True,
+        n_jobs=1,
+        splitter=MultiSubjectTestSplitter(),
+    )
+    pipe = make_pipeline(Covariances("oas"), CSP(8), LDA())
+
+    with pytest.raises(ValueError, match="exactly one subject"):
+        evaluation.process(OrderedDict([("P", pipe)]))
+
+
+@pytest.mark.parametrize(
+    "failure, message",
+    [
+        ("overlap", "disjoint"),
+        ("duplicate", "duplicate train"),
+        ("float", "integer positional indices"),
+        ("out_of_range", "out-of-range test"),
+        ("four_way", "either \\(train, test\\) or \\(train, calibration, test\\)"),
+    ],
+)
+def test_cross_subject_top_level_splitter_rejects_invalid_fold_indices(
+    tmp_path, failure, message
+):
+    splitter = MalformedTopLevelSplitter(failure)
+    evaluation = ev.CrossSubjectEvaluation(
+        paradigm=FakeImageryParadigm(),
+        datasets=[dataset],
+        hdf5_path=tmp_path,
+        splitter=splitter,
+    )
+    _, y, metadata = FakeImageryParadigm().get_data(dataset)
+
+    with pytest.raises((TypeError, ValueError), match=message):
+        evaluation._preview_splits(splitter, y, metadata)
+
+
+def test_cross_subject_top_level_splitter_metadata_is_snapshotted(tmp_path):
+    splitter = ReusedNestedMetadataSplitter()
+    evaluation = ev.CrossSubjectEvaluation(
+        paradigm=FakeImageryParadigm(),
+        datasets=[dataset],
+        hdf5_path=tmp_path,
+        splitter=splitter,
+    )
+    _, y, metadata = FakeImageryParadigm().get_data(dataset)
+
+    preview = evaluation._preview_splits(splitter, y, metadata)
+
+    assert preview[0][4]["fold_trace"] == {"fold": 0, "history": [0]}
+    assert preview[1][4]["fold_trace"] == {"fold": 1, "history": [0, 1]}
+    assert preview[0][4]["fold_trace"] is not preview[1][4]["fold_trace"]
+
+
+def test_cross_subject_top_level_splitter_indices_are_positional(tmp_path):
+    splitter = HeldOutSubjectSplitter(subject=2)
+    _, y, metadata = FakeImageryParadigm().get_data(dataset)
+    metadata = metadata.copy()
+    metadata.index = np.arange(100, 100 + len(metadata))
+
+    train, test = next(splitter.split(y, metadata))
+
+    assert np.array_equal(test, np.flatnonzero(metadata["subject"].to_numpy() == 2))
+    assert set(metadata.iloc[test]["subject"]) == {2}
+    assert not np.intersect1d(train, test).size
+
+
+def test_cross_subject_top_level_splitter_type_is_validated(tmp_path):
+    with pytest.raises(TypeError, match="BaseCrossValidator"):
+        ev.CrossSubjectEvaluation(
+            paradigm=FakeImageryParadigm(),
+            datasets=[dataset],
+            hdf5_path=tmp_path,
+            splitter=object(),
+        )
+
+
+def test_cross_subject_top_level_splitter_runs_end_to_end(tmp_path):
+    ds = FakeDataset(["left_hand", "right_hand"], n_subjects=3, n_sessions=2, seed=18)
+    splitter = HeldOutSubjectSplitter(subject=3)
+    evaluation = ev.CrossSubjectEvaluation(
+        paradigm=FakeImageryParadigm(),
+        datasets=[ds],
+        hdf5_path=tmp_path,
+        overwrite=True,
+        n_jobs=1,
+        splitter=splitter,
+    )
+    pipe = make_pipeline(Covariances("oas"), CSP(8), LDA())
+
+    results = evaluation.process(OrderedDict([("P", pipe)]))
+
+    # Result tables serialize dataset metadata values as strings.
+    assert set(results["subject"]) == {"3"}
+    assert set(results["held_out_subject"]) == {3}
+
+
+def test_cross_subject_top_level_three_way_splitter_routes_calibration(tmp_path):
+    from sklearn import config_context
+
+    _TRANSFER_CAPTURE.clear()
+    with config_context(enable_metadata_routing=True):
+        step = _TransferRecorder().set_fit_request(subjects=True, X_target_unlabeled=True)
+    pipe = make_pipeline(Covariances("oas"), step, CSP(8), LDA())
+    ds = FakeDataset(["left_hand", "right_hand"], n_subjects=3, n_sessions=2, seed=19)
+    splitter = ThreeWayHeldOutSubjectSplitter(subject=3)
+    evaluation = ev.CrossSubjectEvaluation(
+        paradigm=FakeImageryParadigm(),
+        datasets=[ds],
+        hdf5_path=tmp_path,
+        overwrite=True,
+        n_jobs=1,
+        splitter=splitter,
+    )
+
+    results = evaluation.process(OrderedDict([("T", pipe)]))
+
+    assert len(results) > 0
+    assert set(results["subject"]) == {"3"}
+    assert _TRANSFER_CAPTURE, "transfer step was never fitted"
+    assert all(capture["n_subjects"] > 0 for capture in _TRANSFER_CAPTURE)
+    assert all(capture["n_target"] > 0 for capture in _TRANSFER_CAPTURE)
 
 
 @pytest.fixture(scope="module")
@@ -1144,6 +1460,76 @@ class TestUtilEvaluation:
         )
         assert grid_save_path == expected_grid_path
 
+    def test_create_save_path_is_namespaced_by_paradigm_and_suffix(self):
+        save_path = create_save_path(
+            "base_path",
+            "evaluation_code",
+            1,
+            "0",
+            "evaluation_name",
+            eval_type="WithinSession",
+            paradigm="MotorImagery",
+            suffix="run_a",
+        )
+
+        expected_path = os.path.join(
+            "base_path",
+            "Models_WithinSession",
+            "MotorImagery",
+            "run_a",
+            "evaluation_code",
+            "1",
+            "0",
+            "evaluation_name",
+        )
+        assert save_path == expected_path
+
+        other_run_path = create_save_path(
+            "base_path",
+            "evaluation_code",
+            1,
+            "0",
+            "evaluation_name",
+            eval_type="WithinSession",
+            paradigm="SSVEP",
+            suffix="run_a",
+        )
+        assert other_run_path != save_path
+
+        other_suffix_path = create_save_path(
+            "base_path",
+            "evaluation_code",
+            1,
+            "0",
+            "evaluation_name",
+            eval_type="WithinSession",
+            paradigm="MotorImagery",
+            suffix="run_b",
+        )
+        assert other_suffix_path != save_path
+
+        grid_save_path = create_save_path(
+            "base_path",
+            "evaluation_code",
+            1,
+            "0",
+            "evaluation_name",
+            grid=True,
+            eval_type="WithinSession",
+            paradigm="MotorImagery",
+            suffix="run_a",
+        )
+        assert grid_save_path == os.path.join(
+            "base_path",
+            "GridSearch_WithinSession",
+            "MotorImagery",
+            "run_a",
+            "evaluation_code",
+            "1",
+            "0",
+            "evaluation_name",
+        )
+
     def test_save_model_cv_with_pytorch_model(self):
         try:
             import torch
@@ -1564,6 +1950,41 @@ class TestParallelLegacyEquivalence:
     def test_cross_session_equivalence(self, tmp_path):
         """CrossSession parallel matches legacy scores."""
         self._compare_parallel_vs_legacy(ev.CrossSessionEvaluation, tmp_path)
+
+    def test_cross_session_multisession_fold_equivalence(self, tmp_path):
+        """Custom folds spanning sessions keep per-session result provenance."""
+        paradigm = FakeImageryParadigm()
+        ds = FakeDataset(["left_hand", "right_hand"], n_subjects=2, n_sessions=4, seed=12)
+        kwargs = {"cv_class": GroupKFold, "cv_kwargs": {"n_splits": 2}, "overwrite": True}
+
+        eval_parallel = ev.CrossSessionEvaluation(
+            paradigm=paradigm,
+            datasets=[ds],
+            hdf5_path=str(tmp_path / "parallel_multisession"),
+            **kwargs,
+        )
+        results_parallel = eval_parallel.process(pipelines)
+
+        eval_legacy = ev.CrossSessionEvaluation(
+            paradigm=paradigm,
+            datasets=[ds],
+            hdf5_path=str(tmp_path / "legacy_multisession"),
+            **kwargs,
+        )
+        results_legacy = eval_legacy._process_legacy(
+            pipelines, param_grid=None, postprocess_pipeline=None
+        )
+
+        keys = ["subject", "session", "pipeline"]
+        left = results_parallel[keys + ["score"]].sort_values(keys).reset_index(drop=True)
+        right = results_legacy[keys + ["score"]].sort_values(keys).reset_index(drop=True)
+
+        assert len(left) == len(right) == 8
+        assert left[keys].equals(right[keys])
+        assert set(left["session"]) == {"0", "1", "2", "3"}
+        np.testing.assert_allclose(
+            left["score"].to_numpy(), right["score"].to_numpy(), rtol=1e-10, atol=1e-10
+        )
 
     def test_cross_subject_equivalence(self, tmp_path):
         """CrossSubject parallel matches legacy scores."""

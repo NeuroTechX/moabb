@@ -102,7 +102,7 @@ class AlexMI(BaseDataset):
             doi="10.5281/zenodo.806022",
             investigators=["Alexandre Barachant"],
             institution="Université de Grenoble",
-            country="France",
+            country="FR",
             license="CC-BY-SA-4.0",
             repository="Zenodo",
             data_url="https://zenodo.org/record/806023",

@@ -168,7 +168,9 @@ _PARTICIPANTS = ParticipantMetadata(
 # Shared acquisition metadata.
 _ACQUISITION = AcquisitionMetadata(
     sampling_rate=1000.0,
-    channel_types={"eeg": 64, "eog": 1},
+    # Paper: "65-channel Quik-cap ... with 62 EEG electrodes positioned
+    # accordingly"; the loader re-types CB1/CB2 as misc (60 EEG at runtime).
+    channel_types={"eeg": 62, "eog": 1},
     montage="standard_1005",
     hardware="Neuroscan Quik-Cap 65-ch, SynAmps2",
     sensor_type="Ag/AgCl",
@@ -737,7 +739,7 @@ class GuttmannFlury2025_SSVEP(BaseDataset):
             trial_duration=7.0,
             study_design=(
                 "Multi-paradigm BCI (MI/ME/SSVEP/P300). "
-                "SSVEP: 4-class frequency flickering, 48 trials/session, "
+                "SSVEP: 4-class frequency flickering, 40 trials/session, "
                 "up to 3 sessions per subject."
             ),
             feedback_type="none",
@@ -752,10 +754,11 @@ class GuttmannFlury2025_SSVEP(BaseDataset):
         runs_per_session=1,
         tags=Tags(pathology=["Healthy"], modality=["Visual"], type=["Research"]),
         paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="ssvep", stimulus_frequencies_hz=[8.0, 10.0, 12.0, 15.0]
+            detected_paradigm="ssvep", stimulus_frequencies_hz=[10.0, 11.0, 12.0, 13.0]
         ),
         data_structure=DataStructureMetadata(
-            n_trials=3024, trials_context="63 sessions x 48 trials = 3024"
+            n_trials=2520,
+            trials_context="63 sessions x 40 trials = 2520 (paper: 'the other tasks had 40 trials'; 10 per frequency)",
         ),
         bci_application=BCIApplicationMetadata(
             applications=["communication"], environment="laboratory"
