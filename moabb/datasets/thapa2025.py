@@ -92,9 +92,12 @@ class Thapa2025(BaseDataset):
     header rather than assumed.
 
     The data are distributed in BIDS (BrainVision ``.vhdr``/``.vmrk``/``.eeg``)
-    as a single Figshare archive. Each subject has 2-3 sessions recorded on
-    different days, each with 3-7 runs of ~30 trials; 49 sessions and 6808
-    trials in total. MOABB session and run keys are the sorted BIDS
+    as a single Figshare archive. Most subjects have 2-3 sessions recorded on
+    different days, except sub-02 and sub-17 who stopped after a single
+    session by preference; each session has 3-7 runs of ~30 trials, for 49
+    sessions and 6808 trials in total (paper audit, 2026-10-04: receipt
+    session counts are {1: 2 subjects, 2: 16 subjects, 3: 5 subjects}, summing
+    to 49). MOABB session and run keys are the sorted BIDS
     ``ses-*`` / ``run-*`` entities remapped to integer-prefixed strings.
 
     Summary-table trials per class are the cohort mean (6808 / 23 / 4 = 74),
