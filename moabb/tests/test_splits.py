@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import pytest
 from sklearn.model_selection import (
     GroupKFold,
@@ -1029,6 +1030,25 @@ def test_cross_subject_groups_compound_key(data):
         train_keys = set(map(tuple, metadata.loc[train][["subject", "session"]].values))
         test_keys = set(map(tuple, test_meta[["subject", "session"]].values))
         assert train_keys.isdisjoint(test_keys)
+
+
+def test_cross_subject_compound_group_keys_do_not_collide_on_separator():
+    """Compound metadata groups must preserve tuple identity."""
+    metadata = pd.DataFrame(
+        {"subject": ["a-b", "a", "a-b", "a"], "session": ["c", "b-c", "c", "b-c"]}
+    )
+    y = np.array([0, 1, 0, 1])
+
+    split = CrossSubjectSplitter(cv_class=LeaveOneGroupOut, groups=["subject", "session"])
+
+    folds = list(split.split(y, metadata))
+
+    assert len(folds) == 2
+    assert split.get_n_splits(metadata) == 2
+    observed = {
+        tuple(metadata.loc[test, ["subject", "session"]].iloc[0]) for _, test in folds
+    }
+    assert observed == {("a-b", "c"), ("a", "b-c")}
 
 
 def test_cross_subject_predefined_split_single_fold(data):
