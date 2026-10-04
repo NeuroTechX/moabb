@@ -1565,6 +1565,41 @@ class TestParallelLegacyEquivalence:
         """CrossSession parallel matches legacy scores."""
         self._compare_parallel_vs_legacy(ev.CrossSessionEvaluation, tmp_path)
 
+    def test_cross_session_multisession_fold_equivalence(self, tmp_path):
+        """Custom folds spanning sessions keep per-session result provenance."""
+        paradigm = FakeImageryParadigm()
+        ds = FakeDataset(["left_hand", "right_hand"], n_subjects=2, n_sessions=4, seed=12)
+        kwargs = {"cv_class": GroupKFold, "cv_kwargs": {"n_splits": 2}, "overwrite": True}
+
+        eval_parallel = ev.CrossSessionEvaluation(
+            paradigm=paradigm,
+            datasets=[ds],
+            hdf5_path=str(tmp_path / "parallel_multisession"),
+            **kwargs,
+        )
+        results_parallel = eval_parallel.process(pipelines)
+
+        eval_legacy = ev.CrossSessionEvaluation(
+            paradigm=paradigm,
+            datasets=[ds],
+            hdf5_path=str(tmp_path / "legacy_multisession"),
+            **kwargs,
+        )
+        results_legacy = eval_legacy._process_legacy(
+            pipelines, param_grid=None, postprocess_pipeline=None
+        )
+
+        keys = ["subject", "session", "pipeline"]
+        left = results_parallel[keys + ["score"]].sort_values(keys).reset_index(drop=True)
+        right = results_legacy[keys + ["score"]].sort_values(keys).reset_index(drop=True)
+
+        assert len(left) == len(right) == 8
+        assert left[keys].equals(right[keys])
+        assert set(left["session"]) == {"0", "1", "2", "3"}
+        np.testing.assert_allclose(
+            left["score"].to_numpy(), right["score"].to_numpy(), rtol=1e-10, atol=1e-10
+        )
+
     def test_cross_subject_equivalence(self, tmp_path):
         """CrossSubject parallel matches legacy scores."""
         self._compare_parallel_vs_legacy(ev.CrossSubjectEvaluation, tmp_path)
