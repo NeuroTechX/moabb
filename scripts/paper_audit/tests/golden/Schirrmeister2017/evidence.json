@@ -1,0 +1,194 @@
+{
+    "dataset": "Schirrmeister2017",
+    "access": "open",
+    "generated": "2026-09-29T23:37:35Z",
+    "counts": {
+        "mismatch": 0,
+        "conflict": 0,
+        "unsupported": 8,
+        "source_missing": 0,
+        "match": 6
+    },
+    "primary_doi": "10.1002/hbm.23730",
+    "notes": [],
+    "rows": [
+        {
+            "field": "channel_types.eeg",
+            "moabb_value": 128,
+            "source_value": null,
+            "quote": "",
+            "source_file": "",
+            "locator": "",
+            "verdict": "unsupported",
+            "confidence": "low",
+            "note": "no candidate value found in sources"
+        },
+        {
+            "field": "country",
+            "moabb_value": "DE",
+            "source_value": null,
+            "quote": "",
+            "source_file": "",
+            "locator": "",
+            "verdict": "unsupported",
+            "confidence": "low",
+            "note": "phrase not found in sources"
+        },
+        {
+            "field": "institution",
+            "moabb_value": "University of Freiburg",
+            "source_value": null,
+            "quote": "",
+            "source_file": "",
+            "locator": "",
+            "verdict": "unsupported",
+            "confidence": "low",
+            "note": "phrase not found in sources"
+        },
+        {
+            "field": "license",
+            "moabb_value": "cc-by-4.0",
+            "source_value": null,
+            "quote": "",
+            "source_file": "",
+            "locator": "",
+            "verdict": "unsupported",
+            "confidence": "low",
+            "note": "no candidate value found in sources"
+        },
+        {
+            "field": "line_freq",
+            "moabb_value": 50.0,
+            "source_value": null,
+            "quote": "",
+            "source_file": "",
+            "locator": "",
+            "verdict": "unsupported",
+            "confidence": "low",
+            "note": "no candidate value found in sources"
+        },
+        {
+            "field": "n_subjects",
+            "moabb_value": 14,
+            "source_value": null,
+            "quote": "",
+            "source_file": "",
+            "locator": "",
+            "verdict": "unsupported",
+            "confidence": "low",
+            "note": "no candidate value found in sources"
+        },
+        {
+            "field": "runs_per_session",
+            "moabb_value": 2,
+            "source_value": null,
+            "quote": "",
+            "source_file": "",
+            "locator": "",
+            "verdict": "unsupported",
+            "confidence": "low",
+            "note": "no candidate value found in sources"
+        },
+        {
+            "field": "sampling_rate",
+            "moabb_value": 500.0,
+            "source_value": null,
+            "quote": "",
+            "source_file": "",
+            "locator": "",
+            "verdict": "unsupported",
+            "confidence": "low",
+            "note": "no candidate value found in sources"
+        },
+        {
+            "field": "class_labels",
+            "moabb_value": [
+                "left_hand",
+                "right_hand",
+                "feet",
+                "rest"
+            ],
+            "source_value": [
+                "left_hand",
+                "right_hand",
+                "feet",
+                "rest"
+            ],
+            "quote": "gamma band activity to decoding right and left hand and foot movements. Interestingly, these",
+            "source_file": "paper-10_1002_hbm_23730.txt",
+            "locator": "l326",
+            "verdict": "match",
+            "confidence": "medium",
+            "note": "all labels mentioned"
+        },
+        {
+            "field": "investigators",
+            "moabb_value": [
+                "Robin Tibor Schirrmeister",
+                "Jost Tobias Springenberg",
+                "Lukas Dominique Josef Fiederer",
+                "Martin Glasstetter",
+                "Katharina Eggensperger",
+                "Michael Tangermann",
+                "Frank Hutter",
+                "Wolfram Burgard",
+                "Tonio Ball"
+            ],
+            "source_value": "9 authors in 10.1002/hbm.23730",
+            "quote": "\"Robin Tibor Schirrmeister\"",
+            "source_file": "record.json",
+            "locator": "dois.10.1002/hbm.23730.authors",
+            "verdict": "match",
+            "confidence": "medium",
+            "note": "100% of declared surnames found in record authors"
+        },
+        {
+            "field": "n_trials",
+            "moabb_value": {
+                "total_per_subject": 963,
+                "training_set": 880,
+                "test_set": 160
+            },
+            "source_value": 880,
+            "quote": "with a larger number of training trials (\u223c880 trials per subject, compared to 288 trials in the",
+            "source_file": "paper-10_1002_hbm_23730.txt",
+            "locator": "l208",
+            "verdict": "match",
+            "confidence": "medium",
+            "note": "other values mentioned: 288, 880"
+        },
+        {
+            "field": "paradigm",
+            "moabb_value": "imagery",
+            "source_value": "motor imagery",
+            "quote": "dataset with both two motor and two non\u2010motor imagery classes (right hand movement, feet",
+            "source_file": "paper-10_1002_hbm_23730.txt",
+            "locator": "l208",
+            "verdict": "match",
+            "confidence": "medium",
+            "note": "keyword presence only"
+        },
+        {
+            "field": "publication_year",
+            "moabb_value": 2017,
+            "source_value": 2017,
+            "quote": "\"year\": 2017",
+            "source_file": "record.json",
+            "locator": "dois.10.1002/hbm.23730",
+            "verdict": "match",
+            "confidence": "high",
+            "note": ""
+        },
+        {
+            "field": "sessions_per_subject",
+            "moabb_value": 1,
+            "source_value": 1,
+            "quote": "changes in the EEG signal distribution from one session to another. ## Limitations of ConvNets for",
+            "source_file": "paper-10_1002_hbm_23730.txt",
+            "locator": "l352",
+            "verdict": "match",
+            "confidence": "medium",
+            "note": ""
+        }
+    ]
+}

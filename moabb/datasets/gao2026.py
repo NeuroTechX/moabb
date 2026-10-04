@@ -143,6 +143,10 @@ class Gao2026(BaseDataset):
     Most subjects completed 2 sessions. Subjects 9 and 10 completed only
     session 1.
 
+    Licence: the figshare record and its README state CC BY 4.0 for the
+    dataset (the article itself is CC BY-NC-ND 4.0; the BIDS
+    ``dataset_description.json`` inside the archive says "CC0").
+
     References
     ----------
     .. [1] Gao, J., Liu, Y., Li, Z., Huang, K., Wang, F., Xu, J.,
@@ -211,7 +215,7 @@ class Gao2026(BaseDataset):
             repository="Figshare",
             data_url="https://doi.org/10.6084/m9.figshare.30227503.v1",
             publication_year=2026,
-            license="CC-BY-NC-ND-4.0",
+            license="CC-BY-4.0",
         ),
         sessions_per_subject=2,
         runs_per_session=3,

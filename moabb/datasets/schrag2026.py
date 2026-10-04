@@ -160,6 +160,7 @@ class Schrag2026Pediatric(BaseDataset):
         participants=ParticipantMetadata(
             n_subjects=_N_SUBJECTS,
             health_status="healthy",
+            gender={"female": 19, "male": 28},
             age_mean=12.6,
             age_std=3.9,
             age_min=5,

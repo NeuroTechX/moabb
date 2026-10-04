@@ -1,0 +1,216 @@
+{
+    "dataset": "Ma2022",
+    "access": "open",
+    "generated": "2026-09-29T23:37:35Z",
+    "counts": {
+        "mismatch": 1,
+        "conflict": 0,
+        "unsupported": 5,
+        "source_missing": 0,
+        "match": 11
+    },
+    "primary_doi": "10.1038/s41597-022-01647-1",
+    "notes": [],
+    "rows": [
+        {
+            "field": "n_trials",
+            "moabb_value": 11988,
+            "source_value": 100,
+            "quote": "for each subject. Each session contains 100 trials of left-hand and right-hand MI. In this",
+            "source_file": "paper-10_1038_s41597_022_01647_1.txt",
+            "locator": "l7",
+            "verdict": "mismatch",
+            "confidence": "low",
+            "note": ""
+        },
+        {
+            "field": "channel_types.eeg",
+            "moabb_value": 32,
+            "source_value": null,
+            "quote": "",
+            "source_file": "",
+            "locator": "",
+            "verdict": "unsupported",
+            "confidence": "low",
+            "note": "no candidate value found in sources"
+        },
+        {
+            "field": "ground",
+            "moabb_value": "AFz",
+            "source_value": null,
+            "quote": "",
+            "source_file": "",
+            "locator": "",
+            "verdict": "unsupported",
+            "confidence": "low",
+            "note": "no candidate value found in sources"
+        },
+        {
+            "field": "line_freq",
+            "moabb_value": 50.0,
+            "source_value": null,
+            "quote": "",
+            "source_file": "",
+            "locator": "",
+            "verdict": "unsupported",
+            "confidence": "low",
+            "note": "no candidate value found in sources"
+        },
+        {
+            "field": "reference",
+            "moabb_value": "M1 (unipolar)",
+            "source_value": null,
+            "quote": "",
+            "source_file": "",
+            "locator": "",
+            "verdict": "unsupported",
+            "confidence": "low",
+            "note": "no candidate value found in sources"
+        },
+        {
+            "field": "runs_per_session",
+            "moabb_value": 1,
+            "source_value": null,
+            "quote": "",
+            "source_file": "",
+            "locator": "",
+            "verdict": "unsupported",
+            "confidence": "low",
+            "note": "no candidate value found in sources"
+        },
+        {
+            "field": "class_labels",
+            "moabb_value": [
+                "left_hand",
+                "right_hand"
+            ],
+            "source_value": [
+                "left_hand",
+                "right_hand"
+            ],
+            "quote": "Each session contains 100 trials of left-hand and right-hand MI. In this report, we",
+            "source_file": "paper-10_1038_s41597_022_01647_1.txt",
+            "locator": "l7",
+            "verdict": "match",
+            "confidence": "medium",
+            "note": "all labels mentioned"
+        },
+        {
+            "field": "country",
+            "moabb_value": "CN",
+            "source_value": "china",
+            "quote": "engineering, Shanghai University, Shanghai, china.[2] engineering Research center of",
+            "source_file": "paper-10_1038_s41597_022_01647_1.txt",
+            "locator": "l17",
+            "verdict": "match",
+            "confidence": "medium",
+            "note": "phrase found"
+        },
+        {
+            "field": "hardware",
+            "moabb_value": "Wuhan Greentech 32-channel Ag/AgCl cap, Brickcom wireless amplifier",
+            "source_value": "Wuhan Greentech",
+            "quote": "standard 10\u201310 System, see in Fig. 2) from Wuhan Greentech Technology Co., LTD was selected. The",
+            "source_file": "paper-10_1038_s41597_022_01647_1.txt",
+            "locator": "l83",
+            "verdict": "match",
+            "confidence": "medium",
+            "note": "other values mentioned: AgCl, Brickcom, Wuhan Greentech"
+        },
+        {
+            "field": "institution",
+            "moabb_value": "Shanghai University",
+            "source_value": "Shanghai University",
+            "quote": "Center of Brain-Computer engineering, Shanghai University, Shanghai, china.[2] engineering Research",
+            "source_file": "paper-10_1038_s41597_022_01647_1.txt",
+            "locator": "l17",
+            "verdict": "match",
+            "confidence": "medium",
+            "note": "phrase found"
+        },
+        {
+            "field": "investigators",
+            "moabb_value": [
+                "Jun Ma",
+                "Banghua Yang",
+                "Wenzheng Qiu",
+                "Yunzhe Li",
+                "Shouwei Gao",
+                "Xinxing Xia"
+            ],
+            "source_value": "6 authors in 10.1038/s41597-022-01647-1",
+            "quote": "\"Jun Ma\"",
+            "source_file": "record.json",
+            "locator": "dois.10.1038/s41597-022-01647-1.authors",
+            "verdict": "match",
+            "confidence": "medium",
+            "note": "100% of declared surnames found in record authors"
+        },
+        {
+            "field": "license",
+            "moabb_value": "cc-by-4.0",
+            "source_value": "cc-by-4.0",
+            "quote": "Access** This article is licensed under a Creative Commons Attribution 4.0 International License, which permits use, sharing,",
+            "source_file": "paper-10_1038_s41597_022_01647_1.txt",
+            "locator": "l305",
+            "verdict": "match",
+            "confidence": "medium",
+            "note": "other values mentioned: cc, cc-by-4.0"
+        },
+        {
+            "field": "n_subjects",
+            "moabb_value": 25,
+            "source_value": 25,
+            "quote": "with 5 independent sessions from 25 subjects. Subjects conduct MI experiments every 2 or",
+            "source_file": "paper-10_1038_s41597_022_01647_1.txt",
+            "locator": "l13",
+            "verdict": "match",
+            "confidence": "medium",
+            "note": "other values mentioned: 13, 25, 3"
+        },
+        {
+            "field": "paradigm",
+            "moabb_value": "imagery",
+            "source_value": "motor imagery",
+            "quote": "for studying cross-session variability in motor imagery brain-computer interface Jun Ma[1] ,",
+            "source_file": "paper-10_1038_s41597_022_01647_1.txt",
+            "locator": "l3",
+            "verdict": "match",
+            "confidence": "medium",
+            "note": "keyword presence only"
+        },
+        {
+            "field": "publication_year",
+            "moabb_value": 2022,
+            "source_value": 2022,
+            "quote": "\"year\": 2022",
+            "source_file": "record.json",
+            "locator": "dois.10.1038/s41597-022-01647-1",
+            "verdict": "match",
+            "confidence": "high",
+            "note": ""
+        },
+        {
+            "field": "sampling_rate",
+            "moabb_value": 250.0,
+            "source_value": 250.0,
+            "quote": "|Number of trials per session|90 to 100| |Sampling rate|250 Hz| |Sample resolution|24 bits| |Number of",
+            "source_file": "paper-10_1038_s41597_022_01647_1.txt",
+            "locator": "l73",
+            "verdict": "match",
+            "confidence": "high",
+            "note": ""
+        },
+        {
+            "field": "sessions_per_subject",
+            "moabb_value": 5,
+            "source_value": 5,
+            "quote": "number of subjects. The dataset includes 5 session data from 5 different days (2\u20133 days apart)",
+            "source_file": "paper-10_1038_s41597_022_01647_1.txt",
+            "locator": "l7",
+            "verdict": "match",
+            "confidence": "medium",
+            "note": "other values mentioned: 1, 125, 2, 20, 4, 5"
+        }
+    ]
+}
