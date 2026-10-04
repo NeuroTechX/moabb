@@ -54,6 +54,8 @@ Motor Imagery Datasets
     :template: class.rst
 
     AlexMI
+    MartinezPeon2025
+    MILimbEEG
     Pan2023
     Pan2025
     PoloHortiguela2025

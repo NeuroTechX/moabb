@@ -1,6 +1,6 @@
 {
     "_metadata": {
-        "total": 220
+        "total": 223
     },
     "10.1002/hbm.23730": {
         "title": "Deep learning with convolutional neural networks for EEG decoding and visualization",
@@ -2626,5 +2626,38 @@
         ],
         "year": 2023,
         "doi": "10.7910/DVN/251NOW"
+    },
+    "10.1016/j.dib.2023.109540": {
+        "title": "MILimbEEG: A dataset of EEG signals related to upper and lower limb execution of motor and motor imagery tasks",
+        "authors": [
+            "Victor Asanza",
+            "Daniel Montoya",
+            "Leandro L. Lorente-Leyva",
+            "Diego H. Peluffo-Ordonez",
+            "Kleber Gonzalez"
+        ],
+        "year": 2023,
+        "doi": "10.1016/j.dib.2023.109540"
+    },
+    "10.17632/msgzn862ns.1": {
+        "title": "EEG signals of KMI levels of the right and left hands",
+        "authors": [
+            "Dulce Citlalli Martinez Peon",
+            "Marcos Perez Espinoza"
+        ],
+        "year": 2025,
+        "doi": "10.17632/msgzn862ns.1"
+    },
+    "10.17632/x8psbz3f6x.2": {
+        "title": "MILimbEEG (data)",
+        "authors": [
+            "Victor Asanza",
+            "Daniel Montoya",
+            "Leandro L. Lorente-Leyva",
+            "Diego H. Peluffo-Ordonez",
+            "Kleber Gonzalez"
+        ],
+        "year": 2022,
+        "doi": "10.17632/x8psbz3f6x.2"
     }
 }

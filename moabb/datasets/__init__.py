@@ -185,6 +185,8 @@ from .neurotumbci2025 import NeuroTUMBCI2025
 from .shin2022 import Shin2022
 
 
+from .martinezpeon2025 import MartinezPeon2025
+from .milimbeeg import MILimbEEG
 from .perdikis2018 import Perdikis2018
 from .alawieh2025 import Alawieh2025
 from .jia2019 import Jia2019
