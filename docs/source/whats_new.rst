@@ -39,6 +39,17 @@ Requirements
 
 Bugs
 ~~~~
+- Fix :func:`moabb.datasets.Dataset.convert_to_bids` producing files the official
+  bids-validator (``@bids/validator`` v2) rejects. ``_build_sidecar_enrichment``
+  now wraps string or flat-dict ``acq.filters`` so every top-level value of
+  ``HardwareFilters`` is an object (schema requires objects, or the exact string
+  ``"n/a"``), fixing ``JSON_SCHEMA_VALIDATION_ERROR``. ``run_moabb_to_bids`` now
+  stores the MOABB run-label description (e.g. the ``feedback1`` in ``"1feedback1"``)
+  in the ``acquisition`` (``acq-``) entity instead of ``recording`` (``rec-``),
+  which is not valid for ``_eeg``/``_events``/``_channels`` files and raised
+  ``ALL_FILENAME_RULES_HAVE_ISSUES``. ``run_bids_to_moabb`` still accepts the
+  legacy ``rec-`` entity so existing MOABB caches keep reading back to the same
+  run label (:gh:`XXXX` by `Bruno Aristimunha`_).
 - Keep :class:`moabb.evaluations.CrossSessionEvaluation` result provenance
   session-specific when a custom cross-validator holds out more than one recording
   session in the same fold. The estimator is still fitted once per fold, but each
