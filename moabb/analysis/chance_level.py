@@ -30,16 +30,17 @@ def chance_by_chance(
                 f"samples_test values for every row of dataset {dname!r}."
             )
         n_classes_values = grp["n_classes"].unique()
-        n_trials_values = grp["samples_test"].unique()
-        if len(n_classes_values) != 1 or len(n_trials_values) != 1:
+        if len(n_classes_values) != 1:
             raise ValueError(
-                "Adjusted chance level requires one n_classes and one samples_test "
-                f"value per dataset, but {dname!r} has "
-                f"n_classes={n_classes_values.tolist()} and "
-                f"samples_test={n_trials_values.tolist()}."
+                "Dataset-level chance requires one n_classes value per dataset, "
+                f"but {dname!r} has {n_classes_values.tolist()}."
             )
         n_classes = int(n_classes_values[0])
-        n_trials = int(n_trials_values[0])
+        # A dataset-level line must be valid for every result row. Smaller test
+        # sets have the stricter exact-binomial threshold, so use the minimum
+        # fold size as a conservative envelope rather than whichever row happens
+        # to appear first.
+        n_trials = int(grp["samples_test"].min())
         result[dname] = {
             # theoretical chance level: 1 / n_classes
             "theoretical": 1.0 / n_classes,
