@@ -666,12 +666,16 @@ to download the full example code.</p>
 </span><a class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function reference internal" href="../../generated/moabb.setup_seed.html#moabb.setup_seed" title="moabb.setup_seed"><span class="n">setup_seed</span></a><span class="p">(</span><span class="mi">42</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
 <p>Loading the Scikit-learn pipelines</p>
+<p>New model saves are namespaced by paradigm and benchmark suffix. Legacy model
+trees created by older MOABB versions are not moved and remain readable at
+their original paths.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="w">
-</span>    <span class="s2">&quot;</span><span class="s2">../how_to_benchmark/results/Models_WithinSession/Zhou2016/1/0/csp+svm/fitted_model_best.pkl</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="s2">&quot;</span><span class="s2">../how_to_benchmark/results/Models_WithinSession/LeftRightImagery/benchmark/Zhou2016/1/0/csp+svm/fitted_model_best.pkl</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
 </span>    <span class="s2">&quot;</span><span class="s2">rb</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
 </span><span class="p">)</span> <span class="k">as</span> <span class="n">pickle_file</span><span class="p">:</span><span class="w">
 </span>    <span class="n">CSP_SVM_Trained</span> <span class="o">=</span> <a class="sphx-glr-backref-module-pickle sphx-glr-backref-type-py-function reference external" href="https://docs.python.org/3/library/pickle.html#pickle.load" title="pickle.load"><span class="n">load</span></a><span class="p">(</span><span class="n">pickle_file</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
+<p><strong>Estimated memory usage:</strong>  0 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-data-management-and-configuration-noplot-load-model-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/2a375418f1847c7396902d9ef1786ca1/noplot_load_model.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">noplot_load_model.ipynb</span></code></a></p>
