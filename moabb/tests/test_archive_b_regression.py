@@ -69,9 +69,7 @@ def test_imumia2026_archive_transport_and_missing_task(tmp_path, monkeypatch):
     with zipfile.ZipFile(archive, "w") as stream:
         for task, names in task_names.items():
             for name in names:
-                stream.writestr(
-                    f"MI_A_Dataset/MI_A_Dataset/Raw_data/{task}/{name}", b""
-                )
+                stream.writestr(f"MI_A_Dataset/MI_A_Dataset/Raw_data/{task}/{name}", b"")
     data_dl = _capture_transport(monkeypatch, archive)
     paths = IMUMIA2026().data_path(5, path=tmp_path, force_update=True, verbose="ERROR")
     assert len(paths) == 5
@@ -86,7 +84,6 @@ def test_imumia2026_archive_transport_and_missing_task(tmp_path, monkeypatch):
     Path(paths[-1]).unlink()
     with pytest.raises(FileNotFoundError, match="Expected at least"):
         IMUMIA2026().data_path(5, path=tmp_path)
-
 
 
 def test_leeuwis_first_last_si_and_discontinuities(tmp_path):
