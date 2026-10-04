@@ -36,6 +36,7 @@ Requirements
 
 Bugs
 ~~~~
+- Fix metadata-aware splitters collapsing distinct compound groups when column values contain the ``-`` separator. Multi-column group identities now use a canonical collision-free encoding, preserving the intended cross-validation and leakage boundary (by `lindicaphxag-tech`_).
 - Make :func:`moabb.analysis.chance_level.chance_by_chance` independent of result-row order when test-fold sizes vary: dataset-level adjusted thresholds now take the strictest exact-binomial cutoff across the fold sizes actually present (the cutoff is discrete and not strictly monotone in fold size), while inconsistent class counts are rejected (by `lindicaphxag-tech`_).
 - Fix ``SSVEP_TRCA`` trial centering: the inter-trial covariance step subtracted the mean across channels at each sample instead of each channel's mean over time, and did it in place on the filterbank data it received, which also fed ``Q`` and the class templates. Centering is now per channel over time, on a copy (:gh:`1183` by `Arthur031221`_).
 - Use ``gmean`` in TRCA and TRCSP for compatibility with pyRiemann 0.12 and 0.13, and pass the TRCSP mean metric by keyword (by `Bruno Aristimunha`_).
