@@ -152,6 +152,7 @@ class Rozado2015(BaseDataset):
             imagery_duration_s=6.0,
         ),
         data_structure=DataStructureMetadata(
+            n_trials=50,
             n_blocks=2,
             block_duration_s=300.0,
             trials_context=(

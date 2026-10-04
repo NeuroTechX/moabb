@@ -24,6 +24,20 @@ Version 1.8  (Source - GitHub)
 Enhancements
 ~~~~~~~~~~~~
 - Allow :class:`~moabb.evaluations.CrossSubjectEvaluation` to accept an optional top-level ``splitter`` instance, enabling transfer-learning protocols to reuse MOABB's existing caching, parallel execution, and result handling while preserving the default protocol (:gh:`1088` by `lindicaphxag-tech`_).
+- Add Leelakittisin2025 sit-stand transition imagery, PerezBlanco2026 wrist motor-execution, and Vagaja2023 VR motor-imagery datasets (:pr:`1199`) (by `Bruno Aristimunha`_).
+- Add MartinezPeon2025, MILimbEEG dataset loaders with synthetic regression coverage ({gh}`1198` by `Bruno Aristimunha`_).
+- Add Pan2023, Pan2025, PoloHortiguela2025 dataset loaders with synthetic regression coverage ({gh}`1197` by `Bruno Aristimunha`_).
+- Add MIMED2024 and WRCC2023 MI-A/MI-B/MI-C motor-imagery datasets with isolated recording windows (:gh:`1196`, by `Bruno Aristimunha`_).
+- Add :class:`moabb.datasets.MIND2026`, :class:`moabb.datasets.MOVING2024`, :class:`moabb.datasets.NeBULA2025`, and :class:`moabb.datasets.Thapa2025` large-recording motor-imagery and motor-execution datasets. Preserve the MIND acquisition-restart guard and document execution-only tasks (:gh:`1195` by `Bruno Aristimunha`_).
+- Add Batista2022, Farabbi2020, Han2026, Kodera2023 and Kueper2024 dataset loaders (:gh:`1194`).
+- Add Brodu2012, IMUMIA2026, Leeuwis2021, MartinezPeon2024 and PardoGarcia2026 motor-imagery dataset loaders by `Bruno Aristimunha`_ in :gh:`1193`.
+- Add the continuous-recording :class:`datasets.Shin2022` and :class:`datasets.NeuroTUMBCI2025` motor-imagery datasets (:gh:`1192`, by `Bruno Aristimunha`_).
+- Add the offline calibration subsets of Perdikis2018 and Alawieh2025 (:gh:`1191`) (by `Bruno Aristimunha`_).
+- Add Jia2019, MIBMPI2024, Ortiz2023 and Wang2025 motor-imagery loaders (:gh:`1190` by `Bruno Aristimunha`_).
+- Add three OpenNeuro motor-imagery datasets: :class:`moabb.datasets.Peterson2020`, :class:`moabb.datasets.Daly2020`, and :class:`moabb.datasets.Damm2026` (:pr:`1189`, by `Bruno Aristimunha`_).
+- Add :class:`moabb.datasets.NETBCI2026` (NETBCI, Recherche Data Gouv doi:10.57745/RBJRC7): 19 subjects, 74-channel EEG, right-hand motor imagery vs rest over 4 longitudinal sessions x 6 online feedback runs; per-subject EEG is read out of the 49 GB archive by HTTP range requests (:gh:`1188` by `Bruno Aristimunha`_).
+- Add four OpenNeuro motor-imagery datasets: :class:`moabb.datasets.Lee2022` (ds004022, 7 orthopedic-impairment patients, 4 upper-limb MI tasks), :class:`moabb.datasets.Lioi2020_XP1` (ds002336) and :class:`moabb.datasets.Lioi2020_XP2` (ds002338), the two EEG-fMRI right-hand MI / neurofeedback experiments of Lioi et al., and :class:`moabb.datasets.Iwama2023` (ds004444, 30 subjects, 129-channel HD-EEG, up to 16 sessions) (:gh:`1186` by `Bruno Aristimunha`_).
+- Audit every dataset's ``METADATA`` and docstring against its primary paper and data-repository record with a new reusable tool (``scripts/paper_audit/``): ``country`` is now an ISO 3166-1 alpha-2 code everywhere, loader declarations (``sessions_per_subject``, ``subjects``, ``runs_per_session``) and the ``summary_*.csv`` tables match what each loader actually returns, and per-dataset fields (reference/ground, hardware, filters, licence, demographics, trial counts, DOIs) are corrected with quoted evidence; ``Cattan2019_VR`` declares its two sessions, ``Nakanishi2015`` exposes subject 10, ``PhysionetMI``/``MAMEM3``/``BI2015b`` metadata now come from their own records (:gh:`1203` by `Bruno Aristimunha`_).
 - Add :func:`moabb.analysis.plotting.plot_critical_difference` for comparing pipelines across complete multi-dataset benchmarks with Friedman ranks and Nemenyi critical-difference groups (:gh:`1127` by `lindicaphxag-tech`_).
 - Spell MNE's renamed template montages everywhere: MNE 1.13 renamed ``standard_1005``/``standard_1020`` (and the other ``standard_*`` templates) to ``colin27_*`` (identical electrode files), warns on the old names and MNE 1.14 removes them, so every ``make_standard_montage``/``set_montage`` call in MOABB now spells ``colin27_*``. ``METADATA`` montage labels are descriptive and unchanged (:gh:`1200` by `Bruno Aristimunha`_).
 
@@ -41,6 +55,17 @@ Requirements
 
 Bugs
 ~~~~
+- Fix :func:`moabb.datasets.Dataset.convert_to_bids` producing files the official
+  bids-validator (``@bids/validator`` v2) rejects. ``_build_sidecar_enrichment``
+  now wraps string or flat-dict ``acq.filters`` so every top-level value of
+  ``HardwareFilters`` is an object (schema requires objects, or the exact string
+  ``"n/a"``), fixing ``JSON_SCHEMA_VALIDATION_ERROR``. ``run_moabb_to_bids`` now
+  stores the MOABB run-label description (e.g. the ``feedback1`` in ``"1feedback1"``)
+  in the ``acquisition`` (``acq-``) entity instead of ``recording`` (``rec-``),
+  which is not valid for ``_eeg``/``_events``/``_channels`` files and raised
+  ``ALL_FILENAME_RULES_HAVE_ISSUES``. ``run_bids_to_moabb`` still accepts the
+  legacy ``rec-`` entity so existing MOABB caches keep reading back to the same
+  run label (:gh:`1217` by `Bruno Aristimunha`_).
 - Keep :class:`moabb.evaluations.CrossSessionEvaluation` result provenance
   session-specific when a custom cross-validator holds out more than one recording
   session in the same fold. The estimator is still fitted once per fold, but each
