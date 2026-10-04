@@ -609,6 +609,30 @@ artifacts therefore remain manually readable in place.</p></li>
 <section id="bugs">
 <h3>Bugs<a class="headerlink" href="#bugs" title="Link to this heading">#</a></h3>
 <ul class="simple">
+<li><p>Fix <code class="xref py py-func docutils literal notranslate"><span class="pre">moabb.datasets.Dataset.convert_to_bids()</span></code> crashing on datasets whose
+MOABB run-label suffix is literally <code class="docutils literal notranslate"><span class="pre">&quot;calibration&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;crosstalk&quot;</span></code>
+(Wang2025, Leeuwis2021, Brandl2020, Romani_BF2025_ERP). After the <code class="docutils literal notranslate"><span class="pre">acq-</span></code>
+switch (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/1217">#1217</a>), those descriptions collided with <code class="docutils literal notranslate"><span class="pre">mne-bids</span></code>’ reserved
+<code class="docutils literal notranslate"><span class="pre">acq-calibration</span></code> / <code class="docutils literal notranslate"><span class="pre">acq-crosstalk</span></code> MEG fine-calibration/crosstalk
+magic strings (which require <code class="docutils literal notranslate"><span class="pre">task=None</span></code>) and raised
+<code class="docutils literal notranslate"><span class="pre">ValueError:</span> <span class="pre">task</span> <span class="pre">must</span> <span class="pre">be</span> <span class="pre">None</span> <span class="pre">if</span> <span class="pre">the</span> <span class="pre">acquisition</span> <span class="pre">is</span> <span class="pre">&quot;calibration&quot;</span> <span class="pre">or</span>
+<span class="pre">&quot;crosstalk&quot;</span></code>. <code class="docutils literal notranslate"><span class="pre">run_moabb_to_bids</span></code> now rewrites the two reserved tokens
+to short aliases (<code class="docutils literal notranslate"><span class="pre">&quot;calib&quot;</span></code>/<code class="docutils literal notranslate"><span class="pre">&quot;xtalk&quot;</span></code>) and <code class="docutils literal notranslate"><span class="pre">run_bids_to_moabb</span></code> inverts
+the mapping, keeping the round trip exact for every run label currently
+emitted on develop and preserving the legacy <code class="docutils literal notranslate"><span class="pre">recording-</span></code> read fallback
+(<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/1218">#1218</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
+<li><p>Fix <a class="reference internal" href="generated/moabb.datasets.MILimbEEG.html#moabb.datasets.MILimbEEG" title="moabb.datasets.MILimbEEG"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.MILimbEEG</span></code></a> convert aborting on subjects S4 and
+S7 with <code class="docutils literal notranslate"><span class="pre">ValueError:</span> <span class="pre">Expected</span> <span class="pre">a</span> <span class="pre">complete</span> <span class="pre">four-second</span> <span class="pre">stored</span> <span class="pre">trial</span></code>. A
+dataset-wide scan of all 3719 motor-imagery CSVs confirms every file has
+exactly 500 data rows; 124 files (62 per subject across S4 and S7) start
+with a Mendeley v2 header variant whose first field is literally <code class="docutils literal notranslate"><span class="pre">NaN</span></code>
+(<code class="docutils literal notranslate"><span class="pre">NaN,0,1,...,15</span></code>) instead of empty. <code class="docutils literal notranslate"><span class="pre">float(&quot;NaN&quot;)</span></code> succeeds, so the
+previous first-line sniff mis-flagged them as header-less and pandas kept
+the extra row. <code class="docutils literal notranslate"><span class="pre">_read_trial</span></code> now also treats a first line with a
+NaN-or-empty leading cell and sequential column-index remainder as a
+header; a synthetic regression covers both the NaN variant and the empty
+variant and short trials remain a hard error (no silent zero-pad)
+(<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/1218">#1218</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 <li><p>Fix <code class="xref py py-func docutils literal notranslate"><span class="pre">moabb.datasets.Dataset.convert_to_bids()</span></code> producing files the official
 bids-validator (<code class="docutils literal notranslate"><span class="pre">&#64;bids/validator</span></code> v2) rejects. <code class="docutils literal notranslate"><span class="pre">_build_sidecar_enrichment</span></code>
 now wraps string or flat-dict <code class="docutils literal notranslate"><span class="pre">acq.filters</span></code> so every top-level value of
