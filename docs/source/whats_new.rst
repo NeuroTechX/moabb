@@ -63,6 +63,30 @@ Requirements
 
 Bugs
 ~~~~
+- Fix :func:`moabb.datasets.Dataset.convert_to_bids` crashing on datasets whose
+  MOABB run-label suffix is literally ``"calibration"`` or ``"crosstalk"``
+  (Wang2025, Leeuwis2021, Brandl2020, Romani_BF2025_ERP). After the ``acq-``
+  switch (:gh:`1217`), those descriptions collided with ``mne-bids``' reserved
+  ``acq-calibration`` / ``acq-crosstalk`` MEG fine-calibration/crosstalk
+  magic strings (which require ``task=None``) and raised
+  ``ValueError: task must be None if the acquisition is "calibration" or
+  "crosstalk"``. ``run_moabb_to_bids`` now rewrites the two reserved tokens
+  to short aliases (``"calib"``/``"xtalk"``) and ``run_bids_to_moabb`` inverts
+  the mapping, keeping the round trip exact for every run label currently
+  emitted on develop and preserving the legacy ``recording-`` read fallback
+  (:gh:`1218` by `Bruno Aristimunha`_).
+- Fix :class:`moabb.datasets.MILimbEEG` convert aborting on subjects S4 and
+  S7 with ``ValueError: Expected a complete four-second stored trial``. A
+  dataset-wide scan of all 3719 motor-imagery CSVs confirms every file has
+  exactly 500 data rows; 124 files (62 per subject across S4 and S7) start
+  with a Mendeley v2 header variant whose first field is literally ``NaN``
+  (``NaN,0,1,...,15``) instead of empty. ``float("NaN")`` succeeds, so the
+  previous first-line sniff mis-flagged them as header-less and pandas kept
+  the extra row. ``_read_trial`` now also treats a first line with a
+  NaN-or-empty leading cell and sequential column-index remainder as a
+  header; a synthetic regression covers both the NaN variant and the empty
+  variant and short trials remain a hard error (no silent zero-pad)
+  (:gh:`1218` by `Bruno Aristimunha`_).
 - Fix :func:`moabb.datasets.Dataset.convert_to_bids` producing files the official
   bids-validator (``@bids/validator`` v2) rejects. ``_build_sidecar_enrichment``
   now wraps string or flat-dict ``acq.filters`` so every top-level value of

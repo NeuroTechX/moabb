@@ -712,15 +712,63 @@ class TestRunMoabbBidsRoundTrip:
         assert "recording" not in kwargs
         assert kwargs == {"run": "3", "acquisition": "A"}
 
-    @pytest.mark.parametrize("label", ["0", "1", "12", "1feedback1", "3A", "2run2"])
+    @pytest.mark.parametrize(
+        "label",
+        [
+            # Existing round-trip cases.
+            "0",
+            "1",
+            "12",
+            "1feedback1",
+            "3A",
+            "2run2",
+            # Reserved-value cases: mne-bids' BIDSPath rejects acq="calibration"
+            # or acq="crosstalk" with a non-empty task (MEG fine-calibration
+            # magic strings). The writer must escape them; the reader must
+            # invert exactly. The following labels are currently emitted by
+            # Wang2025, Leeuwis2021, Brandl2020 and Romani_BF2025_ERP on
+            # develop.
+            "0calibration",
+            "1calibration",
+            "1feedback",
+            "2feedback2",
+            "3feedback3",
+        ],
+    )
     def test_round_trip(self, label):
         import mne_bids
 
         kwargs = run_moabb_to_bids(label)
+        # The acq entity must not carry a reserved mne-bids magic value;
+        # BIDSPath construction with task set would otherwise raise.
         path = mne_bids.BIDSPath(
             subject="01", task="imagery", datatype="eeg", check=False, **kwargs
         )
         assert run_bids_to_moabb(path) == label
+
+    def test_run_moabb_to_bids_escapes_reserved_calibration(self):
+        """mne-bids reserves acq-calibration for MEG; writer must escape."""
+        import mne_bids
+
+        kwargs = run_moabb_to_bids("0calibration")
+        assert kwargs["run"] == "0"
+        assert kwargs["acquisition"] not in {"calibration", "crosstalk"}
+        # BIDSPath with task-imagery must accept the mapped value.
+        mne_bids.BIDSPath(
+            subject="01", task="imagery", datatype="eeg", check=False, **kwargs
+        )
+
+    def test_run_moabb_to_bids_escapes_reserved_crosstalk(self):
+        import mne_bids
+
+        kwargs = run_moabb_to_bids("0crosstalk")
+        assert kwargs["acquisition"] not in {"calibration", "crosstalk"}
+        mne_bids.BIDSPath(
+            subject="01", task="imagery", datatype="eeg", check=False, **kwargs
+        )
+        # And the suffixless literal (hypothetical) must also be safe.
+        kwargs2 = run_moabb_to_bids("7crosstalk")
+        assert kwargs2["acquisition"] not in {"calibration", "crosstalk"}
 
     def test_run_bids_to_moabb_legacy_recording_fallback(self):
         """A cache written with recording- (older MOABB) must still read back."""
@@ -735,6 +783,25 @@ class TestRunMoabbBidsRoundTrip:
             check=False,
         )
         assert run_bids_to_moabb(path) == "1feedback1"
+
+    def test_run_bids_to_moabb_legacy_recording_calibration(self):
+        """Legacy caches used recording-calibration (no mne-bids special-case).
+
+        Older MOABB wrote the literal description into the ``recording``
+        entity, so a pre-existing cache with ``recording-calibration`` must
+        still read back to the exact MOABB run label.
+        """
+        import mne_bids
+
+        path = mne_bids.BIDSPath(
+            subject="01",
+            task="imagery",
+            run="0",
+            recording="calibration",
+            datatype="eeg",
+            check=False,
+        )
+        assert run_bids_to_moabb(path) == "0calibration"
 
 
 class TestBuildDatasetDescriptionKwargs:

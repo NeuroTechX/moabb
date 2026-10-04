@@ -2154,6 +2154,20 @@ def subject_bids_to_moabb(subject: str):
     return int(subject)
 
 
+# mne-bids reserves ``acq-calibration`` and ``acq-crosstalk`` for MEG
+# fine-calibration/crosstalk sidecar files (``acq-<magic>_meg.json``) and
+# rejects any BIDSPath that pairs one of these values with a non-empty
+# ``task`` (see ``mne_bids.path.BIDSPath._check``). MOABB dataset loaders
+# (Wang2025, Leeuwis2021, Brandl2020, Romani_BF2025_ERP, …) carry run labels
+# whose non-numeric suffix is literally ``"calibration"``, which collides
+# with that reservation once the description is routed through ``acq-``.
+# We map the two reserved tokens to short, mne-bids-safe aliases on write
+# and invert the mapping on read so the round trip stays exact for every
+# label currently emitted by any loader on develop.
+_RESERVED_ACQ_WRITE = {"calibration": "calib", "crosstalk": "xtalk"}
+_RESERVED_ACQ_READ = {v: k for k, v in _RESERVED_ACQ_WRITE.items()}
+
+
 def run_moabb_to_bids(run: str):
     """Convert the run to run index plus eventually description.
 
@@ -2165,12 +2179,17 @@ def run_moabb_to_bids(run: str):
     the official bids-validator rejects for EEG core files
     (``ALL_FILENAME_RULES_HAVE_ISSUES``). ``run_bids_to_moabb`` still
     accepts caches written with ``recording-`` for backwards compatibility.
+
+    The two mne-bids reserved tokens ``"calibration"`` and ``"crosstalk"``
+    are rewritten to safe aliases (``"calib"`` / ``"xtalk"``) so a BIDSPath
+    with the usual ``task-<paradigm>`` entity validates; the inverse
+    mapping is applied on read to keep the round trip exact.
     """
     p = r"([0-9]+)(|[a-zA-Z]+[a-zA-Z0-9]*)"
     idx, desc = re.fullmatch(p, run).groups()
     out = {"run": idx}
     if desc:
-        out["acquisition"] = desc
+        out["acquisition"] = _RESERVED_ACQ_WRITE.get(desc, desc)
     return out
 
 
@@ -2179,11 +2198,15 @@ def run_bids_to_moabb(path: mne_bids.BIDSPath):
 
     Accepts both the new ``acq-`` entity (written by current MOABB) and the
     legacy ``rec-`` entity (written by older MOABB versions) so pre-existing
-    caches keep reading back to the same MOABB run label.
+    caches keep reading back to the same MOABB run label. Inverts the
+    reserved-token rewrite applied by ``run_moabb_to_bids`` so an
+    ``acq-calib`` written by current MOABB round-trips back to a MOABB run
+    label ending in ``calibration``.
     """
     desc = path.acquisition if path.acquisition is not None else path.recording
     if desc is None:
         return path.run
+    desc = _RESERVED_ACQ_READ.get(desc, desc)
     return f"{path.run}{desc}"
 
 
