@@ -103,6 +103,13 @@ class TrianaGuzman2024(BaseBIDSDataset):
     continuous file per subject. By default, only offline MI task
     markers (events 1-4) are used for epoching.
 
+    Per participant the offline phase holds six runs of 30 trials
+    (45 MotorImageryA + 45 IdleStateA, 45 MotorImageryB + 45
+    IdleStateB) and the online phase 60 further trials. The OpenNeuro
+    README states the ground at AFz and the reference at the right
+    mastoid (M2); the paper [1]_ describes the reference electrode as
+    placed in the right earlobe.
+
     Parameters
     ----------
     use_all_events : bool
