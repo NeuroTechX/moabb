@@ -325,7 +325,7 @@ def compute_pvals_perm(df, order=None, seed=None):
 
 
 def _corrected_resampled_ttest(data, n_train, n_test):
-    """Nadeau & Bengio corrected resampled t-test.
+    r"""Nadeau & Bengio corrected resampled t-test.
 
     Computes one-tailed p-values for the paired differences in ``data``
     using the variance correction of Nadeau & Bengio, which accounts for
@@ -336,13 +336,13 @@ def _corrected_resampled_ttest(data, n_train, n_test):
 
     .. math::
 
-        t = \\frac{\\frac{1}{n} \\sum_{j=1}^{n} x_j}
-                 {\\sqrt{(\\frac{1}{n} + \\frac{n_2}{n_1})\\,\\hat\\sigma^2}}
+        t = \frac{\frac{1}{n} \sum_{j=1}^{n} x_j}
+                 {\sqrt{(\frac{1}{n} + \frac{n_2}{n_1})\,\hat\sigma^2}}
 
     where :math:`x_j` is the score difference on resample :math:`j`,
     :math:`n` is the number of resamples, :math:`n_1` and :math:`n_2` are
     the number of training and testing examples of each split, and
-    :math:`\\hat\\sigma^2` is the sample variance of the :math:`x_j`.
+    :math:`\hat\sigma^2` is the sample variance of the :math:`x_j`.
     Under the null hypothesis, :math:`t` follows a Student distribution
     with :math:`n - 1` degrees of freedom.
 

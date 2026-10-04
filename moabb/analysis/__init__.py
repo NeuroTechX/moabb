@@ -101,7 +101,12 @@ def analyze(results, out_path, name="analysis", plot=False):
 # who reaches this package for something else -- ``moabb.datasets`` imports
 # ``moabb.analysis.results`` for ``get_digest``, so an eager import here
 # restyled the figures of every caller who merely imported a dataset.
-_PLOTTING_EXPORTS = ("codecarbon_plot", "distribution_plot", "emissions_summary")
+_PLOTTING_EXPORTS = (
+    "codecarbon_plot",
+    "distribution_plot",
+    "emissions_summary",
+    "plot_critical_difference",
+)
 
 
 def __getattr__(name):
