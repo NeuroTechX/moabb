@@ -430,7 +430,7 @@ class BNCI2025_001(BNCIBaseDataset):
             institution="Institute of Neural Engineering, Graz University of Technology",
             institution_address="Stremayrgasse 16/IV, 8010 Graz, Austria",
             institution_department="Institute of Neural Engineering",
-            country="Austria",
+            country="AT",
             publication_year=2024,
             ethics_approval=[
                 "Ethical committee at the Graz University of Technology (EK-28/2024)",
@@ -1191,7 +1191,7 @@ class BNCI2025_002(BNCIBaseDataset):
                 "Gernot R Müller-Putz",
             ],
             institution="Institute of Neural Engineering, Graz University of Technology",
-            country="Austria",
+            country="AT",
             publication_year=2022,
             senior_author="Gernot R Müller-Putz",
             contact_info=["gernot.mueller@tugraz.at"],

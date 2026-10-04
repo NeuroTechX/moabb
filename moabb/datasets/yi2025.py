@@ -111,7 +111,12 @@ class Yi2025(BaseDataset):
     Raw Neuroscan ``.cnt`` files are loaded from the ``FineMI.zip``
     archive on Figshare (~14.2 GB). Auxiliary channels (M1, M2, HEO,
     VEO, EKG, EMG) are dropped, leaving 62 EEG channels. Each block
-    is loaded as a separate run.
+    file is loaded as a separate run, so ``runs_per_session=8`` is the
+    maximum: "the first four blocks of EEG data from subject 1 were saved
+    in one file, while the EEG data of each block from other subjects were
+    saved in different files separately" [1]_, i.e. subject 1 yields fewer
+    (longer) runs. The paper also reports that "The left mastoid (M1) was
+    employed as the reference during the EEG measurements" [1]_.
 
     .. note::
 

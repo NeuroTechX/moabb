@@ -1,42 +1,6 @@
 {
     "_metadata": {
-        "total": 156
-    },
-    "10.1038/s41467-026-75435-5": {
-        "title": "Sensory-guided human-machine joint learning accelerates the acquisition of motor imagery brain computer interface control",
-        "authors": [
-            "Hanwen Wang",
-            "Yisha Zhang",
-            "Maxim Karrenbach",
-            "Yidan Ding",
-            "Bin He"
-        ],
-        "year": 2026,
-        "doi": "10.1038/s41467-026-75435-5"
-    },
-    "10.1184/R1/32293995.v1": {
-        "title": "EEG Datasets for Sensory-Guided Joint Learning in Motor Imagery Brain-Computer Interfaces",
-        "authors": [
-            "Hanwen Wang",
-            "Yisha Zhang",
-            "Maxim Karrenbach",
-            "Yidan Ding",
-            "Bin He"
-        ],
-        "year": 2026,
-        "doi": "10.1184/R1/32293995.v1"
-    },
-    "10.1109/BCI69045.2026.11435072": {
-        "title": "An enhanced experimental paradigm for auditory BCIs by addressing both acoustic and human factors.",
-        "authors": [
-            "Lena\u00efg Gu\u00e9ho",
-            "Laurent Bougrain",
-            "Cyril Plapous",
-            "Patrick H\u00e9naff",
-            "Rozenn Nicol"
-        ],
-        "year": 2026,
-        "doi": "10.1109/BCI69045.2026.11435072"
+        "total": 227
     },
     "10.1002/hbm.23730": {
         "title": "Deep learning with convolutional neural networks for EEG decoding and visualization",
@@ -162,6 +126,18 @@
         ],
         "year": 2023,
         "doi": "10.1016/j.neuroimage.2023.120446"
+    },
+    "10.1038/s41467-026-75435-5": {
+        "title": "Sensory-guided human-machine joint learning accelerates the acquisition of motor imagery brain computer interface control",
+        "authors": [
+            "Hanwen Wang",
+            "Yisha Zhang",
+            "Maxim Karrenbach",
+            "Yidan Ding",
+            "Bin He"
+        ],
+        "year": 2026,
+        "doi": "10.1038/s41467-026-75435-5"
     },
     "10.1038/s41597-020-0535-2": {
         "title": "Multi-channel EEG recording during motor imagery of different joints from the same limb",
@@ -661,6 +637,18 @@
             "Jose del R. Millan"
         ]
     },
+    "10.1109/BCI69045.2026.11435072": {
+        "title": "An enhanced experimental paradigm for auditory BCIs by addressing both acoustic and human factors.",
+        "authors": [
+            "Lena\u00efg Gu\u00e9ho",
+            "Laurent Bougrain",
+            "Cyril Plapous",
+            "Patrick H\u00e9naff",
+            "Rozenn Nicol"
+        ],
+        "year": 2026,
+        "doi": "10.1109/BCI69045.2026.11435072"
+    },
     "10.1109/MCI.2018.2807039": {
         "title": "Unsupervised Learning for Brain-Computer Interfaces Based on Event-Related Potentials: Review and Online Comparison [Research Frontier]",
         "authors": [
@@ -837,6 +825,18 @@
         "year": 2017,
         "doi": "10.1117/12.2255697"
     },
+    "10.1184/R1/32293995.v1": {
+        "title": "EEG Datasets for Sensory-Guided Joint Learning in Motor Imagery Brain-Computer Interfaces",
+        "authors": [
+            "Hanwen Wang",
+            "Yisha Zhang",
+            "Maxim Karrenbach",
+            "Yidan Ding",
+            "Bin He"
+        ],
+        "year": 2026,
+        "doi": "10.1184/R1/32293995.v1"
+    },
     "10.13026/0byy-ry86": {
         "title": "bigP3BCI: An Open, Diverse and Machine Learning Ready P300-based Brain-Computer Interface Dataset",
         "authors": [
@@ -848,6 +848,18 @@
         ],
         "year": 2025,
         "doi": "10.13026/0byy-ry86"
+    },
+    "10.13026/C28G6P": {
+        "title": "EEG Motor Movement/Imagery Dataset",
+        "authors": [
+            "Gerwin Schalk",
+            "Dennis J McFarland",
+            "Thilo Hinterberger",
+            "Niels Birbaumer",
+            "Jonathan R Wolpaw"
+        ],
+        "year": 2009,
+        "doi": "10.13026/C28G6P"
     },
     "10.1371/journal.pone.0009813": {
         "title": "A New Auditory Multi-Class Brain-Computer Interface Paradigm: Spatial Hearing as an Informative Cue",
@@ -1452,6 +1464,25 @@
         "year": 2026,
         "doi": "10.5281/zenodo.19440997"
     },
+    "10.5281/zenodo.20848097": {
+        "title": "A steady-state visual evoked potential (SSVEP)-based BCI dataset in children and adolescents",
+        "authors": [
+            "Emily Schrag",
+            "Daniel Comaduran Marquez",
+            "Adam Kirton",
+            "Eli Kinney-Lang"
+        ],
+        "year": 2026,
+        "doi": "10.5281/zenodo.20848097"
+    },
+    "10.5281/zenodo.21156618": {
+        "title": "EEG responses to natural and artificial auditory stimuli: a 40 Hz amplitude-modulated paradigm study",
+        "authors": [
+            ""
+        ],
+        "year": 2026,
+        "doi": "10.5281/zenodo.21156618"
+    },
     "10.5281/zenodo.2222268": {
         "title": "Attempted Arm and Hand Movements can be Decoded from Low-Frequency EEG from Persons with Spinal Cord Injury",
         "authors": [
@@ -1637,6 +1668,18 @@
         "year": 2012,
         "doi": "10.5281/zenodo.806022"
     },
+    "10.5281/zenodo.8089820": {
+        "title": "A large EEG database with users' profile information for motor imagery Brain-Computer Interface research",
+        "authors": [
+            "",
+            "",
+            "Rimbert S\u00e9bastien",
+            "",
+            "Lotte Fabien"
+        ],
+        "year": 2023,
+        "doi": "10.5281/zenodo.8089820"
+    },
     "10.5281/zenodo.8255618": {
         "title": "4-class code-VEP EEG data",
         "authors": [
@@ -1745,6 +1788,14 @@
         "year": 2025,
         "doi": "10.6084/m9.figshare.30227503.v1"
     },
+    "10.6084/m9.figshare.3413851.v3": {
+        "title": "MAMEM EEG SSVEP Dataset III (14 channels, 11 subjects, 5 frequencies presented simultaneously)",
+        "authors": [
+            "Spiros Nikolopoulos"
+        ],
+        "year": 2021,
+        "doi": "10.6084/m9.figshare.3413851.v3"
+    },
     "10.6084/m9.figshare.5579461.v1": {
         "title": "Evaluating the versatility of EEG models generated from motor imagery tasks: an exploratory investigation on upper-limb elbow-centered motor imagery tasks",
         "authors": [
@@ -1839,15 +1890,821 @@
             "Huiguang He"
         ]
     },
-    "10.5281/zenodo.20848097": {
-        "title": "A steady-state visual evoked potential (SSVEP)-based BCI dataset in children and adolescents",
+    "10.18112/openneuro.ds004022.v1.0.0": {
+        "title": "Multimodal EEG and fNIRS Biosignal Acquisition during Motor Imagery Tasks in Patients with Orthopedic Impairment",
         "authors": [
-            "Emily Schrag",
-            "Daniel Comaduran Marquez",
-            "Adam Kirton",
-            "Eli Kinney-Lang"
+            "Seho Lee",
+            "Hee Ra Jung",
+            "In-Nea Wang",
+            "Min-Kyung Jung",
+            "Hakseung Kim",
+            "Dong-Joo Kim"
+        ],
+        "year": 2022,
+        "doi": "10.18112/openneuro.ds004022.v1.0.0"
+    },
+    "10.1101/862375": {
+        "title": "Simultaneous MRI-EEG during a motor imagery neurofeedback task: an open access brain imaging dataset for multi-modal data integration",
+        "authors": [
+            "Giulia Lioi",
+            "Claire Cury",
+            "Lorraine Perronnet",
+            "Marsel Mano",
+            "Elise Bannier",
+            "Anatole Lecuyer",
+            "Christian Barillot"
+        ],
+        "year": 2019,
+        "doi": "10.1101/862375"
+    },
+    "10.1038/s41597-020-0498-3": {
+        "title": "Simultaneous EEG-fMRI during a neurofeedback task, a brain imaging dataset for multimodal data integration",
+        "authors": [
+            "Giulia Lioi",
+            "Claire Cury",
+            "Lorraine Perronnet",
+            "Marsel Mano",
+            "Elise Bannier",
+            "Anatole Lecuyer",
+            "Christian Barillot"
+        ],
+        "year": 2020,
+        "doi": "10.1038/s41597-020-0498-3"
+    },
+    "10.1038/s41597-023-02260-6": {
+        "title": "High-density scalp electroencephalogram dataset during sensorimotor rhythm-based brain-computer interfacing",
+        "authors": [
+            "Seitaro Iwama",
+            "Masumi Morishige",
+            "Yoshikazu Takahashi",
+            "Ryotaro Hirose",
+            "Midori Kodama",
+            "Junichi Ushiba"
+        ],
+        "year": 2023,
+        "doi": "10.1038/s41597-023-02260-6"
+    },
+    "10.3389/fnhum.2017.00193": {
+        "title": "Unimodal versus bimodal EEG-fMRI neurofeedback of a motor imagery task",
+        "authors": [
+            "Lorraine Perronnet",
+            "Anatole Lecuyer",
+            "Marsel Mano",
+            "Elise Bannier",
+            "Fabien Lotte",
+            "Maureen Clerc",
+            "Christian Barillot"
+        ],
+        "year": 2017,
+        "doi": "10.3389/fnhum.2017.00193"
+    },
+    "10.1038/s41597-026-08237-5": {
+        "title": "Understanding Brain-Computer Interfaces training:a longitudinal and multimodal dataset",
+        "authors": [
+            "Marie-Constance Corsi",
+            "Christophe Gitton",
+            "Juliana Gonzalez-Astudillo",
+            "Ari E. Kahn",
+            "Laurent Hugueville",
+            "Denis Schwartz",
+            "Nathalie George",
+            "Mario Chavez",
+            "Sophie Dupont",
+            "Danielle S. Bassett",
+            "Fabrizio De Vico Fallani"
         ],
         "year": 2026,
-        "doi": "10.5281/zenodo.20848097"
+        "doi": "10.1038/s41597-026-08237-5"
+    },
+    "10.57745/RBJRC7": {
+        "title": "Understanding Brain-Computer Interfaces training: a longitudinal and multimodal dataset",
+        "authors": [
+            "Marie-Constance Corsi",
+            "Christophe Gitton",
+            "Juliana Gonzalez-Astudillo",
+            "Ari E. Kahn",
+            "Laurent Hugueville",
+            "Denis Schwartz",
+            "Nathalie George",
+            "Mario Chavez",
+            "Sophie Dupont",
+            "Danielle S. Bassett",
+            "Fabrizio De Vico Fallani"
+        ],
+        "year": 2026,
+        "doi": "10.57745/RBJRC7"
+    },
+    "10.1142/S0129065718500144": {
+        "title": "Integrating EEG and MEG Signals to Improve Motor Imagery Classification in Brain\u2013Computer Interface",
+        "authors": [
+            "Marie-Constance Corsi",
+            "Mario Chavez",
+            "Denis Schwartz",
+            "Laurent Hugueville",
+            "Ankit N. Khambhati",
+            "Danielle S. Bassett",
+            "Fabrizio De Vico Fallani"
+        ],
+        "year": 2019,
+        "doi": "10.1142/S0129065718500144"
+    },
+    "10.1016/j.heliyon.2020.e03425": {
+        "title": "A feasibility study of a complete low-cost consumer-grade brain-computer interface system",
+        "authors": [
+            "Victoria Peterson",
+            "Catalina Maria Galvan",
+            "Hugo Sacha Hernadez",
+            "Ruben Spies"
+        ],
+        "year": 2020,
+        "doi": "10.1016/j.heliyon.2020.e03425"
+    },
+    "10.18112/openneuro.ds002720.v1.0.1": {
+        "title": "A dataset recorded during development of a tempo-based brain-computer music interface",
+        "authors": [
+            "Ian Daly",
+            "Nicoletta Nicolaou",
+            "Duncan Williams",
+            "Faustina Hwang",
+            "Alexis Kirke",
+            "Eduardo Miranda",
+            "Slawomir J. Nasuto"
+        ],
+        "year": 2018,
+        "doi": "10.18112/openneuro.ds002720.v1.0.1"
+    },
+    "10.18112/openneuro.ds008446.v1.0.1": {
+        "title": "Random and Sequential Order Finger Motor Imagery",
+        "authors": [
+            "Laura Marie Damm",
+            "Dai Jiang",
+            "Andreas Demosthenous"
+        ],
+        "year": 2026,
+        "doi": "10.18112/openneuro.ds008446.v1.0.1"
+    },
+    "10.18112/openneuro.ds003810.v2.0.2": {
+        "title": "Motor Imagery vs Rest - Low-Cost EEG System",
+        "authors": [
+            "Victoria Peterson",
+            "Catalina Maria Galvan",
+            "Hugo Sacha Hernadez",
+            "Ruben Spies"
+        ],
+        "year": 2021,
+        "doi": "10.18112/openneuro.ds003810.v2.0.2"
+    },
+    "10.21203/rs.3.rs-4268007/v1": {
+        "title": "MI-BMPI Motor Imagery Brain--Mobile Phone Dataset and Performance Evaluation of Voting Ensembles Utilizing QPDM",
+        "authors": [
+            "Cagatay Murat Yilmaz",
+            "Bahar Hatipoglu Yilmaz",
+            "Cemal Kose"
+        ],
+        "year": 2024,
+        "doi": "10.21203/rs.3.rs-4268007/v1"
+    },
+    "10.48550/arXiv.2604.16554": {
+        "title": "PA-TCNet: Pathology-Aware Temporal Calibration with Physiology-Guided Target Refinement for Cross-Subject Motor Imagery EEG Decoding in Stroke Patients",
+        "authors": [
+            "Xiangkai Wang",
+            "Yun Zhao",
+            "Dongyi He",
+            "Qingling Xia",
+            "Gen Li",
+            "Nizhuan Wang",
+            "Ningxiao Peng",
+            "Bin Jiang"
+        ],
+        "year": 2026,
+        "doi": "10.48550/arXiv.2604.16554"
+    },
+    "10.6084/m9.figshare.7636301": {
+        "title": "EEG data of motor imagery for stroke",
+        "authors": [
+            "Tianyu Jia"
+        ],
+        "year": 2019,
+        "doi": "10.6084/m9.figshare.7636301"
+    },
+    "10.1038/s41597-023-02243-7": {
+        "title": "An EEG database for the cognitive assessment of motor imagery during walking with a lower-limb exoskeleton",
+        "authors": [
+            "Mario Ortiz",
+            "Luis de la Ossa",
+            "Eduardo Ianez",
+            "Diego Torricelli",
+            "Jesus Tornero",
+            "Jose M. Azorin"
+        ],
+        "year": 2023,
+        "doi": "10.1038/s41597-023-02243-7"
+    },
+    "10.6084/m9.figshare.21185362.v2": {
+        "title": "An EEG database for the cognitive assessment of motor imagery during walking with a lower-limb exoskeleton (figshare dataset)",
+        "authors": [
+            "Mario Ortiz",
+            "Luis de la Ossa",
+            "Eduardo Ianez",
+            "Diego Torricelli",
+            "Jesus Tornero",
+            "Jose M. Azorin"
+        ],
+        "year": 2023,
+        "doi": "10.6084/m9.figshare.21185362.v2"
+    },
+    "10.1007/s00521-024-10917-5": {
+        "title": "MI-BMPI motor imagery brain-mobile phone dataset and performance evaluation of voting ensembles utilizing QPDM",
+        "authors": [
+            "Cagatay Murat Yilmaz",
+            "Beyda H. Yilmaz",
+            "Cemal Kose"
+        ],
+        "year": 2024,
+        "doi": "10.1007/s00521-024-10917-5"
+    },
+    "10.1109/TNSRE.2025.3591254": {
+        "title": "Enhanced Online Continuous Brain-Control by Deep Learning-Based EEG Decoding",
+        "authors": [
+            "Jiaheng Wang",
+            "Lin Yao",
+            "Yueming Wang"
+        ],
+        "year": 2025,
+        "doi": "10.1109/TNSRE.2025.3591254"
+    },
+    "10.1073/pnas.2418920122": {
+        "title": "Electrical spinal cord stimulation promotes focal sensorimotor activation that accelerates brain\u2013computer interface skill learning",
+        "authors": [
+            "Hussein Alawieh",
+            "Deland Liu",
+            "Jonathan Madera",
+            "Satyam Kumar",
+            "Frigyes Samuel Racz",
+            "Ann Majewicz Fey",
+            "Jos\u00e9 del R. Mill\u00e1n"
+        ],
+        "year": 2025,
+        "doi": "10.1073/pnas.2418920122"
+    },
+    "10.1101/2024.06.10.24308723": {
+        "title": "Transcutaneous Electrical Spinal Cord Stimulation Promotes Focal Sensorimotor Activation that Accelerates Brain-Computer Interface Skill Learning",
+        "authors": [
+            "Hussein Alawieh",
+            "Deland Liu",
+            "Jonathan Madera",
+            "Satyam Kumar",
+            "Frigyes Samuel Racz",
+            "Ann Majewicz Fey",
+            "Jos\u00e9 del R. Mill\u00e1n"
+        ],
+        "year": 2024,
+        "doi": "10.1101/2024.06.10.24308723"
+    },
+    "10.5281/zenodo.841764": {
+        "title": "The Cybathlon BCI race: Successful longitudinal mutual learning with two tetraplegic users (data)",
+        "authors": [
+            "Serafeim Perdikis",
+            "Luca Tonin",
+            "Sareh Saeedi",
+            "Christoph Schneider",
+            "Jose del R. Millan"
+        ],
+        "year": 2018,
+        "doi": "10.5281/zenodo.841764"
+    },
+    "10.1371/journal.pbio.2003787": {
+        "title": "The Cybathlon BCI race: Successful longitudinal mutual learning with two tetraplegic users",
+        "authors": [
+            "Serafeim Perdikis",
+            "Luca Tonin",
+            "Sareh Saeedi",
+            "Christoph Schneider",
+            "Jose del R. Millan"
+        ],
+        "year": 2018,
+        "doi": "10.1371/journal.pbio.2003787"
+    },
+    "10.5281/zenodo.15454354": {
+        "title": "A Multi-Session EEG Dataset of Longitudinal Motor Imagery BCI Training with Transcutaneous Spinal Stimulation in Able-Bodied and Spinal Cord Injury Participants",
+        "authors": [
+            "Hussein Alawieh",
+            "Liu Deland",
+            "Jonathan Madera",
+            "Satyam Kumar",
+            "Frigyes Samuel Racz",
+            "Ann Majewicz Fey",
+            "Jos\u00e9 del R. Mill\u00e1n"
+        ],
+        "year": 2025,
+        "doi": "10.5281/zenodo.15454354"
+    },
+    "10.3389/fnhum.2022.951591": {
+        "title": "Closed-loop motor imagery EEG simulation for brain-computer interfaces",
+        "authors": [
+            "Hyonyoung Shin",
+            "Daniel Suma",
+            "Bin He"
+        ],
+        "year": 2022,
+        "doi": "10.3389/fnhum.2022.951591"
+    },
+    "10.6084/m9.figshare.20383716": {
+        "title": "Data from: Closed-loop motor imagery EEG simulation for brain-computer interfaces",
+        "authors": [
+            "Hyonyoung Shin",
+            "Daniel Suma",
+            "Bin He"
+        ],
+        "year": 2022,
+        "doi": "10.6084/m9.figshare.20383716"
+    },
+    "10.5281/zenodo.18087806": {
+        "title": "neuroTUM-BCI: Cybathlon Dataset",
+        "authors": [
+            "Isabel W. Tscherniak",
+            "Niels C. Thiemann",
+            "Ana McWhinnie-Fernandez",
+            "Iustin Curcean",
+            "Leon L. J. Jokinen",
+            "Sadat Hodzic",
+            "Thomas E. Huber",
+            "Daniel Pavlov",
+            "Manuel Methasani",
+            "Pietro Marcolongo",
+            "Glenn V. Krafczyk",
+            "Oscar Osvaldo Soto Rivera",
+            "Thien Le",
+            "Flaminia Pallotti",
+            "Enrico A. Fazzi"
+        ],
+        "year": 2025,
+        "doi": "10.5281/zenodo.18087806"
+    },
+    "10.48550/arXiv.2511.23384": {
+        "title": "Improving motor imagery decoding methods for an EEG-based mobile brain-computer interface in the context of the 2024 Cybathlon",
+        "authors": [
+            "Isabel W. Tscherniak",
+            "Niels C. Thiemann",
+            "Ana McWhinnie-Fernandez",
+            "Iustin Curcean",
+            "Leon L. J. Jokinen",
+            "Sadat Hodzic",
+            "Thomas E. Huber",
+            "Daniel Pavlov",
+            "Manuel Methasani",
+            "Pietro Marcolongo",
+            "Glenn V. Krafczyk",
+            "Oscar Osvaldo Soto Rivera",
+            "Thien Le",
+            "Flaminia Pallotti",
+            "Enrico A. Fazzi"
+        ],
+        "year": 2026,
+        "doi": "10.48550/arXiv.2511.23384"
+    },
+    "10.21203/rs.3.rs-6958817/v1": {
+        "title": "Resting-State Theta Oscillations as Biomarkers of Adaptive Neuroplasticity in Chronic Stroke: A Pilot EEG Study",
+        "authors": [
+            "Pardo-Garcia Rebeca",
+            "Ruiz-Izquierdo Maria",
+            "Mart\u00edn Garc\u00eda Vega Mercedes",
+            "Calvillo-Torres Rocio",
+            "Kontaxakis George",
+            "Barca Fernandez Idoya",
+            "Eva M. Moreno",
+            "Lucia Garvin Ocampos",
+            "Miguel A. Pozo"
+        ],
+        "year": 2025,
+        "doi": "10.21203/rs.3.rs-6958817/v1"
+    },
+    "10.31428/10317/13645": {
+        "title": "Metodolog\u00eda de an\u00e1lisis de la actividad cerebral en pacientes con  ictus en fase de rehabilitaci\u00f3n",
+        "authors": [
+            "Mart\u00edn Garc\u00eda de la Vega M.",
+            "Pardo Garc\u00eda R.",
+            "Moreno Montes E. M.",
+            "Pozo Garc\u00eda M. A.",
+            "Kontaxakis G."
+        ],
+        "year": null,
+        "doi": "10.31428/10317/13645"
+    },
+    "10.1016/j.neucom.2011.10.010": {
+        "title": "Exploring two novel features for EEG-based brain-computer interfaces: Multifractal cumulants and predictive complexity",
+        "authors": [
+            "Nicolas Brodu",
+            "Fabien Lotte",
+            "Anatole Lecuyer"
+        ],
+        "year": 2012,
+        "doi": "10.1016/j.neucom.2011.10.010"
+    },
+    "10.1088/1741-2552/ad5f27": {
+        "title": "Classification of kinesthetic motor imagery levels from EEG (associated article)",
+        "authors": [
+            "Dulce Martinez-Peon"
+        ],
+        "year": 2024,
+        "doi": "10.1088/1741-2552/ad5f27"
+    },
+    "10.3389/fnhum.2021.634748": {
+        "title": "Vividness of Visual Imagery and Personality Impact Motor-Imagery Brain Computer Interfaces",
+        "authors": [
+            "Nikki Leeuwis",
+            "Alissa Paas",
+            "Maryam Alimardani"
+        ],
+        "year": 2021,
+        "doi": "10.3389/fnhum.2021.634748"
+    },
+    "10.34894/Z7ZVOD": {
+        "title": "Psychological and Cognitive Factors in Motor Imagery Brain Computer Interfaces",
+        "authors": [
+            "Nikki Leeuwis",
+            "Alissa Paas",
+            "Maryam Alimardani"
+        ],
+        "year": 2021,
+        "doi": "10.34894/Z7ZVOD"
+    },
+    "10.5281/zenodo.19599465": {
+        "title": "Mu and Beta Oscillatory Changes during a motor task following Rehabilitation in Chronic MCA Stroke: Insights from EEG",
+        "authors": [
+            "Rebeca Pardo-Garcia",
+            "Maria Ruiz-Izquierdo",
+            "Mercedes Garcia de la Vega",
+            "Rocio Calvillo",
+            "George Kontaxakis",
+            "Eva M. Moreno",
+            "M. A. Pozo"
+        ],
+        "year": 2026,
+        "doi": "10.5281/zenodo.19599465"
+    },
+    "10.5281/zenodo.20421767": {
+        "title": "A Human Motor Imagery EEG Dataset Covering Diverse Cognitive States and Neural Response Patterns",
+        "authors": [
+            "Jianxiu Li",
+            "Changming Wang",
+            "Chao Chen"
+        ],
+        "year": 2026,
+        "doi": "10.5281/zenodo.20421767"
+    },
+    "10.6084/m9.figshare.25773342": {
+        "title": "EEG Kinesthetic motor imagery levels (data)",
+        "authors": [
+            "Dulce Martinez-Peon"
+        ],
+        "year": 2024,
+        "doi": "10.6084/m9.figshare.25773342"
+    },
+    "10.6084/m9.figshare.25773342.v1": {
+        "title": "EEG Kinesthetic motor imagery levels",
+        "authors": [
+            "Dulce Martinez-Peon"
+        ],
+        "year": 2024,
+        "doi": "10.6084/m9.figshare.25773342.v1"
+    },
+    "10.5281/zenodo.7664068": {
+        "title": "Physiological Signals During Motor Imagery Brain-Computer Interface Training Using Virtual Reality and Haptics",
+        "authors": [
+            "Diogo Batista",
+            "Gustavo Caetano",
+            "Mathis Fleury",
+            "Patricia Figueiredo",
+            "Athanasios Vourvopoulos"
+        ],
+        "year": 2022,
+        "doi": "10.5281/zenodo.7664068"
+    },
+    "10.5281/zenodo.5882500": {
+        "title": "Motor-Imagery EEG Dataset During Robot-Arm Control",
+        "authors": [
+            "Andrea Farabbi",
+            "Fabiola Ghiringhelli",
+            "Luca Mainardi",
+            "Joao Miguel Sanches",
+            "Plinio Moreno",
+            "Jose Santos-Victor",
+            "Patricia Figueiredo",
+            "Athanasios Vourvopoulos"
+        ],
+        "year": 2020,
+        "doi": "10.5281/zenodo.5882500"
+    },
+    "10.1038/s41598-024-65910-8": {
+        "title": "Avoidance of specific calibration sessions in motor intention recognition for exoskeleton-supported rehabilitation through transfer learning on EEG data",
+        "authors": [
+            "Niklas Kueper",
+            "Su Kyoung Kim",
+            "Elsa Andrea Kirchner"
+        ],
+        "year": 2024,
+        "doi": "10.1038/s41598-024-65910-8"
+    },
+    "10.18112/openneuro.ds007327.v1.1.0": {
+        "title": "Basketball Motor Observation and Motor Imagery EEG Dataset",
+        "authors": [
+            "Jiahui Han",
+            "Jiaqi Wang",
+            "Lingrong Jia",
+            "Ming Tang"
+        ],
+        "year": 2026,
+        "doi": "10.18112/openneuro.ds007327.v1.1.0"
+    },
+    "10.5281/zenodo.10229480": {
+        "title": "EEG Dataset of Unilateral and Bilateral Movement Executions (data)",
+        "authors": [
+            "Niklas Kueper",
+            "Su Kyoung Kim",
+            "Elsa Andrea Kirchner"
+        ],
+        "year": 2023,
+        "doi": "10.5281/zenodo.10229480"
+    },
+    "10.5281/zenodo.7893846": {
+        "title": "EEG motor imagery",
+        "authors": [
+            "Jakub Kodera",
+            "Roman Moucek",
+            "Pavel Moutner",
+            "Pavel Mochura",
+            "Josef Yassin Saleh",
+            "Petr Bruha",
+            "Jana Solcova",
+            "Lukas Vareka",
+            "Pavel Snejdar"
+        ],
+        "year": 2023,
+        "doi": "10.5281/zenodo.7893846"
+    },
+    "10.5281/zenodo.7664069": {
+        "title": "Physiological Signals During Motor Imagery Brain-Computer Interface Training Using Virtual Reality and Haptics",
+        "authors": [
+            "Diogo Batista",
+            "Gustavo Caetano",
+            "Mathis Fleury",
+            "Patricia Figueiredo",
+            "Athanasios Vourvopoulos"
+        ],
+        "year": 2022,
+        "doi": "10.5281/zenodo.7664069"
+    },
+    "10.1038/s41597-025-05042-4": {
+        "title": "An EEG-EMG dataset from a standardized reaching task for biomarker research in upper limb assessment",
+        "authors": [
+            "Federica Garro",
+            "Elisa Fenoglio",
+            "Ilaria Ceroni",
+            "Iryna Forsiuk",
+            "Michela Canepa",
+            "Marta Mozzon",
+            "Alessandro Bruschi",
+            "Fabio Zippo",
+            "Matteo Laffranchi",
+            "Lorenzo De Michieli",
+            "Stefano Buccelli",
+            "Michela Chiappalone",
+            "Marianna Semprini"
+        ],
+        "year": 2025,
+        "doi": "10.1038/s41597-025-05042-4"
+    },
+    "10.57760/sciencedb.34326": {
+        "title": "MIND: A Multimodal fNIRS-EEG Dataset for Unilateral Limb Motor Imagery",
+        "authors": [
+            "Lufeng Feng",
+            "Baomin Xu",
+            "Haoran Zhang",
+            "Bihai Lin",
+            "Zuxuan Deng",
+            "Sidi Tao",
+            "Chenyu Liu",
+            "Shifan Jia",
+            "Li Duan",
+            "Ziyu Jia"
+        ],
+        "year": 2026,
+        "doi": "10.57760/sciencedb.34326"
+    },
+    "10.1038/s41597-025-06039-9": {
+        "title": "A large electroencephalogram database of freewill reaching and grasping tasks for brain machine interfaces",
+        "authors": [
+            "Bhoj Raj Thapa",
+            "John Boggess",
+            "Jihye Bae"
+        ],
+        "year": 2025,
+        "doi": "10.1038/s41597-025-06039-9"
+    },
+    "10.6084/m9.figshare.28632599": {
+        "title": "A large electroencephalogram database of freewill reaching and grasping tasks for brain machine interfaces (dataset)",
+        "authors": [
+            "Bhoj Raj Thapa",
+            "John Boggess",
+            "Jihye Bae"
+        ],
+        "year": 2025,
+        "doi": "10.6084/m9.figshare.28632599"
+    },
+    "10.3390/s24165207": {
+        "title": "MOVING: A Multi-Modal Dataset of EEG Signals and Virtual Glove Hand Tracking",
+        "authors": [
+            "Enrico Mattei",
+            "Daniele Lozzi",
+            "Alessandro Di Matteo",
+            "Alessia Cipriani",
+            "Costanzo Manes",
+            "Giuseppe Placidi"
+        ],
+        "year": 2024,
+        "doi": "10.3390/s24165207"
+    },
+    "10.5281/zenodo.12804784": {
+        "title": "MOVING: A Multi-Modal Dataset of EEG Signals and Virtual Glove Hand Tracking (data)",
+        "authors": [
+            "Enrico Mattei",
+            "Daniele Lozzi",
+            "Alessandro Di Matteo",
+            "Alessia Cipriani",
+            "Costanzo Manes",
+            "Giuseppe Placidi"
+        ],
+        "year": 2024,
+        "doi": "10.5281/zenodo.12804784"
+    },
+    "10.7910/DVN/J9JFES": {
+        "title": "MI-A dataset of the BCI competition WRCC2023",
+        "authors": [
+            "WRCC2023"
+        ],
+        "year": 2024,
+        "doi": "10.7910/DVN/J9JFES"
+    },
+    "10.7910/DVN/HFNWRX": {
+        "title": "MI-B dataset of the BCI competition WRCC2023",
+        "authors": [
+            "WRCC2023"
+        ],
+        "year": 2024,
+        "doi": "10.7910/DVN/HFNWRX"
+    },
+    "10.7910/DVN/G8FBHH": {
+        "title": "MI-C dataset of the BCI competition WRCC2023",
+        "authors": [
+            "WRCC2023"
+        ],
+        "year": 2024,
+        "doi": "10.7910/DVN/G8FBHH"
+    },
+    "10.1016/j.dib.2024.110833": {
+        "title": "Acquisition and processing of Motor Imagery and Motor Execution Dataset (MIMED) for six movement activities",
+        "authors": [
+            "I Made Agus Wirawan",
+            "Dechrit Maneetham",
+            "I Gede Mahendra Darmawiguna",
+            "Arnon Niyomphol",
+            "Pakornkiat Sawetmethikul",
+            "Padma Nyoman Crisnapati",
+            "Yamin Thwe",
+            "Ni Nyoman Mestri Agustini"
+        ],
+        "year": 2024,
+        "doi": "10.1016/j.dib.2024.110833"
+    },
+    "10.17632/zs25xxjkm9.3": {
+        "title": "MIMED",
+        "authors": [
+            "I Made Agus Wirawan",
+            "Arnon  Niyomphon",
+            "Dechrit  Maneetham",
+            "Padma  Nyoman Crisnapati",
+            "I Gede Mahendra Darmawiguna",
+            "Yamin  Thwe",
+            "Pakornkiat  Sawetmethikul",
+            "Ni Nyoman  Mestri Agustini"
+        ],
+        "year": 2024,
+        "doi": "10.17632/zs25xxjkm9.3"
+    },
+    "10.7910/DVN/GH74ZG": {
+        "title": "Cross-Session Motor Imagery EEG dataset",
+        "authors": [
+            "Lincong Pan"
+        ],
+        "year": 2025,
+        "doi": "10.7910/DVN/GH74ZG"
+    },
+    "10.5281/zenodo.14672334": {
+        "title": "EEG Signal Dataset During Dorsiflexion and Plantar Flexion Movements",
+        "authors": [
+            "Cristina Polo-Hortiguela",
+            "Mario Ortiz",
+            "Eduardo Ianez",
+            "Jose M. Azorin"
+        ],
+        "year": 2025,
+        "doi": "10.5281/zenodo.14672334"
+    },
+    "10.1088/1741-2552/ad0a01": {
+        "title": "Riemannian geometric and ensemble learning for decoding cross-session motor imagery electroencephalography signals",
+        "authors": [
+            "Lincong Pan"
+        ],
+        "year": 2023,
+        "doi": "10.1088/1741-2552/ad0a01"
+    },
+    "10.7910/DVN/251NOW": {
+        "title": "A cross-session motor imagery EEG dataset",
+        "authors": [
+            "Lincong Pan"
+        ],
+        "year": 2023,
+        "doi": "10.7910/DVN/251NOW"
+    },
+    "10.1016/j.dib.2023.109540": {
+        "title": "MILimbEEG: A dataset of EEG signals related to upper and lower limb execution of motor and motor imagery tasks",
+        "authors": [
+            "Victor Asanza",
+            "Daniel Montoya",
+            "Leandro L. Lorente-Leyva",
+            "Diego H. Peluffo-Ordonez",
+            "Kleber Gonzalez"
+        ],
+        "year": 2023,
+        "doi": "10.1016/j.dib.2023.109540"
+    },
+    "10.17632/msgzn862ns.1": {
+        "title": "EEG signals of KMI levels of the right and left hands",
+        "authors": [
+            "Dulce Citlalli Martinez Peon",
+            "Marcos Perez Espinoza"
+        ],
+        "year": 2025,
+        "doi": "10.17632/msgzn862ns.1"
+    },
+    "10.17632/x8psbz3f6x.2": {
+        "title": "MILimbEEG (data)",
+        "authors": [
+            "Victor Asanza",
+            "Daniel Montoya",
+            "Leandro L. Lorente-Leyva",
+            "Diego H. Peluffo-Ordonez",
+            "Kleber Gonzalez"
+        ],
+        "year": 2022,
+        "doi": "10.17632/x8psbz3f6x.2"
+    },
+    "10.1038/s41597-026-07287-z": {
+        "title": "An EEG-EMG-kinematics dataset of wrist movements with a rehabilitation exoskeleton",
+        "authors": [
+            "Jorge German Perez Blanco",
+            "Javier Mauricio Antelis Ortiz",
+            "Luis Guillermo Hernandez Rojas",
+            "Hector Lizarraga Torreblanca"
+        ],
+        "year": 2026,
+        "doi": "10.1038/s41597-026-07287-z"
+    },
+    "10.6084/m9.figshare.29666735": {
+        "title": "An EEG-EMG-kinematics dataset of wrist movements with a rehabilitation exoskeleton (data)",
+        "authors": [
+            "Jorge German Perez Blanco",
+            "Javier Mauricio Antelis Ortiz",
+            "Luis Guillermo Hernandez Rojas",
+            "Hector Lizarraga Torreblanca"
+        ],
+        "year": 2026,
+        "doi": "10.6084/m9.figshare.29666735"
+    },
+    "10.5281/zenodo.20348444": {
+        "title": "EEG-Based Dataset Explicitly Targeting the Transitions between Sitting and Standing for Exploring Neural Activation Patterns in Motor Imagery and Execution",
+        "authors": [
+            "Benjakarn Uengsawapak",
+            "Supavit Kongwudhikunakorn",
+            "Suktipol Kiatthaveephong",
+            "Wipamas Polpakdee",
+            "Rattanaphon Chaisaen",
+            "Poramate Manoonpong",
+            "Chanitsada Chuenchit",
+            "Gun Bhakdisongkhram",
+            "Theerawit Wilaiprasitporn"
+        ],
+        "year": 2025,
+        "doi": "10.5281/zenodo.20348444"
+    },
+    "10.5281/zenodo.8086086": {
+        "title": "Electrophysiological Signals of Embodiment and MI-BCI Training in VR",
+        "authors": [
+            "Katarina Vagaja",
+            "Athanasios Vourvopoulos"
+        ],
+        "year": 2023,
+        "doi": "10.5281/zenodo.8086086"
     }
 }

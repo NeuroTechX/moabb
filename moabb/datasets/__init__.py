@@ -8,6 +8,11 @@ on datasets (electrodes, number of trials, sessions, etc.)
 """
 
 from . import compound_dataset
+from .batista2022 import Batista2022
+from .farabbi2020 import Farabbi2020
+from .han2026 import Han2026
+from .kodera2023 import Kodera2023
+from .kueper2024 import Kueper2024
 
 # flake8: noqa
 from .aguilera_rodriguez2025 import AguileraRodriguez2025
@@ -87,6 +92,7 @@ from .guttmann_flury2025 import (
 from .hefmi_ich2025 import HefmiIch2025
 from .hinss2021 import Hinss2021
 from .huebner_llp import Huebner2017, Huebner2018
+from .iwama2023 import Iwama2023
 from .jeong2020 import Jeong2020
 from .kaneshiro2015 import Kaneshiro2015
 from .kaya2018 import Kaya2018
@@ -95,8 +101,11 @@ from .kojima2024b import Kojima2024B
 from .kumar2024 import Kumar2024
 from .Lee2019 import Lee2019_ERP, Lee2019_MI, Lee2019_SSVEP
 from .lee2021_mobile import Lee2021Mobile_ERP, Lee2021Mobile_SSVEP
+from .lee2022 import Lee2022
 from .lee2024 import Lee2024_AC, Lee2024_BS, Lee2024_DL, Lee2024_EL, Lee2024_TV
 from .lenaig2026 import Lenaig2026
+from .lioi2020_xp1 import Lioi2020_XP1
+from .lioi2020_xp2 import Lioi2020_XP2
 from .liu2024 import Liu2024
 from .liu2025 import Liu2025
 from .ma2020 import Ma2020
@@ -125,6 +134,7 @@ from .mainsah2025 import (
 from .martinezcagigal2023_checker_cvep import MartinezCagigal2023Checker
 from .martinezcagigal2023_pary_cvep import MartinezCagigal2023Pary
 from .mpi_mi import GrosseWentrup2009
+from .netbci2026 import NETBCI2026
 from .nieto2022 import Nieto2022
 from .nguyen2017 import Nguyen2017_L, Nguyen2017_S, Nguyen2017_SL, Nguyen2017_V
 from .phmd_ml import Cattan2019_PHMD
@@ -154,6 +164,10 @@ from .thielen2015 import Thielen2015
 from .thielen2021 import Thielen2021
 from .triana_guzman2024 import TrianaGuzman2024
 from .upper_limb import Ofner2017
+from .mind2026 import MIND2026
+from .moving2024 import MOVING2024
+from .nebula2025 import NeBULA2025
+from .thapa2025 import Thapa2025
 from .utils import _init_dataset, dataset_dict
 from .wairagkar2018 import Wairagkar2018
 from .wang2026 import Wang2026
@@ -167,7 +181,39 @@ from .zheng2020 import Zheng2020
 from .Zhou2016 import Zhou2016
 from .zhou2020 import Zhou2020
 from .zuo2025 import Zuo2025
+from .neurotumbci2025 import NeuroTUMBCI2025
+from .shin2022 import Shin2022
 
+
+from .leelakittisin2025 import Leelakittisin2025
+from .perezblanco2026 import PerezBlanco2026
+from .vagaja2023 import Vagaja2023
+from .martinezpeon2025 import MartinezPeon2025
+from .milimbeeg import MILimbEEG
+from .perdikis2018 import Perdikis2018
+from .alawieh2025 import Alawieh2025
+from .jia2019 import Jia2019
+from .mibmpi2024 import MIBMPI2024
+from .ortiz2023 import Ortiz2023
+from .wang2025 import Wang2025
+from .daly2020 import Daly2020
+from .damm2026 import Damm2026
+from .peterson2020 import Peterson2020
+
+from .brodu2012 import Brodu2012
+from .imumia2026 import IMUMIA2026
+from .leeuwis2021 import Leeuwis2021
+from .martinezpeon2024 import MartinezPeon2024
+from .pardogarcia2026 import PardoGarcia2026
+
+
+from .mimed2024 import MIMED2024
+from .wrcc2023 import WRCC2023_MI_A, WRCC2023_MI_B, WRCC2023_MI_C
+
+
+from .pan2023 import Pan2023
+from .pan2025 import Pan2025
+from .polohortiguela2025 import PoloHortiguela2025
 
 # Call this last in order to make sure the dataset list, dict are populated with
 # the datasets imported in this file.

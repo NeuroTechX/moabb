@@ -160,7 +160,7 @@ class Liu2025(BaseDataset):
             publication_year=2025,
             license="CC-BY-NC-ND-4.0",
         ),
-        sessions_per_subject=3,
+        sessions_per_subject=1,
         runs_per_session=4,
         tags=Tags(pathology=["Stroke"], modality=["Motor"], type=["Research"]),
         paradigm_specific=ParadigmSpecificMetadata(
@@ -169,11 +169,13 @@ class Liu2025(BaseDataset):
             imagery_duration_s=5.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials=8640,
+            n_trials=80,
             trials_context=(
-                "27 subjects x 3 default sessions (pre/post/follow) x "
-                "~4 runs x ~20 trials = ~6480. Paradigm group subjects "
-                "have 2 extra sessions (mises/miies)."
+                "per session: 40 gait-MI + 40 idle trials (paper). The loader "
+                "default exposes the 'pre' session only; up to 5 sessions "
+                "(pre/mises/miies/post/follow) exist for the paradigm group and "
+                "3 (pre/post/follow) for the longitudinal group. The paper reports "
+                "4,260 lower-limb MI trials in total."
             ),
         ),
         signal_processing=SignalProcessingMetadata(
