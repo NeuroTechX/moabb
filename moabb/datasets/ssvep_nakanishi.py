@@ -40,6 +40,10 @@ class Nakanishi2015(BaseDataset):
     estimate an online performance of brain-computer interface (BCI) in the
     reference study [1]_.
 
+    The paper reports "Ten healthy subjects (9 males and 1 female, mean age:
+    28 years)" and the GitHub mirror provides ``s1.mat`` to ``s10.mat``; earlier
+    MOABB versions only exposed subjects 1-9.
+
     references
     ----------
 
@@ -238,7 +242,7 @@ class Nakanishi2015(BaseDataset):
 
     def __init__(self, subjects=None, sessions=None):
         super().__init__(
-            subjects=list(range(1, 10)),
+            subjects=list(range(1, 11)),
             sessions_per_subject=1,
             events={
                 "9.25": 1,

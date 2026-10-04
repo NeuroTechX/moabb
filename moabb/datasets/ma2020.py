@@ -172,8 +172,10 @@ class Ma2020(BaseDataset):
             hardware="Neuroscan SynAmps2",
             sensors=MA2020_CH_NAMES,
             line_freq=50.0,
+            reference="left mastoid",
             ground="AFz",
             impedance_threshold_kohm=5,
+            filters={"bandpass": [0.5, 100.0], "notch": 50.0},
             auxiliary_channels=AuxiliaryChannelsMetadata(
                 has_eog=True,
                 eog_channels=2,
