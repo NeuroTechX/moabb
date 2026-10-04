@@ -230,8 +230,12 @@ class BNCI2016_002(BNCIBaseDataset):
 
     **Participants**
 
-    - 18 subjects (14 males, 4 females) - currently 15 subjects available
-    - Age: 30.6 +/- 5.4 years
+    - 18 subjects (14 males, 4 females) in the original study; 15 subjects are
+      available in the BNCI release and exposed by this loader
+      (``n_subjects=15``; gender split of the released subset unknown)
+    - Age: 30.6 +/- 5.4 years (original study)
+    - Three 45-minute driving blocks per subject, released as one recording
+      per subject and loaded as a single session
     - All healthy with valid driver's licenses
     - Location: Berlin Institute of Technology (TU Berlin), Germany
 
@@ -409,9 +413,8 @@ class BNCI2016_002(BNCIBaseDataset):
             cap_model="Easycap",
         ),
         participants=ParticipantMetadata(
-            n_subjects=18,
+            n_subjects=15,
             health_status="healthy",
-            gender={"male": 14, "female": 4},
             age_mean=30.6,
             age_std=5.4,
             handedness="right-handed",
@@ -460,7 +463,7 @@ class BNCI2016_002(BNCIBaseDataset):
                 "Benjamin Blankertz",
             ],
             institution="Berlin Institute of Technology",
-            country="Germany",
+            country="DE",
             publication_year=2011,
             senior_author="Benjamin Blankertz",
             contact_info=["stefan.haufe@tu-berlin.de"],
@@ -491,7 +494,7 @@ class BNCI2016_002(BNCIBaseDataset):
             license="CC-BY-NC-ND-4.0",
             repository="BNCI Horizon",
         ),
-        sessions_per_subject=3,
+        sessions_per_subject=1,
         runs_per_session=1,
         contributing_labs=[
             "Machine Learning Group, Berlin Institute of Technology",

@@ -239,7 +239,7 @@ class BNCI2019_001(BaseDataset):
             institution="Graz University of Technology",
             institution_department="Institute of Neural Engineering, BCI-Lab",
             institution_address="Graz, Austria",
-            country="Austria",
+            country="AT",
             repository="Zenodo",
             data_url="https://doi.org/10.5281/zenodo.2222268",
             license="CC-BY-4.0",
