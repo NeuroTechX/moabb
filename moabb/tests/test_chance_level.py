@@ -63,3 +63,19 @@ def test_chance_by_chance_is_row_order_invariant_for_valid_input():
     )
 
     assert forward == reversed_rows
+
+
+
+@pytest.mark.parametrize("column", ["samples_test", "n_classes"])
+def test_chance_by_chance_rejects_missing_metadata(column):
+    data = pd.DataFrame(
+        {
+            "dataset": ["A", "A"],
+            "samples_test": [50.0, 50.0],
+            "n_classes": [2.0, 2.0],
+        }
+    )
+    data.loc[1, column] = float("nan")
+
+    with pytest.raises(ValueError, match="requires non-missing"):
+        chance_by_chance(data)
