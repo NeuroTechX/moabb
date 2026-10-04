@@ -135,6 +135,56 @@ def test_plot_critical_difference_uses_subject_balanced_complete_blocks():
     plt.close(fig)
 
 
+def test_plot_critical_difference_macro_averages_repeats_within_session():
+    rows = []
+    session_scores = {
+        "D0": {
+            "P0": {"s0": [1.0, 1.0, 1.0], "s1": [0.0]},
+            "P1": {"s0": [0.6], "s1": [0.6]},
+            "P2": {"s0": [0.4], "s1": [0.4]},
+        },
+        "D1": {
+            "P0": {"s0": [0.9], "s1": [0.9]},
+            "P1": {"s0": [0.8], "s1": [0.8]},
+            "P2": {"s0": [0.7], "s1": [0.7]},
+        },
+    }
+    for dataset, pipelines in session_scores.items():
+        for pipeline, sessions in pipelines.items():
+            for session, repeats in sessions.items():
+                for score in repeats:
+                    rows.append(
+                        {
+                            "dataset": dataset,
+                            "pipeline": pipeline,
+                            "subject": "S0",
+                            "session": session,
+                            "score": score,
+                        }
+                    )
+
+    fig = plot_critical_difference(pd.DataFrame(rows))
+    ranks = sorted(
+        tuple(collection.get_offsets()[0])
+        for collection in fig.axes[0].collections
+        if isinstance(collection, PathCollection)
+        and len(collection.get_offsets()) == 1
+        and collection.get_offsets()[0][1] == 0
+    )
+    # D0 ranks P1 < P0 < P2 after session macro-averaging; D1 ranks
+    # P0 < P1 < P2. Direct row averaging would instead yield [1, 2, 3].
+    np.testing.assert_allclose([rank for rank, _ in ranks], [1.5, 1.5, 3.0])
+    plt.close(fig)
+
+
+def test_plot_critical_difference_rejects_mixed_learning_curve_sizes():
+    data = _make_df(pipelines=("P0", "P1", "P2"))
+    data["data_size"] = np.where(data["dataset"] == "D0", 32, 64)
+
+    with pytest.raises(ValueError, match="single data_size"):
+        plot_critical_difference(data)
+
+
 def test_plot_critical_difference_requires_three_pipelines():
     data = _make_df(pipelines=("P0", "P1"))
     with pytest.raises(ValueError, match="At least three pipelines"):

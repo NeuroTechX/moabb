@@ -436,7 +436,9 @@ def plot_critical_difference(
     dataset). Incomplete dataset-by-pipeline score matrices are rejected
     rather than silently changing the set of benchmark datasets per pair.
     If an ``evaluation`` column is present, all rows must belong to the same
-    evaluation protocol; protocol identity is never averaged away.
+    evaluation protocol; protocol identity is never averaged away. Learning-curve
+    results must also be filtered to a single ``data_size``; permutations at
+    that fixed size are treated as repeated measurements within each session.
 
     References
     ----------
@@ -491,6 +493,21 @@ def plot_critical_difference(
     if selected.empty:
         raise ValueError("No result rows remain after filtering pipelines")
 
+    # Learning-curve rows with different training-set sizes are different
+    # experimental conditions, not repeated measurements of one benchmark block.
+    # Permutations at one fixed size may be averaged, but sizes must be selected
+    # explicitly before computing cross-dataset ranks.
+    if "data_size" in selected.columns:
+        if selected["data_size"].isna().any():
+            raise ValueError("data_size must not contain missing values")
+        data_sizes = selected["data_size"].unique()
+        if len(data_sizes) != 1:
+            raise ValueError(
+                "Critical-difference analysis requires a single data_size; "
+                f"got {data_sizes.tolist()}. Filter the learning-curve results "
+                "to one training-set size before comparison."
+            )
+
     # Validate session coverage before collapse_session_scores() removes
     # session identity. Otherwise a pipeline that is missing one session can
     # still produce a subject-level mean and silently enter the rank comparison
@@ -522,7 +539,27 @@ def plot_critical_difference(
                         f"{reference_pipeline!r} differs from {mismatched}."
                     )
 
-    selected = collapse_session_scores(selected)
+    subject_group = ["pipeline", "dataset", "subject"]
+    if "session" in selected.columns:
+        # Average repeated folds/permutations within each session first, then
+        # average sessions. This makes the documented macro-average literal:
+        # a session with more repeat rows cannot receive more subject-level weight.
+        selected = (
+            selected.groupby(
+                subject_group + ["session"], sort=False, observed=True
+            )["score"]
+            .mean()
+            .reset_index()
+            .groupby(subject_group, sort=False, observed=True)["score"]
+            .mean()
+            .reset_index()
+        )
+    else:
+        selected = (
+            selected.groupby(subject_group, sort=False, observed=True)["score"]
+            .mean()
+            .reset_index()
+        )
 
     # A dataset-level block is comparable only if every pipeline was scored on
     # the same subjects. A rectangular dataset-by-pipeline matrix alone is not
