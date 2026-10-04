@@ -1,6 +1,5 @@
 """Vagaja2023 motor-imagery EEG dataset (embodiment priming + MI-BCI in VR)."""
 
-import logging
 import warnings
 from pathlib import Path
 
@@ -26,8 +25,6 @@ from moabb.datasets.metadata.schema import (
 
 from .utils import download_and_extract_subject_zip, rename_stimulus_codes
 
-
-log = logging.getLogger(__name__)
 
 # The whole study ships as one archive (all subjects, ~2.0 GiB) on the version
 # record 8086086. The plain /records/<id>/files/<name> endpoint serves the bytes
