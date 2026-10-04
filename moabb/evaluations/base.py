@@ -285,9 +285,7 @@ def _evaluate_fold(
                 grid=is_search,
                 eval_type=eval_type,
             )
-            _save_model_cv(
-                model=cvclf, save_path=model_save_path, cv_index=str(cv_ind)
-            )
+            _save_model_cv(model=cvclf, save_path=model_save_path, cv_index=str(cv_ind))
 
     scorer = None if trialwise else _create_scorer(cvclf, scoring)
 

@@ -1060,7 +1060,6 @@ def test_cross_subject_evaluation_materializes_callable_test_fold(
     assert len(train) + len(test) == len(metadata)
 
 
-
 def test_cross_subject_group_kfold_scores_subject_sessions_separately(tmp_path):
     """A multi-subject test fold must not merge equal session labels."""
     X = np.arange(16, dtype=float).reshape(8, 2)
@@ -1139,10 +1138,7 @@ def test_cross_subject_task_builder_uses_all_held_out_subject_work_plans(tmp_pat
         n_splits=2,
     )
     metadata = pd.DataFrame(
-        {
-            "subject": np.repeat([1, 2, 3, 4], 2),
-            "session": ["0", "1"] * 4,
-        }
+        {"subject": np.repeat([1, 2, 3, 4], 2), "session": ["0", "1"] * 4}
     )
     y = np.array([0, 1] * 4)
     splitter = evaluation._create_splitter()
@@ -1170,6 +1166,7 @@ def test_cross_subject_task_builder_uses_all_held_out_subject_work_plans(tmp_pat
     assert tasks[0]["subject"] == target_subject
     assert tasks[0]["score_subjects"] == [target_subject]
     assert target_subject in set(metadata.iloc[tasks[0]["test_idx"]]["subject"])
+
 
 class Test_CrossSubj(TestWithinSess):
     def setup_method(self):
