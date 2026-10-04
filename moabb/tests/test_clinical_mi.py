@@ -68,6 +68,26 @@ def test_milimb_rejects_trial_one_sample_short(tmp_path):
         MILimbEEG()._read_trial(path)
 
 
+def test_milimb_parses_mendeley_v2_nan_header(tmp_path):
+    # Subjects S4 and S7 of the Mendeley v2 export ship a different header
+    # variant: the first field is the string ``NaN`` instead of empty, so
+    # ``float(x)`` succeeds for every field on the first line (pandas and
+    # Python both parse ``"NaN"`` as a float). The loader must still detect
+    # this as a header; otherwise it reads 501 rows and raises the
+    # ``four-second`` length check. Regression for the 124 trials across
+    # S4 and S7 (62 CSVs each) that failed convert after fix 7f14447d4.
+    path = tmp_path / "S4R1I2_1.csv"
+    header = "NaN," + ",".join(str(i) for i in range(16))
+    rows = [
+        ",".join([str(t)] + [f"{t + 0.25:.4f}" for _ in range(16)]) for t in range(500)
+    ]
+    path.write_text("\n".join([header, *rows]) + "\n")
+    data = MILimbEEG()._read_trial(path)
+    assert data.shape == (16, 500)
+    np.testing.assert_allclose(data[:, 0], 0.25e-6)
+    np.testing.assert_allclose(data[:, -1], (499 + 0.25) * 1e-6)
+
+
 def test_milimb_parses_mendeley_v2_numeric_header(tmp_path):
     # The Mendeley v2 export writes a header row that starts with an empty
     # cell and then the integer column indices ``0..15``. pandas' type

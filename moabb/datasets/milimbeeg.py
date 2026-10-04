@@ -1,6 +1,7 @@
 """MILimbEEG motor and motor-imagery limb dataset (Asanza et al., 2023)."""
 
 import glob
+import math
 import re
 from pathlib import Path
 
@@ -242,21 +243,51 @@ class MILimbEEG(BaseDataset):
     def _read_trial(self, csv_file):
         """Read one per-trial CSV as a (n_channels, n_times) array in volts.
 
-        Files hold an optional leading sample-index column plus the 16 electrode
-        columns, x time-sample rows, in microvolts; the Mendeley v2 export ships
-        a header row where the first field is empty and the remaining fields are
-        the integer column indices 0..15. Peeking at the raw first line and
-        trying to parse every field as a float is enough to detect that header
-        (and the all-string header variant some older exports used) without
-        depending on pandas' type inference.
+        Files hold an optional leading sample-index column plus the 16
+        electrode columns, x time-sample rows, in microvolts. The Mendeley
+        v2 export ships two header variants:
+
+        * most subjects: first field empty, remaining fields the integer
+          column indices ``0..15`` (``,0,1,...,15``);
+        * subjects S4 and S7: first field is literally ``"NaN"`` instead of
+          empty (``NaN,0,1,...,15``), which ``float()`` and pandas both
+          parse happily, so a naive ``try: float(x) for x in first_line``
+          sniff mis-detects these files as header-less, reads 501 rows,
+          and raises ``four-second`` on every one of the 124 affected
+          trials (62 CSVs each in S4 and S7).
+
+        We detect either variant by peeking at the raw first line: a
+        ``ValueError`` on any field flags the empty-leading header (variant
+        A); a successfully-parsed first line whose leading value is NaN or
+        empty **and** whose remaining values are the sequential column
+        indices ``0, 1, ..., N-1`` flags the NaN-leading header (variant
+        B). All-text headers from older exports still fall through variant
+        A. Short trials (fewer than ``4 * SFREQ`` samples) remain a hard
+        error — the dataset-wide scan confirmed every real file has
+        exactly 500 data rows, so there is no honest ground to tolerate or
+        pad shorter stored trials.
         """
         with open(csv_file) as fh:
             first_line = fh.readline()
+        fields = first_line.rstrip("\r\n").split(",")
+        header = 0
         try:
-            [float(x) for x in first_line.rstrip("\r\n").split(",")]
-            header = None
+            values = [float(x) for x in fields]
         except ValueError:
-            header = 0
+            # Mendeley v2 variant A: empty leading cell, or an all-text
+            # header from an older export.
+            pass
+        else:
+            leading_header = len(values) >= 2 and (
+                fields[0] == "" or math.isnan(values[0])
+            )
+            index_header = values[1:] == [float(i) for i in range(len(values) - 1)]
+            if leading_header and index_header:
+                # Mendeley v2 variant B: ``NaN,0,1,...,15`` header row
+                # (observed in S4 and S7).
+                header = 0
+            else:
+                header = None
         frame = pd.read_csv(csv_file, header=header)
         data = frame.to_numpy(dtype=float)
         if data.shape[1] != len(CHANNELS) and data.shape[0] == len(CHANNELS):
