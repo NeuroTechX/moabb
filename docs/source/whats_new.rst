@@ -27,7 +27,10 @@ Enhancements
 
 API changes
 ~~~~~~~~~~~
-- None yet.
+- :class:`moabb.evaluations.CrossSessionEvaluation` custom cross-validation
+  folds that hold out multiple sessions now emit one result row per held-out
+  session instead of one aggregate row per fold. The default leave-one-session-out
+  behavior is unchanged (:gh:`1210` by `lindicaphxag-tech`_).
 
 Requirements
 ~~~~~~~~~~~~
