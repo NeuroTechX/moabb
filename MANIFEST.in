@@ -2,6 +2,7 @@ include README.md
 include LICENSE
 
 include moabb/datasets/summary_*.csv
+recursive-include moabb/pipelines/configs *.yml *.py
 
 recursive-include docs *.ipynb *.rst conf.py Makefile
 recursive-exclude docs *checkpoint.ipynb
