@@ -24,11 +24,15 @@ Version 1.8  (Source - GitHub)
 Enhancements
 ~~~~~~~~~~~~
 - Add Batista2022, Farabbi2020, Han2026, Kodera2023 and Kueper2024 dataset loaders (:gh:`1194`).
+- Add :func:`moabb.analysis.plotting.plot_critical_difference` for comparing pipelines across complete multi-dataset benchmarks with Friedman ranks and Nemenyi critical-difference groups (:gh:`1127` by `lindicaphxag-tech`_).
 - Spell MNE's renamed template montages everywhere: MNE 1.13 renamed ``standard_1005``/``standard_1020`` (and the other ``standard_*`` templates) to ``colin27_*`` (identical electrode files), warns on the old names and MNE 1.14 removes them, so every ``make_standard_montage``/``set_montage`` call in MOABB now spells ``colin27_*``. ``METADATA`` montage labels are descriptive and unchanged (:gh:`1200` by `Bruno Aristimunha`_).
 
 API changes
 ~~~~~~~~~~~
-- None yet.
+- :class:`moabb.evaluations.CrossSessionEvaluation` custom cross-validation
+  folds that hold out multiple sessions now emit one result row per held-out
+  session instead of one aggregate row per fold. The default leave-one-session-out
+  behavior is unchanged (:gh:`1210` by `lindicaphxag-tech`_).
 
 Requirements
 ~~~~~~~~~~~~
@@ -36,11 +40,21 @@ Requirements
 
 Bugs
 ~~~~
+- Keep :class:`moabb.evaluations.CrossSessionEvaluation` result provenance
+  session-specific when a custom cross-validator holds out more than one recording
+  session in the same fold. The estimator is still fitted once per fold, but each
+  held-out session is scored and stored separately, matching the evaluation's
+  session-level result contract in both the flattened and legacy execution paths
+  (by `lindicaphxag-tech`_).
+- Fix metadata-aware splitters collapsing distinct compound groups when column values contain the ``-`` separator. Multi-column group identities now use a canonical collision-free encoding, preserving the intended cross-validation and leakage boundary (by `lindicaphxag-tech`_).
+- Make :func:`moabb.analysis.chance_level.chance_by_chance` independent of result-row order when test-fold sizes vary: dataset-level adjusted thresholds now take the strictest exact-binomial cutoff across the fold sizes actually present (the cutoff is discrete and not strictly monotone in fold size), while inconsistent class counts are rejected (by `lindicaphxag-tech`_).
+- Fix ``SSVEP_TRCA`` trial centering: the inter-trial covariance step subtracted the mean across channels at each sample instead of each channel's mean over time, and did it in place on the filterbank data it received, which also fed ``Q`` and the class templates. Centering is now per channel over time, on a copy (:gh:`1183` by `Arthur031221`_).
 - Use ``gmean`` in TRCA and TRCSP for compatibility with pyRiemann 0.12 and 0.13, and pass the TRCSP mean metric by keyword (by `Bruno Aristimunha`_).
 - Fix the ``-e``/``--evaluations`` flag of ``python -m moabb.run``, which used ``type=list`` and so split its value into single characters: ``-e WithinSession`` reached :func:`moabb.benchmark` as ``['W', 'i', 't', ...]`` and raised ``KeyError: 'W'``. It now takes one or more evaluation names, space separated (by `Iain`_)
 - Fix the two install pages asking for optional extras MOABB does not have: the pip install page gave ``pip install moabb[deepleaning,carbonemission,docs]``, which is missing the ``r`` of ``deeplearning``, and pip only warns about an unrecognised extra, so following that page left ``braindecode`` uninstalled. The from-sources page asked for ``external``, removed in 1.2.0 (by `Iain`_).
 - Fix evaluations passing NumPy arrays instead of :class:`mne.Epochs` to :class:`moabb.pipelines.classification.SSVEP_itCCA` and :class:`moabb.pipelines.classification.SSVEP_eCCA`, whose ``fit`` then raised ``ValueError: X should be an MNE Epochs object.`` The check that switches an evaluation to epochs only listed ``SSVEP_CCA``, ``SSVEP_TRCA`` and ``SSVEP_MsetCCA`` (by `Arthur031221`_)
 - Fix :func:`moabb.analysis.meta_analysis.compute_pvals_wilcoxon` reporting the wrong tail when the sign of the mean paired difference disagrees with the signed-rank statistic: the one-tailed p-value is now taken directly from ``scipy.stats.wilcoxon(..., alternative="greater")`` instead of halving the two-sided value and choosing the side from the mean (:gh:`1177` by `Azra Bano`_)
+- Resample the 600 Hz recordings of subject ``zdvm`` (bases 2, 3, 5 and 7) in :class:`moabb.datasets.MartinezCagigal2023Pary` to the declared 256 Hz on load, fixing the ``ValueError`` raised when the ``CVEP`` paradigm concatenated the 601-sample epochs of those sessions with the 257-sample epochs of every other recording (:gh:`1201` by `LiQing`_)
 
 Code health
 ~~~~~~~~~~~
@@ -986,6 +1000,7 @@ API changes
 - None
 
 .. _Ethan Davis: https://github.com/davisethan
+.. _LiQing: https://github.com/qinxwew
 .. _Zheyu Yao: https://github.com/zyao197
 .. _Martin Wimpff: https://github.com/martinwimpff
 .. _Reinmar Kobler: https://github.com/rkobler
@@ -1064,3 +1079,5 @@ API changes
 .. _Iain: https://github.com/NotAFlightRisk
 .. _Anna Sokolova: https://github.com/ZyntZ
 .. _Arthur031221: https://github.com/Arthur031221
+
+.. _lindicaphxag-tech: https://github.com/lindicaphxag-tech
