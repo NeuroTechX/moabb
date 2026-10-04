@@ -24,8 +24,13 @@ def chance_by_chance(
         alpha = [alpha]
     result = {}
     for dname, grp in data.groupby("dataset"):
-        n_classes_values = grp["n_classes"].dropna().unique()
-        n_trials_values = grp["samples_test"].dropna().unique()
+        if grp[["n_classes", "samples_test"]].isna().any().any():
+            raise ValueError(
+                "Adjusted chance level requires non-missing n_classes and "
+                f"samples_test values for every row of dataset {dname!r}."
+            )
+        n_classes_values = grp["n_classes"].unique()
+        n_trials_values = grp["samples_test"].unique()
         if len(n_classes_values) != 1 or len(n_trials_values) != 1:
             raise ValueError(
                 "Adjusted chance level requires one n_classes and one samples_test "
