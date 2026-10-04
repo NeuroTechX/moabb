@@ -711,6 +711,10 @@ Here, we will use the BNCI2014_001 dataset and the LeftRightImagery paradigm.</p
 </span><span class="w">
 </span><a class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery"><span class="n">paradigm</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class reference internal" href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery"><span class="n">LeftRightImagery</span></a><span class="p">(</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/optuna/integration/sklearn.py:14: FutureWarning: `optuna.integration.sklearn` has been deprecated in v4.9.0. This feature will be removed in v6.0.0. See https://github.com/optuna/optuna/releases/tag/v4.9.0. Use `optuna_integration.sklearn` instead.
+  optuna_warn(f"{msg} Use `optuna_integration.sklearn` instead.", FutureWarning)
+</pre></div>
+</div>
 </section>
 <section id="exposing-the-pre-processing-steps">
 <h2>Exposing the pre-processing steps<a class="headerlink" href="#exposing-the-pre-processing-steps" title="Link to this heading">#</a></h2>
@@ -4357,7 +4361,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
             func: callable, default=None<br><br>The callable to use for the transformation. This will be passed<br>the same arguments as transform, with args and kwargs forwarded.<br>If func is None, then func will be the identity function.</span>
         </a>
     </td>
-            <td class="value">&lt;function min...x7fe1d7b211c0&gt;</td>
+            <td class="value">&lt;function min...x7f911474a840&gt;</td>
         </tr>
 
 
@@ -5070,9 +5074,10 @@ Wairagkar2018 not compatible with CrossSessionEvaluation: dataset has only 1 ses
 Weibo2014 not compatible with CrossSessionEvaluation: dataset has only 1 session(s), but CrossSessionEvaluation requires at least 2 sessions. Removing this dataset from the list.
 Wu2020 not compatible with CrossSessionEvaluation: dataset has only 1 session(s), but CrossSessionEvaluation requires at least 2 sessions. Removing this dataset from the list.
 
-BNCI2014-001-CrossSession:   0%|          | 0/1 [00:00&lt;?, ?it/s]
-BNCI2014-001-CrossSession: 100%|██████████| 1/1 [00:05&lt;00:00,  5.10s/it]
-BNCI2014-001-CrossSession: 100%|██████████| 1/1 [00:05&lt;00:00,  5.10s/it]
+BNCI2014-001-CrossSession:   0%|          | 0/1 [00:00&lt;?, ?it/s][codecarbon WARNING @ 16:08:10] Multiple instances of codecarbon are allowed to run at the same time.
+
+BNCI2014-001-CrossSession: 100%|██████████| 1/1 [00:06&lt;00:00,  6.27s/it]
+BNCI2014-001-CrossSession: 100%|██████████| 1/1 [00:06&lt;00:00,  6.27s/it]
 </pre></div>
 </div>
 </section>
@@ -5093,7 +5098,7 @@ BNCI2014-001-CrossSession: 100%|██████████| 1/1 [00:05&lt;00
 <img src="../../_images/sphx_glr_plot_pre_processing_steps_001.png" srcset="../../_images/sphx_glr_plot_pre_processing_steps_001.png" alt="Results of the evaluation with custom pre-processing steps" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Axes: title={'center': 'Results of the evaluation with custom pre-processing steps'}, xlabel='Pipeline', ylabel='Score'&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 5.305 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 12.072 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-pre-processing-steps-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/5c253279cf67626fd4e913feb6c12336/plot_pre_processing_steps.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_pre_processing_steps.ipynb</span></code></a></p>
