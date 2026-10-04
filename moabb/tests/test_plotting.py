@@ -177,6 +177,30 @@ def test_plot_critical_difference_macro_averages_repeats_within_session():
     plt.close(fig)
 
 
+def test_plot_critical_difference_rejects_mismatched_permutations():
+    rows = []
+    for dataset in ("D0", "D1"):
+        for pipeline in ("P0", "P1", "P2"):
+            permutations = (1, 2, 3)
+            if dataset == "D0" and pipeline == "P1":
+                permutations = (1, 2)
+            for permutation in permutations:
+                rows.append(
+                    {
+                        "dataset": dataset,
+                        "pipeline": pipeline,
+                        "subject": "S0",
+                        "session": "s0",
+                        "data_size": 32,
+                        "permutation": permutation,
+                        "score": 0.5 + 0.01 * permutation,
+                    }
+                )
+
+    with pytest.raises(ValueError, match="same permutations"):
+        plot_critical_difference(pd.DataFrame(rows))
+
+
 def test_plot_critical_difference_rejects_mixed_learning_curve_sizes():
     data = _make_df(pipelines=("P0", "P1", "P2"))
     data["data_size"] = np.where(data["dataset"] == "D0", 32, 64)

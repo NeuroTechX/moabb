@@ -438,7 +438,8 @@ def plot_critical_difference(
     If an ``evaluation`` column is present, all rows must belong to the same
     evaluation protocol; protocol identity is never averaged away. Learning-curve
     results must also be filtered to a single ``data_size``; permutations at
-    that fixed size are treated as repeated measurements within each session.
+    that fixed size are treated as repeated measurements within each session,
+    and every pipeline must contain the same permutation identities per block.
 
     References
     ----------
@@ -537,6 +538,38 @@ def plot_critical_difference(
                         "for every pipeline within each dataset/subject block; "
                         f"dataset={dataset!r}, subject={subject!r}, "
                         f"{reference_pipeline!r} differs from {mismatched}."
+                    )
+
+    if "permutation" in selected.columns:
+        if selected["permutation"].isna().any():
+            raise ValueError("permutation must not contain missing values")
+        repeat_group = ["dataset", "subject"]
+        if "session" in selected.columns:
+            repeat_group.append("session")
+        for block_key, block_scores in selected.groupby(
+            repeat_group, sort=False, observed=True
+        ):
+            permutation_sets = {
+                pipeline: frozenset(pipeline_scores["permutation"])
+                for pipeline, pipeline_scores in block_scores.groupby(
+                    "pipeline", sort=False, observed=True
+                )
+            }
+            if permutation_sets:
+                reference_pipeline, reference_permutations = next(
+                    iter(permutation_sets.items())
+                )
+                mismatched = [
+                    pipeline
+                    for pipeline, permutations in permutation_sets.items()
+                    if permutations != reference_permutations
+                ]
+                if mismatched:
+                    raise ValueError(
+                        "Critical-difference analysis requires the same permutations "
+                        "for every pipeline within each repeated-measurement block; "
+                        f"block={block_key!r}, {reference_pipeline!r} differs from "
+                        f"{mismatched}."
                     )
 
     subject_group = ["pipeline", "dataset", "subject"]
