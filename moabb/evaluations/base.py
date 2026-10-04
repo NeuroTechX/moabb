@@ -873,8 +873,7 @@ class BaseEvaluation(ABC):
                 if subject not in work_plan:
                     continue
                 task_specs = [
-                    (name, clf, subject, None)
-                    for name, clf in work_plan[subject].items()
+                    (name, clf, subject, None) for name, clf in work_plan[subject].items()
                 ]
 
             for name, clf, subject, score_subjects in task_specs:

@@ -1787,9 +1787,7 @@ class TestParallelProcess:
 
     def test_cross_subject_multisubject_fold_preserves_provenance(self, tmp_path):
         """A fold holding out multiple subjects is scored per subject/session."""
-        ds = FakeDataset(
-            ["left_hand", "right_hand"], n_subjects=4, n_sessions=2, seed=23
-        )
+        ds = FakeDataset(["left_hand", "right_hand"], n_subjects=4, n_sessions=2, seed=23)
         paradigm = FakeImageryParadigm()
         evaluation = ev.CrossSubjectEvaluation(
             paradigm=paradigm,
@@ -1804,9 +1802,7 @@ class TestParallelProcess:
 
         assert len(results) == 8
         assert set(results["subject"]) == {str(subject) for subject in ds.subject_list}
-        assert (
-            results.groupby(["subject", "session"], observed=True).size() == 1
-        ).all()
+        assert (results.groupby(["subject", "session"], observed=True).size() == 1).all()
 
         _, _, metadata = paradigm.get_data(ds)
         metadata = metadata.copy()
@@ -1814,9 +1810,7 @@ class TestParallelProcess:
         expected_sizes = metadata.groupby(["subject", "session"], observed=True).size()
         actual_sizes = results.set_index(["subject", "session"])["samples_test"]
         actual_sizes = actual_sizes.reindex(expected_sizes.index)
-        np.testing.assert_array_equal(
-            actual_sizes.to_numpy(), expected_sizes.to_numpy()
-        )
+        np.testing.assert_array_equal(actual_sizes.to_numpy(), expected_sizes.to_numpy())
 
         for subject in ds.subject_list:
             model_dir = (
@@ -1832,9 +1826,7 @@ class TestParallelProcess:
 
     def test_cross_subject_multisubject_fold_respects_partial_work_plan(self, tmp_path):
         """A cached first subject must not suppress work for another held-out subject."""
-        ds = FakeDataset(
-            ["left_hand", "right_hand"], n_subjects=4, n_sessions=2, seed=42
-        )
+        ds = FakeDataset(["left_hand", "right_hand"], n_subjects=4, n_sessions=2, seed=42)
         evaluation = ev.CrossSubjectEvaluation(
             paradigm=FakeImageryParadigm(),
             datasets=[ds],
@@ -1879,9 +1871,7 @@ class TestParallelProcess:
                 type(self).fit_calls += 1
                 return super().fit(X, y, sample_weight=sample_weight)
 
-        ds = FakeDataset(
-            ["left_hand", "right_hand"], n_subjects=4, n_sessions=2, seed=42
-        )
+        ds = FakeDataset(["left_hand", "right_hand"], n_subjects=4, n_sessions=2, seed=42)
         paradigm = FakeImageryParadigm()
         evaluation = ev.CrossSubjectEvaluation(
             paradigm=paradigm,
