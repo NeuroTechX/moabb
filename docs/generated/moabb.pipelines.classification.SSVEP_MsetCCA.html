@@ -801,6 +801,7 @@
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="moabb.analysis.plotting.score_plot.html">moabb.analysis.plotting.score_plot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.analysis.plotting.plot_critical_difference.html">moabb.analysis.plotting.plot_critical_difference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.analysis.plotting.paired_plot.html">moabb.analysis.plotting.paired_plot</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.analysis.plotting.summary_plot.html">moabb.analysis.plotting.summary_plot</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.analysis.plotting.meta_analysis_plot.html">moabb.analysis.plotting.meta_analysis_plot</a></li>
@@ -887,7 +888,7 @@
 <h1>moabb.pipelines.classification.SSVEP_MsetCCA<a class="headerlink" href="#moabb-pipelines-classification-ssvep-msetcca" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="moabb.pipelines.classification.SSVEP_MsetCCA">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">moabb.pipelines.classification.</span></span><span class="sig-name descname"><span class="pre">SSVEP_MsetCCA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/pipelines/classification.py#L969-L1275"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.classification.SSVEP_MsetCCA" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">moabb.pipelines.classification.</span></span><span class="sig-name descname"><span class="pre">SSVEP_MsetCCA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/pipelines/classification.py#L967-L1273"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.classification.SSVEP_MsetCCA" title="Link to this definition">#</a></dt>
 <dd><p>Multi-set Canonical Correlation Analysis (MsetCCA) for SSVEP detection <a class="reference internal" href="#r59288fba6272-1" id="id1">[1]</a>.</p>
 <p>MsetCCA learns optimal reference signals from training data rather than using
 predefined sinusoidal references as in standard CCA. It maximizes the correlation
@@ -1043,7 +1044,7 @@ to use averaging instead of concatenation, matching the original algorithm.</p>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.pipelines.classification.SSVEP_MsetCCA.fit">
-<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/pipelines/classification.py#L1113-L1210"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.classification.SSVEP_MsetCCA.fit" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/pipelines/classification.py#L1111-L1208"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.classification.SSVEP_MsetCCA.fit" title="Link to this definition">#</a></dt>
 <dd><p>Compute the optimized reference signal at each stimulus frequency.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1063,7 +1064,7 @@ to use averaging instead of concatenation, matching the original algorithm.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.pipelines.classification.SSVEP_MsetCCA.predict">
-<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/pipelines/classification.py#L1212-L1242"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.classification.SSVEP_MsetCCA.predict" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/pipelines/classification.py#L1210-L1240"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.classification.SSVEP_MsetCCA.predict" title="Link to this definition">#</a></dt>
 <dd><p>Predict is made by taking the maximum correlation coefficient.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1080,7 +1081,7 @@ to use averaging instead of concatenation, matching the original algorithm.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.pipelines.classification.SSVEP_MsetCCA.predict_proba">
-<span class="sig-name descname"><span class="pre">predict_proba</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/pipelines/classification.py#L1244-L1275"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.classification.SSVEP_MsetCCA.predict_proba" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">predict_proba</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/pipelines/classification.py#L1242-L1273"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.classification.SSVEP_MsetCCA.predict_proba" title="Link to this definition">#</a></dt>
 <dd><p>Probability could be computed from the correlation coefficient.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

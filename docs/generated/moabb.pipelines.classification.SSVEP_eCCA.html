@@ -801,6 +801,7 @@
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="moabb.analysis.plotting.score_plot.html">moabb.analysis.plotting.score_plot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.analysis.plotting.plot_critical_difference.html">moabb.analysis.plotting.plot_critical_difference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.analysis.plotting.paired_plot.html">moabb.analysis.plotting.paired_plot</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.analysis.plotting.summary_plot.html">moabb.analysis.plotting.summary_plot</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.analysis.plotting.meta_analysis_plot.html">moabb.analysis.plotting.meta_analysis_plot</a></li>
@@ -887,7 +888,7 @@
 <h1>moabb.pipelines.classification.SSVEP_eCCA<a class="headerlink" href="#moabb-pipelines-classification-ssvep-ecca" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="moabb.pipelines.classification.SSVEP_eCCA">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">moabb.pipelines.classification.</span></span><span class="sig-name descname"><span class="pre">SSVEP_eCCA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_harmonics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/pipelines/classification.py#L1429-L1644"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.classification.SSVEP_eCCA" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">moabb.pipelines.classification.</span></span><span class="sig-name descname"><span class="pre">SSVEP_eCCA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_harmonics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/pipelines/classification.py#L1427-L1642"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.classification.SSVEP_eCCA" title="Link to this definition">#</a></dt>
 <dd><p>Extended CCA (eCCA) for SSVEP detection <a class="reference internal" href="#rd15f3b9780b1-1" id="id1">[1]</a>.</p>
 <p>Extended CCA combines standard CCA with individual template CCA through a
 multi-feature fusion approach. It computes four correlation features that
@@ -1034,7 +1035,7 @@ PLOS ONE, 10(12), e0140703.
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.pipelines.classification.SSVEP_eCCA.fit">
-<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/pipelines/classification.py#L1524-L1571"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.classification.SSVEP_eCCA.fit" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/pipelines/classification.py#L1522-L1569"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.classification.SSVEP_eCCA.fit" title="Link to this definition">#</a></dt>
 <dd><p>Compute individual templates, sinusoidal references, and spatial filters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1056,7 +1057,7 @@ of shape <code class="docutils literal notranslate"><span class="pre">(n_trials,
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.pipelines.classification.SSVEP_eCCA.predict">
-<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/pipelines/classification.py#L1573-L1607"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.classification.SSVEP_eCCA.predict" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/pipelines/classification.py#L1571-L1605"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.classification.SSVEP_eCCA.predict" title="Link to this definition">#</a></dt>
 <dd><p>Predict class labels using 4-feature fusion.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1073,7 +1074,7 @@ of shape <code class="docutils literal notranslate"><span class="pre">(n_trials,
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.pipelines.classification.SSVEP_eCCA.predict_proba">
-<span class="sig-name descname"><span class="pre">predict_proba</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/pipelines/classification.py#L1609-L1644"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.classification.SSVEP_eCCA.predict_proba" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">predict_proba</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/pipelines/classification.py#L1607-L1642"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.classification.SSVEP_eCCA.predict_proba" title="Link to this definition">#</a></dt>
 <dd><p>Predict class probabilities from fused correlation features.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

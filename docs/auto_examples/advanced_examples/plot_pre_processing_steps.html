@@ -4357,7 +4357,7 @@ events: [left_hand, right_hand, feet, tongue] | interval: [2, 6]</div></div></la
             func: callable, default=None<br><br>The callable to use for the transformation. This will be passed<br>the same arguments as transform, with args and kwargs forwarded.<br>If func is None, then func will be the identity function.</span>
         </a>
     </td>
-            <td class="value">&lt;function min...x7f50e4bea3e0&gt;</td>
+            <td class="value">&lt;function min...x7fe1d7b211c0&gt;</td>
         </tr>
 
 
@@ -5053,9 +5053,26 @@ Here, we will use the <cite>DummyClassifier</cite> from sklearn to run the evalu
 </span><span class="c1"># of the evaluation. You can use the `list` function to convert it to a list.</span><span class="w">
 </span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">results</span></a> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">generator_results</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>BNCI2014-001-CrossSession:   0%|          | 0/1 [00:00&lt;?, ?it/s]
-BNCI2014-001-CrossSession: 100%|██████████| 1/1 [00:02&lt;00:00,  2.57s/it]
-BNCI2014-001-CrossSession: 100%|██████████| 1/1 [00:02&lt;00:00,  2.57s/it]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Beetl2021-A not compatible with CrossSessionEvaluation: dataset has only 1 session(s), but CrossSessionEvaluation requires at least 2 sessions. Removing this dataset from the list.
+Beetl2021-B not compatible with CrossSessionEvaluation: dataset has only 1 session(s), but CrossSessionEvaluation requires at least 2 sessions. Removing this dataset from the list.
+Brandl2020 not compatible with CrossSessionEvaluation: dataset has only 1 session(s), but CrossSessionEvaluation requires at least 2 sessions. Removing this dataset from the list.
+Cho2017 not compatible with CrossSessionEvaluation: dataset has only 1 session(s), but CrossSessionEvaluation requires at least 2 sessions. Removing this dataset from the list.
+Dreyer2023 not compatible with CrossSessionEvaluation: dataset has only 1 session(s), but CrossSessionEvaluation requires at least 2 sessions. Removing this dataset from the list.
+Dreyer2023A not compatible with CrossSessionEvaluation: dataset has only 1 session(s), but CrossSessionEvaluation requires at least 2 sessions. Removing this dataset from the list.
+Dreyer2023B not compatible with CrossSessionEvaluation: dataset has only 1 session(s), but CrossSessionEvaluation requires at least 2 sessions. Removing this dataset from the list.
+Dreyer2023C not compatible with CrossSessionEvaluation: dataset has only 1 session(s), but CrossSessionEvaluation requires at least 2 sessions. Removing this dataset from the list.
+GrosseWentrup2009 not compatible with CrossSessionEvaluation: dataset has only 1 session(s), but CrossSessionEvaluation requires at least 2 sessions. Removing this dataset from the list.
+Kaya2018 not compatible with CrossSessionEvaluation: dataset has only 1 session(s), but CrossSessionEvaluation requires at least 2 sessions. Removing this dataset from the list.
+Liu2024 not compatible with CrossSessionEvaluation: dataset has only 1 session(s), but CrossSessionEvaluation requires at least 2 sessions. Removing this dataset from the list.
+PhysionetMotorImagery not compatible with CrossSessionEvaluation: dataset has only 1 session(s), but CrossSessionEvaluation requires at least 2 sessions. Removing this dataset from the list.
+Schirrmeister2017 not compatible with CrossSessionEvaluation: dataset has only 1 session(s), but CrossSessionEvaluation requires at least 2 sessions. Removing this dataset from the list.
+Wairagkar2018 not compatible with CrossSessionEvaluation: dataset has only 1 session(s), but CrossSessionEvaluation requires at least 2 sessions. Removing this dataset from the list.
+Weibo2014 not compatible with CrossSessionEvaluation: dataset has only 1 session(s), but CrossSessionEvaluation requires at least 2 sessions. Removing this dataset from the list.
+Wu2020 not compatible with CrossSessionEvaluation: dataset has only 1 session(s), but CrossSessionEvaluation requires at least 2 sessions. Removing this dataset from the list.
+
+BNCI2014-001-CrossSession:   0%|          | 0/1 [00:00&lt;?, ?it/s]
+BNCI2014-001-CrossSession: 100%|██████████| 1/1 [00:05&lt;00:00,  5.10s/it]
+BNCI2014-001-CrossSession: 100%|██████████| 1/1 [00:05&lt;00:00,  5.10s/it]
 </pre></div>
 </div>
 </section>
@@ -5076,7 +5093,7 @@ BNCI2014-001-CrossSession: 100%|██████████| 1/1 [00:02&lt;00
 <img src="../../_images/sphx_glr_plot_pre_processing_steps_001.png" srcset="../../_images/sphx_glr_plot_pre_processing_steps_001.png" alt="Results of the evaluation with custom pre-processing steps" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Axes: title={'center': 'Results of the evaluation with custom pre-processing steps'}, xlabel='Pipeline', ylabel='Score'&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.670 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 5.305 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-pre-processing-steps-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/5c253279cf67626fd4e913feb6c12336/plot_pre_processing_steps.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_pre_processing_steps.ipynb</span></code></a></p>
