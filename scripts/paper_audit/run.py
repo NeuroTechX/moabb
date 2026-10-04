@@ -24,7 +24,7 @@ from scripts.paper_audit.fetch import (
     DEFAULT_CACHE,
     DEFAULT_DEEP_CEILING,
     DeepCeilingIndex,
-    fetch_dataset,
+    fetch_inventory,
 )
 from scripts.paper_audit.inventory import build_inventory, write_inventory
 from scripts.paper_audit.sources import HttpClient
@@ -68,16 +68,17 @@ def run(
     index = DeepCeilingIndex.from_repo(deep_ceiling)
     client = None if offline else HttpClient()
     stats = {"access": {}, "requests": 0, "datasets": len(records)}
-    for i, rec in enumerate(records, 1):
-        log.info("[%d/%d] %s", i, len(records), rec.name)
-        fetched = fetch_dataset(
-            rec,
-            cache,
-            client=client,
-            deep_ceiling=index,
-            offline=offline,
-            refresh=refresh,
-        )
+    fetched_by_name = fetch_inventory(
+        records,
+        cache,
+        deep_ceiling=index,
+        offline=offline,
+        client=client,
+        refresh=refresh,
+        progress=lambda i, n, name: log.info("[%d/%d] %s", i, n, name),
+    )
+    for rec in records:
+        fetched = fetched_by_name[rec.name]
         stats["access"][fetched.access] = stats["access"].get(fetched.access, 0) + 1
         notes = None
         if agent_notes_dir and (Path(agent_notes_dir) / f"{rec.name}.json").exists():
