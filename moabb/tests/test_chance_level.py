@@ -28,11 +28,7 @@ def test_chance_by_chance():
 
 def test_chance_by_chance_uses_conservative_smallest_test_fold():
     data = pd.DataFrame(
-        {
-            "dataset": ["A", "A"],
-            "samples_test": [100, 50],
-            "n_classes": [2, 2],
-        }
+        {"dataset": ["A", "A"], "samples_test": [100, 50], "n_classes": [2, 2]}
     )
 
     levels = chance_by_chance(data, alpha=0.05)
@@ -40,19 +36,13 @@ def test_chance_by_chance_uses_conservative_smallest_test_fold():
     expected = adjusted_chance_level(2, 50, 0.05)
     assert levels["A"]["adjusted"][0.05] == expected
 
-    reversed_levels = chance_by_chance(
-        data.iloc[::-1].reset_index(drop=True), alpha=0.05
-    )
+    reversed_levels = chance_by_chance(data.iloc[::-1].reset_index(drop=True), alpha=0.05)
     assert reversed_levels == levels
 
 
 def test_chance_by_chance_rejects_ambiguous_class_count():
     data = pd.DataFrame(
-        {
-            "dataset": ["A", "A"],
-            "samples_test": [50, 100],
-            "n_classes": [2, 3],
-        }
+        {"dataset": ["A", "A"], "samples_test": [50, 100], "n_classes": [2, 3]}
     )
 
     with pytest.raises(ValueError, match="requires one n_classes"):
