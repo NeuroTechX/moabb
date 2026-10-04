@@ -23,6 +23,7 @@ Version 1.8  (Source - GitHub)
 
 Enhancements
 ~~~~~~~~~~~~
+- Add Jia2019, MIBMPI2024, Ortiz2023 and Wang2025 motor-imagery loaders (:gh:`1190` by `Bruno Aristimunha`_).
 - Add three OpenNeuro motor-imagery datasets: :class:`moabb.datasets.Peterson2020`, :class:`moabb.datasets.Daly2020`, and :class:`moabb.datasets.Damm2026` (:pr:`1189`, by `Bruno Aristimunha`_).
 - Add :class:`moabb.datasets.NETBCI2026` (NETBCI, Recherche Data Gouv doi:10.57745/RBJRC7): 19 subjects, 74-channel EEG, right-hand motor imagery vs rest over 4 longitudinal sessions x 6 online feedback runs; per-subject EEG is read out of the 49 GB archive by HTTP range requests (:gh:`1188` by `Bruno Aristimunha`_).
 - Add four OpenNeuro motor-imagery datasets: :class:`moabb.datasets.Lee2022` (ds004022, 7 orthopedic-impairment patients, 4 upper-limb MI tasks), :class:`moabb.datasets.Lioi2020_XP1` (ds002336) and :class:`moabb.datasets.Lioi2020_XP2` (ds002338), the two EEG-fMRI right-hand MI / neurofeedback experiments of Lioi et al., and :class:`moabb.datasets.Iwama2023` (ds004444, 30 subjects, 129-channel HD-EEG, up to 16 sessions) (:gh:`1186` by `Bruno Aristimunha`_).
