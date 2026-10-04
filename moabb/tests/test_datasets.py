@@ -64,15 +64,11 @@ NEMAR_ID_EXEMPT = {
     "Schrag2026Pediatric",
     "Lenaig2026",
     "Wang2026",
-    "Leelakittisin2025",  # no public NEMAR mirror yet; tracked in #1199
     "MartinezPeon2025",  # no public NEMAR mirror yet; tracked in #1198
-    "MILimbEEG",  # no public NEMAR mirror yet; tracked in #1198
     "MIND2026",  # no public NEMAR mirror yet; tracked in #1195
     "Han2026",  # no public NEMAR mirror yet; tracked in #1194
-    "Leeuwis2021",  # no public NEMAR mirror yet; tracked in #1193
     "Brodu2012",  # no public NEMAR mirror yet; tracked in #1193
     "MIBMPI2024",  # no public NEMAR mirror yet; tracked in #1190
-    "Wang2025",  # no public NEMAR mirror yet; tracked in #1190
 }
 # Datasets whose NEMAR deposit is assigned but not yet public (private,
 # pending publication). Their ids are valid and still checked; tracked here
@@ -94,6 +90,9 @@ NEMAR_ID_PENDING = {
     "Kueper2024": "nm000319",
     "Kumar2024": "nm000177",
     "Lee2019_SSVEP": "nm000273",
+    "Leelakittisin2025": "nm000330",
+    "Leeuwis2021": "nm000327",
+    "MILimbEEG": "nm000328",
     "MIMED2024": "nm000296",
     "MOVING2024": "nm000293",
     "Mainsah2025_A": "nm000269",
@@ -119,6 +118,7 @@ NEMAR_ID_PENDING = {
     "WRCC2023_MI_A": "nm000297",
     "WRCC2023_MI_B": "nm000298",
     "WRCC2023_MI_C": "nm000299",
+    "Wang2025": "nm000325",
 }
 
 
