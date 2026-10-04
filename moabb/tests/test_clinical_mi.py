@@ -77,8 +77,7 @@ def test_milimb_parses_mendeley_v2_numeric_header(tmp_path):
     path = tmp_path / "S1R1I2_1.csv"
     header = "," + ",".join(str(i) for i in range(16))
     rows = [
-        ",".join([str(t)] + [f"{t + 0.5:.2f}" for _ in range(16)])
-        for t in range(500)
+        ",".join([str(t)] + [f"{t + 0.5:.2f}" for _ in range(16)]) for t in range(500)
     ]
     path.write_text("\n".join([header, *rows]) + "\n")
     data = MILimbEEG()._read_trial(path)
