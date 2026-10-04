@@ -456,40 +456,10 @@ def plot_critical_difference(
     if not isinstance(higher_is_better, bool):
         raise TypeError("higher_is_better must be a bool")
 
-    identifier_columns = ["dataset", "pipeline", "subject"]
-    missing_identifiers = [
-        column for column in identifier_columns if data[column].isna().any()
-    ]
-    if missing_identifiers:
-        raise ValueError(
-            "Critical-difference analysis does not allow missing values in "
-            f"identifier columns: {missing_identifiers}"
-        )
-
-    # Results from different evaluation protocols are not exchangeable
-    # benchmark blocks. Averaging them before ranking would erase protocol
-    # identity (for example, WithinSession vs CrossSubject).
-    if "evaluation" in data.columns:
-        if data["evaluation"].isna().any():
-            raise ValueError("evaluation must not contain missing values")
-        evaluations = data["evaluation"].unique()
-        if len(evaluations) != 1:
-            raise ValueError(
-                "Critical-difference analysis requires a single evaluation "
-                f"protocol; got {evaluations.tolist()}."
-            )
-
     selected = data.copy()
-    try:
-        raw_scores = selected["score"].to_numpy(dtype=float)
-    except (TypeError, ValueError) as exc:
-        raise ValueError("score values must be numeric") from exc
-    if not np.isfinite(raw_scores).all():
-        raise ValueError("score values must be finite")
-
     if pipelines is not None:
         requested = list(dict.fromkeys(pipelines))
-        available = set(selected["pipeline"].unique())
+        available = set(selected["pipeline"].dropna().unique())
         missing_pipelines = [
             pipeline for pipeline in requested if pipeline not in available
         ]
@@ -500,6 +470,39 @@ def plot_critical_difference(
         selected = selected[selected["pipeline"].isin(requested)]
     if selected.empty:
         raise ValueError("No result rows remain after filtering pipelines")
+
+    # Validate only the rows that participate in this comparison. Unselected
+    # pipelines may legitimately belong to another analysis and must not poison
+    # a requested subset through missing metadata or non-finite scores.
+    identifier_columns = ["dataset", "pipeline", "subject"]
+    missing_identifiers = [
+        column for column in identifier_columns if selected[column].isna().any()
+    ]
+    if missing_identifiers:
+        raise ValueError(
+            "Critical-difference analysis does not allow missing values in "
+            f"identifier columns: {missing_identifiers}"
+        )
+
+    # Results from different evaluation protocols are not exchangeable
+    # benchmark blocks. Averaging them before ranking would erase protocol
+    # identity (for example, WithinSession vs CrossSubject).
+    if "evaluation" in selected.columns:
+        if selected["evaluation"].isna().any():
+            raise ValueError("evaluation must not contain missing values")
+        evaluations = selected["evaluation"].unique()
+        if len(evaluations) != 1:
+            raise ValueError(
+                "Critical-difference analysis requires a single evaluation "
+                f"protocol; got {evaluations.tolist()}."
+            )
+
+    try:
+        raw_scores = selected["score"].to_numpy(dtype=float)
+    except (TypeError, ValueError) as exc:
+        raise ValueError("score values must be numeric") from exc
+    if not np.isfinite(raw_scores).all():
+        raise ValueError("score values must be finite")
 
     # Learning-curve rows with different training-set sizes are different
     # experimental conditions, not repeated measurements of one benchmark block.

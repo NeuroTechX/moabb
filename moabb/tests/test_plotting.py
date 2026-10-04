@@ -280,6 +280,19 @@ def test_plot_critical_difference_rejects_missing_evaluation_identity():
         plot_critical_difference(data)
 
 
+def test_plot_critical_difference_validates_only_selected_pipelines():
+    data = _make_df(pipelines=("P0", "P1", "P2", "P3"))
+    data["evaluation"] = "WithinSession"
+    bad = data["pipeline"] == "P3"
+    data.loc[bad, "evaluation"] = "CrossSubject"
+    data.loc[bad, "score"] = np.nan
+    data.loc[bad, "subject"] = np.nan
+
+    fig = plot_critical_difference(data, pipelines=["P0", "P1", "P2"])
+    assert isinstance(fig, Figure)
+    plt.close(fig)
+
+
 def test_plot_critical_difference_rejects_missing_requested_pipeline():
     data = _make_df(pipelines=("P0", "P1", "P2"))
 
