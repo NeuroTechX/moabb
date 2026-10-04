@@ -201,6 +201,16 @@ def test_plot_critical_difference_rejects_mismatched_permutations():
         plot_critical_difference(pd.DataFrame(rows))
 
 
+def test_plot_critical_difference_rejects_nonfinite_raw_scores():
+    data = _make_df(pipelines=("P0", "P1", "P2"))
+    duplicate = data.iloc[[0]].copy()
+    duplicate["score"] = np.nan
+    data = pd.concat([data, duplicate], ignore_index=True)
+
+    with pytest.raises(ValueError, match="score values must be finite"):
+        plot_critical_difference(data)
+
+
 def test_plot_critical_difference_rejects_mixed_learning_curve_sizes():
     data = _make_df(pipelines=("P0", "P1", "P2"))
     data["data_size"] = np.where(data["dataset"] == "D0", 32, 64)

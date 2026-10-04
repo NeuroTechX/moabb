@@ -480,6 +480,13 @@ def plot_critical_difference(
             )
 
     selected = data.copy()
+    try:
+        raw_scores = selected["score"].to_numpy(dtype=float)
+    except (TypeError, ValueError) as exc:
+        raise ValueError("score values must be numeric") from exc
+    if not np.isfinite(raw_scores).all():
+        raise ValueError("score values must be finite")
+
     if pipelines is not None:
         requested = list(dict.fromkeys(pipelines))
         available = set(selected["pipeline"].unique())
