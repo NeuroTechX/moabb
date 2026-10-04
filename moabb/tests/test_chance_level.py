@@ -26,34 +26,37 @@ def test_chance_by_chance():
     assert levels["B"]["theoretical"] == 0.25
 
 
-@pytest.mark.parametrize(
-    ("column", "values"), [("samples_test", [50, 100]), ("n_classes", [2, 3])]
-)
-def test_chance_by_chance_rejects_ambiguous_dataset_level_threshold(column, values):
-    data = pd.DataFrame(
-        {"dataset": ["A", "A"], "samples_test": [50, 50], "n_classes": [2, 2]}
-    )
-    data[column] = values
-
-    with pytest.raises(ValueError, match="requires one n_classes and one samples_test"):
-        chance_by_chance(data)
-
-
-def test_chance_by_chance_is_row_order_invariant_for_valid_input():
+def test_chance_by_chance_uses_conservative_smallest_test_fold():
     data = pd.DataFrame(
         {
-            "dataset": ["A", "A", "B", "B"],
-            "samples_test": [50, 50, 100, 100],
-            "n_classes": [2, 2, 4, 4],
+            "dataset": ["A", "A"],
+            "samples_test": [100, 50],
+            "n_classes": [2, 2],
         }
     )
 
-    forward = chance_by_chance(data, alpha=[0.05, 0.01])
-    reversed_rows = chance_by_chance(
-        data.iloc[::-1].reset_index(drop=True), alpha=[0.05, 0.01]
+    levels = chance_by_chance(data, alpha=0.05)
+
+    expected = adjusted_chance_level(2, 50, 0.05)
+    assert levels["A"]["adjusted"][0.05] == expected
+
+    reversed_levels = chance_by_chance(
+        data.iloc[::-1].reset_index(drop=True), alpha=0.05
+    )
+    assert reversed_levels == levels
+
+
+def test_chance_by_chance_rejects_ambiguous_class_count():
+    data = pd.DataFrame(
+        {
+            "dataset": ["A", "A"],
+            "samples_test": [50, 100],
+            "n_classes": [2, 3],
+        }
     )
 
-    assert forward == reversed_rows
+    with pytest.raises(ValueError, match="requires one n_classes"):
+        chance_by_chance(data)
 
 
 @pytest.mark.parametrize("column", ["samples_test", "n_classes"])
