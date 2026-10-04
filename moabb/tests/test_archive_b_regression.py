@@ -55,17 +55,29 @@ def test_transport_flags(cls, count, tmp_path, monkeypatch):
 
 
 def test_imumia2026_archive_transport_and_missing_task(tmp_path, monkeypatch):
+    # The real Zenodo archive ships purely numeric file names (one per task,
+    # task-specific trailing digits, varying subject-position digits in the
+    # middle); subject ``n`` is the n-th file in the lex-sorted task folder.
+    task_names = {
+        "task1": [f"010{i}001.cdt" for i in range(1, 6)],
+        "task2": [f"010{i}050.cdt" for i in range(1, 6)],
+        "task3": [f"010{i}100.cdt" for i in range(1, 6)],
+        "task4": [f"010{i}0150.cdt" for i in range(1, 6)],
+        "task5": [f"010{i}0200.cdt" for i in range(1, 6)],
+    }
     archive = tmp_path / "MI_A_Dataset.zip"
     with zipfile.ZipFile(archive, "w") as stream:
-        for task in imumia2026._TASKS:
-            for subject in ("01", "50", "100", "150", "200"):
+        for task, names in task_names.items():
+            for name in names:
                 stream.writestr(
-                    f"MI_A_Dataset/MI_A_Dataset/Raw_data/{task}/Sub_{subject}.cdt", b""
+                    f"MI_A_Dataset/MI_A_Dataset/Raw_data/{task}/{name}", b""
                 )
     data_dl = _capture_transport(monkeypatch, archive)
     paths = IMUMIA2026().data_path(5, path=tmp_path, force_update=True, verbose="ERROR")
     assert len(paths) == 5
-    assert all(path.endswith("Sub_200.cdt") for path in paths)
+    # Subject 5 is the fifth (last) lex-sorted file in each task directory.
+    expected_tails = [names[4] for names in task_names.values()]
+    assert [Path(p).name for p in paths] == expected_tails
     assert all(
         Path(path).is_relative_to(tmp_path / "MNE-imumia2026-data") for path in paths
     )
@@ -74,6 +86,7 @@ def test_imumia2026_archive_transport_and_missing_task(tmp_path, monkeypatch):
     Path(paths[-1]).unlink()
     with pytest.raises(FileNotFoundError, match="Expected at least"):
         IMUMIA2026().data_path(5, path=tmp_path)
+
 
 
 def test_leeuwis_first_last_si_and_discontinuities(tmp_path):

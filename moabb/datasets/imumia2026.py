@@ -73,7 +73,18 @@ _MISC_TYPES = {"HEO": "eog", "VEO": "eog", "EKG": "ecg", "EMG": "emg", "Trigger"
 
 
 def _subject_number(cdt_path):
-    return int(re.search(r"Sub_(\d+)", cdt_path.name).group(1))
+    """Return a per-task sort key for the archive's purely numeric file names.
+
+    The Zenodo release ships five participants (Sub_01, Sub_50, Sub_100,
+    Sub_150, Sub_200 of the full 244-participant pool) as per-task ``.cdt``
+    files whose stems are purely numeric (e.g. ``0101001.cdt`` under
+    ``task1``, ``01020200.cdt`` under ``task5``). Within one ``task*``
+    directory every file has the same digit count and the only varying
+    field is the subject position in the released sample, so a plain
+    lexicographic sort by file name reproduces the authors' order and
+    maps subject ``n`` (1..5) to the n-th file.
+    """
+    return cdt_path.name
 
 
 def _dpa_parameter(dpa, name, cdt_path):
