@@ -59,6 +59,11 @@ class Schirrmeister2017(BaseDataset):
     2004).  The experiment was approved by the ethical committee of the University
     of Freiburg.
 
+    The GIN repository README adds that the recordings were referenced to Cz
+    (with some residual signal remaining on Cz) and that for subject 14 about
+    half of the sensors lost meaningful signal in the test set; the data are
+    released under CC BY 4.0 (LICENSE.txt).
+
     References
     ----------
 
@@ -73,7 +78,7 @@ class Schirrmeister2017(BaseDataset):
             sampling_rate=500.0,
             channel_types={"eeg": 128},
             hardware=None,
-            reference=None,
+            reference="Cz",
             sensors=[
                 "Fp1",
                 "Fp2",
@@ -283,7 +288,7 @@ class Schirrmeister2017(BaseDataset):
                 "neural networks for EEG decoding and visualization. Human Brain Mapping, "
                 "38(11), 5391-5420. https://doi.org/10.1002/hbm.23730"
             ),
-            repository="GitHub",
+            repository="GIN",
             data_url="https://web.gin.g-node.org/robintibor/high-gamma-dataset/",
             license="CC-BY-4.0",
         ),

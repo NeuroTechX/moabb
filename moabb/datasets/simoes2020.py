@@ -69,6 +69,14 @@ class Simoes2020(BaseDataset):
     - Training: 1600 epochs per session (8 objects x 10 runs x 20 blocks)
     - Testing: 400 x K epochs per session (K = runs_per_block, 3-10)
 
+    Each session "was divided in two parts: calibration and online phase.
+    Data from calibration and online phases were named in the dataset as
+    train and test data, respectively" [1]_; MOABB exposes these two phases
+    as the two runs of a session (``runs_per_session=2``), which is not the
+    paper's "run" (one flash of each of the 8 objects within a block).
+    "The reference electrode was placed at the right ear and the ground
+    electrode at AFz location" [1]_.
+
     References
     ----------
     .. [1] Simoes, M., Borra, D., Santamaria-Vazquez, E., et al.
