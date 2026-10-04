@@ -536,6 +536,7 @@ Plotting
     :template: function.rst
 
     plotting.score_plot
+    plotting.plot_critical_difference
     plotting.paired_plot
     plotting.summary_plot
     plotting.meta_analysis_plot

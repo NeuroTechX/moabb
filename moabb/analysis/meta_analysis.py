@@ -336,8 +336,8 @@ def _corrected_resampled_ttest(data, n_train, n_test):
 
     .. math::
 
-        t = \\frac{\\frac{1}{n} \\sum_{j=1}^{n} x_j}
-                 {\\sqrt{(\\frac{1}{n} + \\frac{n_2}{n_1})\\,\\hat\\sigma^2}}
+        t = \frac{\frac{1}{n} \\sum_{j=1}^{n} x_j}
+                 {\\sqrt{(\frac{1}{n} + \frac{n_2}{n_1})\\,\\hat\\sigma^2}}
 
     where :math:`x_j` is the score difference on resample :math:`j`,
     :math:`n` is the number of resamples, :math:`n_1` and :math:`n_2` are
