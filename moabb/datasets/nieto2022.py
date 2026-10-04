@@ -71,6 +71,8 @@ class Nieto2022(BaseDataset):
             filters={"lowpass": 208.0},
             line_freq=50.0,
             sensor_type="EEG/EMG",
+            reference="EXG1/EXG2 (left and right ear lobes; raw BDF files are not re-referenced)",
+            impedance_threshold_kohm=0.04,
         ),
         participants=ParticipantMetadata(
             n_subjects=10,
@@ -110,8 +112,12 @@ class Nieto2022(BaseDataset):
                 "Juan Esteban Kamienkowski",
                 "Ruben Spies",
             ],
-            institution="CIMEC (UNL-CONICET) / sinc(i) (UNL-CONICET)",
+            institution="sinc(i), FICH-UNL/CONICET",
+            institution_address="Santa Fe, Argentina",
             country="AR",
+            ethics_approval=[
+                "Comité Asesor de Ética y Seguridad en el Trabajo Experimental (CEySTE, CCT-CONICET, Santa Fe, Argentina)"
+            ],
             publication_year=2022,
             license="CC-BY-4.0",
             data_url="https://openneuro.org/datasets/ds003626",
@@ -151,6 +157,7 @@ class Nieto2022(BaseDataset):
             imagery_tasks=["Arriba", "Abajo", "Derecha", "Izquierda"],
             imagery_duration_s=2.5,
         ),
+        sessions_per_subject=3,
         data_processed=False,
         file_format="BDF",
     )
