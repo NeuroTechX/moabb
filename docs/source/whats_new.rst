@@ -28,7 +28,10 @@ Enhancements
 
 API changes
 ~~~~~~~~~~~
-- None yet.
+- :class:`moabb.evaluations.CrossSessionEvaluation` custom cross-validation
+  folds that hold out multiple sessions now emit one result row per held-out
+  session instead of one aggregate row per fold. The default leave-one-session-out
+  behavior is unchanged (:gh:`1210` by `lindicaphxag-tech`_).
 
 Requirements
 ~~~~~~~~~~~~
@@ -36,6 +39,12 @@ Requirements
 
 Bugs
 ~~~~
+- Keep :class:`moabb.evaluations.CrossSessionEvaluation` result provenance
+  session-specific when a custom cross-validator holds out more than one recording
+  session in the same fold. The estimator is still fitted once per fold, but each
+  held-out session is scored and stored separately, matching the evaluation's
+  session-level result contract in both the flattened and legacy execution paths
+  (by `lindicaphxag-tech`_).
 - Fix metadata-aware splitters collapsing distinct compound groups when column values contain the ``-`` separator. Multi-column group identities now use a canonical collision-free encoding, preserving the intended cross-validation and leakage boundary (by `lindicaphxag-tech`_).
 - Make :func:`moabb.analysis.chance_level.chance_by_chance` independent of result-row order when test-fold sizes vary: dataset-level adjusted thresholds now take the strictest exact-binomial cutoff across the fold sizes actually present (the cutoff is discrete and not strictly monotone in fold size), while inconsistent class counts are rejected (by `lindicaphxag-tech`_).
 - Fix ``SSVEP_TRCA`` trial centering: the inter-trial covariance step subtracted the mean across channels at each sample instead of each channel's mean over time, and did it in place on the filterbank data it received, which also fed ``Q`` and the class templates. Centering is now per channel over time, on a copy (:gh:`1183` by `Arthur031221`_).
