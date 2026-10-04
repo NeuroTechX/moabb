@@ -24,7 +24,7 @@ from moabb.analysis.results import get_digest, get_string_rep
 from moabb.datasets.compound_dataset import compound
 from moabb.datasets.fake import FakeDataset
 from moabb.evaluations import evaluations as ev
-from moabb.evaluations.base import BaseEvaluation, optuna_available
+from moabb.evaluations.base import BaseEvaluation, _evaluate_fold, optuna_available
 from moabb.evaluations.splitters import LearningCurveSplitter
 from moabb.evaluations.utils import _create_save_path as create_save_path
 from moabb.evaluations.utils import _pipeline_requires_epochs
@@ -1059,6 +1059,117 @@ def test_cross_subject_evaluation_materializes_callable_test_fold(
     assert set(test_metadata["session"]) == {"0"}
     assert len(train) + len(test) == len(metadata)
 
+
+
+def test_cross_subject_group_kfold_scores_subject_sessions_separately(tmp_path):
+    """A multi-subject test fold must not merge equal session labels."""
+    X = np.arange(16, dtype=float).reshape(8, 2)
+    y = np.array([0, 1, 0, 1, 0, 1, 1, 0])
+    metadata = pd.DataFrame(
+        {
+            "subject": [1, 1, 2, 2, 3, 3, 4, 4],
+            "session": ["0", "1", "0", "1", "0", "1", "0", "1"],
+        }
+    )
+    dataset_multi = FakeDataset(
+        ["left_hand", "right_hand"], n_subjects=4, n_sessions=2, seed=42
+    )
+    config = {
+        "scoring": "accuracy",
+        "error_score": "raise",
+        "random_state": 42,
+        "param_grid": None,
+        "additional_columns": [],
+        "score_per_session": True,
+        "mne_labels": False,
+        "codecarbon_config": None,
+        "trialwise": False,
+        "n_jobs_grid": 1,
+        "optuna": False,
+        "time_out": 60,
+        "hdf5_path": str(tmp_path),
+        "eval_type": "CrossSubject",
+        "save_model": True,
+    }
+
+    results = _evaluate_fold(
+        X,
+        y,
+        metadata,
+        config,
+        dataset_multi,
+        "dummy",
+        Dummy(strategy="most_frequent"),
+        train_idx=np.array([0, 1, 2, 3]),
+        test_idx=np.array([4, 5, 6, 7]),
+        subject=3,
+        session="0",
+        cv_ind=0,
+        score_subjects=[3, 4],
+    )
+
+    assert {(r["subject"], r["session"]) for r in results} == {
+        (3, "0"),
+        (3, "1"),
+        (4, "0"),
+        (4, "1"),
+    }
+    assert all(r["n_samples_test"] == 1 for r in results)
+    for held_out_subject in (3, 4):
+        model_path = (
+            tmp_path
+            / "Models_CrossSubject"
+            / dataset_multi.code
+            / str(held_out_subject)
+            / "dummy"
+            / "fitted_model_0.pkl"
+        )
+        assert model_path.is_file()
+
+
+def test_cross_subject_task_builder_uses_all_held_out_subject_work_plans(tmp_path):
+    """A cached first subject must not suppress another subject in the same fold."""
+    dataset_multi = FakeDataset(
+        ["left_hand", "right_hand"], n_subjects=4, n_sessions=2, seed=42
+    )
+    evaluation = ev.CrossSubjectEvaluation(
+        paradigm=FakeImageryParadigm(),
+        datasets=[dataset_multi],
+        hdf5_path=tmp_path,
+        n_splits=2,
+    )
+    metadata = pd.DataFrame(
+        {
+            "subject": np.repeat([1, 2, 3, 4], 2),
+            "session": ["0", "1"] * 4,
+        }
+    )
+    y = np.array([0, 1] * 4)
+    splitter = evaluation._create_splitter()
+    folds = list(splitter.split(y, metadata))
+    held_out = list(pd.unique(metadata.iloc[folds[0][1]]["subject"]))
+    assert len(held_out) == 2
+
+    # Only the second subject in this fold still needs the pipeline. The old
+    # builder inspected held_out[0] only and skipped the whole fold.
+    target_subject = held_out[1]
+    pipeline = Dummy(strategy="most_frequent")
+    work_plan = {target_subject: {"dummy": pipeline}}
+    tasks = evaluation._build_task_list(
+        dataset_multi,
+        None,
+        y,
+        metadata,
+        evaluation._create_splitter(),
+        work_plan,
+        {"dummy": pipeline},
+        None,
+    )
+
+    assert len(tasks) == 1
+    assert tasks[0]["subject"] == target_subject
+    assert tasks[0]["score_subjects"] == [target_subject]
+    assert target_subject in set(metadata.iloc[tasks[0]["test_idx"]]["subject"])
 
 class Test_CrossSubj(TestWithinSess):
     def setup_method(self):
