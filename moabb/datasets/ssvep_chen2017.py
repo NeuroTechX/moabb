@@ -22,6 +22,7 @@ from .metadata.schema import (
     BCIApplicationMetadata,
     CrossValidationMetadata,
     DatasetMetadata,
+    DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
     ParadigmSpecificMetadata,
@@ -158,6 +159,14 @@ class Chen2017SingleFlicker(BaseDataset):
             environment="lab", online_feedback=True, applications=["spatial_navigation"]
         ),
         tags=Tags(pathology=["healthy"], modality=["visual"], type=["perception"]),
+        sessions_per_subject=2,
+        runs_per_session=2,
+        sessions=["0", "1"],
+        data_structure=DataStructureMetadata(
+            n_trials=200,
+            n_trials_per_class={"north": 50, "east": 50, "west": 50, "south": 50},
+            trials_context="training session (session '0'): two blocks of fifty sequences of the four targets each, i.e. 200 cued trials per subject; the online game session (session '1') has a variable number of trials",
+        ),
         file_format="XDF/MAT",
     )
 

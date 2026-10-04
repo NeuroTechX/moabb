@@ -69,7 +69,7 @@ class MartinezCagigal2023Checker(BaseDataset):
     using binary m-sequences. The conditions were tested in a 9-command
     speller. The stimulus was composed of a black-background checkerboard
     (BB-CB) pattern, i.e. event 1 was encoded with a checkerboard pattern and
-    event 0 with a white flash. The stimuli were encoded using circularly
+    event 0 with a black flash. The stimuli were encoded using circularly
     shifting versions of a 63-bit binary m-sequence. The different conditions
     evaluated different spatial frequency variations of the BB-CB pattern
     (i.e., the number of squares inside the checkerboard pattern).
@@ -100,9 +100,10 @@ class MartinezCagigal2023Checker(BaseDataset):
 
     The encoding was displayed at a 120 Hz refresh rate. EEG signals were
     recorded using a g.USBamp amplifier (g.Tec, Guger Technologies, Austria)
-    with 16 active electrodes and a sampling rate of 256 Hz. Electrodes were
-    placed at: Oz, F3, Fz, F4, I1, I2, C3, Cz, C4, CPz, P3, Pz, P4, PO7, POz,
-    PO8, grounded at AFz and referenced to the earlobe.
+    with 16 channels and a sampling rate of 256 Hz. The paper lists fifteen
+    active electrodes (F3, Fz, F4, C3, Cz, C4, CPz, P3, Pz, P4, PO7, PO8, Oz,
+    I1 and I2), referenced to the right earlobe and grounded at AFz; the
+    released recordings contain 16 EEG channels (the above plus POz).
 
     The experimental paradigm was executed using the MEDUSA© software [3]_.
 
@@ -143,9 +144,24 @@ class MartinezCagigal2023Checker(BaseDataset):
     """
 
     METADATA = DatasetMetadata(
-        acquisition=AcquisitionMetadata(sampling_rate=256.0, channel_types={"eeg": 16}),
-        participants=ParticipantMetadata(n_subjects=16),
+        acquisition=AcquisitionMetadata(
+            sampling_rate=256.0,
+            channel_types={"eeg": 16},
+            reference="right earlobe",
+            ground="AFz",
+            hardware="g.USBamp (g.tec)",
+            software="MEDUSA",
+        ),
+        participants=ParticipantMetadata(
+            n_subjects=16,
+            health_status="healthy",
+            gender={"male": 11, "female": 5},
+            age_mean=29.63,
+            age_std=4.06,
+        ),
         experiment=ExperimentMetadata(paradigm="cvep"),
+        sessions_per_subject=8,
+        runs_per_session=3,
         documentation=DocumentationMetadata(
             doi="10.71569/7c67-v596",
             associated_paper_doi="10.3389/fnhum.2023.1288438",
@@ -166,6 +182,10 @@ class MartinezCagigal2023Checker(BaseDataset):
             contact_info=["victor.martinez@gib.tel.uva.es"],
             ethics_approval=[
                 "Approved by the local ethics committee; all participants provided informed consent"
+            ],
+            funding=[
+                "Ministerio de Ciencia e Innovación/Agencia Estatal de Investigación and ERDF (TED2021-129915B-I00, RTC2019-007350-1, PID2020-115468RB-I00, PID2021-127261OB-I00)",
+                "CIBER-BBN through Instituto de Salud Carlos III",
             ],
             data_url="https://doi.org/10.71569/7c67-v596",
             how_to_acknowledge=(

@@ -435,7 +435,7 @@ class BNCI2014_001(MNEBNCI):
                 "Benjamin Blankertz",
             ],
             institution="Berlin Institute of Technology",
-            country="Germany",
+            country="DE",
             license="CC-BY-ND-4.0",
             repository="BNCI Horizon",
             data_url="http://www.bbci.de/competition/iv/",
@@ -585,6 +585,11 @@ class BNCI2014_002(MNEBNCI):
     were aged between 20 and 30 years, 8 naive to the task, and had no known
     disabilities.
 
+    .. note::
+        The BNCI description above mentions 13 participants, but the BNCI
+        Horizon 2020 release contains 14 subject files (``S01`` to ``S14``),
+        which is what this loader exposes (``n_subjects=14``).
+
     References
     ----------
     .. [1] Scherer, R., Faller, J., Balderas, D., Friedrich, E. V., &
@@ -625,7 +630,7 @@ class BNCI2014_002(MNEBNCI):
             electrode_material="Ag/AgCl",
         ),
         participants=ParticipantMetadata(
-            n_subjects=13,
+            n_subjects=14,
             health_status="healthy",
             age_min=20.0,
             age_max=30.0,
@@ -656,7 +661,7 @@ class BNCI2014_002(MNEBNCI):
             ],
             institution="Graz University of Technology",
             institution_department="Institute for Knowledge Discovery, Laboratory of Brain-Computer Interfaces",
-            country="Austria",
+            country="AT",
             license="CC-BY-ND-4.0",
             repository="BNCI Horizon",
             publication_year=2014,
@@ -1085,7 +1090,7 @@ class BNCI2014_008(MNEBNCI):
                 "Febo Cincotti",
             ],
             institution="Fondazione Santa Lucia",
-            country="Italy",
+            country="IT",
             license="CC-BY-NC-ND-4.0",
             repository="BNCI Horizon",
             publication_year=2013,
@@ -1194,15 +1199,20 @@ class BNCI2014_009(MNEBNCI):
 
     - Channels: 16 EEG channels
     - Sampling rate: 256 Hz
-    - Reference: Linked mastoids
+    - Reference: Linked earlobes, ground on the right mastoid
+
+    .. note::
+        The BNCI description of this dataset mentions four recording sessions
+        per subject; the released ``A0XS.mat`` files contain three recordings
+        per subject, which this loader exposes as three sessions.
 
     References
     ----------
-    .. [1] Riccio, A., Simione, L., Schettini, F., Pizzimenti, A., Inghilleri,
-           M., Belardinelli, M. O., & Mattia, D. (2013). Attention and P300-based
-           BCI performance in people with amyotrophic lateral sclerosis. Frontiers
-           in human neuroscience, 7, 732.
-           https://doi.org/10.3389/fnhum.2013.00732
+    .. [1] Aricò, P., Aloise, F., Schettini, F., Salinari, S., Mattia, D., &
+           Cincotti, F. (2014). Influence of P300 latency jitter on event
+           related potential-based brain–computer interface performance.
+           Journal of Neural Engineering, 11(3), 035008.
+           https://doi.org/10.1088/1741-2560/11/3/035008
 
     Notes
     -----
@@ -1290,7 +1300,7 @@ class BNCI2014_009(MNEBNCI):
                 "F Cincotti",
             ],
             institution="Fondazione Santa Lucia IRCCS",
-            country="Italy",
+            country="IT",
             license="CC-BY-NC-ND-4.0",
             repository="BNCI Horizon",
             publication_year=2014,
@@ -1306,9 +1316,9 @@ class BNCI2014_009(MNEBNCI):
                 "wavelet analysis",
                 "single epoch",
             ],
-            associated_paper_doi="10.3389/fnhum.2013.00732",
+            associated_paper_doi="10.1088/1741-2560/11/3/035008",
         ),
-        sessions_per_subject=4,
+        sessions_per_subject=3,
         runs_per_session=1,
         preprocessing=PreprocessingMetadata(
             data_state="preprocessed",

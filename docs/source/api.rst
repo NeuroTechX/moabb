@@ -54,6 +54,20 @@ Motor Imagery Datasets
     :template: class.rst
 
     AlexMI
+    Batista2022
+    Farabbi2020
+    Han2026
+    Kodera2023
+    Kueper2024
+    Brodu2012
+    IMUMIA2026
+    Leeuwis2021
+    MartinezPeon2024
+    PardoGarcia2026
+    Jia2019
+    MIBMPI2024
+    Ortiz2023
+    Wang2025
     BNCI2003_004
     BNCI2014_001
     BNCI2014_002
@@ -72,11 +86,22 @@ Motor Imagery Datasets
     Dreyer2023A
     Dreyer2023B
     Dreyer2023C
+    Daly2020
+    Damm2026
+    Peterson2020
     Lee2019_MI
     GrosseWentrup2009
+    MIND2026
+    MOVING2024
+    NeBULA2025
+    Thapa2025
     Ofner2017
     PhysionetMI
+    Perdikis2018
+    Alawieh2025
     Schirrmeister2017
+    NeuroTUMBCI2025
+    Shin2022
     Shin2017A
     Shin2017B
     Weibo2014
@@ -97,11 +122,16 @@ Motor Imagery Datasets
     GuttmannFlury2025_ME
     GuttmannFlury2025_MI
     HefmiIch2025
+    Iwama2023
     Jeong2020
     Kaya2018
     Kumar2024
+    Lee2022
+    Lioi2020_XP1
+    Lioi2020_XP2
     Liu2025
     Ma2020
+    NETBCI2026
     Rozado2015
     Tavakolan2017
     TrianaGuzman2024
