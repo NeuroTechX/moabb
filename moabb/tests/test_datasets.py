@@ -64,6 +64,8 @@ NEMAR_ID_EXEMPT = {
     "Schrag2026Pediatric",
     "Lenaig2026",
     "Wang2026",
+    "Shin2022",  # no public NEMAR mirror yet; tracked in #1192
+    "NeuroTUMBCI2025",  # no public NEMAR mirror yet; tracked in #1192
     "Perdikis2018",  # no public NEMAR mirror yet; tracked in #1191
     "Alawieh2025",  # no public NEMAR mirror yet; tracked in #1191
     "Jia2019",  # no public NEMAR mirror yet; tracked in #1190

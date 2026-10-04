@@ -23,6 +23,7 @@ Version 1.8  (Source - GitHub)
 
 Enhancements
 ~~~~~~~~~~~~
+- Add the continuous-recording :class:`datasets.Shin2022` and :class:`datasets.NeuroTUMBCI2025` motor-imagery datasets (:gh:`1192`, by `Bruno Aristimunha`_).
 - Add the offline calibration subsets of Perdikis2018 and Alawieh2025 (:gh:`1191`) (by `Bruno Aristimunha`_).
 - Add Jia2019, MIBMPI2024, Ortiz2023 and Wang2025 motor-imagery loaders (:gh:`1190` by `Bruno Aristimunha`_).
 - Add three OpenNeuro motor-imagery datasets: :class:`moabb.datasets.Peterson2020`, :class:`moabb.datasets.Daly2020`, and :class:`moabb.datasets.Damm2026` (:pr:`1189`, by `Bruno Aristimunha`_).

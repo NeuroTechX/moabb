@@ -86,6 +86,8 @@ Motor Imagery Datasets
     Perdikis2018
     Alawieh2025
     Schirrmeister2017
+    NeuroTUMBCI2025
+    Shin2022
     Shin2017A
     Shin2017B
     Weibo2014

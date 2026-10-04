@@ -172,6 +172,8 @@ from .zheng2020 import Zheng2020
 from .Zhou2016 import Zhou2016
 from .zhou2020 import Zhou2020
 from .zuo2025 import Zuo2025
+from .neurotumbci2025 import NeuroTUMBCI2025
+from .shin2022 import Shin2022
 
 
 from .perdikis2018 import Perdikis2018
