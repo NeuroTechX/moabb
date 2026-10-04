@@ -49,6 +49,13 @@ API changes
   folds that hold out multiple sessions now emit one result row per held-out
   session instead of one aggregate row per fold. The default leave-one-session-out
   behavior is unchanged (:gh:`1210` by `lindicaphxag-tech`_).
+- Saved evaluation model paths now include the paradigm and optional suffix, so
+  separate benchmark runs no longer overwrite artifacts that otherwise share the
+  same evaluation/dataset/subject/session/pipeline keys (:gh:`1182` by
+  `lindicaphxag-tech`_). Existing legacy ``Models_*``/``GridSearch_*`` trees
+  remain untouched at their historical paths and are not auto-migrated because
+  those paths do not encode the missing paradigm/suffix provenance; legacy
+  artifacts therefore remain manually readable in place.
 
 Requirements
 ~~~~~~~~~~~~
