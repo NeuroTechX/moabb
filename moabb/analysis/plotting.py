@@ -12,7 +12,7 @@ import seaborn as sea
 from matplotlib.collections import PatchCollection
 from matplotlib.colors import LinearSegmentedColormap
 from matplotlib.patches import Circle, RegularPolygon
-from scipy.stats import t
+from scipy.stats import friedmanchisquare, rankdata, studentized_range, t
 
 from moabb.analysis._utils import _compute_n_trials, _match_float, _match_int
 from moabb.analysis.meta_analysis import (
@@ -385,6 +385,371 @@ def _extract_color_dict(handles, labels):
         else:
             color_dict[lb] = "C0"
     return color_dict
+
+
+def _nemenyi_critical_difference(n_pipelines, n_datasets, alpha):
+    """Return the Nemenyi critical difference for complete benchmark blocks."""
+    q_alpha = studentized_range.ppf(1 - alpha, n_pipelines, np.inf) / np.sqrt(2)
+    return q_alpha * np.sqrt(n_pipelines * (n_pipelines + 1) / (6 * n_datasets))
+
+
+def plot_critical_difference(
+    data, pipelines=None, alpha=0.05, higher_is_better=True, figsize=None
+):
+    """Plot average pipeline ranks and Nemenyi critical-difference groups.
+
+    Session identity is checked before aggregation: within each
+    dataset-and-subject block, every pipeline must contain the same sessions.
+    Scores are then macro-averaged over sessions per subject and averaged over
+    subjects within each dataset. This prevents a missing session from being
+    silently averaged away while still giving every subject equal weight. Each
+    dataset therefore contributes one comparable score per pipeline and one
+    rank to the cross-dataset comparison.
+
+    Parameters
+    ----------
+    data : pandas.DataFrame
+        Output of ``Results.to_dataframe()``. Must contain ``dataset``,
+        ``pipeline``, ``subject``, and ``score`` columns.
+    pipelines : list of str | None
+        Pipelines to include. If None, all pipelines are included.
+    alpha : float
+        Significance level for the Nemenyi post-hoc critical difference.
+    higher_is_better : bool
+        If True, larger scores receive better (lower) ranks. If False, smaller
+        scores receive better ranks.
+    figsize : tuple of (float, float) | None
+        Figure size. If None, the width and height scale with the number of
+        pipelines.
+
+    Returns
+    -------
+    fig : matplotlib.figure.Figure
+        Critical-difference diagram. Horizontal bars connect maximal groups
+        of pipelines whose mean-rank differences do not exceed the Nemenyi
+        critical difference.
+
+    Notes
+    -----
+    The comparison uses a Friedman test followed by the Nemenyi critical
+    difference for complete blocks (the same pipelines evaluated on every
+    dataset). Incomplete dataset-by-pipeline score matrices are rejected
+    rather than silently changing the set of benchmark datasets per pair.
+    If an ``evaluation`` column is present, all rows must belong to the same
+    evaluation protocol; protocol identity is never averaged away. Learning-curve
+    results must also be filtered to a single ``data_size``; permutations at
+    that fixed size are treated as repeated measurements within each session,
+    and every pipeline must contain the same permutation identities per block.
+
+    References
+    ----------
+    .. [1] Demšar, J. (2006). Statistical Comparisons of Classifiers over
+           Multiple Data Sets. *Journal of Machine Learning Research*, 7,
+           1–30. https://www.jmlr.org/papers/v7/demsar06a.html
+    """
+    required = {"dataset", "pipeline", "subject", "score"}
+    missing = required.difference(data.columns)
+    if missing:
+        raise ValueError(f"data is missing required columns: {sorted(missing)}")
+    if not isinstance(alpha, (int, float)) or not 0 < alpha < 1:
+        raise ValueError("alpha must be between 0 and 1")
+    if not isinstance(higher_is_better, bool):
+        raise TypeError("higher_is_better must be a bool")
+
+    selected = data.copy()
+    if pipelines is not None:
+        requested = list(dict.fromkeys(pipelines))
+        available = set(selected["pipeline"].dropna().unique())
+        missing_pipelines = [
+            pipeline for pipeline in requested if pipeline not in available
+        ]
+        if missing_pipelines:
+            raise ValueError(
+                f"Requested pipelines are missing from the results: {missing_pipelines}"
+            )
+        selected = selected[selected["pipeline"].isin(requested)]
+    if selected.empty:
+        raise ValueError("No result rows remain after filtering pipelines")
+
+    # Validate only the rows that participate in this comparison. Unselected
+    # pipelines may legitimately belong to another analysis and must not poison
+    # a requested subset through missing metadata or non-finite scores.
+    identifier_columns = ["dataset", "pipeline", "subject"]
+    missing_identifiers = [
+        column for column in identifier_columns if selected[column].isna().any()
+    ]
+    if missing_identifiers:
+        raise ValueError(
+            "Critical-difference analysis does not allow missing values in "
+            f"identifier columns: {missing_identifiers}"
+        )
+
+    # Results from different evaluation protocols are not exchangeable
+    # benchmark blocks. Averaging them before ranking would erase protocol
+    # identity (for example, WithinSession vs CrossSubject).
+    if "evaluation" in selected.columns:
+        if selected["evaluation"].isna().any():
+            raise ValueError("evaluation must not contain missing values")
+        evaluations = selected["evaluation"].unique()
+        if len(evaluations) != 1:
+            raise ValueError(
+                "Critical-difference analysis requires a single evaluation "
+                f"protocol; got {evaluations.tolist()}."
+            )
+
+    try:
+        raw_scores = selected["score"].to_numpy(dtype=float)
+    except (TypeError, ValueError) as exc:
+        raise ValueError("score values must be numeric") from exc
+    if not np.isfinite(raw_scores).all():
+        raise ValueError("score values must be finite")
+
+    # Learning-curve rows with different training-set sizes are different
+    # experimental conditions, not repeated measurements of one benchmark block.
+    # Permutations at one fixed size may be averaged, but sizes must be selected
+    # explicitly before computing cross-dataset ranks.
+    if "data_size" in selected.columns:
+        if selected["data_size"].isna().any():
+            raise ValueError("data_size must not contain missing values")
+        data_sizes = selected["data_size"].unique()
+        if len(data_sizes) != 1:
+            raise ValueError(
+                "Critical-difference analysis requires a single data_size; "
+                f"got {data_sizes.tolist()}. Filter the learning-curve results "
+                "to one training-set size before comparison."
+            )
+
+    # Validate session coverage before collapse_session_scores() removes
+    # session identity. Otherwise a pipeline that is missing one session can
+    # still produce a subject-level mean and silently enter the rank comparison
+    # against pipelines evaluated on the complete subject record.
+    if "session" in selected.columns:
+        if selected["session"].isna().any():
+            raise ValueError("session must not contain missing values")
+        for (dataset, subject), subject_scores in selected.groupby(
+            ["dataset", "subject"], sort=False, observed=True
+        ):
+            session_sets = {
+                pipeline: frozenset(pipeline_scores["session"])
+                for pipeline, pipeline_scores in subject_scores.groupby(
+                    "pipeline", sort=False, observed=True
+                )
+            }
+            if session_sets:
+                reference_pipeline, reference_sessions = next(iter(session_sets.items()))
+                mismatched = [
+                    pipeline
+                    for pipeline, sessions in session_sets.items()
+                    if sessions != reference_sessions
+                ]
+                if mismatched:
+                    raise ValueError(
+                        "Critical-difference analysis requires the same sessions "
+                        "for every pipeline within each dataset/subject block; "
+                        f"dataset={dataset!r}, subject={subject!r}, "
+                        f"{reference_pipeline!r} differs from {mismatched}."
+                    )
+
+    if "permutation" in selected.columns:
+        if selected["permutation"].isna().any():
+            raise ValueError("permutation must not contain missing values")
+        repeat_group = ["dataset", "subject"]
+        if "session" in selected.columns:
+            repeat_group.append("session")
+        for block_key, block_scores in selected.groupby(
+            repeat_group, sort=False, observed=True
+        ):
+            permutation_sets = {
+                pipeline: frozenset(pipeline_scores["permutation"])
+                for pipeline, pipeline_scores in block_scores.groupby(
+                    "pipeline", sort=False, observed=True
+                )
+            }
+            if permutation_sets:
+                reference_pipeline, reference_permutations = next(
+                    iter(permutation_sets.items())
+                )
+                mismatched = [
+                    pipeline
+                    for pipeline, permutations in permutation_sets.items()
+                    if permutations != reference_permutations
+                ]
+                if mismatched:
+                    raise ValueError(
+                        "Critical-difference analysis requires the same permutations "
+                        "for every pipeline within each repeated-measurement block; "
+                        f"block={block_key!r}, {reference_pipeline!r} differs from "
+                        f"{mismatched}."
+                    )
+
+    subject_group = ["pipeline", "dataset", "subject"]
+    if "session" in selected.columns:
+        # Average repeated folds/permutations within each session first, then
+        # average sessions. This makes the documented macro-average literal:
+        # a session with more repeat rows cannot receive more subject-level weight.
+        selected = (
+            selected.groupby(subject_group + ["session"], sort=False, observed=True)[
+                "score"
+            ]
+            .mean()
+            .reset_index()
+            .groupby(subject_group, sort=False, observed=True)["score"]
+            .mean()
+            .reset_index()
+        )
+    else:
+        selected = (
+            selected.groupby(subject_group, sort=False, observed=True)["score"]
+            .mean()
+            .reset_index()
+        )
+
+    # A dataset-level block is comparable only if every pipeline was scored on
+    # the same subjects. A rectangular dataset-by-pipeline matrix alone is not
+    # enough: silently averaging different subject cohorts can bias the ranks.
+    for dataset, dataset_scores in selected.groupby("dataset", sort=False, observed=True):
+        subject_sets = {
+            pipeline: frozenset(pipeline_scores["subject"])
+            for pipeline, pipeline_scores in dataset_scores.groupby(
+                "pipeline", sort=False, observed=True
+            )
+        }
+        if subject_sets:
+            reference_pipeline, reference_subjects = next(iter(subject_sets.items()))
+            mismatched = [
+                pipeline
+                for pipeline, subjects in subject_sets.items()
+                if subjects != reference_subjects
+            ]
+            if mismatched:
+                raise ValueError(
+                    "Critical-difference analysis requires the same subjects "
+                    f"for every pipeline within dataset {dataset!r}; "
+                    f"{reference_pipeline!r} differs from {mismatched}."
+                )
+
+    scores = (
+        selected.groupby(["dataset", "pipeline"], observed=True)["score"]
+        .mean()
+        .unstack("pipeline")
+    )
+    if scores.shape[0] < 2:
+        raise ValueError("At least two datasets are required")
+    if scores.shape[1] < 3:
+        raise ValueError(
+            "At least three pipelines are required for Friedman/Nemenyi analysis"
+        )
+    if scores.isna().any().any():
+        missing_pairs = [
+            (dataset, pipeline)
+            for dataset, row in scores.iterrows()
+            for pipeline in scores.columns[row.isna()]
+        ]
+        raise ValueError(
+            "Critical-difference analysis requires every pipeline on every "
+            f"dataset; missing pairs: {missing_pairs}"
+        )
+    score_values = scores.to_numpy(dtype=float)
+    if not np.isfinite(score_values).all():
+        raise ValueError("score values must be finite")
+
+    ranks = rankdata(-score_values if higher_is_better else score_values, axis=1)
+    mean_ranks = pd.Series(ranks.mean(axis=0), index=scores.columns).sort_values()
+    n_datasets = scores.shape[0]
+    n_pipelines = scores.shape[1]
+    if np.all(score_values == score_values[:, [0]]):
+        # scipy returns NaN for Friedman when all measurements are identical.
+        friedman_p = 1.0
+    else:
+        friedman_p = friedmanchisquare(
+            *[score_values[:, i] for i in range(n_pipelines)]
+        ).pvalue
+    critical_difference = _nemenyi_critical_difference(n_pipelines, n_datasets, alpha)
+
+    if figsize is None:
+        figsize = (max(8.0, 1.2 * n_pipelines), max(4.5, 0.34 * n_pipelines + 2.5))
+    fig, ax = plt.subplots(figsize=figsize)
+    ax.set_xlim(0.5, n_pipelines + 0.5)
+    ax.set_ylim(-0.8, max(2.8, 0.28 * n_pipelines + 2.3))
+    ax.set_xticks(np.arange(1, n_pipelines + 1))
+    ax.set_yticks([])
+    ax.set_xlabel("Mean rank (lower is better)", fontsize=FONT_SIZES["axis_label"])
+    ax.set_title("Pipeline comparison across datasets", fontsize=FONT_SIZES["title"])
+    ax.axhline(0, color=MOABB_DARK_TEXT, linewidth=1.4)
+    ax.tick_params(axis="x", length=5, color=MOABB_DARK_TEXT)
+
+    # Alternate label lanes so similar mean ranks do not obscure each other.
+    ordered = list(mean_ranks.items())
+    lane_step = 0.22
+    for i, (pipeline, rank) in enumerate(ordered):
+        y = 0.65 + (i // 2) * lane_step
+        ax.vlines(rank, 0, y - 0.08, color=MOABB_NAVY, linewidth=0.8, alpha=0.7)
+        ax.text(
+            rank,
+            y,
+            str(pipeline),
+            rotation=30,
+            ha="left" if rank <= (n_pipelines + 1) / 2 else "right",
+            va="bottom",
+            fontsize=FONT_SIZES["source"],
+            color=MOABB_DARK_TEXT,
+        )
+        ax.scatter(rank, 0, s=28, color=MOABB_TEAL, zorder=3)
+
+    # In rank order, non-significant Nemenyi groups form contiguous intervals.
+    rank_values = mean_ranks.to_numpy()
+    groups = []
+    for start in range(n_pipelines - 1):
+        for end in range(start + 1, n_pipelines):
+            if rank_values[end] - rank_values[start] > critical_difference:
+                break
+            extends_left = start > 0 and (
+                rank_values[end] - rank_values[start - 1] <= critical_difference
+            )
+            extends_right = end < n_pipelines - 1 and (
+                rank_values[end + 1] - rank_values[start] <= critical_difference
+            )
+            if not extends_left and not extends_right:
+                groups.append((start, end))
+
+    group_base = max(1.9, 0.65 + ((n_pipelines + 1) // 2) * lane_step + 0.25)
+    for i, (start, end) in enumerate(groups):
+        y = group_base + i * 0.18
+        x0, x1 = rank_values[start], rank_values[end]
+        ax.plot(
+            [x0, x1], [y, y], color=MOABB_CORAL, linewidth=2.0, solid_capstyle="round"
+        )
+        ax.vlines([x0, x1], y - 0.07, y + 0.07, color=MOABB_CORAL, linewidth=1.2)
+
+    cd_y = -0.48
+    cd_x0 = 1
+    cd_x1 = cd_x0 + critical_difference
+    ax.set_xlim(0.5, max(n_pipelines + 0.5, cd_x1 + 0.8))
+    ax.plot([cd_x0, cd_x1], [cd_y, cd_y], color=MOABB_DARK_TEXT, linewidth=2)
+    ax.vlines([cd_x0, cd_x1], cd_y - 0.08, cd_y + 0.08, color=MOABB_DARK_TEXT)
+    ax.text(
+        cd_x1 + 0.08,
+        cd_y,
+        f"CD = {critical_difference:.2f}",
+        va="center",
+        fontsize=FONT_SIZES["source"],
+        color=MOABB_DARK_TEXT,
+    )
+    apply_moabb_style(
+        ax, title="Pipeline comparison across datasets", subtitle="", grid_axis="none"
+    )
+    fig.text(
+        0.08,
+        0.875,
+        f"Friedman p = {friedman_p:.3g}  ·  N = {n_datasets} datasets  ·  α = {alpha:g}  ·  "
+        "connected groups: not significantly different",
+        fontsize=FONT_SIZES["subtitle"],
+        color=GRID_COLOR,
+        ha="left",
+        va="top",
+    )
+    fig.subplots_adjust(top=0.82, bottom=0.17, left=0.08, right=0.95)
+    return fig
 
 
 def score_plot(data, pipelines=None, orientation="vertical", chance_level=None):
