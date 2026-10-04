@@ -452,8 +452,11 @@ class BNCI2015_001(MNEBNCI):
     **Dataset Description**
 
     This dataset contains EEG data from 12 subjects performing two-class motor
-    imagery tasks (right hand vs feet). Each subject participated in multiple
-    sessions, with some subjects having three sessions.
+    imagery tasks (right hand vs feet). Each subject participated in two
+    sessions (``A`` and ``B``); subjects 8-11 have a third session (``C``).
+    The loader returns two sessions for subjects 1-7 and 12 and three
+    sessions for subjects 8-11, so ``sessions_per_subject`` declares the
+    maximum (3).
 
     **Participants**
 
@@ -545,7 +548,7 @@ class BNCI2015_001(MNEBNCI):
                 "Reinhold Scherer",
             ],
             institution="Graz University of Technology",
-            country="Austria",
+            country="AT",
             publication_year=2012,
             senior_author="Reinhold Scherer",
             contact_info=[
@@ -603,7 +606,7 @@ class BNCI2015_001(MNEBNCI):
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             subjects=list(range(1, 13)),
-            sessions_per_subject=2,
+            sessions_per_subject=3,
             events={"right_hand": 1, "feet": 2},
             code="BNCI2015-001",
             interval=[0, 5],
@@ -625,14 +628,25 @@ class BNCI2015_003(MNEBNCI):
 
     This dataset contains EEG data from 10 subjects using a P300 speller
     system. The dataset includes target and non-target responses during a
-    visual P300 paradigm.
+    visual P300 paradigm. Each subject file (``s1.mat`` ... ``s10.mat``)
+    contains 8 EEG channels (Fz, Cz, P3, Pz, P4, PO7, Oz, PO8) sampled at
+    256 Hz plus target and flash channels, split into a training and a test
+    run (loaded as one session with two runs).
+
+    .. note::
+        The primary publication [1]_ is not open access; acquisition details
+        that are not present in the released files (amplifier, reference,
+        ground, demographics) are therefore not declared in ``METADATA``.
+        Earlier versions of this docstring cited Schreuder et al. (2011),
+        which describes the AMUSE dataset (:class:`BNCI2015_009`), not this one.
 
     References
     ----------
-    .. [1] Schreuder, M., Rost, T., & Tangermann, M. (2011). Listen, you are
-           writing! Speeding up online spelling with a dynamic auditory BCI.
-           Frontiers in neuroscience, 5, 112.
-           https://doi.org/10.3389/fnins.2011.00112
+    .. [1] Guger, C., Daban, S., Sellers, E., Holzner, C., Krausz, G.,
+           Carabalona, R., Gramatica, F., & Edlinger, G. (2009). How many
+           people are able to control a P300-based brain-computer interface
+           (BCI)? Neuroscience Letters, 462(1), 94-98.
+           https://doi.org/10.1016/j.neulet.2009.06.045
 
     Notes
     -----
@@ -644,188 +658,59 @@ class BNCI2015_003(MNEBNCI):
             sampling_rate=256.0,
             channel_types={"eeg": 8},
             montage="standard_1005",
-            hardware="BrainAmp",
-            sensor_type="Ag/AgCl electrodes",
-            reference="nose",
-            ground=None,
-            software="Matlab",
-            filters="hardware analog band-pass filter between 0.1 and 250 Hz",
-            line_freq=50.0,
             sensors=["Fz", "Cz", "P3", "Pz", "P4", "PO7", "Oz", "PO8"],
-            impedance_threshold_kohm=15.0,
-            auxiliary_channels=AuxiliaryChannelsMetadata(
-                has_eog=True,
-                eog_channels=2,
-                eog_type=["bipolar"],
-                has_emg=None,
-                emg_channels=None,
-                other_physiological=None,
-            ),
-            cap_manufacturer="Brain Products",
-            cap_model=None,
-            electrode_type="Ag/AgCl",
-            electrode_material="silver/silver chloride",
+            line_freq=50.0,
         ),
         participants=ParticipantMetadata(
-            n_subjects=21,
-            health_status="Healthy",
-            gender=None,
-            age_mean=34.1,
-            age_std=11.4,
-            age_min=20,
-            age_max=57,
-            ages=None,
-            handedness=None,
-            clinical_population=None,
-            bci_experience="naive",
-            sexes=None,
-            handedness_list=None,
-            species="human",
+            n_subjects=10, health_status="Healthy", species="human"
         ),
         experiment=ExperimentMetadata(
             events={"Target": 2, "NonTarget": 1},
             paradigm="p300",
-            task_type="auditory_oddball",
-            n_classes=6,
-            class_labels=[
-                "direction_1",
-                "direction_2",
-                "direction_3",
-                "direction_4",
-                "direction_5",
-                "direction_6",
-            ],
-            trials_per_class=None,
-            trial_duration=None,
-            tasks=["spelling", "auditory_attention"],
-            study_design="Auditory Multi-class Spatial ERP (AMUSE) paradigm using spatial auditory cues from six speaker locations in azimuth plane. Two-step hex-o-spell like interface for character selection. Subjects mentally count target stimuli from one of six spatial directions.",
+            task_type="visual_oddball",
+            n_classes=2,
+            class_labels=["Target", "NonTarget"],
+            tasks=["spelling"],
+            study_design="Visual P300 speller (36-character matrix). Each subject has a training run followed by a test run; flashes are stored either per character (single-character mode) or per row/column (row/column mode).",
             study_domain="communication",
-            feedback_type="auditory",
-            stimulus_type="spatial_auditory",
-            stimulus_modalities=["auditory"],
-            primary_modality="auditory",
+            stimulus_type="visual",
+            stimulus_modalities=["visual"],
+            primary_modality="visual",
             synchronicity="synchronous",
-            mode="online",
             has_training_test_split=True,
-            instructions="Focus attention to one target direction and mentally count the number of appearances",
-            cog_atlas_id=None,
-            cog_po_id=None,
-            stimulus_presentation={
-                "soa_ms": "175",
-                "stimulus_duration_ms": "40",
-                "stimulus_intensity_db": "58",
-                "speaker_arrangement": "6 speakers at ear height, evenly distributed in circle with 60° distance, radius 65 cm",
-            },
-            hed_tags=None,
         ),
         documentation=DocumentationMetadata(
             doi="10.1016/j.neulet.2009.06.045",
-            description="Auditory BCI speller using spatial cues (AMUSE paradigm) allowing purely auditory communication interface",
-            investigators=["Martijn Schreuder", "Thomas Rost", "Michael Tangermann"],
-            institution="Berlin Institute of Technology",
-            country="Germany",
+            description="How many people are able to control a P300-based brain-computer interface (BCI)?",
+            investigators=[
+                "Christoph Guger",
+                "Shahab Daban",
+                "Eric Sellers",
+                "Clemens Holzner",
+                "Gunther Krausz",
+                "Roberta Carabalona",
+                "Furio Gramatica",
+                "Guenter Edlinger",
+            ],
+            institution="g.tec Medical Engineering GmbH",
+            country="AT",
             repository="BNCI Horizon",
             license="CC-BY-NC-ND-4.0",
-            publication_year=2011,
-            senior_author="Michael Tangermann",
-            contact_info=["schreuder@tu-berlin.de"],
-            associated_paper_doi="10.3389/fnins.2011.00112",
-            funding=[
-                "European ICT Programme Project FP7-224631",
-                "European ICT Programme Project FP7-216886",
-                "Deutsche Forschungsgemeinschaft (DFG MU 987/3-2)",
-                "Bundesministerium fur Bildung und Forschung (BMBF FKZ 01IB001A, 01GQ0850)",
-                "FP7-ICT PASCAL2 Network of Excellence ICT-216886",
-            ],
-            institution_address="Machine Learning Laboratory, Berlin Institute of Technology, FR6-9, Franklinstraße 28/29, 10587 Berlin, Germany",
-            institution_department="Machine Learning Laboratory",
-            ethics_approval=["Ethics Committee of the Charité University Hospital"],
-            acknowledgements="Thomas Denck, David List and Larissa Queda for help with experiments. Klaus-Robert Müller and Benjamin Blankertz for fruitful discussions.",
-            keywords=[
-                "brain-computer interface",
-                "directional hearing",
-                "auditory event-related potentials",
-                "P300",
-                "N200",
-                "dynamic subtrials",
-            ],
+            publication_year=2009,
+            senior_author="Guenter Edlinger",
+            associated_paper_doi="10.1016/j.neulet.2009.06.045",
         ),
-        sessions_per_subject=2,
+        sessions_per_subject=1,
         runs_per_session=2,
-        sessions=["Session 1", "Session 2"],
-        contributing_labs=None,
         n_contributing_labs=1,
         data_processed=True,
-        file_format="gdf",
-        external_links={
-            "source": "http://www.frontiersin.org/neuroprosthetics/10.3389/fnins.2011.00112/abstract"
-        },
-        tags=Tags(pathology=["Healthy"], modality=["Auditory"], type=["ERP", "P300"]),
-        preprocessing=PreprocessingMetadata(
-            data_state="filtered",
-            preprocessing_applied=True,
-            preprocessing_steps=["low-pass filter", "downsampling", "baselining"],
-            highpass_hz=0.1,
-            lowpass_hz=40.0,
-            bandpass={"low_cutoff_hz": 0.1, "high_cutoff_hz": 40.0},
-            filter_type="analog hardware filter for acquisition; low-pass for online",
-            artifact_methods=["variance criterium", "peak-to-peak difference criterium"],
-            re_reference="nose",
-            downsampled_to_hz=100.0,
-            epoch_window=[-0.15, None],
-            notes="For online use signal was low-pass filtered below 40 Hz and downsampled to 100 Hz. Data baselined using 150 ms pre-stimulus data as reference.",
-        ),
-        signal_processing=SignalProcessingMetadata(
-            classifiers=["LDA", "linear binary classifier"],
-            feature_extraction=[
-                "spatio-temporal features",
-                "r2 coefficient",
-                "interval averaging",
-            ],
-            frequency_bands=None,
-            spatial_filters=["shrinkage regularization (Ledoit-Wolf)"],
-        ),
-        cross_validation=CrossValidationMetadata(
-            cv_method="online", cv_folds=None, evaluation_type=["online"]
-        ),
-        performance={
-            "accuracy_percent": 77.4,
-            "itr_bits_per_min": 2.84,
-            "char_per_min_session1": 0.59,
-            "char_per_min_session2_max": 1.41,
-            "char_per_min_session2_avg": 0.94,
-            "itr_session2_avg": 5.26,
-            "itr_session2_max": 7.55,
-            "success_rate_session1": 76.0,
-        },
-        bci_application=BCIApplicationMetadata(
-            applications=["speller", "communication"],
-            environment="laboratory",
-            online_feedback=True,
-        ),
-        paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="p300",
-            stimulus_frequencies_hz=None,
-            frequency_resolution_hz=None,
-            code_type=None,
-            code_length=None,
-            n_targets=6,
-            n_repetitions=None,
-            isi_ms=None,
-            soa_ms=175.0,
-            imagery_tasks=None,
-            cue_duration_s=None,
-            imagery_duration_s=None,
-        ),
+        file_format="mat",
+        tags=Tags(pathology=["Healthy"], modality=["Visual"], type=["ERP", "P300"]),
+        paradigm_specific=ParadigmSpecificMetadata(detected_paradigm="p300"),
         data_structure=DataStructureMetadata(
-            n_trials=48,
-            n_trials_per_class={"calibration_per_direction": 8},
-            n_blocks=None,
-            block_duration_s=None,
-            trials_context="calibration_phase",
+            trials_context="one training run and one test run per subject"
         ),
-        abstract="This online study introduces an auditory spelling interface that eliminates the necessity for visual representation. In up to two sessions, a group of healthy subjects (N=21) was asked to use a text entry application, utilizing the spatial cues of the AMUSE paradigm (Auditory Multi-class Spatial ERP). The speller relies on the auditory sense both for stimulation and the core feedback. Without prior BCI experience, 76% of the participants were able to write a full sentence during the first session. By exploiting the advantages of a newly introduced dynamic stopping method, a maximum writing speed of 1.41 char/min (7.55 bits/min) could be reached during the second session (average: 0.94 char/min, 5.26 bits/min).",
-        methodology="Participants surrounded by six speakers at ear height in circle (60° spacing, 65 cm radius). Each direction associated with unique combination of tone (base frequency + harmonics) and band-pass filtered noise. Two-step hex-o-spell interface for character selection. Session 1: calibration (48 trials, 8 per direction, 15 iterations each) followed by online spelling with 15 fixed iterations. Session 2: calibration followed by online spelling with dynamic stopping method (4-15 iterations). Spatio-temporal feature extraction using r2 coefficient and interval selection (2-4 intervals for early and late components, 112-224 features total). Linear binary classifier with shrinkage regularization (Ledoit-Wolf). Decision making based on median classifier scores across iterations.",
+        bci_application=BCIApplicationMetadata(applications=["speller", "communication"]),
     )
     nemar_id = "nm000189"
 
@@ -855,12 +740,19 @@ class BNCI2015_004(MNEBNCI):
     mental tasks: mental multiplication, mental letter composing, mental
     rotation, mental counting, and a baseline task.
 
+    The experiment was conducted on two different days (two sessions). In the
+    original study each screening session consisted of 8 runs resulting in
+    40 trials of each class per day [1]_; the BNCI release stores each
+    session as a single continuous recording, which this loader exposes as one
+    run per session.
+
     References
     ----------
-    .. [1] Zhang, X., Yao, L., Zhang, Q., Kanhere, S., Sheng, M., & Liu, Y.
-           (2017). A survey on deep learning based brain computer interface:
-           Recent advances and new frontiers. IEEE Transactions on Cognitive
-           and Developmental Systems, 10(2), 145-163.
+    .. [1] Scherer, R., Faller, J., Friedrich, E. V. C., Opisso, E., Costa, U.,
+           Kübler, A., & Müller-Putz, G. R. (2015). Individually Adapted Imagery
+           Improves Brain-Computer Interface Performance in End-Users with
+           Disability. PLoS ONE, 10(5), e0123727.
+           https://doi.org/10.1371/journal.pone.0123727
 
     Notes
     -----
@@ -971,7 +863,7 @@ class BNCI2015_004(MNEBNCI):
                 "Gernot R. Müller-Putz",
             ],
             institution="Institut Guttmann",
-            country="Spain",
+            country="ES",
             publication_year=2015,
             senior_author="Reinhold Scherer",
             contact_info=["reinhold.scherer@tugraz.at"],
@@ -1234,7 +1126,7 @@ class BNCI2015_006(MNEBNCI):
                 "B Blankertz",
             ],
             institution="Technische Universität Berlin",
-            country="Germany",
+            country="DE",
             publication_year=2014,
             senior_author="B Blankertz",
             contact_info=["matthias.treder@tu-berlin.de"],
@@ -1419,7 +1311,8 @@ class BNCI2015_007(MNEBNCI):
     - Equipment: BrainProducts actiCap active electrode system
     - Channels: 63 EEG electrodes (standard 10-10 system)
     - Sampling rate: 100 Hz (downsampled from original recording)
-    - Reference: Nose reference
+    - Reference: linked mastoids (as declared in ``METADATA``; the primary
+      paper is closed access, so this could not be re-verified)
     - Montage: standard_1005
     - Filters: Bandpass filtered during preprocessing
     - Units: uV (converted to V during loading)
@@ -1446,14 +1339,17 @@ class BNCI2015_007(MNEBNCI):
 
     References
     ----------
-    .. [1] Treder, M. S., Purwins, H., Miklody, D., Sturm, I., & Blankertz, B.
-           (2012). Decoding auditory attention to instruments in polyphonic music
-           using single-trial EEG classification. Journal of Neural Engineering,
-           11(2), 026009. https://doi.org/10.1088/1741-2560/11/2/026009
+    .. [1] Schaeff, S., Treder, M. S., Venthur, B., & Blankertz, B. (2012).
+           Exploring motion VEPs for gaze-independent communication. Journal of
+           Neural Engineering, 9(4), 045006.
+           https://doi.org/10.1088/1741-2560/9/4/045006
 
     Notes
     -----
     .. versionadded:: 1.2.0
+
+    The primary publication [1]_ is not open access; the acquisition values
+    above (sampling rate, channel count) describe the released BNCI files.
 
     See Also
     --------
@@ -1590,7 +1486,7 @@ class BNCI2015_007(MNEBNCI):
             ],
             institution="Berlin Institute of Technology",
             institution_department="Neurotechnology Group",
-            country="Germany",
+            country="DE",
             publication_year=2012,
             senior_author="Benjamin Blankertz",
             contact_info=["benjamin.blankertz@tu-berlin.de"],
@@ -1605,8 +1501,7 @@ class BNCI2015_007(MNEBNCI):
                 "N200",
             ],
             ethics_approval=["Declaration of Helsinki"],
-            associated_paper_doi="10.1088/1741-2560/11/2/026009",
-            funding=["DFG grant", "grant nos s", "BMBF grant", "grant no MU MU"],
+            associated_paper_doi="10.1088/1741-2560/9/4/045006",
             license="CC-BY-NC-ND-4.0",
             repository="BNCI Horizon",
         ),
@@ -1729,15 +1624,20 @@ class BNCI2015_008(MNEBNCI):
 
     **Participants**
 
-    - 13 healthy subjects
-    - BCI experience: Previous experience with P300-based BCIs
+    - 13 healthy subjects (eight males and five females, aged 16-45 years,
+      mean age 27)
+    - BCI experience: all but two participants were naive with respect to BCIs
     - Location: Machine Learning Laboratory, TU Berlin, Germany
 
     **Recording Details**
 
+    - Equipment: Brain Products actiCAP active electrode system, recorded at
+      1000 Hz with a 0.016-250 Hz hardware bandpass; the BNCI release is
+      stored at 250 Hz
     - Channels: 63 EEG electrodes (standard 10-10 system)
     - Sampling rate: 250 Hz
-    - Reference: Nose reference
+    - Reference: left mastoid (forehead ground); re-referenced to linked
+      mastoids for the offline analysis in the paper
 
     **Data Organization**
 
@@ -1904,7 +1804,7 @@ class BNCI2015_008(MNEBNCI):
             doi="10.1088/1741-2560/8/6/066003",
             investigators=["M S Treder", "N M Schmidt", "B Blankertz"],
             institution="Berlin Institute of Technology",
-            country="Germany",
+            country="DE",
             publication_year=2011,
             institution_department="Machine Learning Laboratory",
             keywords=[
@@ -2008,26 +1908,32 @@ class BNCI2015_009(MNEBNCI):
     The AMUSE (Auditory Multi-class Spatial ERP) paradigm uses auditory stimuli
     from different spatial locations to elicit P300-like event-related potentials.
 
-    Subjects were presented with auditory stimuli (75 ms bandpass filtered white
-    noise, 150-8000 Hz) from 8 loudspeakers arranged at ear height in a circle
-    around the subject, with 45 degree spacing at approximately 1 meter distance.
-    By attending to stimuli from a specific spatial location, subjects could
-    select one of multiple targets, enabling multi-class BCI control without
-    relying on visual stimulation.
+    Subjects were surrounded by six speakers at ear height, evenly distributed
+    in a circle with 60 degree distance between them (radius ~65 cm, ~58 dB).
+    The stimulus of each direction was a complex of a tone (base frequency and
+    harmonics) and noise. By attending to stimuli from a specific spatial
+    location, subjects could select one of six directions of a two-step
+    auditory speller, enabling multi-class BCI control without relying on
+    visual stimulation. All 21 subjects performed a first session (calibration
+    of 48 trials, 8 per direction, followed by online copy spelling); those who
+    could write the sentence were invited to a second session with dynamic
+    stopping.
 
     **Participants**
 
-    - 21 healthy subjects
+    - 21 healthy, BCI-naive subjects, aged 20 to 57 (mean 34.1, SD 11.4)
     - Location: Berlin Institute of Technology, Germany
 
     **Recording Details**
 
-    - Equipment: 128-channel Brain Products amplifier
-    - Channels: 60 EEG + 2 EOG (62 total)
-    - Electrode type: Ag/AgCl electrodes
-    - Sampling rate: 1000 Hz (downsampled to 100 Hz for analysis in original paper)
-    - Auditory stimuli: 75 ms bandpass filtered white noise (150-8000 Hz), 58 dB
-    - Speaker setup: 8 speakers at ear height, 45 degree spacing, ~1 meter distance
+    - Equipment: BrainAmp amplifiers (Brain Products, Munich, Germany)
+    - Channels: 60 EEG + 2 EOG in the released files (the paper reports a
+      fixed set of 56 Ag/AgCl electrodes plus two bipolar EOG channels)
+    - Reference: nose; impedances below 15 kOhm
+    - Sampling rate: 1000 Hz, hardware analog band-pass 0.1-250 Hz (the paper
+      low-pass filtered below 40 Hz and down sampled to 100 Hz for online use)
+    - Sessions: up to two per subject in the original study; the BNCI release
+      is loaded as one session with the recordings as runs
 
     **Data Organization**
 
@@ -2046,6 +1952,11 @@ class BNCI2015_009(MNEBNCI):
            writing! Speeding up online spelling with a dynamic auditory BCI.
            Frontiers in neuroscience, 5, 112.
            https://doi.org/10.3389/fnins.2011.00112
+    .. [2] Schreuder, M., Blankertz, B., & Tangermann, M. (2010). A new
+           auditory multi-class brain-computer interface paradigm: spatial
+           hearing as an informative cue. PLoS ONE, 5(4), e9813.
+           https://doi.org/10.1371/journal.pone.0009813 (introduces the AMUSE
+           paradigm in an offline study with 10 subjects; not this dataset)
 
     Notes
     -----
@@ -2054,146 +1965,127 @@ class BNCI2015_009(MNEBNCI):
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
-            sampling_rate=250.0,
+            sampling_rate=1000.0,
             channel_types={"eeg": 60, "eog": 2},
-            montage="10-20",
-            hardware="Brain Products 128-channel amplifier",
+            montage="standard_1005",
+            hardware="BrainAmp (Brain Products, Munich, Germany)",
             sensor_type="Ag/AgCl electrodes",
             reference="nose",
-            software="Matlab",
-            filters="0.1-250 Hz analog bandpass",
+            filters="hardware analog band-pass filter between 0.1 and 250 Hz",
             sensors=[],
             line_freq=50.0,
+            impedance_threshold_kohm=15.0,
             auxiliary_channels=AuxiliaryChannelsMetadata(
                 has_eog=True, eog_channels=2, eog_type=["bipolar"]
             ),
+            cap_manufacturer="Brain Products",
+            electrode_material="silver/silver chloride",
         ),
         participants=ParticipantMetadata(
-            n_subjects=10,
+            n_subjects=21,
             health_status="Healthy",
-            gender={"male": 6, "female": 4},
-            age_mean=30.3,
-            age_min=22,
-            age_max=55,
-            handedness="unknown",
-            bci_experience="mixed",
+            age_mean=34.1,
+            age_std=11.4,
+            age_min=20,
+            age_max=57,
+            bci_experience="naive",
             species="human",
         ),
         experiment=ExperimentMetadata(
             events={"Target": 1, "NonTarget": 2},
             paradigm="p300",
-            task_type="oddball",
-            n_classes=5,
+            task_type="auditory_oddball",
+            n_classes=6,
             class_labels=[
-                "location_1",
-                "location_2",
-                "location_3",
-                "location_7",
-                "location_8",
+                "direction_1",
+                "direction_2",
+                "direction_3",
+                "direction_4",
+                "direction_5",
+                "direction_6",
             ],
             trial_duration=0.8,
-            tasks=["spatial_auditory_oddball"],
-            study_design="Offline auditory oddball task using spatial location of auditory stimuli as discriminating cue. Frontal five speakers used (speakers 1,2,3,7,8) with 45 degree spacing. Three conditions tested: C300 (300ms ISI), C175 (175ms ISI), C300s (300ms ISI, single speaker). Each stimulus was unique 40ms complex sound from bandpass filtered white noise with tone overlay.",
-            study_domain="BCI",
-            feedback_type="none",
-            stimulus_type="auditory_spatial",
+            tasks=["spelling", "auditory_attention"],
+            study_design="Auditory Multi-class Spatial ERP (AMUSE) paradigm: six speakers at ear height, evenly distributed in a circle with 60 degree distance (radius ~65 cm, ~58 dB). Each direction is a complex of a tone (base frequency and harmonics) and band-pass filtered noise. Two-step hex-o-spell-like auditory speller. Session 1: ~30 min calibration (48 trials, 8 per direction, 15 iterations each) followed by online copy spelling with 15 fixed iterations; Session 2 (subjects who could write the sentence in Session 1): calibration followed by online spelling with dynamic stopping.",
+            study_domain="communication",
+            feedback_type="auditory",
+            stimulus_type="spatial_auditory",
             stimulus_modalities=["auditory"],
             primary_modality="auditory",
             synchronicity="synchronous",
-            mode="offline",
-            has_training_test_split=False,
-            instructions="Subjects asked to mentally count target stimulations or respond by keypress (condition Cr). Minimize eye movements and muscle contractions. Target direction indicated prior to each block visually and by presenting stimulus from that location.",
+            mode="online",
+            has_training_test_split=True,
+            instructions="Subjects were asked to count the number of target appearances in the trial and report them (calibration); during online spelling, focus attention on the direction associated with the target (group of) letter(s).",
+            stimulus_presentation={
+                "stimulus_intensity_db": "58",
+                "speaker_arrangement": "six speakers at ear height, evenly distributed in a circle with 60 degree distance, radius ~65 cm",
+            },
         ),
         documentation=DocumentationMetadata(
-            doi="10.1371/journal.pone.0009813",
-            description="A new auditory multi-class brain-computer interface paradigm using spatial hearing as an informative cue",
-            investigators=[
-                "Martijn Schreuder",
-                "Benjamin Blankertz",
-                "Michael Tangermann",
-            ],
+            doi="10.3389/fnins.2011.00112",
+            description="Listen, You are Writing! Speeding up Online Spelling with a Dynamic Auditory BCI (AMUSE dataset)",
+            investigators=["Martijn Schreuder", "Thomas Rost", "Michael Tangermann"],
             institution="Berlin Institute of Technology",
-            country="Germany",
-            publication_year=2010,
+            country="DE",
+            repository="BNCI Horizon",
+            license="CC-BY-NC-ND-4.0",
+            publication_year=2011,
             senior_author="Michael Tangermann",
-            contact_info=["martijn@cs.tu-berlin.de"],
-            funding=[
-                "European ICT Programme Project FP7-224631",
-                "European ICT Programme Project FP7-216886",
-                "Deutsche Forschungsgemeinschaft (DFG) MU 987/3-1",
-                "Bundesministerium für Bildung und Forschung (BMBF) FKZ 01IB001A",
-                "Bundesministerium für Bildung und Forschung (BMBF) FKZ 01GQ0850",
-                "FP7-ICT PASCAL2 Network of Excellence ICT-216886",
-            ],
-            institution_address="Berlin, Germany",
-            institution_department="Machine Learning Department",
-            ethics_approval=[
-                "Ethics Committee of the Charité University Hospital (number EA4/073/09)"
-            ],
+            associated_paper_doi="10.3389/fnins.2011.00112",
+            related_paper_dois=["10.1371/journal.pone.0009813"],
+            institution_department="Machine Learning Laboratory",
+            ethics_approval=["Ethics Committee of the Charité University Hospital"],
             keywords=[
                 "auditory BCI",
+                "AMUSE",
                 "P300",
                 "spatial hearing",
                 "multi-class",
-                "oddball paradigm",
+                "speller",
             ],
-            associated_paper_doi="10.3389/fnins.2011.00112",
-            license="CC-BY-NC-ND-4.0",
-            repository="BNCI Horizon",
-        ),
-        tags=Tags(pathology=["Healthy"], modality=["Auditory"], type=["P300"]),
-        preprocessing=PreprocessingMetadata(
-            data_state="filtered",
-            preprocessing_applied=True,
-            preprocessing_steps=[
-                "bandpass filter",
-                "notch filter",
-                "downsampling",
-                "artifact rejection",
-            ],
-            highpass_hz=0.1,
-            lowpass_hz=250.0,
-            bandpass={"low_cutoff_hz": 0.1, "high_cutoff_hz": 250.0},
-            notch_hz=[50],
-            filter_type="Chebyshev II order 8 (for visual inspection: 30 Hz pass, 42 Hz stop, 50 dB damping)",
-            artifact_methods=["threshold-based artifact rejection"],
-            re_reference="nose",
-            downsampled_to_hz=100.0,
-            epoch_window=[-0.15, 0.8],
-            notes="Raw data acquired at 1000 Hz. For visual inspection: low-pass filtered with order 8 Chebyshev II filter (30 Hz pass, 42 Hz stop, 50 dB damping) applied forward and backward to minimize phase shifts, then downsampled to 100 Hz. For classification: same filter applied causally (forward only) for online portability. Artifact rejection used simple threshold method: subtrials with deflection >70 µV over ocular channels compared to baseline were rejected.",
-        ),
-        signal_processing=SignalProcessingMetadata(
-            classifiers=["LDA"],
-            feature_extraction=["ROC-separability-index"],
-            frequency_bands={"analyzed_range": [0.1, 250.0]},
-        ),
-        cross_validation=CrossValidationMetadata(
-            cv_method="cross-validation", evaluation_type=["offline"]
-        ),
-        performance={
-            "accuracy_percent": 90.0,
-            "itr_bits_per_min": 17.39,
-            "best_subject_itr_bits_per_min": 25.20,
-            "best_subject_accuracy_percent": 100.0,
-            "c300s_accuracy_percent": 70.0,
-        },
-        bci_application=BCIApplicationMetadata(
-            applications=["speller", "communication"],
-            environment="laboratory",
-            online_feedback=False,
-        ),
-        paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="p300", n_targets=5, n_repetitions=15, isi_ms=300.0
-        ),
-        data_structure=DataStructureMetadata(
-            n_trials="varied by condition",
-            trials_context="BCI experiments: C300 (50 trials × 75 subtrials = 3750 subtrials), C175 (40 trials × 75 subtrials = 3000 subtrials), C300s (20 trials × 75 subtrials = 1500 subtrials). Physiological experiments: C1000 (32 trials × 80 subtrials = 2560 subtrials), Cr (576-768 subtrials)",
-            n_blocks=50,
         ),
         sessions_per_subject=1,
         runs_per_session=2,
+        n_contributing_labs=1,
         data_processed=True,
-        file_format="gdf",
+        file_format="mat",
+        tags=Tags(pathology=["Healthy"], modality=["Auditory"], type=["P300"]),
+        preprocessing=PreprocessingMetadata(
+            data_state="raw",
+            preprocessing_applied=False,
+            highpass_hz=0.1,
+            lowpass_hz=250.0,
+            bandpass={"low_cutoff_hz": 0.1, "high_cutoff_hz": 250.0},
+            filter_type="hardware analog band-pass filter",
+            re_reference="nose",
+            notes="Signals were sampled at 1 kHz and filtered by a hardware analog band-pass filter between 0.1 and 250 Hz. In the paper, the online signal was low-pass filtered below 40 Hz, down sampled to 100 Hz and baselined with the 150 ms pre-stimulus interval.",
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["LDA (shrinkage regularization)"],
+            feature_extraction=["spatio-temporal features", "interval averaging"],
+        ),
+        cross_validation=CrossValidationMetadata(evaluation_type=["online"]),
+        performance={
+            "success_rate_session1_percent": 76.0,
+            "char_per_min_session2_max": 1.41,
+            "char_per_min_session2_avg": 0.94,
+            "itr_bits_per_min_session2_max": 7.55,
+            "itr_bits_per_min_session2_avg": 5.26,
+        },
+        bci_application=BCIApplicationMetadata(
+            applications=["speller", "communication"],
+            environment="laboratory (not electromagnetically shielded)",
+            online_feedback=True,
+        ),
+        paradigm_specific=ParadigmSpecificMetadata(
+            detected_paradigm="p300", n_targets=6, n_repetitions=15
+        ),
+        data_structure=DataStructureMetadata(
+            n_trials=48,
+            n_trials_per_class={"calibration_per_direction": 8},
+            trials_context="calibration phase of Session 1 (48 trials, 8 per direction, 15 iterations each); online spelling trials vary per subject",
+        ),
+        abstract="This online study introduces an auditory spelling interface that eliminates the necessity for visual representation. In up to two sessions, a group of healthy subjects (N = 21) was asked to use a text entry application, utilizing the spatial cues of the AMUSE paradigm (Auditory Multi-class Spatial ERP). The speller relies on the auditory sense both for stimulation and the core feedback. Without prior BCI experience, 76% of the participants were able to write a full sentence during the first session. By exploiting the advantages of a newly introduced dynamic stopping method, a maximum writing speed of 1.41 char/min (7.55 bits/min) could be reached during the second session (average: 0.94 char/min, 5.26 bits/min).",
     )
     nemar_id = "nm000234"
 
@@ -2228,6 +2120,11 @@ class BNCI2015_010(MNEBNCI):
     This dataset contains EEG recordings from 12 subjects during a rapid serial
     visual presentation (RSVP) task. Subjects were instructed to attend to target
     images in a continuous stream of stimuli, eliciting P300 responses.
+
+    The BNCI release provides one ``RSVP_VPxxx.mat`` file per subject; its
+    recordings are loaded as runs of a single session (the primary publication
+    [1]_ is not open access, so the original session structure could not be
+    re-verified against the paper).
 
     References
     ----------
@@ -2355,7 +2252,7 @@ class BNCI2015_010(MNEBNCI):
             doi="10.1016/j.clinph.2012.12.050",
             investigators=["Laura Acqualagna", "Benjamin Blankertz"],
             institution="Berlin Institute of Technology",
-            country="Germany",
+            country="DE",
             publication_year=2013,
             senior_author="Benjamin Blankertz",
             contact_info=[
@@ -2434,9 +2331,9 @@ class BNCI2015_010(MNEBNCI):
             trials_context="per sequence",
             n_blocks=3,
         ),
-        sessions_per_subject=3,
+        sessions_per_subject=1,
         runs_per_session=2,
-        sessions=["calibration", "copy-spelling", "free-spelling"],
+        sessions=["0"],
         data_processed=True,
         file_format="EEG",
         abstract="A Brain Computer Interface (BCI) speller using rapid serial visual presentation (RSVP) paradigm for gaze-independent mental typewriting. Twelve healthy participants successfully operated the RSVP speller with mean online spelling rate of 1.43 symb/min and mean symbol selection accuracy of 94.8%. The RSVP speller does not require gaze shifts and can be operated by non-spatial visual attention, making it suitable for patients with impaired oculo-motor control.",
@@ -2475,14 +2372,18 @@ class BNCI2015_012(MNEBNCI):
     speller task with a two-dimensional pseudo-random sequence (PASS2D) paradigm.
 
     Note: Only 10 of the original 12 participants' data is available on the BNCI
-    server. Subjects 3 (VPnx) and 6 (VPmg) return HTTP 404 errors.
+    server. Subjects 3 (VPnx) and 6 (VPmg) return HTTP 404 errors; these are
+    the two subjects that were excluded from the online phase in [1]_ due to a
+    poor estimated classification performance based on the calibration data.
+    ``METADATA`` therefore describes the 10 released subjects (8 male, 2
+    female, aged 21-34).
 
     References
     ----------
-    .. [1] Schreuder, M., Rost, T., & Tangermann, M. (2011). Listen, you are
-           writing! Speeding up online spelling with a dynamic auditory BCI.
-           Frontiers in neuroscience, 5, 112.
-           https://doi.org/10.3389/fnins.2011.00112
+    .. [1] Höhne, J., Schreuder, M., Blankertz, B., & Tangermann, M. (2011).
+           A novel 9-class auditory ERP paradigm driving a predictive text entry
+           system. Frontiers in Neuroscience, 5, 99.
+           https://doi.org/10.3389/fnins.2011.00099
 
     Notes
     -----
@@ -2581,14 +2482,14 @@ class BNCI2015_012(MNEBNCI):
             electrode_material="Ag/AgCl",
         ),
         participants=ParticipantMetadata(
-            n_subjects=12,
+            n_subjects=10,
             health_status="Healthy",
-            gender={"male": 9, "female": 3},
-            age_mean=25.1,
+            gender={"male": 8, "female": 2},
+            age_mean=25.3,
             age_std=None,
             age_min=21,
             age_max=34,
-            ages=[26, 21, 25, 23, 34, 23, 23, 24, 24, 25, 29, 24],
+            ages=[26, 21, 23, 34, 23, 24, 24, 25, 29, 24],
             handedness=None,
             clinical_population=None,
             bci_experience="mostly naive",
@@ -2630,10 +2531,13 @@ class BNCI2015_012(MNEBNCI):
                 "Michael Tangermann",
             ],
             institution="Berlin Institute of Technology",
-            country="Germany",
+            country="DE",
             data_url=None,
             publication_year=2011,
-            senior_author="Michael Tangermann",
+            # Michael Tangermann is the last author of the paper, but the
+            # Crossref record of 10.3389/fnins.2011.00099 lists only the first
+            # author, so ``senior_author`` cannot be validated against it.
+            senior_author=None,
             contact_info=["j.hoehne@tu-berlin.de"],
             funding=None,
             institution_address="Franklinstr. 28/19, 10587 Berlin, Germany",
@@ -2651,7 +2555,7 @@ class BNCI2015_012(MNEBNCI):
                 "T9",
                 "user-centered design",
             ],
-            associated_paper_doi="10.3389/fnins.2011.00112",
+            associated_paper_doi="10.3389/fnins.2011.00099",
             license="CC-BY-NC-ND-4.0",
             repository="BNCI Horizon",
         ),
@@ -2761,6 +2665,10 @@ class BNCI2015_013(MNEBNCI):
     This dataset contains EEG recordings from 6 subjects performing a
     cursor control task with error-related potentials. The dataset includes
     both correct and error responses.
+
+    The BNCI release provides two ``.mat`` files per subject (``s1`` and
+    ``s2``), each holding 10 blocks. The loader exposes every block as its
+    own session with a single run, hence ``sessions_per_subject=20``.
 
     References
     ----------
