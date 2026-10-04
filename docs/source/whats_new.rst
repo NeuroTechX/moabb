@@ -23,6 +23,7 @@ Version 1.8  (Source - GitHub)
 
 Enhancements
 ~~~~~~~~~~~~
+- Add the offline calibration subsets of Perdikis2018 and Alawieh2025 (:gh:`1191`) (by `Bruno Aristimunha`_).
 - Add Jia2019, MIBMPI2024, Ortiz2023 and Wang2025 motor-imagery loaders (:gh:`1190` by `Bruno Aristimunha`_).
 - Add three OpenNeuro motor-imagery datasets: :class:`moabb.datasets.Peterson2020`, :class:`moabb.datasets.Daly2020`, and :class:`moabb.datasets.Damm2026` (:pr:`1189`, by `Bruno Aristimunha`_).
 - Add :class:`moabb.datasets.NETBCI2026` (NETBCI, Recherche Data Gouv doi:10.57745/RBJRC7): 19 subjects, 74-channel EEG, right-hand motor imagery vs rest over 4 longitudinal sessions x 6 online feedback runs; per-subject EEG is read out of the 49 GB archive by HTTP range requests (:gh:`1188` by `Bruno Aristimunha`_).
