@@ -91,7 +91,7 @@ def _quote(text: str, start: int, end: int, pad: int = 45) -> str:
     return re.sub(r"\s+", " ", text[a:b]).strip()
 
 
-def _scan(text: str, pattern: re.Pattern, value_fn, group: int = 1):
+def _scan(text: str, pattern: re.Pattern, value_fn):
     hits = []
     for m in pattern.finditer(text):
         try:

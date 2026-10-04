@@ -121,21 +121,6 @@ class FetchResult:
         }
 
     @classmethod
-    def from_dict(cls, d: dict) -> "FetchResult":
-        return cls(
-            name=d["name"],
-            access=d["access"],
-            paper_text_paths=[Path(p) for p in d.get("paper_text_paths", [])],
-            repository_files=[Path(p) for p in d.get("repository_files", [])],
-            record_json=Path(d["record_json"]) if d.get("record_json") else None,
-            provenance=Path(d["provenance"]) if d.get("provenance") else None,
-            paper_dois=d.get("paper_dois", []),
-            dataset_dois=d.get("dataset_dois", []),
-            unsupported=d.get("unsupported", False),
-            notes=d.get("notes", []),
-        )
-
-    @classmethod
     def from_cache(cls, cache_root: Path | str, name: str) -> "FetchResult | None":
         """Rebuild the result of a previous ``fetch_dataset`` from its cache dir."""
         ds_dir = Path(cache_root) / name
@@ -365,7 +350,6 @@ def fetch_dataset(
     prov_requests: list[dict] = []
     prov_papers: list[dict] = []
     prov_repos: list[dict] = []
-    network_errors = 0
 
     while queue:
         doi = queue.pop(0)
@@ -392,8 +376,6 @@ def fetch_dataset(
             "errors": st.get("errors"),
         }
         prov_requests.extend(st.get("requests") or [])
-        if st["errors"]:
-            network_errors += 1
         store = _DoiStore(cache_root, doi)
         if st["kind"] == "paper":
             result.paper_dois.append(doi)

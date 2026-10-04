@@ -34,29 +34,6 @@ _DOI_PREFIXES = (
 _DOI_RE = re.compile(r"^10\.\d{4,}/\S+$")
 _DOI_IN_TEXT_RE = re.compile(r"10\.\d{4,}/[^\s\]\">]+")
 
-#: Metadata fields under audit, flattened into ``DatasetRecord.declared``.
-DECLARED_FIELDS = (
-    "n_subjects",
-    "sessions_per_subject",
-    "runs_per_session",
-    "sampling_rate",
-    "channel_types",
-    "reference",
-    "ground",
-    "hardware",
-    "filters",
-    "line_freq",
-    "interval",
-    "n_trials",
-    "class_labels",
-    "paradigm",
-    "license",
-    "institution",
-    "country",
-    "publication_year",
-    "investigators",
-)
-
 
 def normalize_doi(value: str | None) -> str | None:
     """Return a lowercase bare DOI (``10.xxxx/...``) or ``None``."""
