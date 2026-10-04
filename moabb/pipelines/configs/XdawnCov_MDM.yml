@@ -1,0 +1,18 @@
+name: XdawnCovariances + MDM
+
+paradigms:
+  - P300
+
+citations:
+  - https://doi.org/10.1109/NER49283.2021.9441279
+  - https://citeseerx.ist.psu.edu/doc/10.1.1.713.5131
+
+pipeline:
+  - name: XdawnCovariances
+    from: pyriemann.estimation
+    parameters:
+      estimator: oas
+      xdawn_estimator: scm
+
+  - name: MDM
+    from: pyriemann.classification

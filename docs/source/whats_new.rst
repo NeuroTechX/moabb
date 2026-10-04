@@ -23,6 +23,7 @@ Version 1.8  (Source - GitHub)
 
 Enhancements
 ~~~~~~~~~~~~
+- Ship MOABB's reference benchmark pipeline configs as package data and add :func:`moabb.pipelines.get_benchmark_pipelines`, so published baseline pipelines are available from normal wheel/sdist installs instead of only from a source checkout. Pipeline parsing now also accepts a single ``.py`` config and rejects valid-but-empty config directories instead of silently returning no pipelines (:gh:`1149` by `lindicaphxag-tech`_).
 - Allow :class:`~moabb.evaluations.CrossSubjectEvaluation` to accept an optional top-level ``splitter`` instance, enabling transfer-learning protocols to reuse MOABB's existing caching, parallel execution, and result handling while preserving the default protocol (:gh:`1088` by `lindicaphxag-tech`_).
 - Add Leelakittisin2025 sit-stand transition imagery, PerezBlanco2026 wrist motor-execution, and Vagaja2023 VR motor-imagery datasets (:pr:`1199`) (by `Bruno Aristimunha`_).
 - Add MartinezPeon2025, MILimbEEG dataset loaders with synthetic regression coverage ({gh}`1198` by `Bruno Aristimunha`_).
@@ -48,6 +49,13 @@ API changes
   folds that hold out multiple sessions now emit one result row per held-out
   session instead of one aggregate row per fold. The default leave-one-session-out
   behavior is unchanged (:gh:`1210` by `lindicaphxag-tech`_).
+- Saved evaluation model paths now include the paradigm and optional suffix, so
+  separate benchmark runs no longer overwrite artifacts that otherwise share the
+  same evaluation/dataset/subject/session/pipeline keys (:gh:`1182` by
+  `lindicaphxag-tech`_). Existing legacy ``Models_*``/``GridSearch_*`` trees
+  remain untouched at their historical paths and are not auto-migrated because
+  those paths do not encode the missing paradigm/suffix provenance; legacy
+  artifacts therefore remain manually readable in place.
 
 Requirements
 ~~~~~~~~~~~~

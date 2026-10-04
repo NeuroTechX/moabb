@@ -1,0 +1,13 @@
+name: eCCA-SSVEP
+
+paradigms:
+  - SSVEP
+
+citations:
+  - https://doi.org/10.1371/journal.pone.0140703
+
+pipeline:
+  - name: SSVEP_eCCA
+    from: moabb.pipelines.classification
+    parameters:
+      n_harmonics: 3
