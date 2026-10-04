@@ -99,6 +99,7 @@ class Thielen2015(BaseDataset):
             hardware="Biosemi ActiveTwo",
             sensor_type="EEG",
             electrode_type="active",
+            electrode_material="sintered Ag/AgCl",
             reference="CMS/DRL",
             sensors=[
                 "AF3",
@@ -195,7 +196,7 @@ class Thielen2015(BaseDataset):
         ),
         documentation=DocumentationMetadata(
             doi="10.1371/journal.pone.0133797",
-            repository="GitHub",
+            repository="Radboud Data Repository",
             investigators=[
                 "Jordy Thielen",
                 "Philip van den Broek",

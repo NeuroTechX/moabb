@@ -16,6 +16,7 @@ from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
     DatasetMetadata,
+    DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
     ParticipantMetadata,
@@ -153,6 +154,7 @@ class Lenaig2026(BaseDataset):
         acquisition=AcquisitionMetadata(
             sampling_rate=500,
             channel_types={"eeg": 24, "misc": 3},
+            hardware="mBrainTrain 24-channel headset with Smarting module",
             sensor_type="EEG",
             electrode_material="Ag/AgCl",
             electrode_type="Wet - Passive",
@@ -177,6 +179,8 @@ class Lenaig2026(BaseDataset):
         ),
         documentation=DocumentationMetadata(
             doi=_DOI,
+            repository="Zenodo",
+            data_url=f"https://doi.org/{_DATA_DOI}",
             license="CC-BY-NC-ND-4.0",
             country="FR",
             institution="Orange Labs",
@@ -189,6 +193,15 @@ class Lenaig2026(BaseDataset):
                 "Rozenn Nicol",
             ],
             publication_year=2026,
+        ),
+        # One session of two 10-minute runs per participant (Zenodo record);
+        # ``n_subjects`` counts both loudness experiments (24 + 24), the
+        # default ``exp=1`` instance exposes 24 subjects.
+        sessions_per_subject=1,
+        runs_per_session=2,
+        data_structure=DataStructureMetadata(
+            n_trials=100,
+            trials_context="per subject: 2 runs x 50 trials (10 repetitions per condition, 5 conditions)",
         ),
     )
 
