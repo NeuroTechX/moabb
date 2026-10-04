@@ -1,6 +1,6 @@
 {
     "_metadata": {
-        "total": 216
+        "total": 220
     },
     "10.1002/hbm.23730": {
         "title": "Deep learning with convolutional neural networks for EEG decoding and visualization",
@@ -2591,5 +2591,40 @@
         ],
         "year": 2024,
         "doi": "10.17632/zs25xxjkm9.3"
+    },
+    "10.7910/DVN/GH74ZG": {
+        "title": "Cross-Session Motor Imagery EEG dataset",
+        "authors": [
+            "Lincong Pan"
+        ],
+        "year": 2025,
+        "doi": "10.7910/DVN/GH74ZG"
+    },
+    "10.5281/zenodo.14672334": {
+        "title": "EEG Signal Dataset During Dorsiflexion and Plantar Flexion Movements",
+        "authors": [
+            "Cristina Polo-Hortiguela",
+            "Mario Ortiz",
+            "Eduardo Ianez",
+            "Jose M. Azorin"
+        ],
+        "year": 2025,
+        "doi": "10.5281/zenodo.14672334"
+    },
+    "10.1088/1741-2552/ad0a01": {
+        "title": "Riemannian geometric and ensemble learning for decoding cross-session motor imagery electroencephalography signals",
+        "authors": [
+            "Lincong Pan"
+        ],
+        "year": 2023,
+        "doi": "10.1088/1741-2552/ad0a01"
+    },
+    "10.7910/DVN/251NOW": {
+        "title": "A cross-session motor imagery EEG dataset",
+        "authors": [
+            "Lincong Pan"
+        ],
+        "year": 2023,
+        "doi": "10.7910/DVN/251NOW"
     }
 }

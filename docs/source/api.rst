@@ -54,6 +54,9 @@ Motor Imagery Datasets
     :template: class.rst
 
     AlexMI
+    Pan2023
+    Pan2025
+    PoloHortiguela2025
     Batista2022
     Farabbi2020
     Han2026

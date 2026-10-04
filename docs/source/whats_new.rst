@@ -23,6 +23,7 @@ Version 1.8  (Source - GitHub)
 
 Enhancements
 ~~~~~~~~~~~~
+- Add Pan2023, Pan2025, PoloHortiguela2025 dataset loaders with synthetic regression coverage ({gh}`1197` by `Bruno Aristimunha`_).
 - Add MIMED2024 and WRCC2023 MI-A/MI-B/MI-C motor-imagery datasets with isolated recording windows (:gh:`1196`, by `Bruno Aristimunha`_).
 - Add :class:`moabb.datasets.MIND2026`, :class:`moabb.datasets.MOVING2024`, :class:`moabb.datasets.NeBULA2025`, and :class:`moabb.datasets.Thapa2025` large-recording motor-imagery and motor-execution datasets. Preserve the MIND acquisition-restart guard and document execution-only tasks (:gh:`1195` by `Bruno Aristimunha`_).
 - Add Batista2022, Farabbi2020, Han2026, Kodera2023 and Kueper2024 dataset loaders (:gh:`1194`).
