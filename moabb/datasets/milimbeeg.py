@@ -243,11 +243,21 @@ class MILimbEEG(BaseDataset):
         """Read one per-trial CSV as a (n_channels, n_times) array in volts.
 
         Files hold an optional leading sample-index column plus the 16 electrode
-        columns, x time-sample rows, in microvolts; some exports add a header row.
+        columns, x time-sample rows, in microvolts; the Mendeley v2 export ships
+        a header row where the first field is empty and the remaining fields are
+        the integer column indices 0..15. Peeking at the raw first line and
+        trying to parse every field as a float is enough to detect that header
+        (and the all-string header variant some older exports used) without
+        depending on pandas' type inference.
         """
-        frame = pd.read_csv(csv_file, header=None)
-        if any(isinstance(v, str) for v in frame.iloc[0]):
-            frame = pd.read_csv(csv_file)
+        with open(csv_file) as fh:
+            first_line = fh.readline()
+        try:
+            [float(x) for x in first_line.rstrip("\r\n").split(",")]
+            header = None
+        except ValueError:
+            header = 0
+        frame = pd.read_csv(csv_file, header=header)
         data = frame.to_numpy(dtype=float)
         if data.shape[1] != len(CHANNELS) and data.shape[0] == len(CHANNELS):
             data = data.T

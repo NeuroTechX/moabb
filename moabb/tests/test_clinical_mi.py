@@ -59,6 +59,35 @@ def test_milimb_rejects_short_trial(tmp_path):
         MILimbEEG()._read_trial(path)
 
 
+def test_milimb_rejects_trial_one_sample_short(tmp_path):
+    # Regression: a 499-sample trial (one sample short of 4 s * 125 Hz) must
+    # be rejected, not silently zero-padded.
+    path = tmp_path / "short_by_one.csv"
+    pd.DataFrame(np.zeros((499, 17))).to_csv(path, header=False, index=False)
+    with pytest.raises(ValueError, match="four-second"):
+        MILimbEEG()._read_trial(path)
+
+
+def test_milimb_parses_mendeley_v2_numeric_header(tmp_path):
+    # The Mendeley v2 export writes a header row that starts with an empty
+    # cell and then the integer column indices ``0..15``. pandas' type
+    # inference coerces those column names to floats, so the loader must
+    # detect the header by peeking at the raw first line instead of trusting
+    # ``iloc[0]``'s dtype.
+    path = tmp_path / "S1R1I2_1.csv"
+    header = "," + ",".join(str(i) for i in range(16))
+    rows = [
+        ",".join([str(t)] + [f"{t + 0.5:.2f}" for _ in range(16)])
+        for t in range(500)
+    ]
+    path.write_text("\n".join([header, *rows]) + "\n")
+    data = MILimbEEG()._read_trial(path)
+    assert data.shape == (16, 500)
+    # Microvolts -> volts conversion preserves the authored amplitudes.
+    np.testing.assert_allclose(data[:, 0], 0.5e-6)
+    np.testing.assert_allclose(data[:, -1], (499 + 0.5) * 1e-6)
+
+
 def test_kmi_si_and_protocol(tmp_path):
     path = tmp_path / "grip.csv"
     pd.DataFrame({"C3": np.full(42000, 25), "C4": np.full(42000, -12)}).to_csv(
