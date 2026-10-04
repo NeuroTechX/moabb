@@ -3,6 +3,7 @@ import os.path as osp
 import platform
 import warnings
 from collections import OrderedDict
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -328,6 +329,7 @@ class TestWithinSess:
 
     def test_within_session_evaluation_save_model(self):
         res_test_path = "./res_test"
+        self.eval.suffix = "run_a"
         process_pipeline = self.eval.paradigm.make_process_pipelines(dataset)[0]
         list(
             self.eval.evaluate(
@@ -336,11 +338,15 @@ class TestWithinSess:
         )
 
         model_path = os.path.join(
-            res_test_path, "Models_WithinSession", type(self.eval.paradigm).__name__
+            res_test_path,
+            "Models_WithinSession",
+            type(self.eval.paradigm).__name__,
+            "run_a",
         )
         assert os.path.isdir(model_path), (
-            "Saved models should be namespaced under their paradigm.",
+            "Saved models should be namespaced under their paradigm and suffix.",
         )
+        assert any(Path(model_path).rglob("fitted_model_*.pkl"))
 
     def test_lambda_warning(self):
         def explicit_kernel(x):
@@ -1189,6 +1195,28 @@ class TestUtilEvaluation:
             suffix="run_b",
         )
         assert other_suffix_path != save_path
+
+        grid_save_path = create_save_path(
+            "base_path",
+            "evaluation_code",
+            1,
+            "0",
+            "evaluation_name",
+            grid=True,
+            eval_type="WithinSession",
+            paradigm="MotorImagery",
+            suffix="run_a",
+        )
+        assert grid_save_path == os.path.join(
+            "base_path",
+            "GridSearch_WithinSession",
+            "MotorImagery",
+            "run_a",
+            "evaluation_code",
+            "1",
+            "0",
+            "evaluation_name",
+        )
 
     def test_save_model_cv_with_pytorch_model(self):
         try:
