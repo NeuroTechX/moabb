@@ -33,9 +33,7 @@ def test_chance_by_chance_uses_conservative_fold_envelope():
 
     levels = chance_by_chance(data, alpha=0.05)
 
-    expected = max(
-        adjusted_chance_level(2, n_trials, 0.05) for n_trials in (100, 50)
-    )
+    expected = max(adjusted_chance_level(2, n_trials, 0.05) for n_trials in (100, 50))
     assert levels["A"]["adjusted"][0.05] == expected
 
     reversed_levels = chance_by_chance(data.iloc[::-1].reset_index(drop=True), alpha=0.05)
