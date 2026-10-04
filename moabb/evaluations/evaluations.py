@@ -3,7 +3,12 @@ from typing import TYPE_CHECKING, Optional
 
 import numpy as np
 from sklearn.base import clone
-from sklearn.model_selection import GroupKFold, LeaveOneGroupOut, StratifiedKFold
+from sklearn.model_selection import (
+    BaseCrossValidator,
+    GroupKFold,
+    LeaveOneGroupOut,
+    StratifiedKFold,
+)
 from sklearn.preprocessing import LabelEncoder
 from tqdm import tqdm
 
@@ -498,6 +503,17 @@ class CrossSubjectEvaluation(BaseEvaluation):
         ``"roc_auc"`` metrics. Cannot be combined with manual
         ``calibration_size`` or ``calibration_labeled`` in ``cv_kwargs``, except
         for the default ``TRAIN`` mode.
+    splitter : BaseCrossValidator or None
+        Optional top-level cross-subject splitter. It must follow MOABB's
+        ``split(y, metadata)`` contract and yield unique, in-range,
+        one-dimensional positional integer indices into ``y`` and
+        ``metadata`` for either train/test or train/calibration/test slices.
+        The slices must be pairwise disjoint. Each test fold must contain exactly
+        one subject, matching
+        MOABB's per-subject result-row semantics. When provided, it replaces
+        ``CrossSubjectSplitter`` and cannot
+        be combined with ``cv_class``, ``cv_kwargs``, ``n_splits``,
+        ``groups``, or a non-default ``cs_mode``. Defaults to ``None``.
 
     Notes
     -----
@@ -509,14 +525,54 @@ class CrossSubjectEvaluation(BaseEvaluation):
     _score_per_session = True
     _needs_all_subjects = True
 
-    def __init__(self, *args, cs_mode=CrossSubjectMode.TRAIN, **kwargs):
-        cv_kwargs = dict(kwargs.get("cv_kwargs") or {})
-        internal_cv_keys = frozenset()
-
+    def __init__(
+        self,
+        *args,
+        cs_mode=CrossSubjectMode.TRAIN,
+        splitter: Optional[BaseCrossValidator] = None,
+        **kwargs,
+    ):
         if cs_mode is None:
             cs_mode = CrossSubjectMode.TRAIN
-
         cs_mode = CrossSubjectMode(cs_mode)
+
+        if splitter is not None:
+            if not isinstance(splitter, BaseCrossValidator):
+                raise TypeError("splitter must be a sklearn BaseCrossValidator instance.")
+
+            conflicts = []
+            if kwargs.get("cv_class") is not None:
+                conflicts.append("cv_class")
+            if kwargs.get("cv_kwargs"):
+                conflicts.append("cv_kwargs")
+            if kwargs.get("n_splits") is not None:
+                conflicts.append("n_splits")
+            if kwargs.get("groups") is not None:
+                conflicts.append("groups")
+            if cs_mode != CrossSubjectMode.TRAIN:
+                conflicts.append("cs_mode")
+            if conflicts:
+                names = ", ".join(conflicts)
+                raise ValueError(
+                    f"splitter cannot be combined with protocol options: {names}."
+                )
+
+            self.splitter = splitter
+            self.cs_mode = cs_mode
+            self.trialwise = False
+            additional_columns = list(kwargs.get("additional_columns") or ())
+            for column in getattr(splitter, "metadata_columns", ()):
+                if column not in additional_columns:
+                    additional_columns.append(column)
+            kwargs["additional_columns"] = additional_columns
+            super().__init__(*args, **kwargs)
+            self._cv_internal_keys = frozenset()
+            self._cv_explicit_keys = frozenset()
+            return
+
+        self.splitter = None
+        cv_kwargs = dict(kwargs.get("cv_kwargs") or {})
+        internal_cv_keys = frozenset()
         self.cs_mode = cs_mode
 
         # Manual cv_kwargs still work when the default train-only blockwise
@@ -547,14 +603,72 @@ class CrossSubjectEvaluation(BaseEvaluation):
         self._cv_internal_keys = internal_cv_keys
         self._cv_explicit_keys = frozenset(self.cv_kwargs) - internal_cv_keys
 
+    def _validate_fold_indices(
+        self, train_idx, calib_idx, test_idx, *, n_samples, cv_ind
+    ):
+        if self.splitter is None:
+            return
+
+        named_indices = {
+            "train": np.asarray(train_idx),
+            "calibration": np.asarray(calib_idx),
+            "test": np.asarray(test_idx),
+        }
+        for name, indices in named_indices.items():
+            if indices.ndim != 1 or not np.issubdtype(indices.dtype, np.integer):
+                raise TypeError(
+                    "A top-level CrossSubjectEvaluation splitter must return "
+                    f"one-dimensional integer positional indices; fold {cv_ind} "
+                    f"{name} indices have shape {indices.shape} and dtype "
+                    f"{indices.dtype}."
+                )
+            if indices.size and (indices.min() < 0 or indices.max() >= n_samples):
+                raise ValueError(
+                    "A top-level CrossSubjectEvaluation splitter returned "
+                    f"out-of-range {name} indices in fold {cv_ind} for "
+                    f"{n_samples} samples."
+                )
+            if np.unique(indices).size != indices.size:
+                raise ValueError(
+                    "A top-level CrossSubjectEvaluation splitter returned "
+                    f"duplicate {name} indices in fold {cv_ind}."
+                )
+
+        for left, right in (
+            ("train", "calibration"),
+            ("train", "test"),
+            ("calibration", "test"),
+        ):
+            if np.intersect1d(named_indices[left], named_indices[right]).size:
+                raise ValueError(
+                    "A top-level CrossSubjectEvaluation splitter must return "
+                    "disjoint train/calibration/test slices; "
+                    f"fold {cv_ind} has overlapping {left} and {right} indices."
+                )
+
+    def _validate_test_fold_metadata(self, test_metadata):
+        super()._validate_test_fold_metadata(test_metadata)
+        if self.splitter is None:
+            return
+        test_subjects = test_metadata["subject"].unique()
+        if len(test_subjects) != 1:
+            raise ValueError(
+                "A top-level CrossSubjectEvaluation splitter must hold out "
+                "exactly one subject per test fold because MOABB records one "
+                "subject identity per result row; got test subjects "
+                f"{test_subjects.tolist()}."
+            )
+
     def _create_splitter(self):
-        """Create the CrossSubjectSplitter for parallel evaluation.
+        """Create the top-level splitter for parallel evaluation.
 
+        An explicit ``splitter`` is used directly. Otherwise,
         ``calibration_size`` and ``calibration_labeled`` passed via
-        ``cv_kwargs`` turn each fold into a transfer split:
-
-        ``(train, calibration, test)``.
+        ``cv_kwargs`` configure the default ``CrossSubjectSplitter``.
         """
+        if self.splitter is not None:
+            return self.splitter
+
         if self.n_splits is None:
             default_class = LeaveOneGroupOut
             default_kwargs = {}
