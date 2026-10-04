@@ -190,7 +190,7 @@ class Wang2016(BaseDataset):
             sensor_type=None,
         ),
         participants=ParticipantMetadata(
-            n_subjects=35,
+            n_subjects=34,
             health_status="healthy",
             gender={"female": 17, "male": 18},
             age_mean=22.0,
@@ -302,7 +302,7 @@ class Wang2016(BaseDataset):
                 "public data set",
                 "steady-state visual evoked potential (SSVEP)",
             ],
-            repository="BNCI Horizon 2020",
+            repository="Zenodo (mirror of the Tsinghua BCI lab release)",
             data_url="http://bci.med.tsinghua.edu.cn/download.html",
             license="CC-BY-4.0",
         ),

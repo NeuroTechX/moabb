@@ -142,6 +142,10 @@ class Sosulski2019(BaseDataset):
             auxiliary_channels=AuxiliaryChannelsMetadata(
                 has_eog=True, eog_channels=1, eog_type=["vertical"]
             ),
+            impedance_threshold_kohm=20.0,
+            cap_manufacturer="EasyCap",
+            electrode_type="passive",
+            electrode_material="Ag/AgCl",
         ),
         participants=ParticipantMetadata(
             n_subjects=13,
@@ -214,7 +218,9 @@ class Sosulski2019(BaseDataset):
             repository="FreiDok",
         ),
         tags=Tags(pathology=["Healthy"], modality=["Auditory"], type=["Research"]),
-        preprocessing=PreprocessingMetadata(),
+        preprocessing=PreprocessingMetadata(
+            data_state="raw", preprocessing_applied=False
+        ),
         signal_processing=SignalProcessingMetadata(
             classifiers=["rLDA", "Shrinkage LDA"],
             feature_extraction=["Mean amplitude in time intervals"],
