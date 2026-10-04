@@ -202,6 +202,10 @@ from .martinezpeon2024 import MartinezPeon2024
 from .pardogarcia2026 import PardoGarcia2026
 
 
+from .mimed2024 import MIMED2024
+from .wrcc2023 import WRCC2023_MI_A, WRCC2023_MI_B, WRCC2023_MI_C
+
+
 # Call this last in order to make sure the dataset list, dict are populated with
 # the datasets imported in this file.
 _init_dataset()

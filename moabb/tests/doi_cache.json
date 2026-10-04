@@ -1,6 +1,6 @@
 {
     "_metadata": {
-        "total": 211
+        "total": 216
     },
     "10.1002/hbm.23730": {
         "title": "Deep learning with convolutional neural networks for EEG decoding and visualization",
@@ -2537,5 +2537,59 @@
         ],
         "year": 2024,
         "doi": "10.5281/zenodo.12804784"
+    },
+    "10.7910/DVN/J9JFES": {
+        "title": "MI-A dataset of the BCI competition WRCC2023",
+        "authors": [
+            "WRCC2023"
+        ],
+        "year": 2024,
+        "doi": "10.7910/DVN/J9JFES"
+    },
+    "10.7910/DVN/HFNWRX": {
+        "title": "MI-B dataset of the BCI competition WRCC2023",
+        "authors": [
+            "WRCC2023"
+        ],
+        "year": 2024,
+        "doi": "10.7910/DVN/HFNWRX"
+    },
+    "10.7910/DVN/G8FBHH": {
+        "title": "MI-C dataset of the BCI competition WRCC2023",
+        "authors": [
+            "WRCC2023"
+        ],
+        "year": 2024,
+        "doi": "10.7910/DVN/G8FBHH"
+    },
+    "10.1016/j.dib.2024.110833": {
+        "title": "Acquisition and processing of Motor Imagery and Motor Execution Dataset (MIMED) for six movement activities",
+        "authors": [
+            "I Made Agus Wirawan",
+            "Dechrit Maneetham",
+            "I Gede Mahendra Darmawiguna",
+            "Arnon Niyomphol",
+            "Pakornkiat Sawetmethikul",
+            "Padma Nyoman Crisnapati",
+            "Yamin Thwe",
+            "Ni Nyoman Mestri Agustini"
+        ],
+        "year": 2024,
+        "doi": "10.1016/j.dib.2024.110833"
+    },
+    "10.17632/zs25xxjkm9.3": {
+        "title": "MIMED",
+        "authors": [
+            "I Made Agus Wirawan",
+            "Arnon  Niyomphon",
+            "Dechrit  Maneetham",
+            "Padma  Nyoman Crisnapati",
+            "I Gede Mahendra Darmawiguna",
+            "Yamin  Thwe",
+            "Pakornkiat  Sawetmethikul",
+            "Ni Nyoman  Mestri Agustini"
+        ],
+        "year": 2024,
+        "doi": "10.17632/zs25xxjkm9.3"
     }
 }
