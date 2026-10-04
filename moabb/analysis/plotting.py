@@ -545,9 +545,9 @@ def plot_critical_difference(
         # average sessions. This makes the documented macro-average literal:
         # a session with more repeat rows cannot receive more subject-level weight.
         selected = (
-            selected.groupby(
-                subject_group + ["session"], sort=False, observed=True
-            )["score"]
+            selected.groupby(subject_group + ["session"], sort=False, observed=True)[
+                "score"
+            ]
             .mean()
             .reset_index()
             .groupby(subject_group, sort=False, observed=True)["score"]
