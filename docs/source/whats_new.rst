@@ -49,7 +49,7 @@ Bugs
   which is not valid for ``_eeg``/``_events``/``_channels`` files and raised
   ``ALL_FILENAME_RULES_HAVE_ISSUES``. ``run_bids_to_moabb`` still accepts the
   legacy ``rec-`` entity so existing MOABB caches keep reading back to the same
-  run label (:gh:`XXXX` by `Bruno Aristimunha`_).
+  run label (:gh:`1217` by `Bruno Aristimunha`_).
 - Keep :class:`moabb.evaluations.CrossSessionEvaluation` result provenance
   session-specific when a custom cross-validator holds out more than one recording
   session in the same fold. The estimator is still fitted once per fold, but each
