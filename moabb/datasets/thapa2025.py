@@ -189,7 +189,11 @@ class Thapa2025(BaseDataset):
                 "freewill",
             ],
         ),
-        sessions_per_subject=3,
+        # Per MOABB convention, the declared count is the minimum (1): sub-02
+        # and sub-17 stopped after a single session. The true per-subject
+        # distribution is {1 session: 2 subjects, 2 sessions: 16 subjects,
+        # 3 sessions: 5 subjects}, summing to 49 sessions (see docstring).
+        sessions_per_subject=1,
         runs_per_session=5,
         tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Research"]),
         paradigm_specific=ParadigmSpecificMetadata(
@@ -211,7 +215,9 @@ class Thapa2025(BaseDataset):
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             subjects=list(range(1, 24)),
-            sessions_per_subject=3,
+            # MOABB minimum-sessions convention; actual per-subject count is
+            # data-borne (see `data_path` and the docstring distribution).
+            sessions_per_subject=1,
             events=dict(_EVENTS),
             code="Thapa2025",
             interval=[0, 4],
