@@ -90,6 +90,15 @@ Bugs
   ``_format_dict()`` on it. Now a per-class dict (``{"Stimulus": 10,
   "Silence": 10}``), matching the documented 10 repetitions per condition
   (:gh:`1225` by `Bruno Aristimunha`_).
+- Fix :func:`moabb.datasets.Dataset.convert_to_bids` aborting the whole
+  multi-subject convert when exactly one subject raises
+  ``FileNotFoundError`` (a loader's own "nothing to write for this subject"
+  signal, e.g. :class:`moabb.datasets.Schrag2026Pediatric` subject 16's
+  single game run being dropped entirely by the >10%% drift policy): every
+  subject after the one that raised was previously silently skipped as
+  well. The per-subject loop now catches ``FileNotFoundError``, logs a
+  warning naming the subject, and continues converting the rest
+  (:gh:`1225` by `Bruno Aristimunha`_).
 - Keep :class:`moabb.evaluations.CrossSubjectEvaluation` result provenance subject-specific when a grouped cross-validation fold holds out multiple subjects at once. The estimator is still fitted once per fold, while scores, cache identities, and saved-model paths are emitted per held-out subject and session instead of assigning the whole fold to its first subject (by `lindicaphxag-tech`_).
 - Fix :func:`moabb.datasets.Dataset.convert_to_bids` crashing on datasets whose
   MOABB run-label suffix is literally ``"calibration"`` or ``"crosstalk"``

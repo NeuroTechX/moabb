@@ -13,6 +13,7 @@ from moabb.datasets import download as _dl
 from moabb.datasets import schirrmeister2017
 from moabb.datasets.bnci.bnci_2020 import _convert_attention_shift
 from moabb.datasets.braininvaders import BI2015b
+from moabb.datasets.fake import FakeDataset
 from moabb.datasets.hefmi_ich2025 import HefmiIch2025
 from moabb.datasets.kaneshiro2015 import Kaneshiro2015
 from moabb.datasets.kojima2024a import Kojima2024A
@@ -353,6 +354,38 @@ def test_lenaig2026_data_path_accepts_wrapped_and_flat_layouts(tmp_path, monkeyp
     paths2 = Lenaig2026(exp=1, run="both").data_path(1)
     assert [Path(p).name for p in paths2] == ["01_R1.gdf", "01_R2.gdf"]
     assert all(Path(p).is_file() for p in paths2)
+
+
+def test_convert_to_bids_skips_subject_with_no_usable_data(tmp_path, monkeypatch, caplog):
+    """gh: Schrag2026Pediatric subject 16 has a single game recording whose
+    only run is dropped by the >10%% drift policy, leaving zero usable runs;
+    _get_single_subject_data correctly raises FileNotFoundError for that one
+    subject (a loader's own "nothing to write" signal). Before this fix,
+    convert_to_bids's per-subject loop had no try/except around
+    self.get_data(), so that single subject's FileNotFoundError aborted the
+    whole multi-subject convert, losing every subject not yet processed.
+    convert_to_bids must now skip that subject (with a warning) and keep
+    converting the rest."""
+    from moabb.datasets.base import BaseDataset
+
+    dataset = FakeDataset(event_list=["fake1", "fake2"], n_sessions=1, n_subjects=3)
+    real_get_data = BaseDataset.get_data
+
+    def flaky_get_data(self, subjects=None, **kwargs):
+        if subjects == [2]:
+            raise FileNotFoundError("subject 2: no usable runs after drift policy")
+        return real_get_data(self, subjects=subjects, **kwargs)
+
+    monkeypatch.setattr(FakeDataset, "get_data", flaky_get_data)
+
+    with caplog.at_level("WARNING"):
+        bids_root = dataset.convert_to_bids(path=tmp_path, subjects=[1, 2, 3])
+
+    assert any("skipping subject" in record.message for record in caplog.records), (
+        "a warning naming the skipped subject must be logged"
+    )
+    subjects_found = {f.parent.parent.parent.name for f in bids_root.rglob("*.edf")}
+    assert subjects_found == {"sub-1", "sub-3"}, "subject 2 must be skipped, not abort"
 
 
 def test_lenaig2026_trials_per_class_builds_a_readme(tmp_path):
