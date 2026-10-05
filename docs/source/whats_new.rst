@@ -63,6 +63,25 @@ Requirements
 
 Bugs
 ~~~~
+- Fix :class:`moabb.datasets.Lenaig2026`'s ``data_path()`` raising
+  ``FileNotFoundError: Some data files are missing.`` on every subject: it
+  hard-coded an ``EEG_24Chan_AudioStim/`` wrapper directory for the extracted
+  RAR, but the current Zenodo v2 archive (record ``21156618``) extracts
+  ``EXP1/``/``EXP2/`` directly at the root -- confirmed by direct inspection
+  on Voyager (``find ... -iname '*EEG_24Chan*'`` only finds the ``.rar``
+  itself). ``data_path()`` now locates each run's file with a recursive glob
+  that matches either layout, without changing which events/labels are read
+  (:gh:`1225` by `Bruno Aristimunha`_).
+- Fix :class:`moabb.datasets.Schrag2026Pediatric` crashing
+  ``convert_to_bids()`` with ``ValueError: Raw object must have annotations
+  to be saved in BIDS format`` on subject 1's personalized-stimulus game run:
+  the loader's own documented policy of dropping all trial labels when a
+  run's ``Trial Started`` marker count drifts more than 10%% from its
+  movements-CSV row count (true for that run, 15%% drift) produced a
+  zero-annotation ``Raw``, which ``bids_interface``'s writer then rejected.
+  ``_get_single_subject_data`` now skips a run that ends up with zero
+  events instead of returning it, logging a warning that names the subject
+  and run; the docstring documents this (:gh:`1225` by `Bruno Aristimunha`_).
 - Keep :class:`moabb.evaluations.CrossSubjectEvaluation` result provenance subject-specific when a grouped cross-validation fold holds out multiple subjects at once. The estimator is still fitted once per fold, while scores, cache identities, and saved-model paths are emitted per held-out subject and session instead of assigning the whole fold to its first subject (by `lindicaphxag-tech`_).
 - Fix :func:`moabb.datasets.Dataset.convert_to_bids` crashing on datasets whose
   MOABB run-label suffix is literally ``"calibration"`` or ``"crosstalk"``

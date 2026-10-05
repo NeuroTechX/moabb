@@ -16,6 +16,7 @@ from moabb.datasets.braininvaders import BI2015b
 from moabb.datasets.hefmi_ich2025 import HefmiIch2025
 from moabb.datasets.kaneshiro2015 import Kaneshiro2015
 from moabb.datasets.kojima2024a import Kojima2024A
+from moabb.datasets.lenaig2026 import Lenaig2026
 from moabb.datasets.mainsah2025 import _parse_manifest
 from moabb.datasets.schirrmeister2017 import Schirrmeister2017
 from moabb.datasets.ssvep_chen2017 import Chen2017SingleFlicker
@@ -316,3 +317,89 @@ def test_kaneshiro2015_valid_for_declared_paradigm():
         assert paradigm.used_events(dataset) == dataset.event_id
     # The old declaration was broken: P300 requires Target/NonTarget.
     assert not P300().is_valid(dataset)
+
+
+def test_lenaig2026_data_path_accepts_wrapped_and_flat_layouts(tmp_path, monkeypatch):
+    """data_path() assumed the extracted RAR always sits under an
+    ``EEG_24Chan_AudioStim/`` wrapper directory, but the current Zenodo v2
+    archive (record 21156618) extracts ``EXP1/``/``EXP2/`` directly at the
+    root -- confirmed by direct inspection on Voyager. The loader must find
+    the files either way, without touching events/labels."""
+    import moabb.datasets.lenaig2026 as lenaig2026_mod
+
+    def make_tree(root):
+        for run in (1, 2):
+            run_dir = root / "EXP1" / "S1" / f"R{run}"
+            run_dir.mkdir(parents=True)
+            (run_dir / f"01_R{run}.gdf").write_bytes(b"")
+
+    # Flat layout: EXP1/ directly at the extraction root (current archive).
+    flat_root = tmp_path / "flat" / "MNE-Lenaig2026-data"
+    make_tree(flat_root)
+    monkeypatch.setattr(
+        lenaig2026_mod.dl, "get_dataset_path", lambda *a, **k: str(tmp_path / "flat")
+    )
+    paths = Lenaig2026(exp=1, run="both").data_path(1)
+    assert [Path(p).name for p in paths] == ["01_R1.gdf", "01_R2.gdf"]
+    assert all(Path(p).is_file() for p in paths)
+
+    # Wrapped layout: EXP1/ under EEG_24Chan_AudioStim/ (what the loader
+    # originally -- and exclusively -- assumed).
+    wrapped_root = tmp_path / "wrapped" / "MNE-Lenaig2026-data"
+    make_tree(wrapped_root / "EEG_24Chan_AudioStim")
+    monkeypatch.setattr(
+        lenaig2026_mod.dl, "get_dataset_path", lambda *a, **k: str(tmp_path / "wrapped")
+    )
+    paths2 = Lenaig2026(exp=1, run="both").data_path(1)
+    assert [Path(p).name for p in paths2] == ["01_R1.gdf", "01_R2.gdf"]
+    assert all(Path(p).is_file() for p in paths2)
+
+
+def test_schrag2026_skips_run_with_zero_annotations_after_high_drift(
+    tmp_path, monkeypatch, caplog
+):
+    """gh: subject 1's personal-stimulus game run has >10%% Trial/CSV drift,
+    so ``_load_game_run``'s documented policy drops every label, returning a
+    zero-annotation Raw. ``bids_interface._write_file`` hard-requires every
+    Raw to carry annotations, so writing that Raw crashes the whole convert.
+    ``_get_single_subject_data`` must skip (not return) a zero-annotation
+    run, with a warning naming the subject and run, instead of crashing
+    downstream."""
+    import mne
+    import numpy as np
+
+    from moabb.datasets import schrag2026
+    from moabb.datasets.schrag2026 import Schrag2026Pediatric
+
+    eeg_dir = tmp_path / "P001" / "EEG"
+    eeg_dir.mkdir(parents=True)
+    std_name = "sub-P001_ses-S001_task-T2_acq-BW_M1_run-001_eeg.xdf"
+    pers_name = "sub-P001_ses-S001_task-T3_acq-C3S1_M2_run-001_eeg.xdf"
+    (eeg_dir / std_name).write_bytes(b"")
+    (eeg_dir / pers_name).write_bytes(b"")
+
+    info = mne.create_info(["Fz"], 256.0, "eeg")
+
+    def fake_load_game_run(path):
+        raw = mne.io.RawArray(np.zeros((1, 10)), info, verbose=False)
+        if path.name == pers_name:
+            return raw  # the >10%% drift run: zero annotations
+        raw.set_annotations(
+            mne.Annotations(onset=[0.0], duration=[5.0], description=["6.25"])
+        )
+        return raw
+
+    monkeypatch.setattr(schrag2026, "_load_game_run", fake_load_game_run)
+    dataset = Schrag2026Pediatric()
+    monkeypatch.setattr(dataset, "data_path", lambda *a, **k: str(tmp_path / "P001"))
+
+    with caplog.at_level("WARNING"):
+        session = dataset._get_single_subject_data(1)
+
+    runs = session["0"]
+    assert set(runs) == {"0standard"}, "the zero-annotation run must be skipped"
+    assert len(runs["0standard"].annotations) == 1
+    assert any(
+        "zero labelled trials" in record.message and "1personal" in record.message
+        for record in caplog.records
+    ), "a warning naming the subject/run must be logged"

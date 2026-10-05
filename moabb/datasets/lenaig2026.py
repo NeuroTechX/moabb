@@ -292,26 +292,49 @@ class Lenaig2026(BaseDataset):
             if path
             else Path(dl.get_dataset_path(_SIGN, None)) / f"MNE-{_SIGN}-data"
         )
-        paths = [
-            base_path
-            / "EEG_24Chan_AudioStim"
-            / f"EXP{self.exp}/S1/R{run}/{subject:02}_R{run}.gdf"
-            for run in self.runs
+        rel_patterns = [
+            f"EXP{self.exp}/S1/R{run}/{subject:02}_R{run}.gdf" for run in self.runs
         ]
 
-        if all(p.exists() for p in paths) and not force_update:
-            return (
-                paths  # Return existing paths if all files exist and no update is forced
-            )
+        if not force_update:
+            paths = self._locate_files(base_path, rel_patterns)
+            if paths is not None:
+                return paths
 
         url = f"{_ZENODO_BASE}/EEG_24Chan_AudioStim.rar"
         rar_path = Path(dl.data_dl(url, sign=_SIGN, path=base_path, verbose=verbose))
         extract_rar(rar_path, dest_dir=base_path)
 
-        if not all(p.exists() for p in paths) or force_update:
+        paths = self._locate_files(base_path, rel_patterns)
+        if paths is None:
             raise FileNotFoundError("Some data files are missing.")
 
         return paths
+
+    @staticmethod
+    def _locate_files(base_path, rel_patterns):
+        """Locate each relative file pattern under ``base_path``.
+
+        The Zenodo record's RAR archive has shipped at least two extracted
+        layouts over time: wrapped under an ``EEG_24Chan_AudioStim/``
+        directory (what this loader originally assumed) and flat, with the
+        ``EXP*/`` directories directly at the extraction root (the current
+        Zenodo v2 archive, record ``21156618``). ``Path.glob("**/<rel>")``
+        matches both -- the recursive ``**`` segment matches zero or more
+        intermediate directories -- without hard-coding either layout. Does
+        not change which events/trials are read, only how the source files
+        are found.
+
+        Returns the list of matched paths (one per pattern, in order) or
+        ``None`` if any pattern has no match.
+        """
+        found = []
+        for rel in rel_patterns:
+            matches = sorted(base_path.glob(f"**/{rel}"))
+            if not matches:
+                return None
+            found.append(matches[0])
+        return found
 
     def _get_single_subject_data(self, subject):
         """
