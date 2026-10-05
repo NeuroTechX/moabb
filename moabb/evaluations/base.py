@@ -269,6 +269,8 @@ def _evaluate_fold(
             name=pipeline_name,
             grid=is_search,
             eval_type=eval_type,
+            paradigm=config["paradigm"],
+            suffix=config["suffix"],
         )
         _save_model_cv(model=cvclf, save_path=model_save_path, cv_index=str(cv_ind))
 
@@ -447,6 +449,7 @@ class BaseEvaluation(ABC):
         self.n_jobs = n_jobs
         self.error_score = error_score
         self.hdf5_path = hdf5_path
+        self.suffix = suffix
         self.return_epochs = return_epochs
         self.return_raws = return_raws
         self.mne_labels = mne_labels
@@ -680,6 +683,8 @@ class BaseEvaluation(ABC):
             name=name,
             grid=self.search,
             eval_type=eval_type,
+            paradigm=type(self.paradigm).__name__,
+            suffix=self.suffix,
         )
         _save_model_cv(model=model, save_path=model_save_path, cv_index=str(cv_ind))
 
@@ -747,6 +752,8 @@ class BaseEvaluation(ABC):
             "save_model": self.save_model,
             "hdf5_path": self.hdf5_path,
             "eval_type": self._eval_type or self.__class__.__name__,
+            "paradigm": type(self.paradigm).__name__,
+            "suffix": self.suffix,
             "mne_labels": self.mne_labels,
             "codecarbon_config": (
                 self.emissions.codecarbon_config if _carbonfootprint else None
@@ -756,21 +763,45 @@ class BaseEvaluation(ABC):
             "param_grid": None,  # overridden per-task below if needed
         }
 
-    @staticmethod
-    def _preview_splits(splitter, y, metadata):
+    def _preview_splits(self, splitter, y, metadata):
         """Materialize folds up front with optional splitter metadata."""
         preview = []
-        # ``*cal`` absorbs the optional calibration slice from a transfer
-        # splitter; a plain 2-tuple splitter gives cal == [] (no calibration).
-        for cv_ind, (train_idx, *cal, test_idx) in enumerate(splitter.split(y, metadata)):
-            calib_idx = cal[0] if cal else train_idx[:0]
+        for cv_ind, split in enumerate(splitter.split(y, metadata)):
+            split = tuple(split)
+            if len(split) == 2:
+                train_idx, test_idx = split
+                calib_idx = np.asarray(train_idx)[:0]
+            elif len(split) == 3:
+                train_idx, calib_idx, test_idx = split
+            else:
+                raise ValueError(
+                    "Cross-validation splitters must yield either "
+                    "(train, test) or (train, calibration, test); "
+                    f"fold {cv_ind} yielded {len(split)} slices."
+                )
+
+            self._validate_fold_indices(
+                train_idx, calib_idx, test_idx, n_samples=len(metadata), cv_ind=cv_ind
+            )
+
             split_metadata = None
             if hasattr(splitter, "get_metadata"):
                 split_metadata = splitter.get_metadata()
                 if split_metadata is not None:
-                    split_metadata = dict(split_metadata)
+                    split_metadata = deepcopy(dict(split_metadata))
             preview.append((cv_ind, train_idx, calib_idx, test_idx, split_metadata))
         return preview
+
+    def _validate_fold_indices(
+        self, train_idx, calib_idx, test_idx, *, n_samples, cv_ind
+    ):
+        """Hook for evaluation-specific validation of materialized fold indices."""
+        return None
+
+    def _validate_test_fold_metadata(self, test_metadata):
+        """Validate metadata assumptions made by the parallel task builder."""
+        if test_metadata.empty:
+            raise ValueError("Cross-validation split produced an empty test fold.")
 
     def _build_task_list(
         self, dataset, X, y, metadata, splitter, work_plan, pipelines, param_grid
@@ -782,6 +813,7 @@ class BaseEvaluation(ABC):
 
         for cv_ind, train_idx, calib_idx, test_idx, split_meta in fold_preview:
             test_meta = metadata.iloc[test_idx]
+            self._validate_test_fold_metadata(test_meta)
             subject = test_meta["subject"].iloc[0]
 
             if subject not in work_plan:

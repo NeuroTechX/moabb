@@ -97,6 +97,7 @@ Changelog = "https://moabb.neurotechx.com/docs/whats_new.html"
 "Cite MOABB" = "https://moabb.neurotechx.com/docs/cite.html"
 
 [project.optional-dependencies]
+bci2000 = ["BCI2kReader"]
 carbonemission = ["codecarbon>=2.1.4"]
 deeplearning = ["braindecode>=0.8.1"]
 optuna = ["optuna>=3.6.1", "optuna-integration>=3.6.0"]
@@ -139,6 +140,9 @@ all = [
 [tool.setuptools]
 py-modules = []
 include-package-data = true
+
+[tool.setuptools.package-data]
+"moabb.pipelines.configs" = ["*.yml", "*.py"]
 
 [tool.setuptools.packages.find]
 where = ["."]

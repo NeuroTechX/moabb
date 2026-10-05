@@ -42,6 +42,35 @@ def test_trca_riemannian_covariance_mean(method):
     assert (np.linalg.eigvalsh(S) > 0).all()
 
 
+def _trca_reference_S(X):
+    n_trials, n_channels, _ = X.shape
+    S = np.zeros((n_channels, n_channels))
+    for i in range(n_trials - 1):
+        for j in range(i + 1, n_trials):
+            cov = np.cov(np.concatenate((X[i], X[j]), axis=0), bias=True)
+            S += cov[:n_channels, n_channels:] + cov[n_channels:, :n_channels]
+    return S
+
+
+def test_trca_q_s_estim_does_not_modify_input():
+    X = np.random.default_rng(0).standard_normal((4, 3, 50)) + 5.0
+    X_before = X.copy()
+    SSVEP_TRCA()._Q_S_estim(X)
+    np.testing.assert_array_equal(X, X_before)
+
+
+def test_trca_q_s_estim_matches_reference():
+    # A channel-wise offset that varies over time must not be removed
+    # across channels: S is the sum of inter-trial covariances.
+    rng = np.random.default_rng(0)
+    X = rng.standard_normal((4, 3, 50))
+    S, Q = SSVEP_TRCA()._Q_S_estim(X.copy())
+    np.testing.assert_allclose(S, _trca_reference_S(X), atol=1e-10)
+    # Q is the covariance of all trials concatenated in time
+    Q_ref = np.cov(np.concatenate(list(X), axis=1), bias=True)
+    np.testing.assert_allclose(Q, Q_ref, atol=1e-10)
+
+
 @pytest.fixture(scope="module")
 def ssvep_epochs_data():
     dataset = FakeDataset(
@@ -168,9 +197,6 @@ class TestSSVEP_TRCA(unittest.TestCase):
         self.y = y
         self.clf = SSVEP_TRCA(n_fbands=self.n_fbands)
 
-    @pytest.mark.xfail(
-        reason="Filterbank design parameters may fail with some frequency combinations"
-    )
     def test_fit(self):
         for method in ["original", "riemann", "logeuclid"]:
             for estimator in ["scm", "lwf", "oas"]:
@@ -187,17 +213,11 @@ class TestSSVEP_TRCA(unittest.TestCase):
                 self.assertTrue(hasattr(self.clf, "one_inv_"))
                 self.assertTrue(hasattr(self.clf, "sfreq_"))
 
-    @pytest.mark.xfail(
-        reason="Filterbank design parameters may fail with some frequency combinations"
-    )
     def test_predict(self):
         self.clf.fit(self.X, self.y)
         y_pred = self.clf.predict(self.X)
         self.assertEqual(len(y_pred), len(self.X))
 
-    @pytest.mark.xfail(
-        reason="Filterbank design parameters may fail with some frequency combinations"
-    )
     def test_predict_proba(self):
         self.clf.fit(self.X, self.y)
         P = self.clf.predict_proba(self.X)
@@ -230,9 +250,6 @@ class TestSSVEP_TRCA_R(unittest.TestCase):
         self.y = y
         self.clf = SSVEP_TRCA_R(n_fbands=self.n_fbands, n_harmonics=3)
 
-    @pytest.mark.xfail(
-        reason="Filterbank design parameters may fail with some frequency combinations"
-    )
     def test_fit(self):
         self.clf.fit(self.X, self.y)
         self.assertTrue(hasattr(self.clf, "freqs_"))
@@ -244,17 +261,11 @@ class TestSSVEP_TRCA_R(unittest.TestCase):
         self.assertTrue(hasattr(self.clf, "one_inv_"))
         self.assertTrue(hasattr(self.clf, "sfreq_"))
 
-    @pytest.mark.xfail(
-        reason="Filterbank design parameters may fail with some frequency combinations"
-    )
     def test_predict(self):
         self.clf.fit(self.X, self.y)
         y_pred = self.clf.predict(self.X)
         self.assertEqual(len(y_pred), len(self.X))
 
-    @pytest.mark.xfail(
-        reason="Filterbank design parameters may fail with some frequency combinations"
-    )
     def test_predict_proba(self):
         self.clf.fit(self.X, self.y)
         P = self.clf.predict_proba(self.X)
@@ -285,9 +296,6 @@ class TestSSVEP_SSCOR(unittest.TestCase):
         self.y = y
         self.clf = SSVEP_SSCOR(n_fbands=self.n_fbands)
 
-    @pytest.mark.xfail(
-        reason="Filterbank design parameters may fail with some frequency combinations"
-    )
     def test_fit(self):
         self.clf.fit(self.X, self.y)
         self.assertTrue(hasattr(self.clf, "freqs_"))
@@ -299,17 +307,11 @@ class TestSSVEP_SSCOR(unittest.TestCase):
         self.assertTrue(hasattr(self.clf, "one_inv_"))
         self.assertTrue(hasattr(self.clf, "sfreq_"))
 
-    @pytest.mark.xfail(
-        reason="Filterbank design parameters may fail with some frequency combinations"
-    )
     def test_predict(self):
         self.clf.fit(self.X, self.y)
         y_pred = self.clf.predict(self.X)
         self.assertEqual(len(y_pred), len(self.X))
 
-    @pytest.mark.xfail(
-        reason="Filterbank design parameters may fail with some frequency combinations"
-    )
     def test_predict_proba(self):
         self.clf.fit(self.X, self.y)
         P = self.clf.predict_proba(self.X)
@@ -340,9 +342,6 @@ class TestSSVEP_TDCA(unittest.TestCase):
         self.y = y
         self.clf = SSVEP_TDCA(n_fbands=self.n_fbands, n_components=1, n_delay=3)
 
-    @pytest.mark.xfail(
-        reason="Filterbank design parameters may fail with some frequency combinations"
-    )
     def test_fit(self):
         self.clf.fit(self.X, self.y)
         self.assertTrue(hasattr(self.clf, "freqs_"))
@@ -354,17 +353,11 @@ class TestSSVEP_TDCA(unittest.TestCase):
         self.assertTrue(hasattr(self.clf, "one_inv_"))
         self.assertTrue(hasattr(self.clf, "sfreq_"))
 
-    @pytest.mark.xfail(
-        reason="Filterbank design parameters may fail with some frequency combinations"
-    )
     def test_predict(self):
         self.clf.fit(self.X, self.y)
         y_pred = self.clf.predict(self.X)
         self.assertEqual(len(y_pred), len(self.X))
 
-    @pytest.mark.xfail(
-        reason="Filterbank design parameters may fail with some frequency combinations"
-    )
     def test_predict_proba(self):
         self.clf.fit(self.X, self.y)
         P = self.clf.predict_proba(self.X)

@@ -23,6 +23,8 @@ from moabb.datasets.bids_interface import (
     _update_electrodes_tsv,
     _update_events_json_sidecar,
     _update_participants_tsv,
+    run_bids_to_moabb,
+    run_moabb_to_bids,
 )
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
@@ -443,7 +445,7 @@ class TestBuildSidecarEnrichment:
         assert entries["CapManufacturer"] == "EasyCap"
 
     def test_acq_filters_fallback_string(self):
-        """acq.filters used as HardwareFilters when prep filters are absent."""
+        """acq.filters string wrapped so HardwareFilter value is an object (BIDS schema)."""
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
                 sampling_rate=256,
@@ -454,10 +456,17 @@ class TestBuildSidecarEnrichment:
             experiment=ExperimentMetadata(paradigm="imagery"),
         )
         entries = _build_sidecar_enrichment(metadata)
-        assert entries["HardwareFilters"] == {"HardwareFilter": "0.1-100 Hz bandpass"}
+        # BIDS validator (@bids/validator v2) requires HardwareFilters values
+        # to be objects (or the whole field to be the string "n/a"). Wrap the
+        # free-text filter description inside a ``Description`` sub-object.
+        assert entries["HardwareFilters"] == {
+            "HardwareFilter": {"Description": "0.1-100 Hz bandpass"}
+        }
+        # Top-level values must all be dicts.
+        assert all(isinstance(v, dict) for v in entries["HardwareFilters"].values())
 
-    def test_acq_filters_fallback_dict(self):
-        """acq.filters dict used as HardwareFilters when prep filters are absent."""
+    def test_acq_filters_fallback_flat_dict(self):
+        """Flat dict acq.filters is wrapped so every top-level value is an object."""
         metadata = DatasetMetadata(
             acquisition=AcquisitionMetadata(
                 sampling_rate=256,
@@ -468,7 +477,29 @@ class TestBuildSidecarEnrichment:
             experiment=ExperimentMetadata(paradigm="imagery"),
         )
         entries = _build_sidecar_enrichment(metadata)
-        assert entries["HardwareFilters"] == {"HardwareFilter": {"bandpass": [0.1, 100]}}
+        # ``bandpass: [0.1, 100]`` has a non-dict value, so wrap under a single
+        # ``HardwareFilter`` key whose value is an object.
+        assert entries["HardwareFilters"] == {
+            "HardwareFilter": {"bandpass": "[0.1, 100]"}
+        }
+        assert all(isinstance(v, dict) for v in entries["HardwareFilters"].values())
+
+    def test_acq_filters_fallback_nested_dict_passthrough(self):
+        """Already-nested dict (values are dicts) is kept as-is."""
+        nested = {
+            "Bandpass": {"LowCutoffFrequency": 0.1, "HighCutoffFrequency": 100},
+            "Notch": {"CutoffFrequency": [50]},
+        }
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=256, channel_types={"eeg": 22}, filters=nested
+            ),
+            participants=ParticipantMetadata(n_subjects=9),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+        )
+        entries = _build_sidecar_enrichment(metadata)
+        assert entries["HardwareFilters"] == nested
+        assert all(isinstance(v, dict) for v in entries["HardwareFilters"].values())
 
     def test_acq_filters_not_used_when_prep_filters_present(self):
         """prep filters take priority over acq.filters."""
@@ -652,6 +683,125 @@ class TestBuildSidecarEnrichment:
 # ============================================================
 # _build_dataset_description_kwargs
 # ============================================================
+
+
+class TestRunMoabbBidsRoundTrip:
+    """Round-trip and BIDS-validity for run_moabb_to_bids / run_bids_to_moabb.
+
+    The ``recording-`` entity is only valid for ``_physio``/``_stim`` BIDS
+    files, not for ``_eeg``/``_events``/``_channels``. The MOABB run label
+    description (e.g. the ``feedback1`` part of ``"1feedback1"``) must be
+    stored in a BIDS entity that is valid for EEG core files; we use
+    ``acquisition`` (``acq-``). On read we still accept ``recording`` for
+    backwards compatibility with caches written by older MOABB versions.
+    """
+
+    def test_run_moabb_to_bids_pure_numeric(self):
+        assert run_moabb_to_bids("0") == {"run": "0"}
+        assert run_moabb_to_bids("12") == {"run": "12"}
+
+    def test_run_moabb_to_bids_description_uses_acquisition_not_recording(self):
+        kwargs = run_moabb_to_bids("1feedback1")
+        assert "recording" not in kwargs, (
+            "The 'recording-' entity is not valid for EEG files; use 'acq-'."
+        )
+        assert kwargs == {"run": "1", "acquisition": "feedback1"}
+
+    def test_run_moabb_to_bids_alpha_only_suffix(self):
+        kwargs = run_moabb_to_bids("3A")
+        assert "recording" not in kwargs
+        assert kwargs == {"run": "3", "acquisition": "A"}
+
+    @pytest.mark.parametrize(
+        "label",
+        [
+            # Existing round-trip cases.
+            "0",
+            "1",
+            "12",
+            "1feedback1",
+            "3A",
+            "2run2",
+            # Reserved-value cases: mne-bids' BIDSPath rejects acq="calibration"
+            # or acq="crosstalk" with a non-empty task (MEG fine-calibration
+            # magic strings). The writer must escape them; the reader must
+            # invert exactly. The following labels are currently emitted by
+            # Wang2025, Leeuwis2021, Brandl2020 and Romani_BF2025_ERP on
+            # develop.
+            "0calibration",
+            "1calibration",
+            "1feedback",
+            "2feedback2",
+            "3feedback3",
+        ],
+    )
+    def test_round_trip(self, label):
+        import mne_bids
+
+        kwargs = run_moabb_to_bids(label)
+        # The acq entity must not carry a reserved mne-bids magic value;
+        # BIDSPath construction with task set would otherwise raise.
+        path = mne_bids.BIDSPath(
+            subject="01", task="imagery", datatype="eeg", check=False, **kwargs
+        )
+        assert run_bids_to_moabb(path) == label
+
+    def test_run_moabb_to_bids_escapes_reserved_calibration(self):
+        """mne-bids reserves acq-calibration for MEG; writer must escape."""
+        import mne_bids
+
+        kwargs = run_moabb_to_bids("0calibration")
+        assert kwargs["run"] == "0"
+        assert kwargs["acquisition"] not in {"calibration", "crosstalk"}
+        # BIDSPath with task-imagery must accept the mapped value.
+        mne_bids.BIDSPath(
+            subject="01", task="imagery", datatype="eeg", check=False, **kwargs
+        )
+
+    def test_run_moabb_to_bids_escapes_reserved_crosstalk(self):
+        import mne_bids
+
+        kwargs = run_moabb_to_bids("0crosstalk")
+        assert kwargs["acquisition"] not in {"calibration", "crosstalk"}
+        mne_bids.BIDSPath(
+            subject="01", task="imagery", datatype="eeg", check=False, **kwargs
+        )
+        # And the suffixless literal (hypothetical) must also be safe.
+        kwargs2 = run_moabb_to_bids("7crosstalk")
+        assert kwargs2["acquisition"] not in {"calibration", "crosstalk"}
+
+    def test_run_bids_to_moabb_legacy_recording_fallback(self):
+        """A cache written with recording- (older MOABB) must still read back."""
+        import mne_bids
+
+        path = mne_bids.BIDSPath(
+            subject="01",
+            task="imagery",
+            run="1",
+            recording="feedback1",
+            datatype="eeg",
+            check=False,
+        )
+        assert run_bids_to_moabb(path) == "1feedback1"
+
+    def test_run_bids_to_moabb_legacy_recording_calibration(self):
+        """Legacy caches used recording-calibration (no mne-bids special-case).
+
+        Older MOABB wrote the literal description into the ``recording``
+        entity, so a pre-existing cache with ``recording-calibration`` must
+        still read back to the exact MOABB run label.
+        """
+        import mne_bids
+
+        path = mne_bids.BIDSPath(
+            subject="01",
+            task="imagery",
+            run="0",
+            recording="calibration",
+            datatype="eeg",
+            check=False,
+        )
+        assert run_bids_to_moabb(path) == "0calibration"
 
 
 class TestBuildDatasetDescriptionKwargs:

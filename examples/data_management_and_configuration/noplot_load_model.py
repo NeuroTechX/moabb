@@ -30,9 +30,13 @@ setup_seed(42)
 
 ###############################################################################
 # Loading the Scikit-learn pipelines
+#
+# New model saves are namespaced by paradigm and benchmark suffix. Legacy model
+# trees created by older MOABB versions are not moved and remain readable at
+# their original paths.
 
 with open(
-    "../how_to_benchmark/results/Models_WithinSession/Zhou2016/1/0/csp+svm/fitted_model_best.pkl",
+    "../how_to_benchmark/results/Models_WithinSession/LeftRightImagery/benchmark/Zhou2016/1/0/csp+svm/fitted_model_best.pkl",
     "rb",
 ) as pickle_file:
     CSP_SVM_Trained = load(pickle_file)

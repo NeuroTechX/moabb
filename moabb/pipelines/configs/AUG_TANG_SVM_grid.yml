@@ -1,0 +1,58 @@
+name: AUG Tang SVM Grid
+
+paradigms:
+  - LeftRightImagery
+  - MotorImagery
+
+citations:
+  - https://arxiv.org/abs/2302.04508
+
+pipeline:
+  - name: AugmentedDataset
+    from: moabb.pipelines.features
+
+  - name: Covariances
+    from: pyriemann.estimation
+    parameters:
+      estimator: "cov"
+
+  - name: TangentSpace
+    from: pyriemann.tangentspace
+    parameters:
+      metric: "riemann"
+
+  - name: SVC
+    from: sklearn.svm
+    parameters:
+      kernel: "rbf"
+
+param_grid:
+  augmenteddataset__order:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
+    - 9
+    - 10
+  augmenteddataset__lag:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
+    - 9
+    - 10
+  svc__C:
+    - 0.5
+    - 1
+    - 1.5
+  svc__kernel:
+    - "rbf"
+    - "linear"

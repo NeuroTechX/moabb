@@ -1,0 +1,16 @@
+name: TDCA-SSVEP
+
+paradigms:
+  - SSVEP
+
+citations:
+  - https://doi.org/10.1109/TNSRE.2021.3114340
+
+pipeline:
+  - name: SSVEP_TDCA
+    from: moabb.pipelines.classification
+    parameters:
+      n_fbands: 5
+      n_components: 1
+      n_delay: 6
+      is_ensemble: True

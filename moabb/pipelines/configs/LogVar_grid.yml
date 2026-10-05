@@ -1,0 +1,25 @@
+name: Log Variance SVM grid
+
+paradigms:
+  - LeftRightImagery
+
+pipeline:
+  - name: LogVariance
+    from: moabb.pipelines.features
+
+  - name: SVC
+    from: sklearn.svm
+    parameters:
+      kernel: "linear"
+
+param_grid:
+  svc__C:
+    - 0.01
+    - 0.05
+    - 0.1
+    - 0.5
+    - 1
+    - 5
+    - 10
+    - 50
+    - 100

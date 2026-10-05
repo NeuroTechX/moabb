@@ -1,9 +1,13 @@
 import inspect
+import io
 import json
 import logging
 import re
 import warnings
-from unittest.mock import patch
+import zipfile
+import zlib
+from types import SimpleNamespace
+from unittest.mock import Mock, patch
 
 import mne
 import numpy as np
@@ -60,27 +64,62 @@ NEMAR_ID_EXEMPT = {
     "Schrag2026Pediatric",
     "Lenaig2026",
     "Wang2026",
+    "MartinezPeon2025",  # no public NEMAR mirror yet; tracked in #1198
+    "MIND2026",  # no public NEMAR mirror yet; tracked in #1195
+    "Han2026",  # no public NEMAR mirror yet; tracked in #1194
+    "Brodu2012",  # no public NEMAR mirror yet; tracked in #1193
+    "MIBMPI2024",  # no public NEMAR mirror yet; tracked in #1190
 }
 # Datasets whose NEMAR deposit is assigned but not yet public (private,
 # pending publication). Their ids are valid and still checked; tracked here
 # so we know which deposits remain to be published.
 NEMAR_ID_PENDING = {
     "AguileraRodriguez2025": "nm000174",
+    "Alawieh2025": "nm000312",
     "BCIComp2020UpperLimb": "nm000233",
     "BCIComp2020WalkingERP": "nm000184",
     "BNCI2020_001": "nm000178",
+    "Batista2022": "nm000318",
     "Beetl2021_A": "nm000220",
     "Beetl2021_B": "nm000274",
+    "Farabbi2020": "nm000294",
+    "IMUMIA2026": "nm000316",
+    "Jia2019": "nm000306",
     "Kaneshiro2015": "nm000263",
+    "Kodera2023": "nm000295",
+    "Kueper2024": "nm000319",
     "Kumar2024": "nm000177",
     "Lee2019_SSVEP": "nm000273",
     "Ma2022": "nm000288",
+    "Leelakittisin2025": "nm000330",
+    "Leeuwis2021": "nm000327",
+    "MILimbEEG": "nm000328",
+    "MIMED2024": "nm000296",
+    "MOVING2024": "nm000293",
     "Mainsah2025_A": "nm000269",
+    "MartinezPeon2024": "nm000314",
+    "NETBCI2026": "nm000305",
+    "NeBULA2025": "nm000322",
+    "NeuroTUMBCI2025": "nm000308",
     "Nguyen2017_L": "nm000252",
     "Nguyen2017_S": "nm000257",
     "Nguyen2017_SL": "nm000224",
     "Nguyen2017_V": "nm000261",
+    "Ortiz2023": "nm000320",
+    "Pan2023": "nm000291",
+    "Pan2025": "nm000300",
+    "PardoGarcia2026": "nm000309",
+    "Perdikis2018": "nm000307",
+    "PerezBlanco2026": "nm000304",
+    "PoloHortiguela2025": "nm000302",
     "Pressel2016": "nm000258",
+    "Shin2022": "nm000315",
+    "Thapa2025": "nm000324",
+    "Vagaja2023": "nm000292",
+    "WRCC2023_MI_A": "nm000297",
+    "WRCC2023_MI_B": "nm000298",
+    "WRCC2023_MI_C": "nm000299",
+    "Wang2025": "nm000325",
 }
 
 
@@ -1807,3 +1846,118 @@ def test_lee2024_data_path_downloads_the_real_upstream_inventory(tmp_path, monke
     )
     dataset.data_path(1, path=str(tmp_path))
     assert [fname for _, fname in calls] == ["Doorlock/Dat_sub01/sub01_Testing1.mat"]
+
+
+def test_netbci2026_events_replace_markers_and_off_rate_run_is_resampled(
+    tmp_path, monkeypatch
+):
+    """Each trial is epoched once and an off-rate run yields 250 Hz epochs.
+
+    The .vmrk carries the same two codes as events.tsv; adding rather than
+    replacing would double every trial (the Iwama2023 failure mode). Ten runs
+    are at 249.9 Hz (six at 1000 Hz, same resample path); event times are kept.
+    """
+    sfreq = 249.89999389648438
+    info = mne.create_info(["C3", "C4"], sfreq, "eeg")
+    raw = mne.io.RawArray(np.zeros((2, int(40 * sfreq))), info, verbose=False)
+    onsets = [7.314926149046683, 14.249700227984265, 21.0, 28.0]
+    raw.set_annotations(
+        mne.Annotations(onsets, [0.0] * 4, ["Stimulus/S  1", "Stimulus/S  2"] * 2)
+    )
+    stem = tmp_path / "sub-01_ses-01_task-MotorImageryRest_run-04"
+    (tmp_path / f"{stem.name}_events.tsv").write_text(
+        "onset\tduration\ttrial_type\tvalue\tsample\n"
+        + "".join(
+            f"{o}\t0.0\t{v}\t{v}\t{int(o * sfreq)}\n"
+            for o, v in zip(onsets, [1, 2, 1, 2])
+        )
+    )
+    dataset = db.NETBCI2026(subjects=[1])
+    bids_path = SimpleNamespace(fpath=f"{stem}_eeg.vhdr", session="01", run="04")
+    monkeypatch.setattr(dataset, "bids_paths", Mock(return_value=[bids_path]))
+    reader = Mock(return_value=raw.copy())
+    monkeypatch.setattr(mne.io, "read_raw_brainvision", reader)
+    out = dataset._get_single_subject_data(1)["01"]["04"]
+    dataset.bids_paths.assert_called_once_with(1)
+    assert str(reader.call_args.args[0]) == f"{stem}_eeg.vhdr"
+    assert out.info["sfreq"] == 250.0
+    events = mne.find_events(out, shortest_event=0, verbose=False)
+    assert events[:, 2].tolist() == [1, 2, 1, 2]
+    np.testing.assert_allclose(events[:, 0] / 250.0, onsets, atol=4e-3)
+
+
+def test_netbci2026_subject_members_are_eeg_motor_imagery_only():
+    names = [
+        "sub-01/",
+        "sub-01/ses-01/eeg/sub-01_ses-01_task-MotorImageryRest_run-01_eeg.eeg",
+        "sub-01/ses-01/eeg/sub-01_ses-01_task-MotorImageryRest_run-01_events.tsv",
+        "sub-01/ses-01/eeg/sub-01_ses-01_space-CapTrak_electrodes.tsv",
+        "sub-01/ses-01/eeg/sub-01_ses-01_task-rest_run-01_eeg.eeg",
+        "sub-01/ses-01/meg/sub-01_ses-01_task-MotorImageryRest_run-01_meg.fif",
+        "sub-01/ses-01/.DS_Store",
+        "sub-10/ses-01/eeg/sub-10_ses-01_task-MotorImageryRest_run-01_eeg.eeg",
+        "__MACOSX/sub-01/ses-01/._.DS_Store",
+    ]
+    infos = [zipfile.ZipInfo(name) for name in names]
+    for offset, info in enumerate(reversed(infos)):
+        info.header_offset = offset  # archive order differs from listing order
+    members = db.NETBCI2026._subject_members(infos, 1)
+    assert [info.filename for info in members] == [names[3], names[2], names[1]]
+
+
+def test_netbci2026_staged_subject_skips_the_network(tmp_path, monkeypatch):
+    netbci = db.netbci2026
+    root = tmp_path / "MNE-netbci2026-data"
+    for ses in range(1, 5):
+        eeg = root / "sub-02" / f"ses-{ses:02d}" / "eeg"
+        eeg.mkdir(parents=True)
+        for run in range(1, 7):
+            stem = f"sub-02_ses-{ses:02d}_task-MotorImageryRest_run-{run:02d}_"
+            for suffix in netbci._RUN_SUFFIXES:
+                (eeg / f"{stem}{suffix}").touch()
+    monkeypatch.setattr(netbci, "get_dataset_path", Mock(return_value=str(tmp_path)))
+    monkeypatch.delattr(netbci.requests, "Session")  # any network use fails
+    assert db.NETBCI2026()._download_subject(2, None, False, None, None) == str(root)
+
+
+class _BytesRemote:
+    """Stand-in for ``netbci2026._HTTPRangeFile`` backed by local bytes."""
+
+    def __init__(self, data):
+        self.data = data
+        self.n_requests = 0
+
+    def read_range(self, start, length):
+        self.n_requests += 1
+        return self.data[start : start + length]
+
+
+@pytest.mark.parametrize(
+    "compression", [zipfile.ZIP_STORED, zipfile.ZIP_DEFLATED], ids=["stored", "deflated"]
+)
+def test_netbci2026_read_member_one_request_and_crc(compression):
+    payload = {"a/first.eeg": b"\x00\x01" * 5000, "a/second.tsv": b"onset\tvalue\n1\t1\n"}
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", compression=compression) as zf:
+        for name, data in payload.items():
+            zf.writestr(name, data)
+    remote = _BytesRemote(buf.getvalue())
+    infos = zipfile.ZipFile(buf).infolist()
+    for info in infos:
+        assert db.NETBCI2026._read_member(remote, info) == payload[info.filename]
+    assert remote.n_requests == len(infos)  # one range request per member
+
+    corrupt = bytearray(remote.data)
+    corrupt[infos[0].header_offset + 30 + len(infos[0].filename) + 10] ^= 0xFF
+    with pytest.raises((OSError, zlib.error)):
+        db.NETBCI2026._read_member(_BytesRemote(bytes(corrupt)), infos[0])
+
+
+def test_netbci2026_root_files_are_md5_checked(tmp_path, monkeypatch):
+    netbci = db.netbci2026
+    session = Mock()
+    session.get.return_value.content = b"tampered"
+    monkeypatch.setattr(netbci, "get_dataset_path", Mock(return_value=str(tmp_path)))
+    monkeypatch.setattr(netbci.requests, "Session", Mock(return_value=session))
+    with pytest.raises(OSError, match="MD5"):
+        db.NETBCI2026()._download_subject(3, None, False, None, None)

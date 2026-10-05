@@ -120,7 +120,10 @@ class Kaya2018(BaseDataset):
 
     Each trial consists of a 1-second visual cue followed by a 1.5-2.5
     second inter-trial interval. Subjects have between 1 and 3 recording
-    sessions (CLA files) each.
+    sessions (CLA files) each: subjects 1 (A) and 4 (D) have one session,
+    subjects 2 (B), 3 (C), 5 (E), 6 (F) and 7 (J) have three. Each CLA file
+    is returned as one session with a single run, so ``sessions_per_subject``
+    declares the maximum (3).
 
     .. note::
 
@@ -218,6 +221,8 @@ class Kaya2018(BaseDataset):
         ),
         bci_application=BCIApplicationMetadata(environment="lab", online_feedback=False),
         tags=Tags(pathology=["healthy"], modality=["motor"], type=["imagery"]),
+        sessions_per_subject=3,
+        runs_per_session=1,
         file_format="MAT",
     )
 
@@ -226,7 +231,7 @@ class Kaya2018(BaseDataset):
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
             subjects=list(range(1, 8)),
-            sessions_per_subject=1,
+            sessions_per_subject=3,
             events=self._events,
             code="Kaya2018",
             interval=[0, 1],

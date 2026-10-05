@@ -23,12 +23,40 @@ Version 1.8  (Source - GitHub)
 
 Enhancements
 ~~~~~~~~~~~~
+- Ship MOABB's reference benchmark pipeline configs as package data and add :func:`moabb.pipelines.get_benchmark_pipelines`, so published baseline pipelines are available from normal wheel/sdist installs instead of only from a source checkout. Pipeline parsing now also accepts a single ``.py`` config and rejects valid-but-empty config directories instead of silently returning no pipelines (:gh:`1149` by `lindicaphxag-tech`_).
+- Allow :class:`~moabb.evaluations.CrossSubjectEvaluation` to accept an optional top-level ``splitter`` instance, enabling transfer-learning protocols to reuse MOABB's existing caching, parallel execution, and result handling while preserving the default protocol (:gh:`1088` by `lindicaphxag-tech`_).
+- Add Leelakittisin2025 sit-stand transition imagery, PerezBlanco2026 wrist motor-execution, and Vagaja2023 VR motor-imagery datasets (:pr:`1199`) (by `Bruno Aristimunha`_).
+- Add MartinezPeon2025, MILimbEEG dataset loaders with synthetic regression coverage ({gh}`1198` by `Bruno Aristimunha`_).
+- Add Pan2023, Pan2025, PoloHortiguela2025 dataset loaders with synthetic regression coverage ({gh}`1197` by `Bruno Aristimunha`_).
+- Add MIMED2024 and WRCC2023 MI-A/MI-B/MI-C motor-imagery datasets with isolated recording windows (:gh:`1196`, by `Bruno Aristimunha`_).
+- Add :class:`moabb.datasets.MIND2026`, :class:`moabb.datasets.MOVING2024`, :class:`moabb.datasets.NeBULA2025`, and :class:`moabb.datasets.Thapa2025` large-recording motor-imagery and motor-execution datasets. Preserve the MIND acquisition-restart guard and document execution-only tasks (:gh:`1195` by `Bruno Aristimunha`_).
+- Add Batista2022, Farabbi2020, Han2026, Kodera2023 and Kueper2024 dataset loaders (:gh:`1194`).
+- Add Brodu2012, IMUMIA2026, Leeuwis2021, MartinezPeon2024 and PardoGarcia2026 motor-imagery dataset loaders by `Bruno Aristimunha`_ in :gh:`1193`.
+- Add the continuous-recording :class:`datasets.Shin2022` and :class:`datasets.NeuroTUMBCI2025` motor-imagery datasets (:gh:`1192`, by `Bruno Aristimunha`_).
+- Add the offline calibration subsets of Perdikis2018 and Alawieh2025 (:gh:`1191`) (by `Bruno Aristimunha`_).
+- Add Jia2019, MIBMPI2024, Ortiz2023 and Wang2025 motor-imagery loaders (:gh:`1190` by `Bruno Aristimunha`_).
+- Add three OpenNeuro motor-imagery datasets: :class:`moabb.datasets.Peterson2020`, :class:`moabb.datasets.Daly2020`, and :class:`moabb.datasets.Damm2026` (:pr:`1189`, by `Bruno Aristimunha`_).
+- Add :class:`moabb.datasets.NETBCI2026` (NETBCI, Recherche Data Gouv doi:10.57745/RBJRC7): 19 subjects, 74-channel EEG, right-hand motor imagery vs rest over 4 longitudinal sessions x 6 online feedback runs; per-subject EEG is read out of the 49 GB archive by HTTP range requests (:gh:`1188` by `Bruno Aristimunha`_).
+- Add four OpenNeuro motor-imagery datasets: :class:`moabb.datasets.Lee2022` (ds004022, 7 orthopedic-impairment patients, 4 upper-limb MI tasks), :class:`moabb.datasets.Lioi2020_XP1` (ds002336) and :class:`moabb.datasets.Lioi2020_XP2` (ds002338), the two EEG-fMRI right-hand MI / neurofeedback experiments of Lioi et al., and :class:`moabb.datasets.Iwama2023` (ds004444, 30 subjects, 129-channel HD-EEG, up to 16 sessions) (:gh:`1186` by `Bruno Aristimunha`_).
+- Audit every dataset's ``METADATA`` and docstring against its primary paper and data-repository record with a new reusable tool (``scripts/paper_audit/``): ``country`` is now an ISO 3166-1 alpha-2 code everywhere, loader declarations (``sessions_per_subject``, ``subjects``, ``runs_per_session``) and the ``summary_*.csv`` tables match what each loader actually returns, and per-dataset fields (reference/ground, hardware, filters, licence, demographics, trial counts, DOIs) are corrected with quoted evidence; ``Cattan2019_VR`` declares its two sessions, ``Nakanishi2015`` exposes subject 10, ``PhysionetMI``/``MAMEM3``/``BI2015b`` metadata now come from their own records (:gh:`1203` by `Bruno Aristimunha`_).
+- Add :func:`moabb.analysis.plotting.plot_critical_difference` for comparing pipelines across complete multi-dataset benchmarks with Friedman ranks and Nemenyi critical-difference groups (:gh:`1127` by `lindicaphxag-tech`_).
 - Spell MNE's renamed template montages everywhere: MNE 1.13 renamed ``standard_1005``/``standard_1020`` (and the other ``standard_*`` templates) to ``colin27_*`` (identical electrode files), warns on the old names and MNE 1.14 removes them, so every ``make_standard_montage``/``set_montage`` call in MOABB now spells ``colin27_*``. ``METADATA`` montage labels are descriptive and unchanged (:gh:`1200` by `Bruno Aristimunha`_).
 - Add :class:`moabb.datasets.Ma2022`, the SHU cross-session motor-imagery dataset: 25 subjects, five sessions, 32 EEG channels at 250 Hz and 11,988 retained 4 s trials. Read the authors' EDF release and BIDS events from NEMAR ``nm000288`` (publication pending), preserving bad-channel flags. These are authors-preprocessed, concatenated imagery windows, not continuous amplifier recordings. The ``Ma-edf2022`` code prevents reuse of legacy MATLAB caches; there is no MATLAB fallback (:gh:`1178` by `LiQing`_ and `Bruno Aristimunha`_)
 
 API changes
 ~~~~~~~~~~~
-- None yet.
+- :class:`moabb.evaluations.CrossSubjectEvaluation` now rejects custom splitter outputs with more than three items instead of silently treating all middle items as calibration data; custom splitters must yield ``(train, test)`` or ``(train, cal, test)`` (:gh:`1207` by `lindicaphxag-tech`_).
+- :class:`moabb.evaluations.CrossSessionEvaluation` custom cross-validation
+  folds that hold out multiple sessions now emit one result row per held-out
+  session instead of one aggregate row per fold. The default leave-one-session-out
+  behavior is unchanged (:gh:`1210` by `lindicaphxag-tech`_).
+- Saved evaluation model paths now include the paradigm and optional suffix, so
+  separate benchmark runs no longer overwrite artifacts that otherwise share the
+  same evaluation/dataset/subject/session/pipeline keys (:gh:`1182` by
+  `lindicaphxag-tech`_). Existing legacy ``Models_*``/``GridSearch_*`` trees
+  remain untouched at their historical paths and are not auto-migrated because
+  those paths do not encode the missing paradigm/suffix provenance; legacy
+  artifacts therefore remain manually readable in place.
 
 Requirements
 ~~~~~~~~~~~~
@@ -36,11 +64,56 @@ Requirements
 
 Bugs
 ~~~~
+- Fix :func:`moabb.datasets.Dataset.convert_to_bids` crashing on datasets whose
+  MOABB run-label suffix is literally ``"calibration"`` or ``"crosstalk"``
+  (Wang2025, Leeuwis2021, Brandl2020, Romani_BF2025_ERP). After the ``acq-``
+  switch (:gh:`1217`), those descriptions collided with ``mne-bids``' reserved
+  ``acq-calibration`` / ``acq-crosstalk`` MEG fine-calibration/crosstalk
+  magic strings (which require ``task=None``) and raised
+  ``ValueError: task must be None if the acquisition is "calibration" or
+  "crosstalk"``. ``run_moabb_to_bids`` now rewrites the two reserved tokens
+  to short aliases (``"calib"``/``"xtalk"``) and ``run_bids_to_moabb`` inverts
+  the mapping, keeping the round trip exact for every run label currently
+  emitted on develop and preserving the legacy ``recording-`` read fallback
+  (:gh:`1218` by `Bruno Aristimunha`_).
+- Fix :class:`moabb.datasets.MILimbEEG` convert aborting on subjects S4 and
+  S7 with ``ValueError: Expected a complete four-second stored trial``. A
+  dataset-wide scan of all 3719 motor-imagery CSVs confirms every file has
+  exactly 500 data rows; 124 files (62 per subject across S4 and S7) start
+  with a Mendeley v2 header variant whose first field is literally ``NaN``
+  (``NaN,0,1,...,15``) instead of empty. ``float("NaN")`` succeeds, so the
+  previous first-line sniff mis-flagged them as header-less and pandas kept
+  the extra row. ``_read_trial`` now also treats a first line with a
+  NaN-or-empty leading cell and sequential column-index remainder as a
+  header; a synthetic regression covers both the NaN variant and the empty
+  variant and short trials remain a hard error (no silent zero-pad)
+  (:gh:`1218` by `Bruno Aristimunha`_).
+- Fix :func:`moabb.datasets.Dataset.convert_to_bids` producing files the official
+  bids-validator (``@bids/validator`` v2) rejects. ``_build_sidecar_enrichment``
+  now wraps string or flat-dict ``acq.filters`` so every top-level value of
+  ``HardwareFilters`` is an object (schema requires objects, or the exact string
+  ``"n/a"``), fixing ``JSON_SCHEMA_VALIDATION_ERROR``. ``run_moabb_to_bids`` now
+  stores the MOABB run-label description (e.g. the ``feedback1`` in ``"1feedback1"``)
+  in the ``acquisition`` (``acq-``) entity instead of ``recording`` (``rec-``),
+  which is not valid for ``_eeg``/``_events``/``_channels`` files and raised
+  ``ALL_FILENAME_RULES_HAVE_ISSUES``. ``run_bids_to_moabb`` still accepts the
+  legacy ``rec-`` entity so existing MOABB caches keep reading back to the same
+  run label (:gh:`1217` by `Bruno Aristimunha`_).
+- Keep :class:`moabb.evaluations.CrossSessionEvaluation` result provenance
+  session-specific when a custom cross-validator holds out more than one recording
+  session in the same fold. The estimator is still fitted once per fold, but each
+  held-out session is scored and stored separately, matching the evaluation's
+  session-level result contract in both the flattened and legacy execution paths
+  (by `lindicaphxag-tech`_).
+- Fix metadata-aware splitters collapsing distinct compound groups when column values contain the ``-`` separator. Multi-column group identities now use a canonical collision-free encoding, preserving the intended cross-validation and leakage boundary (by `lindicaphxag-tech`_).
+- Make :func:`moabb.analysis.chance_level.chance_by_chance` independent of result-row order when test-fold sizes vary: dataset-level adjusted thresholds now take the strictest exact-binomial cutoff across the fold sizes actually present (the cutoff is discrete and not strictly monotone in fold size), while inconsistent class counts are rejected (by `lindicaphxag-tech`_).
+- Fix ``SSVEP_TRCA`` trial centering: the inter-trial covariance step subtracted the mean across channels at each sample instead of each channel's mean over time, and did it in place on the filterbank data it received, which also fed ``Q`` and the class templates. Centering is now per channel over time, on a copy (:gh:`1183` by `Arthur031221`_).
 - Use ``gmean`` in TRCA and TRCSP for compatibility with pyRiemann 0.12 and 0.13, and pass the TRCSP mean metric by keyword (by `Bruno Aristimunha`_).
 - Fix the ``-e``/``--evaluations`` flag of ``python -m moabb.run``, which used ``type=list`` and so split its value into single characters: ``-e WithinSession`` reached :func:`moabb.benchmark` as ``['W', 'i', 't', ...]`` and raised ``KeyError: 'W'``. It now takes one or more evaluation names, space separated (by `Iain`_)
 - Fix the two install pages asking for optional extras MOABB does not have: the pip install page gave ``pip install moabb[deepleaning,carbonemission,docs]``, which is missing the ``r`` of ``deeplearning``, and pip only warns about an unrecognised extra, so following that page left ``braindecode`` uninstalled. The from-sources page asked for ``external``, removed in 1.2.0 (by `Iain`_).
 - Fix evaluations passing NumPy arrays instead of :class:`mne.Epochs` to :class:`moabb.pipelines.classification.SSVEP_itCCA` and :class:`moabb.pipelines.classification.SSVEP_eCCA`, whose ``fit`` then raised ``ValueError: X should be an MNE Epochs object.`` The check that switches an evaluation to epochs only listed ``SSVEP_CCA``, ``SSVEP_TRCA`` and ``SSVEP_MsetCCA`` (by `Arthur031221`_)
 - Fix :func:`moabb.analysis.meta_analysis.compute_pvals_wilcoxon` reporting the wrong tail when the sign of the mean paired difference disagrees with the signed-rank statistic: the one-tailed p-value is now taken directly from ``scipy.stats.wilcoxon(..., alternative="greater")`` instead of halving the two-sided value and choosing the side from the mean (:gh:`1177` by `Azra Bano`_)
+- Resample the 600 Hz recordings of subject ``zdvm`` (bases 2, 3, 5 and 7) in :class:`moabb.datasets.MartinezCagigal2023Pary` to the declared 256 Hz on load, fixing the ``ValueError`` raised when the ``CVEP`` paradigm concatenated the 601-sample epochs of those sessions with the 257-sample epochs of every other recording (:gh:`1201` by `LiQing`_)
 
 Code health
 ~~~~~~~~~~~
@@ -986,6 +1059,7 @@ API changes
 - None
 
 .. _Ethan Davis: https://github.com/davisethan
+.. _LiQing: https://github.com/qinxwew
 .. _Zheyu Yao: https://github.com/zyao197
 .. _Martin Wimpff: https://github.com/martinwimpff
 .. _LiQing: https://github.com/qinxwew
@@ -1065,3 +1139,5 @@ API changes
 .. _Iain: https://github.com/NotAFlightRisk
 .. _Anna Sokolova: https://github.com/ZyntZ
 .. _Arthur031221: https://github.com/Arthur031221
+
+.. _lindicaphxag-tech: https://github.com/lindicaphxag-tech

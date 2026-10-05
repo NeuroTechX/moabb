@@ -74,6 +74,12 @@ EVENTS = {
     "9.0": 109,
     "10.0": 110,
 }
+# The sampling rate declared by the dataset metadata. Recordings deviating
+# from it (subject "zdvm", bases 2/3/5/7 at 600 Hz) are resampled on load so
+# that all sessions share a single rate and paradigms can concatenate epochs
+# across sessions.
+DECLARED_SFREQ = 256.0
+
 log = logging.getLogger(__name__)
 
 
@@ -125,6 +131,9 @@ class MartinezCagigal2023Pary(BaseDataset):
     .. note::
        Recordings of user "zdvm" for bases 2, 3, 5, and 7 had a sampling rate
        of 600 Hz. The rest of recordings have all a sampling rate of 256 Hz.
+       The 600 Hz recordings are resampled to 256 Hz on load, matching the
+       sampling rate declared by the dataset metadata, so that epochs from all
+       sessions can be concatenated.
 
     The experimental paradigm was executed using the MEDUSA© software [4]_.
 
@@ -170,9 +179,24 @@ class MartinezCagigal2023Pary(BaseDataset):
     """
 
     METADATA = DatasetMetadata(
-        acquisition=AcquisitionMetadata(sampling_rate=256.0, channel_types={"eeg": 16}),
-        participants=ParticipantMetadata(n_subjects=16),
+        acquisition=AcquisitionMetadata(
+            sampling_rate=256.0,
+            channel_types={"eeg": 16},
+            reference="earlobe",
+            ground="AFz",
+            hardware="g.USBamp (g.tec)",
+            software="MEDUSA",
+        ),
+        participants=ParticipantMetadata(
+            n_subjects=16,
+            health_status="healthy",
+            gender={"male": 11, "female": 5},
+            age_mean=28.8,
+            age_std=5.0,
+        ),
         experiment=ExperimentMetadata(paradigm="cvep"),
+        sessions_per_subject=5,
+        runs_per_session=8,
         documentation=DocumentationMetadata(
             doi="10.71569/025s-eq10",
             associated_paper_doi="10.1016/j.eswa.2023.120815",
@@ -364,6 +388,21 @@ class MartinezCagigal2023Pary(BaseDataset):
         # Set data (signal shape is samples x channels, need to transpose).
         # The BSON files store EEG in microvolts; convert to Volts for MNE.
         raw_data = mne.io.RawArray(signal.T * 1e-6, info, verbose=False)
+
+        # Subject "zdvm" was recorded at 600 Hz for bases 2, 3, 5 and 7, while
+        # every other recording -- including zdvm's base 11 -- uses 256 Hz.
+        # Paradigms concatenate epochs across sessions, which requires a single
+        # sampling rate, so bring off-rate recordings to the declared rate
+        # before any sample-index math below.
+        if sampling_freq != DECLARED_SFREQ:
+            log.info(
+                "Resampling recording %s from %s Hz to the dataset rate of %s Hz.",
+                rec["recording_id"],
+                sampling_freq,
+                DECLARED_SFREQ,
+            )
+            raw_data.resample(DECLARED_SFREQ)
+            sampling_freq = raw_data.info["sfreq"]
 
         # Get timing information
         fps = cvep_data["fps_resolution"]

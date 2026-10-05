@@ -416,6 +416,11 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
     events. The stimulus onset asynchrony (SOA) was 250 ms and the stimulus duration was 100 ms leading to an
     interstimulus interval (ISI) of 150 ms.
 
+    The raw data are hosted on Zenodo (record 5831879, CC BY 4.0). According to the record description, each
+    subject spelled a 35-letter sentence followed by 35-letter free spelling, i.e. Run1-5 were copy-spell and
+    Run6-10 were free spelling, and did this three times (Block1-3); the loader exposes each block as a session
+    with 10 runs.
+
     Parameters
     ----------
     interval: array_like
@@ -521,7 +526,7 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
             },
         ),
         documentation=DocumentationMetadata(
-            doi="10.5281/zenodo.192684",
+            doi="10.1109/MCI.2018.2807039",
             repository="Zenodo",
             data_url="https://zenodo.org/record/5831879",
             publication_year=2018,
@@ -561,10 +566,9 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
                 "EEG",
             ],
             license="CC-BY-4.0",
-            associated_paper_doi="10.1109/MCI.2018.2807039",
         ),
         sessions_per_subject=3,
-        runs_per_session=None,
+        runs_per_session=10,
         sessions=["0", "1", "2"],
         contributing_labs=None,
         n_contributing_labs=None,
