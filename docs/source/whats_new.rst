@@ -63,6 +63,7 @@ Requirements
 
 Bugs
 ~~~~
+- Fix :class:`moabb.datasets.MIND2026` download 404ing immediately on every fresh fetch: the loader hardcoded ScienceDB's ``getZipFile?...&version=V3`` endpoint, which ScienceDB has since removed (``HEAD`` -> 404). ``version=V4`` is the current replacement and was confirmed live with an exact byte-count match to this loader's own ~74 GB docstring estimate (``HEAD`` -> 200, ``content-length: 74409645600``). No other behavior changes; the synthetic regression test is unaffected since it never hits the network (by `Bruno Aristimunha`_).
 - Fix :class:`moabb.datasets.Lenaig2026`'s ``data_path()`` raising
   ``FileNotFoundError: Some data files are missing.`` on every subject: it
   hard-coded an ``EEG_24Chan_AudioStim/`` wrapper directory for the extracted

@@ -37,7 +37,12 @@ _SCIDB_ID = "d0f67f38c5bc4416bdcce619f33e57da"
 MIND2026_DOI = "10.57760/sciencedb.34326"
 MIND2026_URL = f"https://www.scidb.cn/detail?dataSetId={_SCIDB_ID}"
 MIND2026_DOWNLOAD_URL = (
-    f"https://china.scidb.cn/getZipFile?dataSetId={_SCIDB_ID}&version=V3"
+    # ScienceDB removed the V3 release of this archive (now a 404); V4 is the
+    # current replacement and was confirmed live on 2026-10-05 with an exact
+    # byte-count match to this loader's own ~74 GB docstring estimate:
+    #   HEAD https://china.scidb.cn/getZipFile?dataSetId=d0f67f38c5bc4416bdcce619f33e57da&version=V3  -> 404
+    #   HEAD https://china.scidb.cn/getZipFile?dataSetId=d0f67f38c5bc4416bdcce619f33e57da&version=V4  -> 200, content-length: 74409645600
+    f"https://china.scidb.cn/getZipFile?dataSetId={_SCIDB_ID}&version=V4"
 )
 
 # BIDS task label of the EEG BrainVision recordings (sub-NN/eeg/*_task-mi2d_*).
