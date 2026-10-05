@@ -18,8 +18,8 @@ What's new
 
 .. _current:
 
-Version 1.8  (Source - GitHub)
--------------------------------
+Version 1.8.0 (2026-10-06)
+--------------------------
 
 Enhancements
 ~~~~~~~~~~~~
