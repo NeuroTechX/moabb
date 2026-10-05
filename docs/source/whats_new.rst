@@ -64,6 +64,42 @@ Requirements
 Bugs
 ~~~~
 - Fix :class:`moabb.datasets.MIND2026` download 404ing immediately on every fresh fetch: the loader hardcoded ScienceDB's ``getZipFile?...&version=V3`` endpoint, which ScienceDB has since removed (``HEAD`` -> 404). ``version=V4`` is the current replacement and was confirmed live with an exact byte-count match to this loader's own ~74 GB docstring estimate (``HEAD`` -> 200, ``content-length: 74409645600``). No other behavior changes; the synthetic regression test is unaffected since it never hits the network (by `Bruno Aristimunha`_).
+- Fix :class:`moabb.datasets.Lenaig2026`'s ``data_path()`` raising
+  ``FileNotFoundError: Some data files are missing.`` on every subject: it
+  hard-coded an ``EEG_24Chan_AudioStim/`` wrapper directory for the extracted
+  RAR, but the current Zenodo v2 archive (record ``21156618``) extracts
+  ``EXP1/``/``EXP2/`` directly at the root -- confirmed by direct inspection
+  on Voyager (``find ... -iname '*EEG_24Chan*'`` only finds the ``.rar``
+  itself). ``data_path()`` now locates each run's file with a recursive glob
+  that matches either layout, without changing which events/labels are read
+  (:gh:`1225` by `Bruno Aristimunha`_).
+- Fix :class:`moabb.datasets.Schrag2026Pediatric` crashing
+  ``convert_to_bids()`` with ``ValueError: Raw object must have annotations
+  to be saved in BIDS format`` on subject 1's personalized-stimulus game run:
+  the loader's own documented policy of dropping all trial labels when a
+  run's ``Trial Started`` marker count drifts more than 10%% from its
+  movements-CSV row count (true for that run, 15%% drift) produced a
+  zero-annotation ``Raw``, which ``bids_interface``'s writer then rejected.
+  ``_get_single_subject_data`` now skips a run that ends up with zero
+  events instead of returning it, logging a warning that names the subject
+  and run; the docstring documents this (:gh:`1225` by `Bruno Aristimunha`_).
+- Fix :class:`moabb.datasets.Lenaig2026` crashing ``convert_to_bids()`` with
+  ``AttributeError: 'int' object has no attribute 'items'``:
+  ``METADATA.experiment.trials_per_class`` was a bare int (``10``) instead
+  of the ``Dict[str, int]`` the schema declares, and
+  ``bids_interface._build_readme`` unconditionally calls
+  ``_format_dict()`` on it. Now a per-class dict (``{"Stimulus": 10,
+  "Silence": 10}``), matching the documented 10 repetitions per condition
+  (:gh:`1225` by `Bruno Aristimunha`_).
+- Fix :func:`moabb.datasets.Dataset.convert_to_bids` aborting the whole
+  multi-subject convert when exactly one subject raises
+  ``FileNotFoundError`` (a loader's own "nothing to write for this subject"
+  signal, e.g. :class:`moabb.datasets.Schrag2026Pediatric` subject 16's
+  single game run being dropped entirely by the >10%% drift policy): every
+  subject after the one that raised was previously silently skipped as
+  well. The per-subject loop now catches ``FileNotFoundError``, logs a
+  warning naming the subject, and continues converting the rest
+  (:gh:`1225` by `Bruno Aristimunha`_).
 - Keep :class:`moabb.evaluations.CrossSubjectEvaluation` result provenance subject-specific when a grouped cross-validation fold holds out multiple subjects at once. The estimator is still fitted once per fold, while scores, cache identities, and saved-model paths are emitted per held-out subject and session instead of assigning the whole fold to its first subject (by `lindicaphxag-tech`_).
 - Fix :func:`moabb.datasets.Dataset.convert_to_bids` crashing on datasets whose
   MOABB run-label suffix is literally ``"calibration"`` or ``"crosstalk"``
