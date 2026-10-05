@@ -63,6 +63,27 @@ _CH_NAMES = [
 # fmt: on
 
 
+def _brainvision_overrides(vhdr_path):
+    """Build the ``overrides`` for one released BrainVision header.
+
+    Two released headers declare a ``MarkerFile`` belonging to another subject
+    (``s12b10.vhdr`` -> ``s20b10.vmrk``, ``s8b7.vhdr`` -> ``s21b7.vmrk``), so the
+    declared marker file is not in the archive. Point the reader at the block's
+    own ``.vmrk`` explicitly rather than relying on the not-found fallback.
+    Returns ``None`` when the header is self-consistent and needs no override.
+    """
+    vhdr_path = Path(vhdr_path)
+    match = re.search(
+        r"^MarkerFile=(.+)$", vhdr_path.read_text(errors="replace"), flags=re.MULTILINE
+    )
+    if match is None:
+        return None
+    declared = match.group(1).strip()
+    if declared.lower() == "false" or (vhdr_path.parent / declared).exists():
+        return None
+    return {"marker_fname": vhdr_path.with_suffix(".vmrk").name}
+
+
 class Yagan2023(BaseDataset):
     """P300 speller dataset from Yağan et al. 2023.
 
@@ -247,7 +268,12 @@ class Yagan2023(BaseDataset):
         after the associated flash), and ``NonTarget`` otherwise. All other
         markers (ISI, block/word/character boundaries) are dropped.
         """
-        raw = mne.io.read_raw_brainvision(file_path, preload=True, verbose=False)
+        raw = mne.io.read_raw_brainvision(
+            file_path,
+            preload=True,
+            overrides=_brainvision_overrides(file_path),
+            verbose=False,
+        )
         raw.set_montage(
             mne.channels.make_standard_montage("colin27_1020"),
             on_missing="ignore",
