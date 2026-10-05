@@ -23,6 +23,7 @@ Version 1.8  (Source - GitHub)
 
 Enhancements
 ~~~~~~~~~~~~
+- Document a download-free, paradigm-only metadata preflight using the existing ``MotorImagery.is_valid`` API, including explicit ``n_classes`` semantics and unknown evaluation compatibility; add a no-I/O regression test for the recipe (by `Bruno Aristimunha`_).
 - Ship MOABB's reference benchmark pipeline configs as package data and add :func:`moabb.pipelines.get_benchmark_pipelines`, so published baseline pipelines are available from normal wheel/sdist installs instead of only from a source checkout. Pipeline parsing now also accepts a single ``.py`` config and rejects valid-but-empty config directories instead of silently returning no pipelines (:gh:`1149` by `lindicaphxag-tech`_).
 - Allow :class:`~moabb.evaluations.CrossSubjectEvaluation` to accept an optional top-level ``splitter`` instance, enabling transfer-learning protocols to reuse MOABB's existing caching, parallel execution, and result handling while preserving the default protocol (:gh:`1088` by `lindicaphxag-tech`_).
 - Add Leelakittisin2025 sit-stand transition imagery, PerezBlanco2026 wrist motor-execution, and Vagaja2023 VR motor-imagery datasets (:pr:`1199`) (by `Bruno Aristimunha`_).
