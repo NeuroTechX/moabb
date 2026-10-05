@@ -171,7 +171,14 @@ class Lenaig2026(BaseDataset):
             paradigm="ssvep",
             n_classes=2,
             class_labels=["Stimulus", "Silence"],
-            trials_per_class=10,
+            # 10 repetitions per condition (5 conditions: Sinus, BrownNoise,
+            # Cicada, Cat, Silence) per the dataset description above; the
+            # schema declares ``trials_per_class`` as Dict[str, int], not a
+            # bare int -- bids_interface._build_readme's
+            # ``_format_dict(exp.trials_per_class)`` crashes with
+            # ``AttributeError: 'int' object has no attribute 'items'``
+            # otherwise (hit on a real end-to-end convert).
+            trials_per_class={"Stimulus": 10, "Silence": 10},
             trial_duration=10,
             feedback_type="auditory",
             mode="offline",

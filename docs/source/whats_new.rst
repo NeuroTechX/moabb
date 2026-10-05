@@ -82,6 +82,14 @@ Bugs
   ``_get_single_subject_data`` now skips a run that ends up with zero
   events instead of returning it, logging a warning that names the subject
   and run; the docstring documents this (:gh:`1225` by `Bruno Aristimunha`_).
+- Fix :class:`moabb.datasets.Lenaig2026` crashing ``convert_to_bids()`` with
+  ``AttributeError: 'int' object has no attribute 'items'``:
+  ``METADATA.experiment.trials_per_class`` was a bare int (``10``) instead
+  of the ``Dict[str, int]`` the schema declares, and
+  ``bids_interface._build_readme`` unconditionally calls
+  ``_format_dict()`` on it. Now a per-class dict (``{"Stimulus": 10,
+  "Silence": 10}``), matching the documented 10 repetitions per condition
+  (:gh:`1225` by `Bruno Aristimunha`_).
 - Keep :class:`moabb.evaluations.CrossSubjectEvaluation` result provenance subject-specific when a grouped cross-validation fold holds out multiple subjects at once. The estimator is still fitted once per fold, while scores, cache identities, and saved-model paths are emitted per held-out subject and session instead of assigning the whole fold to its first subject (by `lindicaphxag-tech`_).
 - Fix :func:`moabb.datasets.Dataset.convert_to_bids` crashing on datasets whose
   MOABB run-label suffix is literally ``"calibration"`` or ``"crosstalk"``

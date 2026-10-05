@@ -355,6 +355,21 @@ def test_lenaig2026_data_path_accepts_wrapped_and_flat_layouts(tmp_path, monkeyp
     assert all(Path(p).is_file() for p in paths2)
 
 
+def test_lenaig2026_trials_per_class_builds_a_readme(tmp_path):
+    """gh: METADATA.experiment.trials_per_class was a bare int (``10``),
+    violating the schema's declared ``Dict[str, int]`` type. A real
+    end-to-end convert crashed in ``bids_interface._build_readme`` with
+    ``AttributeError: 'int' object has no attribute 'items'`` because
+    ``_format_dict`` assumes a mapping. It is now a per-class dict; the
+    README builder must run without crashing."""
+    from moabb.datasets.bids_interface import _build_readme
+
+    dataset = Lenaig2026(exp=1, run="both")
+    assert isinstance(dataset.METADATA.experiment.trials_per_class, dict)
+    readme = _build_readme(dataset)
+    assert "Trials per class" in readme
+
+
 def test_schrag2026_skips_run_with_zero_annotations_after_high_drift(
     tmp_path, monkeypatch, caplog
 ):
