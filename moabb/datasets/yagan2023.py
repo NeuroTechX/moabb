@@ -221,6 +221,12 @@ class Yagan2023(BaseDataset):
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
+        """Get the paths to the subject's block files.
+
+        ``update_path`` is accepted for signature compatibility with
+        :class:`moabb.datasets.base.BaseDataset` but is not forwarded:
+        ``download.data_dl`` has no such parameter and MNE has deprecated it.
+        """
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
