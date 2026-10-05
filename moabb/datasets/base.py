@@ -1400,7 +1400,17 @@ class BaseDataset(metaclass=MetaclassDataset):
                         repr(interface),
                     )
                     continue
-            sessions_data = self.get_data(subjects=[subject])
+            try:
+                sessions_data = self.get_data(subjects=[subject])
+            except FileNotFoundError as exc:
+                # A loader's own "no usable data for this subject" signal
+                # (e.g. every run dropped by a documented quality policy,
+                # not a download/path bug) must not abort every other
+                # subject's conversion in the same call. Skip loudly instead.
+                log.warning(
+                    "%s: skipping subject %s, no usable data: %s", self.code, subject, exc
+                )
+                continue
             interface.save(sessions_data[subject])
 
         bids_root = get_bids_root(self.code, path)

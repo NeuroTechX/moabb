@@ -74,18 +74,20 @@ NEMAR_ID_EXEMPT = {
 # pending publication). Their ids are valid and still checked; tracked here
 # so we know which deposits remain to be published.
 NEMAR_ID_PENDING = {
-    "AguileraRodriguez2025": "nm000174",
+    # Removed on 2026-10-05: these 15 deposits were published on NEMAR and are
+    # anonymously reachable (fresh clone + annexed-EDF HTTP 200 against
+    # https://nemar.s3.us-east-2.amazonaws.com/<id>/objects/<key>). Evidence:
+    # .pr-audits/w41/p2-evidence/anon-report.tsv.
+    #   nm000174 AguileraRodriguez2025, nm000177 Kumar2024, nm000178 BNCI2020_001,
+    #   nm000184 BCIComp2020WalkingERP, nm000220 Beetl2021_A, nm000224 Nguyen2017_SL,
+    #   nm000233 BCIComp2020UpperLimb, nm000252 Nguyen2017_L, nm000257 Nguyen2017_S,
+    #   nm000258 Pressel2016, nm000261 Nguyen2017_V, nm000263 Kaneshiro2015,
+    #   nm000269 Mainsah2025_A, nm000273 Lee2019_SSVEP, nm000274 Beetl2021_B.
     "Alawieh2025": "nm000312",
-    "BCIComp2020UpperLimb": "nm000233",
-    "BCIComp2020WalkingERP": "nm000184",
-    "BNCI2020_001": "nm000178",
     "Batista2022": "nm000318",
-    "Beetl2021_A": "nm000220",
-    "Beetl2021_B": "nm000274",
     "Farabbi2020": "nm000294",
     "IMUMIA2026": "nm000316",
     "Jia2019": "nm000306",
-    "Kaneshiro2015": "nm000263",
     "Kodera2023": "nm000295",
     "Kueper2024": "nm000319",
     "Kumar2024": "nm000177",
@@ -96,15 +98,10 @@ NEMAR_ID_PENDING = {
     "MILimbEEG": "nm000328",
     "MIMED2024": "nm000296",
     "MOVING2024": "nm000293",
-    "Mainsah2025_A": "nm000269",
     "MartinezPeon2024": "nm000314",
     "NETBCI2026": "nm000305",
     "NeBULA2025": "nm000322",
     "NeuroTUMBCI2025": "nm000308",
-    "Nguyen2017_L": "nm000252",
-    "Nguyen2017_S": "nm000257",
-    "Nguyen2017_SL": "nm000224",
-    "Nguyen2017_V": "nm000261",
     "Ortiz2023": "nm000320",
     "Pan2023": "nm000291",
     "Pan2025": "nm000300",
@@ -112,7 +109,6 @@ NEMAR_ID_PENDING = {
     "Perdikis2018": "nm000307",
     "PerezBlanco2026": "nm000304",
     "PoloHortiguela2025": "nm000302",
-    "Pressel2016": "nm000258",
     "Shin2022": "nm000315",
     "Thapa2025": "nm000324",
     "Vagaja2023": "nm000292",
