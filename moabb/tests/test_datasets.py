@@ -83,6 +83,10 @@ NEMAR_ID_PENDING = {
     #   nm000233 BCIComp2020UpperLimb, nm000252 Nguyen2017_L, nm000257 Nguyen2017_S,
     #   nm000258 Pressel2016, nm000261 Nguyen2017_V, nm000263 Kaneshiro2015,
     #   nm000269 Mainsah2025_A, nm000273 Lee2019_SSVEP, nm000274 Beetl2021_B.
+    # Removed on 2026-10-06: nm000292 Vagaja2023 published 2026-10-05
+    # (`nemar dataset publish status nm000292` -> published); NEMAR's BIDS
+    # mirror verified readable end-to-end (k8s job, subject 3 fetched via
+    # `nemar.download`, no upstream fallback). .pr-audits/w41/N5B-REPORT.md.
     "Alawieh2025": "nm000312",
     "Batista2022": "nm000318",
     "Farabbi2020": "nm000294",
@@ -108,7 +112,6 @@ NEMAR_ID_PENDING = {
     "PoloHortiguela2025": "nm000302",
     "Shin2022": "nm000315",
     "Thapa2025": "nm000324",
-    "Vagaja2023": "nm000292",
     "WRCC2023_MI_A": "nm000297",
     "WRCC2023_MI_B": "nm000298",
     "WRCC2023_MI_C": "nm000299",
