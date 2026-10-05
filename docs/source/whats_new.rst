@@ -63,6 +63,7 @@ Requirements
 
 Bugs
 ~~~~
+- Keep :class:`moabb.evaluations.CrossSubjectEvaluation` result provenance subject-specific when a grouped cross-validation fold holds out multiple subjects at once. The estimator is still fitted once per fold, while scores, cache identities, and saved-model paths are emitted per held-out subject and session instead of assigning the whole fold to its first subject (by `lindicaphxag-tech`_).
 - Fix :func:`moabb.datasets.Dataset.convert_to_bids` crashing on datasets whose
   MOABB run-label suffix is literally ``"calibration"`` or ``"crosstalk"``
   (Wang2025, Leeuwis2021, Brandl2020, Romani_BF2025_ERP). After the ``acq-``

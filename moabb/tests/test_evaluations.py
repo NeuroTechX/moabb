@@ -1785,6 +1785,151 @@ class TestParallelProcess:
         # 2 subjects × 2 sessions = 4 results
         assert len(results) == 4
 
+    def test_cross_subject_multisubject_fold_preserves_provenance(self, tmp_path):
+        """A fold holding out multiple subjects is scored per subject/session."""
+        ds = FakeDataset(["left_hand", "right_hand"], n_subjects=4, n_sessions=2, seed=23)
+        paradigm = FakeImageryParadigm()
+        evaluation = ev.CrossSubjectEvaluation(
+            paradigm=paradigm,
+            datasets=[ds],
+            n_splits=2,
+            overwrite=True,
+            hdf5_path=str(tmp_path / "cross_subject_multisubject"),
+            save_model=True,
+        )
+
+        results = evaluation.process(pipelines)
+
+        assert len(results) == 8
+        assert set(results["subject"]) == {str(subject) for subject in ds.subject_list}
+        assert (results.groupby(["subject", "session"], observed=True).size() == 1).all()
+
+        _, _, metadata = paradigm.get_data(ds)
+        metadata = metadata.copy()
+        metadata["subject"] = metadata["subject"].astype(str)
+        expected_sizes = metadata.groupby(["subject", "session"], observed=True).size()
+        actual_sizes = results.set_index(["subject", "session"])["samples_test"]
+        actual_sizes = actual_sizes.reindex(expected_sizes.index)
+        np.testing.assert_array_equal(actual_sizes.to_numpy(), expected_sizes.to_numpy())
+
+        for subject in ds.subject_list:
+            model_dir = (
+                tmp_path
+                / "cross_subject_multisubject"
+                / "Models_CrossSubject"
+                / type(paradigm).__name__
+                / ds.code
+                / str(subject)
+                / "C"
+            )
+            assert list(model_dir.glob("fitted_model_*.pkl"))
+
+    def test_cross_subject_multisubject_fold_respects_partial_work_plan(self, tmp_path):
+        """A cached first subject must not suppress work for another held-out subject."""
+        ds = FakeDataset(["left_hand", "right_hand"], n_subjects=4, n_sessions=2, seed=42)
+        evaluation = ev.CrossSubjectEvaluation(
+            paradigm=FakeImageryParadigm(),
+            datasets=[ds],
+            hdf5_path=str(tmp_path / "cross_subject_partial_cache"),
+            n_splits=2,
+        )
+        metadata = pd.DataFrame(
+            {"subject": np.repeat([1, 2, 3, 4], 2), "session": ["0", "1"] * 4}
+        )
+        y = np.array([0, 1] * 4)
+        splitter = evaluation._create_splitter()
+        folds = list(splitter.split(y, metadata))
+        held_out = list(pd.unique(metadata.iloc[folds[0][1]]["subject"]))
+        assert len(held_out) == 2
+
+        target_subject = held_out[1]
+        pipeline = Dummy(strategy="most_frequent")
+        work_plan = {target_subject: {"dummy": pipeline}}
+        tasks = evaluation._build_task_list(
+            ds,
+            None,
+            y,
+            metadata,
+            evaluation._create_splitter(),
+            work_plan,
+            {"dummy": pipeline},
+            None,
+        )
+
+        assert len(tasks) == 1
+        assert tasks[0]["subject"] == target_subject
+        assert tasks[0]["score_subjects"] == [target_subject]
+        assert target_subject in set(metadata.iloc[tasks[0]["test_idx"]]["subject"])
+
+    def test_cross_subject_partial_cache_fits_remaining_fold_once(self, tmp_path):
+        """A partially cached grouped fold is fitted once for the missing subject."""
+
+        class CountingDummy(Dummy):
+            fit_calls = 0
+
+            def fit(self, X, y, sample_weight=None):
+                type(self).fit_calls += 1
+                return super().fit(X, y, sample_weight=sample_weight)
+
+        ds = FakeDataset(["left_hand", "right_hand"], n_subjects=4, n_sessions=2, seed=42)
+        paradigm = FakeImageryParadigm()
+        evaluation = ev.CrossSubjectEvaluation(
+            paradigm=paradigm,
+            datasets=[ds],
+            hdf5_path=str(tmp_path / "cross_subject_cached_fold"),
+            n_splits=2,
+        )
+        pipeline = CountingDummy(strategy="most_frequent")
+        pipeline_dict = {"counting": pipeline}
+
+        X, y, metadata = paradigm.get_data(ds)
+        folds = list(evaluation._create_splitter().split(y, metadata))
+        held_out_by_fold = [
+            list(pd.unique(metadata.iloc[test_idx]["subject"])) for _, test_idx in folds
+        ]
+        assert all(len(subjects) == 2 for subjects in held_out_by_fold)
+
+        cached_target = held_out_by_fold[0][0]
+        missing_target = held_out_by_fold[0][1]
+        cached_subjects = [cached_target, *held_out_by_fold[1]]
+
+        process_pipeline = paradigm.make_process_pipelines(ds)[0]
+        for cached_subject in cached_subjects:
+            cached_result = {
+                "score": 0.0,
+                "time": 0.0,
+                "dataset": ds,
+                "subject": cached_subject,
+                "session": "cached",
+                "n_samples": 1,
+                "n_channels": X.shape[1],
+                "carbon_emission": 0.0,
+            }
+            evaluation.results.add(
+                {"counting": cached_result},
+                pipelines=pipeline_dict,
+                process_pipeline=process_pipeline,
+            )
+
+        before = evaluation.results.to_dataframe(
+            pipelines=pipeline_dict, process_pipeline=process_pipeline
+        )
+        before_counts = before.groupby("subject", observed=True).size().to_dict()
+
+        CountingDummy.fit_calls = 0
+        after = evaluation.process(pipeline_dict)
+
+        assert CountingDummy.fit_calls == 1
+        after_counts = after.groupby("subject", observed=True).size().to_dict()
+        increased_subjects = {
+            subject
+            for subject, count in after_counts.items()
+            if count > before_counts.get(subject, 0)
+        }
+        assert increased_subjects == {str(missing_target)}
+        assert after_counts[str(cached_target)] == before_counts[str(cached_target)]
+        assert after_counts[str(missing_target)] == ds.n_sessions
+
     def test_learning_curve_parallel(self, tmp_path):
         """LearningCurve evaluation via parallel process()."""
         evaluation = ev.WithinSessionEvaluation(
