@@ -69,6 +69,7 @@ NEMAR_ID_EXEMPT = {
     "Han2026",  # no public NEMAR mirror yet; tracked in #1194
     "Brodu2012",  # no public NEMAR mirror yet; tracked in #1193
     "MIBMPI2024",  # no public NEMAR mirror yet; tracked in #1190
+    "Yagan2023",  # hosted on Mendeley Data; no NEMAR deposit
 }
 # Datasets whose NEMAR deposit is assigned but not yet public (private,
 # pending publication). Their ids are valid and still checked; tracked here
@@ -76,13 +77,13 @@ NEMAR_ID_EXEMPT = {
 NEMAR_ID_PENDING = {
     # Removed on 2026-10-05: these 15 deposits were published on NEMAR and are
     # anonymously reachable (fresh clone + annexed-EDF HTTP 200 against
-    # https://nemar.s3.us-east-2.amazonaws.com/<id>/objects/<key>). Evidence:
-    # .pr-audits/w41/p2-evidence/anon-report.tsv.
+    # https://nemar.s3.us-east-2.amazonaws.com/<id>/objects/<key>).
     #   nm000174 AguileraRodriguez2025, nm000177 Kumar2024, nm000178 BNCI2020_001,
     #   nm000184 BCIComp2020WalkingERP, nm000220 Beetl2021_A, nm000224 Nguyen2017_SL,
     #   nm000233 BCIComp2020UpperLimb, nm000252 Nguyen2017_L, nm000257 Nguyen2017_S,
     #   nm000258 Pressel2016, nm000261 Nguyen2017_V, nm000263 Kaneshiro2015,
     #   nm000269 Mainsah2025_A, nm000273 Lee2019_SSVEP, nm000274 Beetl2021_B.
+    # Removed on 2026-10-06 (published): nm000292 Vagaja2023.
     "Alawieh2025": "nm000312",
     "Batista2022": "nm000318",
     "Farabbi2020": "nm000294",
@@ -108,7 +109,6 @@ NEMAR_ID_PENDING = {
     "PoloHortiguela2025": "nm000302",
     "Shin2022": "nm000315",
     "Thapa2025": "nm000324",
-    "Vagaja2023": "nm000292",
     "WRCC2023_MI_A": "nm000297",
     "WRCC2023_MI_B": "nm000298",
     "WRCC2023_MI_C": "nm000299",
