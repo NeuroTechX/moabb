@@ -27,7 +27,7 @@ from moabb.datasets.compound_dataset import compound
 from moabb.datasets.fake import FakeDataset
 from moabb.evaluations import evaluations as ev
 from moabb.evaluations.base import BaseEvaluation, optuna_available
-from moabb.evaluations.splitters import LearningCurveSplitter
+from moabb.evaluations.splitters import LearningCurveSplitter, PurgedEpochKFold
 from moabb.evaluations.utils import _create_save_path as create_save_path
 from moabb.evaluations.utils import _pipeline_requires_epochs
 from moabb.evaluations.utils import _save_model_cv as save_model_cv
@@ -2547,3 +2547,43 @@ def test_within_session_passes_epochs(clf, tmp_path):
     )
     results = evaluation.process({"clf": clf})
     assert len(results) == 1
+
+
+def test_purged_epoch_cv_auto_loads_true_event_timing():
+    evaluation = ev.WithinSessionEvaluation(
+        paradigm=FakeImageryParadigm(),
+        datasets=[dataset],
+        cv_class=PurgedEpochKFold,
+        n_splits=3,
+        overwrite=True,
+    )
+    try:
+        process_pipeline = evaluation.paradigm.make_process_pipelines(dataset)[0]
+        X, y, metadata = evaluation._load_data(
+            dataset,
+            pipelines,
+            process_pipeline,
+            None,
+            subjects=[dataset.subject_list[0]],
+        )
+
+        assert len(X) == len(y) == len(metadata)
+        assert {"event_sample", "epoch_n_samples"} <= set(metadata.columns)
+
+        splitter = evaluation._create_splitter()
+        folds = list(splitter.split(y, metadata))
+        assert folds
+
+        runs = metadata["run"].to_numpy()
+        starts = metadata["event_sample"].to_numpy()
+        stops = starts + metadata["epoch_n_samples"].to_numpy()
+        for train, test in folds:
+            for train_index in train:
+                same_run_test = test[runs[test] == runs[train_index]]
+                assert not np.any(
+                    (starts[train_index] < stops[same_run_test])
+                    & (starts[same_run_test] < stops[train_index])
+                )
+    finally:
+        if os.path.isfile(evaluation.results.filepath):
+            os.remove(evaluation.results.filepath)
