@@ -12,12 +12,15 @@ from types import SimpleNamespace
 
 import httpx
 import mne
+import numpy as np
 import pytest
 from mne import get_config, set_config
+from mne_bids import BIDSPath
 from requests.exceptions import HTTPError
 
 import moabb.datasets.brandl2020 as brandl
 import moabb.datasets.download as dl
+import moabb.datasets.dreyer2023 as dreyer2023_module
 import moabb.datasets.romani_bf2025_erp as romani
 from moabb.datasets import base as base_module
 from moabb.datasets.bbci_eeg_fnirs import BaseShin2017
@@ -837,6 +840,197 @@ def test_split_family_reuses_legacy_download(tmp_path, _family_downloads, family
 
     assert cls_a().download_by_subject(subject=subj_a, path=tmp_path) == legacy_root
     assert _family_downloads == []
+
+
+# -- Dreyer2023 NEMAR sourcedata store ---------------------------------------
+#
+# nm000250's sourcedata/ mirrors each subject's 6 run EDFs under their
+# upstream BIDS-style names (sub-01/eeg/sub-01_task-R1acquisition_eeg.edf,
+# zero-padded), without a dataset_description.json or sidecars -- confirmed
+# against the real deposit on Voyager (2026-10-06). ``data_path`` must prefer
+# that store when the provider policy allows it, and ``get_subject_info``
+# must prefer the store's ``performance.csv`` once it is added there.
+
+_DREYER_STORE_TASKS = (
+    "R1acquisition",
+    "R2acquisition",
+    "R3online",
+    "R4online",
+    "R5online",
+    "R6online",
+)
+
+
+def _make_dreyer_store(tmp_path, subject, tasks=_DREYER_STORE_TASKS):
+    """Create placeholder EDFs in the NEMAR sourcedata store layout."""
+    store = tmp_path / "NEMAR" / "nm000250" / "sourcedata"
+    eeg_dir = store / f"sub-{subject:02d}" / "eeg"
+    eeg_dir.mkdir(parents=True, exist_ok=True)
+    for task in tasks:
+        (eeg_dir / f"sub-{subject:02d}_task-{task}_eeg.edf").touch()
+    return store
+
+
+def test_dreyer2023_data_path_reads_sourcedata_store(
+    tmp_path, monkeypatch, _isolated_mne_config
+):
+    """A store hit returns the subject's EDFs directly, never touching OSF."""
+    monkeypatch.setenv("MNE_DATA", str(tmp_path))
+    monkeypatch.delenv("MOABB_DOWNLOAD_PROVIDER", raising=False)
+    _make_dreyer_store(tmp_path, 1)
+
+    def _boom(*a, **k):
+        raise AssertionError("OSF path touched despite a store hit")
+
+    monkeypatch.setattr(dl, "download_if_missing", _boom)
+
+    files = Dreyer2023A().data_path(1, path=tmp_path)
+
+    assert len(files) == 6
+    assert all(isinstance(f, Path) and not isinstance(f, BIDSPath) for f in files)
+    got_tasks = [f.name.split("task-", 1)[1].rsplit("_eeg.edf", 1)[0] for f in files]
+    assert got_tasks == list(_DREYER_STORE_TASKS)
+
+
+def test_dreyer2023_data_path_upstream_provider_skips_store(
+    tmp_path, monkeypatch, _isolated_mne_config
+):
+    """``upstream`` must reach OSF even when the store has this subject."""
+    monkeypatch.setenv("MNE_DATA", str(tmp_path))
+    monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", "upstream")
+    _make_dreyer_store(tmp_path, 1)
+
+    calls = []
+    monkeypatch.setattr(
+        Dreyer2023A,
+        "download_by_subject",
+        lambda self, subject, path=None, force_update=False: (
+            calls.append(subject) or tmp_path
+        ),
+    )
+    monkeypatch.setattr(
+        dreyer2023_module, "get_entity_vals", lambda root, key: ["R1acquisition"]
+    )
+
+    files = Dreyer2023A().data_path(1, path=tmp_path)
+
+    assert calls == [1]
+    assert len(files) == 1
+    assert isinstance(files[0], BIDSPath)
+
+
+def test_dreyer2023_data_path_nemar_provider_missing_store_raises(
+    tmp_path, monkeypatch, _isolated_mne_config
+):
+    """Pinned to NEMAR, a subject absent from the store must not reach OSF."""
+    monkeypatch.setenv("MNE_DATA", str(tmp_path))
+    monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", "nemar")
+
+    def _boom(self, subject, path=None, force_update=False):
+        raise AssertionError("OSF path touched despite provider='nemar'")
+
+    monkeypatch.setattr(Dreyer2023A, "download_by_subject", _boom)
+
+    with pytest.raises(dl.NemarDownloadError, match="subject 1"):
+        Dreyer2023A().data_path(1, path=tmp_path)
+
+
+def test_dreyer2023_get_single_subject_data_reads_store(
+    tmp_path, monkeypatch, _isolated_mne_config
+):
+    """Store-sourced EDFs are read directly and keep the 769/770 semantics."""
+    monkeypatch.setenv("MNE_DATA", str(tmp_path))
+    monkeypatch.delenv("MOABB_DOWNLOAD_PROVIDER", raising=False)
+    _make_dreyer_store(tmp_path, 1, tasks=("R1acquisition",))
+
+    ch_names = [
+        "Fz", "FCz", "Cz", "CPz", "Pz", "C1", "C3", "C5", "C2", "C4", "C6",
+        "EOG1", "EOG2", "EOG3", "EMGg", "EMGd", "F4", "FC2", "FC4", "FC6",
+        "CP2", "CP4", "CP6", "P4", "F3", "FC1", "FC3", "FC5", "CP1", "CP3",
+        "CP5", "P3",
+    ]  # fmt: skip
+    info = mne.create_info(ch_names, sfreq=512.0, ch_types="eeg")
+    raw = mne.io.RawArray(np.zeros((len(ch_names), 300)), info, verbose=False)
+    raw.set_annotations(
+        mne.Annotations(onset=[0.1, 0.2], duration=[0, 0], description=["769", "770"])
+    )
+
+    monkeypatch.setattr(dreyer2023_module.mne.io, "read_raw_edf", lambda *a, **k: raw)
+
+    sessions = Dreyer2023A()._get_single_subject_data(1)
+
+    assert list(sessions) == ["0"]
+    runs = sessions["0"]
+    assert list(runs) == ["0R1acquisition"]
+    got = runs["0R1acquisition"]
+    assert sorted(got.annotations.description) == ["left_hand", "right_hand"]
+    assert got.get_channel_types(picks=["EOG1"])[0] == "eog"
+    assert got.get_channel_types(picks=["EMGg"])[0] == "emg"
+
+
+def test_dreyer2023_get_subject_info_reads_store(
+    tmp_path, monkeypatch, _isolated_mne_config
+):
+    """``performance.csv`` is read from the store once it is added there."""
+    monkeypatch.setenv("MNE_DATA", str(tmp_path))
+    monkeypatch.delenv("MOABB_DOWNLOAD_PROVIDER", raising=False)
+    store = tmp_path / "NEMAR" / "nm000250" / "sourcedata"
+    store.mkdir(parents=True)
+    (store / "performance.csv").write_text("SUJ_ID;SUBDATASET\n1;A\n")
+
+    def _boom(*a, **k):
+        raise AssertionError("OSF path touched despite a store hit")
+
+    monkeypatch.setattr(dl, "download_if_missing", _boom)
+
+    metainfo = Dreyer2023A().get_subject_info(path=tmp_path)
+
+    assert list(metainfo["SUJ_ID"]) == [1]
+
+
+def test_dreyer2023_get_subject_info_falls_back_to_osf(
+    tmp_path, monkeypatch, _isolated_mne_config
+):
+    """A store without ``performance.csv`` falls back to the OSF copy."""
+    monkeypatch.setenv("MNE_DATA", str(tmp_path))
+    monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", "auto")
+
+    def _no_performance(*a, **k):
+        raise dl.NemarDownloadError("no sourcedata for performance.csv")
+
+    monkeypatch.setattr(dreyer2023_module, "nemar_sourcedata_dl", _no_performance)
+
+    def _fake_download_if_missing(file_path, url, **kwargs):
+        Path(file_path).parent.mkdir(parents=True, exist_ok=True)
+        Path(file_path).write_text("SUJ_ID;SUBDATASET\n1;A\n")
+
+    monkeypatch.setattr(dl, "download_if_missing", _fake_download_if_missing)
+
+    with pytest.warns(RuntimeWarning, match="falling back to the OSF copy"):
+        metainfo = Dreyer2023A().get_subject_info(path=tmp_path)
+
+    assert list(metainfo["SUJ_ID"]) == [1]
+
+
+def test_dreyer2023_get_subject_info_nemar_provider_does_not_fall_back(
+    tmp_path, monkeypatch, _isolated_mne_config
+):
+    """Pinned to NEMAR, a missing ``performance.csv`` must not reach OSF."""
+    monkeypatch.setenv("MNE_DATA", str(tmp_path))
+    monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", "nemar")
+
+    def _no_performance(*a, **k):
+        raise dl.NemarDownloadError("no sourcedata for performance.csv")
+
+    monkeypatch.setattr(dreyer2023_module, "nemar_sourcedata_dl", _no_performance)
+
+    def _boom(*a, **k):
+        raise AssertionError("OSF path touched despite provider='nemar'")
+
+    monkeypatch.setattr(dl, "download_if_missing", _boom)
+
+    with pytest.raises(dl.NemarDownloadError, match="no sourcedata for performance.csv"):
+        Dreyer2023A().get_subject_info(path=tmp_path)
 
 
 def _forbid_connect(self, address):

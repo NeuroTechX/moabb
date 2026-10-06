@@ -9,6 +9,7 @@ import zipfile
 from dataclasses import replace
 from pathlib import Path
 
+import mne
 import numpy as np
 import pandas as pd
 from mne.channels import make_standard_montage
@@ -16,6 +17,7 @@ from mne_bids import BIDSPath, get_entity_vals, read_raw_bids
 from tqdm import tqdm
 
 from moabb.datasets import download as dl
+from moabb.datasets.download import NemarDownloadError, nemar_sourcedata_dl
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
     AuxiliaryChannelsMetadata,
@@ -31,6 +33,7 @@ from moabb.datasets.metadata.schema import (
     SignalProcessingMetadata,
     Tags,
 )
+from moabb.utils import get_download_provider
 
 from .base import BaseDataset
 
@@ -45,12 +48,47 @@ _api_base_url = f"https://files.de-1.osf.io/v1/resources/{_osf_tag}/providers/os
 # only select subject ranges, so every class shares this root.
 DATASET_FOLDER = "MNE-dreyer2023-data"
 
+# The NEMAR deposit's sourcedata/ mirrors each subject's 6 run EDFs under
+# their upstream BIDS-style names (e.g. sub-01/eeg/sub-01_task-R1acquisition_
+# eeg.edf), zero-padded to 2 digits. It ships no dataset_description.json or
+# sidecars, so these cannot be read through read_raw_bids/BIDSPath -- read
+# them directly with mne.io.read_raw_edf instead. Subject 59's missing
+# R5online/R6online files (see the OSF-path exception below) are simply
+# absent from the store, so no special-casing is needed here.
+_STORE_SKIP_SUBSTRINGS = ("baseline", "rest")
+
+
+def _store_edf_files(store, subject):
+    """List subject's run EDFs already mirrored in the NEMAR sourcedata store.
+
+    Returns an empty list (not an error) when the store has nothing for this
+    subject yet; the caller decides what to do with that.
+    """
+    subject_dir = Path(store) / f"sub-{subject:02d}" / "eeg"
+    if not subject_dir.is_dir():
+        return []
+    files = sorted(subject_dir.glob(f"sub-{subject:02d}_task-*_eeg.edf"))
+    return [
+        f for f in files if not any(skip in f.name for skip in _STORE_SKIP_SUBSTRINGS)
+    ]
+
+
+def _store_task(path):
+    """Extract the BIDS task label from a sourcedata EDF filename."""
+    return path.name.split("task-", 1)[1].rsplit("_eeg.edf", 1)[0]
+
 
 class _Dreyer2023Base(BaseDataset):
     """
     Parent class of Dreyer2023A, Dreyer2023B and Dreyer2023C.
     Should not be instantiated.
     """
+
+    # The NEMAR deposit's sourcedata/ labels subjects zero-padded to 2 digits
+    # (sub-01 .. sub-87); its root BIDS conversion uses unpadded sub-1 ..
+    # sub-87, but that root is not what sourcedata_path()/_store_edf_files
+    # read from.
+    nemar_subject_template = "{subject:02d}"
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
@@ -287,8 +325,19 @@ class _Dreyer2023Base(BaseDataset):
         for run_id, file in enumerate(files_path):
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
-                # Read the subject's raw data and set the montage
-                raw = read_raw_bids(bids_path=file, verbose=False)
+                # Read the subject's raw data and set the montage. A store
+                # hit (file is a plain Path into NEMAR's sourcedata/, which
+                # ships no dataset_description.json or sidecars) is read
+                # directly; the OSF path's extracted BIDS folder still goes
+                # through read_raw_bids/BIDSPath. The EDF itself carries the
+                # 769/770 annotations in both cases, so the rest of this
+                # method is identical either way.
+                if isinstance(file, BIDSPath):
+                    raw = read_raw_bids(bids_path=file, verbose=False)
+                    task = file.task
+                else:
+                    raw = mne.io.read_raw_edf(file, preload=False, verbose=False)
+                    task = _store_task(Path(file))
                 raw = raw.load_data()
 
                 # Set the channel montage
@@ -301,10 +350,11 @@ class _Dreyer2023Base(BaseDataset):
 
                 raw.set_channel_types(mapping)
 
-                # The Zenodo BIDS archive ships no electrodes.tsv sidecar, so
-                # read_raw_bids leaves all EEG positions as NaN. The 27 EEG
-                # channels are standard 10-20 names, so fall back to the
-                # standard_1005 montage when positions are missing.
+                # Neither the Zenodo BIDS archive nor NEMAR's sourcedata/
+                # ships an electrodes.tsv sidecar, so EEG positions come back
+                # NaN. The 27 EEG channels are standard 10-20 names, so fall
+                # back to the standard_1005 montage when positions are
+                # missing.
                 eeg_idx = [i for i, t in enumerate(raw.get_channel_types()) if t == "eeg"]
                 if any(np.isnan(raw.info["chs"][i]["loc"][:3]).any() for i in eeg_idx):
                     raw.set_montage(
@@ -314,7 +364,7 @@ class _Dreyer2023Base(BaseDataset):
                 # We are losting several annotations because there is no fuck
                 # place explaining what it is the events ids :)
                 raw.annotations.rename({"769": "left_hand", "770": "right_hand"})
-                runs.update({f"{run_id}{file.task}": raw})
+                runs.update({f"{run_id}{task}": raw})
 
         sessions = {"0": runs}
 
@@ -353,7 +403,27 @@ class _Dreyer2023Base(BaseDataset):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
-        # Download and extract the dataset
+        # Prefer the NEMAR sourcedata store when the provider policy allows
+        # it and this subject is already mirrored there (get_data() fills it
+        # via BaseDataset._prefetch_nemar_sourcedata before this is called).
+        # 'upstream' makes _sourcedata_store() return None, so it always
+        # skips straight to OSF below; 'nemar' must not silently reach OSF,
+        # so a missing store is fatal instead of falling through.
+        store = self._sourcedata_store()
+        if store is not None:
+            store_files = _store_edf_files(store, subject)
+            if store_files:
+                return store_files
+            if get_download_provider() == "nemar":
+                raise NemarDownloadError(
+                    f"{self.code} subject {subject} has no NEMAR sourcedata "
+                    f"cached at {store}. Fetch it first, e.g. with "
+                    f"{type(self).__name__}().sourcedata_path(subject={subject}), "
+                    "or switch the download provider away from 'nemar' to "
+                    "allow the OSF fallback."
+                )
+
+        # Download and extract the dataset from OSF
         dataset_path = self.download_by_subject(
             subject=subject, path=path, force_update=force_update
         )
@@ -466,17 +536,53 @@ class _Dreyer2023Base(BaseDataset):
         :class:`pandas.DataFrame`
             A DataFrame containing the demographic information of the subjects.
         """
-        path = Path(dl.get_dataset_path("Dreyer2023", path)) / DATASET_FOLDER
-
-        # checking it there is manifest file in the dataset folder.
-        dl.download_if_missing(path / "performance.csv", _metainfo_link)
-
-        metainfo = pd.read_csv(path / "performance.csv", sep=";")
+        metainfo = self._subject_info_from_store(path=path)
+        if metainfo is None:
+            path_root = Path(dl.get_dataset_path("Dreyer2023", path)) / DATASET_FOLDER
+            dl.download_if_missing(path_root / "performance.csv", _metainfo_link)
+            metainfo = pd.read_csv(path_root / "performance.csv", sep=";")
 
         if self.sub_id == "":
             return metainfo
         else:
             return metainfo[metainfo["SUBDATASET"] == self.sub_id].reset_index(drop=True)
+
+    def _subject_info_from_store(self, path=None):
+        """Read performance.csv from the NEMAR sourcedata store, if possible.
+
+        Returns ``None`` (never raises, except when pinned to 'nemar') so the
+        caller falls back to the OSF copy -- exactly the policy
+        :meth:`BaseDataset._prefetch_nemar_sourcedata` applies to the EEG
+        files. ``_sourcedata_store`` already returns ``None`` for
+        ``nemar_id is None`` and for provider ``'upstream'``, so both are
+        handled for free here.
+        """
+        store = self._sourcedata_store()
+        if store is None:
+            return None
+        candidate = Path(store) / "performance.csv"
+        if not candidate.is_file():
+            try:
+                nemar_sourcedata_dl(
+                    self.nemar_id,
+                    self.code,
+                    path=path,
+                    include="sourcedata/performance.csv",
+                )
+            except NemarDownloadError as exc:
+                if get_download_provider() == "nemar":
+                    raise
+                warnings.warn(
+                    f"Could not fetch {self.code} performance.csv from NEMAR "
+                    f"({self.nemar_id}); falling back to the OSF copy. "
+                    f"Original error: {exc}",
+                    RuntimeWarning,
+                    stacklevel=2,
+                )
+                return None
+        if not candidate.is_file():
+            return None
+        return pd.read_csv(candidate, sep=";")
 
 
 class Dreyer2023A(_Dreyer2023Base):
