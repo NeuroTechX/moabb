@@ -27,7 +27,14 @@ from typing import TYPE_CHECKING, Dict, Type
 import mne
 import mne_bids
 import pandas as pd
-from mne_bids._fileio import _open_lock as _bids_lock
+try:
+    from mne_bids._fileio import _open_lock as _bids_lock
+except ImportError:  # pragma: no cover - defensive fallback
+    import contextlib
+
+    @contextlib.contextmanager
+    def _bids_lock(_path):
+        yield
 from numpy import load as np_load
 from numpy import save as np_save
 
@@ -1021,22 +1028,10 @@ def _update_participants_tsv_locked(tsv_path, root, subject, participants, raw):
             "Description": "BCI experience level of the participant"
         }
         updated = True
-    # Ensure mne_bids-generated columns have Description (RECOMMENDED)
-    if "participant_id" not in sidecar:
-        sidecar["participant_id"] = {"Description": "Unique participant identifier"}
-        updated = True
-    if "weight" not in sidecar:
-        sidecar["weight"] = {
-            "Description": "Body weight of the participant",
-            "Units": "kg",
-        }
-        updated = True
-    if "height" not in sidecar:
-        sidecar["height"] = {
-            "Description": "Body height of the participant",
-            "Units": "m",
-        }
-        updated = True
+    # ``participant_id``, ``weight``, ``height``, ``sex`` and ``hand`` get
+    # Description/Units entries from mne-bids 0.19+'s ``_participants_json``
+    # writer (see mne-bids :gh:`1545`), so MOABB only enriches its own
+    # extension columns above.
 
     if updated:
         with open(json_path, "w", encoding="utf-8") as f:
@@ -2618,16 +2613,13 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
         # is already equipped with annotations, which will be converted to
         # BIDS events automatically.
 
-        # Suppress mne_bids informational warnings about format conversion.
-        # "Converting data files to EDF format" — we explicitly request the
-        # format via self._format, so this is expected.
-        # "Encountered data in "double" format" — mne_bids internally handles
-        # the float64->float32 downcast for EDF; we cannot pre-convert because
-        # MNE Epochs.save() requires float64 data.
+        # Suppress mne_bids / MNE informational warning about float64 data.
+        # mne-bids 0.19+ downgraded the "Converting data files to <FORMAT>"
+        # notice to info-level, so no filter is needed for that line anymore.
+        # The "Encountered data in "double" format" warning still comes from
+        # mne-core's EDF export (float64->float32 downcast); we cannot
+        # pre-convert because MNE Epochs.save() requires float64 data.
         with warnings.catch_warnings():
-            warnings.filterwarnings(
-                "ignore", "Converting data files to EDF", RuntimeWarning
-            )
             warnings.filterwarnings(
                 "ignore", 'Encountered data in "double" format', RuntimeWarning
             )
@@ -2666,11 +2658,9 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
                         )
                         raw.set_montage(None)
 
-            # Save annotation extras before write_raw_bids (which may
-            # strip them).  We patch events.tsv afterwards.
-            ann_extras = getattr(raw.annotations, "extras", None)
-            has_extras = ann_extras is not None and any(ann_extras)
-
+            # mne-bids >= 0.19 serialises ``raw.annotations.extras`` natively
+            # into events.tsv (see mne-bids :gh:`1502`), so no post-patch is
+            # needed anymore.
             mne_bids.write_raw_bids(
                 raw,
                 bids_path,
@@ -2678,28 +2668,9 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
                 allow_preload=True,
                 montage=raw.get_montage(),
                 overwrite=True,
+                readme=False,  # MOABB writes its own enriched README below.
                 verbose=self.verbose,
             )
-
-            # Append per-event metadata from annotation extras (e.g.
-            # triallength for Stieger2021) as extra columns in events.tsv.
-            if has_extras:
-                events_path = bids_path.copy().update(suffix="events", extension=".tsv")
-                events_fpath = events_path.fpath
-                if events_fpath.exists():
-                    df = pd.read_csv(str(events_fpath), sep="\t")
-                    extras_df = pd.DataFrame(ann_extras)
-                    if len(extras_df) == len(df):
-                        for col in extras_df.columns:
-                            df[col] = extras_df[col]
-                        df.to_csv(str(events_fpath), sep="\t", index=False, na_rep="n/a")
-                    else:
-                        log.warning(
-                            "Annotation extras length (%d) does not match "
-                            "events.tsv rows (%d); skipping extras.",
-                            len(extras_df),
-                            len(df),
-                        )
 
         # Post-write enrichment: update EEG sidecar with metadata fields
         if metadata is not None:
@@ -2870,8 +2841,7 @@ class BIDSInterfaceNumpyArray(BIDSInterfaceBase):
     def _load_file(self, bids_path, preload):
         if preload:
             raise ValueError("preload must be False for numpy arrays")
-        events_fname = mne_bids.write._find_matching_sidecar(
-            bids_path,
+        events_fname = bids_path.find_matching_sidecar(
             suffix="events",
             extension=".eve",  # mne convention
             on_error="raise",
