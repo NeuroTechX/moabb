@@ -7,7 +7,7 @@ import zipfile
 from pathlib import Path
 
 import mne
-from mne_bids import BIDSPath, get_entity_vals
+from mne_bids import find_matching_paths
 
 from moabb.datasets import download as dl
 from moabb.datasets.metadata.schema import (
@@ -278,34 +278,17 @@ class Thapa2025(BaseDataset):
         root = self._bids_root(path, force_update=force_update, verbose=verbose)
         subj = f"{subject:02d}"
 
-        # Dataset-wide session/run labels; keep only combinations present for
-        # this subject (sessions vary, and mne_bids raises on a missing dir).
-        sessions = get_entity_vals(root, "session") or [None]
-        all_runs = get_entity_vals(root, "run") or [None]
-        bids_paths = []
-        for ses in sessions:
-            if (
-                ses is not None
-                and not (Path(root) / f"sub-{subj}" / f"ses-{ses}").is_dir()
-            ):
-                continue
-            for run in all_runs:
-                bids_path = BIDSPath(
-                    subject=subj,
-                    session=ses,
-                    task=_TASK,
-                    run=run,
-                    suffix="eeg",
-                    root=root,
-                    check=True,
-                )
-                try:
-                    exists = bids_path.fpath.exists()
-                except (FileNotFoundError, OSError):
-                    exists = False
-                if exists:
-                    bids_paths.append(bids_path)
-        return bids_paths
+        # Let mne-bids enumerate the per-subject runs/sessions actually on
+        # disk instead of iterating the dataset-wide product and probing each
+        # combination with ``fpath.exists()``.
+        return find_matching_paths(
+            root=root,
+            subjects=subj,
+            tasks=_TASK,
+            suffixes="eeg",
+            datatypes="eeg",
+            ignore_json=True,
+        )
 
     @staticmethod
     def _annotations_from_events(events_path):
