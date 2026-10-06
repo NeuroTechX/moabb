@@ -114,6 +114,7 @@ class Vagaja2023(BaseDataset):
 
     """
 
+    nemar_id = "nm000292"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
