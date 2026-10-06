@@ -79,10 +79,8 @@ def offline_dataset(bids_root, monkeypatch):
     return dataset
 
 
-@pytest.mark.parametrize("provider", ["auto", "nemar"])
+@pytest.mark.parametrize("provider", ["auto", "nemar", "upstream"])
 def test_download_uses_bids_and_forwards_flags(bids_root, monkeypatch, provider):
-    # ``upstream`` deliberately skips NEMAR -- its coverage lives in
-    # ``test_upstream_provider_uses_figshare_mirror`` below.
     monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", provider)
     download = Mock(return_value=str(bids_root))
     monkeypatch.setattr("moabb.datasets.base.nemar_dl", download)
@@ -109,14 +107,9 @@ def test_download_uses_bids_and_forwards_flags(bids_root, monkeypatch, provider)
         dataset.data_path(2)
 
 
-def test_nemar_pin_never_falls_back_on_failure(monkeypatch, tmp_path):
-    """``MOABB_DOWNLOAD_PROVIDER=nemar`` keeps NEMAR failures fatal.
-
-    The figshare mirror only activates when the user has not explicitly
-    opted into NEMAR-only; the mirror must never be reached from an
-    ``nemar``-pinned run (silent routing would defeat the pin's purpose).
-    """
-    monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", "nemar")
+@pytest.mark.parametrize("provider", ["auto", "nemar", "upstream"])
+def test_failure_never_falls_back_to_mat(monkeypatch, tmp_path, provider):
+    monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", provider)
     legacy = tmp_path / "MNE-ma2022-data" / "mat"
     legacy.mkdir(parents=True)
     (legacy / "sub-003_ses-01_task_motorimagery_eeg.mat").write_bytes(b"legacy")
@@ -128,51 +121,10 @@ def test_nemar_pin_never_falls_back_on_failure(monkeypatch, tmp_path):
         "moabb.datasets.download.data_dl",
         lambda *a, **k: pytest.fail("upstream MAT fallback"),
     )
-    monkeypatch.setattr(
-        "moabb.datasets._ma2022_figshare.ensure_bids_mirror",
-        lambda *a, **k: pytest.fail("figshare fallback used from nemar-pinned run"),
-    )
     with pytest.raises(NemarDownloadError, match="unavailable"):
         dataset.download(path=tmp_path)
     with pytest.raises(NemarDownloadError, match="unavailable"):
         dataset.get_data([3], cache_config={"use": False})
-
-
-@pytest.mark.parametrize("provider", ["auto", "upstream"])
-def test_nemar_outage_falls_back_to_figshare(bids_root, monkeypatch, tmp_path, provider):
-    """NEMAR outage (or ``provider=upstream``) routes to the figshare mirror.
-
-    Mock-only: ``ensure_bids_mirror`` is intercepted so no file leaves the
-    laptop. Only the fallback *selection* is under test here.
-    """
-    monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", provider)
-    dataset = Ma2022(subjects=[3])
-    # provider=auto still goes NEMAR first; simulate an outage so the
-    # fallback branch gets exercised. provider=upstream skips NEMAR by
-    # policy, so the Mock is never consulted there.
-    nemar_mock = Mock(side_effect=NemarDownloadError("NEMAR down"))
-    monkeypatch.setattr(dataset, "_download_nemar", nemar_mock)
-    captured: dict[str, object] = {}
-
-    def fake_ensure(root, subjects, *, force_update=False, verbose=None):
-        captured["root"] = root
-        captured["subjects"] = list(subjects)
-        captured["force_update"] = force_update
-
-    monkeypatch.setattr("moabb.datasets._ma2022_figshare.ensure_bids_mirror", fake_ensure)
-    monkeypatch.setattr(
-        "moabb.datasets.download.data_dl",
-        lambda *a, **k: pytest.fail("upstream MAT fallback"),
-    )
-    root = dataset._download_subject(3, str(tmp_path), False, None, None)
-    assert captured["subjects"] == [3]
-    assert captured["force_update"] is False
-    assert str(captured["root"]).endswith("MNE-BIDS-ma-edf2022-figshare")
-    assert root == str(captured["root"])
-    if provider == "auto":
-        nemar_mock.assert_called_once()
-    else:
-        nemar_mock.assert_not_called()
 
 
 def test_missing_session_is_not_silently_skipped(bids_root, offline_dataset):

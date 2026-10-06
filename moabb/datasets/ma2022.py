@@ -5,17 +5,11 @@ DOI: 10.1038/s41597-022-01647-1
 Data DOI: 10.6084/m9.figshare.19228725
 """
 
-import logging
-
-import pandas as pd  # noqa: I001
+import pandas as pd
 from mne.channels import get_builtin_montages, make_standard_montage
 from mne_bids import events_file_to_annotation_kwargs
 
-from moabb.utils import get_download_provider
-
-from . import _ma2022_figshare as figshare_mirror
 from .base import BaseBIDSDataset
-from .download import NemarDownloadError
 from .metadata.schema import (
     AcquisitionMetadata,
     BCIApplicationMetadata,
@@ -31,8 +25,6 @@ from .metadata.schema import (
     Tags,
 )
 
-
-log = logging.getLogger(__name__)
 
 # Sampling rate (Hz), from the BIDS ``task-motorimagery_eeg.json`` sidecar.
 _SFREQ = 250.0
@@ -141,18 +133,12 @@ class Ma2022(BaseBIDSDataset):
 
     .. note::
 
-       NEMAR serves this deposit through ``nm000288``. Until that deposit is
-       published, and whenever ``get_download_provider() != "nemar"``, the
-       loader falls back to the authors' public figshare deposit (DOI
-       10.6084/m9.figshare.19228725) and rebuilds an equivalent BIDS tree
-       under ``MNE-ma-edf2022-figshare/``. The two sources share the exact
-       same EDFs (32 channels at 250 Hz, four-second windows) and the exact
-       same ``task-motorimagery`` sidecars, so the loaded representation is
-       identical. There is no fallback to the scientifically different
-       MATLAB representation. ``data_path`` returns the five EDF paths;
-       sessions are numbered ``"0"`` to ``"4"`` in MOABB. The code
-       ``Ma-edf2022`` isolates downloads, caches and evaluation results from
-       the former MATLAB loader.
+       NEMAR is the only download source for this EDF/BIDS loader, including
+       when the provider is set to ``upstream``. Failures propagate: there is
+       no fallback to the scientifically different MATLAB representation.
+       ``data_path`` returns the five EDF paths; sessions are numbered
+       ``"0"`` to ``"4"`` in MOABB. The code ``Ma-edf2022`` isolates downloads,
+       caches and evaluation results from the former MATLAB loader.
 
        This dataset is from the same laboratory as :class:`Yang2025`
        (WBCIC-SHU, a distinct 2025 multi-day recording) and is unrelated
@@ -349,39 +335,7 @@ class Ma2022(BaseBIDSDataset):
     def _download_subject(self, subject, path, force_update, update_path, verbose):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
-        provider = get_download_provider()
-        # ``upstream`` opts out of NEMAR entirely, matching base.py's
-        # provider policy for sourcedata downloads. ``nemar`` pins the
-        # loader to NEMAR, so a NEMAR failure stays fatal (no silent
-        # route back to the public mirror the caller opted out of).
-        if provider != "upstream":
-            try:
-                return self._download_nemar(
-                    subject, path, force_update, update_path, verbose
-                )
-            except NemarDownloadError:
-                if provider == "nemar":
-                    raise
-                log.warning(
-                    "Could not fetch Ma2022 subject %r from NEMAR (%s); "
-                    "falling back to the authors' figshare deposit.",
-                    subject,
-                    self.nemar_id,
-                )
-        return self._download_figshare(subject, path, force_update, verbose)
-
-    def _download_figshare(self, subject, path, force_update, verbose):
-        """Rebuild the BIDS tree from figshare and return its root.
-
-        The figshare deposit is already BIDS-shaped (same channels, same
-        sfreq, same events as NEMAR). This mirrors it under the usual MOABB
-        cache path so the rest of the loader is oblivious to the source.
-        """
-        bids_root = figshare_mirror.figshare_bids_root(self.code, path)
-        figshare_mirror.ensure_bids_mirror(
-            bids_root, [subject], force_update=force_update, verbose=verbose
-        )
-        return str(bids_root)
+        return self._download_nemar(subject, path, force_update, update_path, verbose)
 
     def _get_path_search_params(self, subject):
         return {
