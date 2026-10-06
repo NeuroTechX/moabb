@@ -44,6 +44,7 @@ Enhancements
 - Audit every dataset's ``METADATA`` and docstring against its primary paper and data-repository record: ``country`` is now an ISO 3166-1 alpha-2 code everywhere, loader declarations (``sessions_per_subject``, ``subjects``, ``runs_per_session``) and the ``summary_*.csv`` tables match what each loader actually returns, and per-dataset fields (reference/ground, hardware, filters, licence, demographics, trial counts, DOIs) are corrected with quoted evidence; ``Cattan2019_VR`` declares its two sessions, ``Nakanishi2015`` exposes subject 10, ``PhysionetMI``/``MAMEM3``/``BI2015b`` metadata now come from their own records (:gh:`1203` by `Bruno Aristimunha`_).
 - Add :func:`moabb.analysis.plotting.plot_critical_difference` for comparing pipelines across complete multi-dataset benchmarks with Friedman ranks and Nemenyi critical-difference groups (:gh:`1127` by `lindicaphxag-tech`_).
 - Spell MNE's renamed template montages everywhere: MNE 1.13 renamed ``standard_1005``/``standard_1020`` (and the other ``standard_*`` templates) to ``colin27_*`` (identical electrode files), warns on the old names and MNE 1.14 removes them, so every ``make_standard_montage``/``set_montage`` call in MOABB now spells ``colin27_*``. ``METADATA`` montage labels are descriptive and unchanged (:gh:`1200` by `Bruno Aristimunha`_).
+- Add :class:`moabb.datasets.Ma2022`, the SHU cross-session motor-imagery dataset: 25 subjects, five sessions, 32 EEG channels at 250 Hz and 11,988 retained 4 s trials. Read the authors' EDF release and BIDS events from NEMAR ``nm000288`` (publication pending), preserving bad-channel flags. These are authors-preprocessed, concatenated imagery windows, not continuous amplifier recordings. The ``Ma-edf2022`` code prevents reuse of legacy MATLAB caches; there is no MATLAB fallback (:gh:`1178` by `LiQing`_ and `Bruno Aristimunha`_)
 
 API changes
 ~~~~~~~~~~~
@@ -1106,6 +1107,7 @@ API changes
 .. _LiQing: https://github.com/qinxwew
 .. _Zheyu Yao: https://github.com/zyao197
 .. _Martin Wimpff: https://github.com/martinwimpff
+.. _LiQing: https://github.com/qinxwew
 .. _Reinmar Kobler: https://github.com/rkobler
 .. _Gabriel Schwartz: https://github.com/Kaos9001
 .. _Sara Sedlar: https://github.com/Sara04
