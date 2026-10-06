@@ -627,6 +627,10 @@ class BaseEvaluation(ABC):
             _pipeline_requires_epochs(clf) for clf in run_pipes.values()
         )
         return_epochs = True if requires_epochs else self.return_epochs
+        requires_epoch_timing = bool(
+            self.cv_class is not None
+            and getattr(self.cv_class, "requires_epoch_timing", False)
+        )
         kwargs = {
             "dataset": dataset,
             "return_epochs": return_epochs,
@@ -634,6 +638,7 @@ class BaseEvaluation(ABC):
             "cache_config": self.cache_config,
             "postprocess_pipeline": postprocess_pipeline,
             "process_pipelines": None if requires_epochs else [process_pipeline],
+            "include_epoch_timing": requires_epoch_timing,
         }
         if subjects is not None:
             kwargs["subjects"] = subjects
