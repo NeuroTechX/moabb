@@ -1495,10 +1495,7 @@ class TestMetadata:
         paradigm = MotorImagery()
 
         epochs, labels_epochs, metadata_epochs = paradigm.get_data(
-            dataset=dataset,
-            subjects=["1"],
-            return_epochs=True,
-            include_epoch_timing=True,
+            dataset=dataset, subjects=["1"], return_epochs=True, include_epoch_timing=True
         )
         array, labels_array, metadata_array = paradigm.get_data(
             dataset=dataset,
@@ -1510,8 +1507,7 @@ class TestMetadata:
         assert "event_sample" in metadata_epochs
         assert "epoch_n_samples" in metadata_epochs
         np.testing.assert_array_equal(
-            metadata_epochs["event_sample"].to_numpy(),
-            epochs.events[:, 0],
+            metadata_epochs["event_sample"].to_numpy(), epochs.events[:, 0]
         )
         assert (metadata_epochs["epoch_n_samples"] == len(epochs.times)).all()
         np.testing.assert_array_equal(
@@ -1524,7 +1520,6 @@ class TestMetadata:
         )
         np.testing.assert_array_equal(labels_array, labels_epochs)
         assert array.shape[0] == len(metadata_array)
-
 
         assert "value" in metadata2.columns
         assert "value" in metadata3.columns

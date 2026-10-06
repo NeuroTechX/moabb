@@ -1408,9 +1408,7 @@ class PurgedEpochKFold(GroupsConsumerMixin, BaseCrossValidator):
             raise ValueError(
                 f"Cannot create {self.n_splits} folds from {n_samples} epochs."
             )
-        runs, event_samples, epoch_n_samples = self._parse_groups(
-            groups, n_samples
-        )
+        runs, event_samples, epoch_n_samples = self._parse_groups(groups, n_samples)
         run_values = self._stable_unique(runs)
         ordered_by_run = {}
         for run in run_values:
@@ -1429,9 +1427,7 @@ class PurgedEpochKFold(GroupsConsumerMixin, BaseCrossValidator):
         }
         for fold_index in range(self.n_splits):
             test = np.sort(
-                np.concatenate([
-                    run_blocks[run][fold_index] for run in run_values
-                ])
+                np.concatenate([run_blocks[run][fold_index] for run in run_values])
             )
             is_test = np.zeros(n_samples, dtype=bool)
             is_test[test] = True
@@ -1460,9 +1456,7 @@ class PurgedEpochKFold(GroupsConsumerMixin, BaseCrossValidator):
             self._last_split_metadata = {
                 "n_purged_overlap": n_purged,
                 "purge_fraction": (
-                    float(n_purged / candidate_train)
-                    if candidate_train
-                    else 0.0
+                    float(n_purged / candidate_train) if candidate_train else 0.0
                 ),
             }
             yield train, test

@@ -2560,11 +2560,7 @@ def test_purged_epoch_cv_auto_loads_true_event_timing():
     try:
         process_pipeline = evaluation.paradigm.make_process_pipelines(dataset)[0]
         X, y, metadata = evaluation._load_data(
-            dataset,
-            pipelines,
-            process_pipeline,
-            None,
-            subjects=[dataset.subject_list[0]],
+            dataset, pipelines, process_pipeline, None, subjects=[dataset.subject_list[0]]
         )
 
         assert len(X) == len(y) == len(metadata)
