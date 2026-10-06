@@ -509,6 +509,7 @@ accuracy, across-subject accuracy, or other transfer learning settings.
     :template: class.rst
 
     WithinSessionSplitter
+    PurgedEpochKFold
     WithinSubjectSplitter
     CrossSessionSplitter
     CrossSubjectSplitter
