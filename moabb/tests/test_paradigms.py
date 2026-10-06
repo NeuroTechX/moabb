@@ -1483,6 +1483,49 @@ class TestMetadata:
 
         assert (metadata1.columns == ["subject", "session", "run"]).all()
 
+    def test_epoch_timing_metadata_is_opt_in_and_matches_processed_events(
+        self, cached_dataset_root
+    ):
+        dataset = LocalBIDSDataset(
+            cached_dataset_root,
+            events={"fake1": 1, "fake2": 2},
+            interval=[0, 3],
+            paradigm="imagery",
+        )
+        paradigm = MotorImagery()
+
+        epochs, labels_epochs, metadata_epochs = paradigm.get_data(
+            dataset=dataset,
+            subjects=["1"],
+            return_epochs=True,
+            include_epoch_timing=True,
+        )
+        array, labels_array, metadata_array = paradigm.get_data(
+            dataset=dataset,
+            subjects=["1"],
+            return_epochs=False,
+            include_epoch_timing=True,
+        )
+
+        assert "event_sample" in metadata_epochs
+        assert "epoch_n_samples" in metadata_epochs
+        np.testing.assert_array_equal(
+            metadata_epochs["event_sample"].to_numpy(),
+            epochs.events[:, 0],
+        )
+        assert (metadata_epochs["epoch_n_samples"] == len(epochs.times)).all()
+        np.testing.assert_array_equal(
+            metadata_array["event_sample"].to_numpy(),
+            metadata_epochs["event_sample"].to_numpy(),
+        )
+        np.testing.assert_array_equal(
+            metadata_array["epoch_n_samples"].to_numpy(),
+            metadata_epochs["epoch_n_samples"].to_numpy(),
+        )
+        np.testing.assert_array_equal(labels_array, labels_epochs)
+        assert array.shape[0] == len(metadata_array)
+
+
         assert "value" in metadata2.columns
         assert "value" in metadata3.columns
         assert "value" in metadata4.columns
