@@ -1473,12 +1473,10 @@ def test_within_session_splitter_routes_epoch_timing_to_purged_cv():
     )
 
 
-
 def test_purged_epoch_kfold_rejects_fractional_timing():
     splitter = PurgedEpochKFold(n_splits=2)
     groups = np.asarray(
-        [["0", 0.5, 100], ["0", 100, 100], ["0", 200, 100], ["0", 300, 100]],
-        dtype=object,
+        [["0", 0.5, 100], ["0", 100, 100], ["0", 200, 100], ["0", 300, 100]], dtype=object
     )
     with pytest.raises(ValueError, match="finite integers"):
         next(splitter.split(np.zeros(4), groups=groups))
@@ -1490,10 +1488,4 @@ def test_purged_epoch_kfold_fails_when_fold_loses_class_support():
     splitter = PurgedEpochKFold(n_splits=5)
 
     with pytest.raises(ValueError, match="does not contain every class"):
-        list(
-            splitter.split(
-                np.zeros(len(y)),
-                y,
-                groups=epoch_interval_groups(timing),
-            )
-        )
+        list(splitter.split(np.zeros(len(y)), y, groups=epoch_interval_groups(timing)))

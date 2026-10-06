@@ -1390,9 +1390,7 @@ class PurgedEpochKFold(GroupsConsumerMixin, BaseCrossValidator):
             or not np.all(raw_event_samples == np.rint(raw_event_samples))
             or not np.all(raw_epoch_n_samples == np.rint(raw_epoch_n_samples))
         ):
-            raise ValueError(
-                "event_sample and epoch_n_samples must be finite integers."
-            )
+            raise ValueError("event_sample and epoch_n_samples must be finite integers.")
         event_samples = raw_event_samples.astype(np.int64)
         epoch_n_samples = raw_epoch_n_samples.astype(np.int64)
         if np.any(epoch_n_samples <= 0):
@@ -1465,10 +1463,9 @@ class PurgedEpochKFold(GroupsConsumerMixin, BaseCrossValidator):
             if y is not None:
                 y_array = np.asarray(y)
                 classes = np.unique(y_array)
-                if (
-                    len(np.unique(y_array[train])) != len(classes)
-                    or len(np.unique(y_array[test])) != len(classes)
-                ):
+                if len(np.unique(y_array[train])) != len(classes) or len(
+                    np.unique(y_array[test])
+                ) != len(classes):
                     raise ValueError(
                         "A purged fold does not contain every class in both "
                         "train and test. Reduce n_splits or use a dedicated "
