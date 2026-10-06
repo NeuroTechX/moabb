@@ -39,7 +39,7 @@ Enhancements
 - Add three OpenNeuro motor-imagery datasets: :class:`moabb.datasets.Peterson2020`, :class:`moabb.datasets.Daly2020`, and :class:`moabb.datasets.Damm2026` (:pr:`1189`, by `Bruno Aristimunha`_).
 - Add :class:`moabb.datasets.NETBCI2026` (NETBCI, Recherche Data Gouv doi:10.57745/RBJRC7): 19 subjects, 74-channel EEG, right-hand motor imagery vs rest over 4 longitudinal sessions x 6 online feedback runs; per-subject EEG is read out of the 49 GB archive by HTTP range requests (:gh:`1188` by `Bruno Aristimunha`_).
 - Add four OpenNeuro motor-imagery datasets: :class:`moabb.datasets.Lee2022` (ds004022, 7 orthopedic-impairment patients, 4 upper-limb MI tasks), :class:`moabb.datasets.Lioi2020_XP1` (ds002336) and :class:`moabb.datasets.Lioi2020_XP2` (ds002338), the two EEG-fMRI right-hand MI / neurofeedback experiments of Lioi et al., and :class:`moabb.datasets.Iwama2023` (ds004444, 30 subjects, 129-channel HD-EEG, up to 16 sessions) (:gh:`1186` by `Bruno Aristimunha`_).
-- Audit every dataset's ``METADATA`` and docstring against its primary paper and data-repository record with a new reusable tool (``scripts/paper_audit/``): ``country`` is now an ISO 3166-1 alpha-2 code everywhere, loader declarations (``sessions_per_subject``, ``subjects``, ``runs_per_session``) and the ``summary_*.csv`` tables match what each loader actually returns, and per-dataset fields (reference/ground, hardware, filters, licence, demographics, trial counts, DOIs) are corrected with quoted evidence; ``Cattan2019_VR`` declares its two sessions, ``Nakanishi2015`` exposes subject 10, ``PhysionetMI``/``MAMEM3``/``BI2015b`` metadata now come from their own records (:gh:`1203` by `Bruno Aristimunha`_).
+- Audit every dataset's ``METADATA`` and docstring against its primary paper and data-repository record: ``country`` is now an ISO 3166-1 alpha-2 code everywhere, loader declarations (``sessions_per_subject``, ``subjects``, ``runs_per_session``) and the ``summary_*.csv`` tables match what each loader actually returns, and per-dataset fields (reference/ground, hardware, filters, licence, demographics, trial counts, DOIs) are corrected with quoted evidence; ``Cattan2019_VR`` declares its two sessions, ``Nakanishi2015`` exposes subject 10, ``PhysionetMI``/``MAMEM3``/``BI2015b`` metadata now come from their own records (:gh:`1203` by `Bruno Aristimunha`_).
 - Add :func:`moabb.analysis.plotting.plot_critical_difference` for comparing pipelines across complete multi-dataset benchmarks with Friedman ranks and Nemenyi critical-difference groups (:gh:`1127` by `lindicaphxag-tech`_).
 - Spell MNE's renamed template montages everywhere: MNE 1.13 renamed ``standard_1005``/``standard_1020`` (and the other ``standard_*`` templates) to ``colin27_*`` (identical electrode files), warns on the old names and MNE 1.14 removes them, so every ``make_standard_montage``/``set_montage`` call in MOABB now spells ``colin27_*``. ``METADATA`` montage labels are descriptive and unchanged (:gh:`1200` by `Bruno Aristimunha`_).
 
@@ -64,6 +64,44 @@ Requirements
 
 Bugs
 ~~~~
+- Fix :class:`moabb.datasets.MIND2026` download 404ing immediately on every fresh fetch: the loader hardcoded ScienceDB's ``getZipFile?...&version=V3`` endpoint, which ScienceDB has since removed (``HEAD`` -> 404). ``version=V4`` is the current replacement and was confirmed live with an exact byte-count match to this loader's own ~74 GB docstring estimate (``HEAD`` -> 200, ``content-length: 74409645600``). No other behavior changes; the synthetic regression test is unaffected since it never hits the network (by `Bruno Aristimunha`_).
+- Fix :class:`moabb.datasets.Lenaig2026`'s ``data_path()`` raising
+  ``FileNotFoundError: Some data files are missing.`` on every subject: it
+  hard-coded an ``EEG_24Chan_AudioStim/`` wrapper directory for the extracted
+  RAR, but the current Zenodo v2 archive (record ``21156618``) extracts
+  ``EXP1/``/``EXP2/`` directly at the root -- confirmed by direct inspection
+  on Voyager (``find ... -iname '*EEG_24Chan*'`` only finds the ``.rar``
+  itself). ``data_path()`` now locates each run's file with a recursive glob
+  that matches either layout, without changing which events/labels are read
+  (:gh:`1225` by `Bruno Aristimunha`_).
+- Fix :class:`moabb.datasets.Schrag2026Pediatric` crashing
+  ``convert_to_bids()`` with ``ValueError: Raw object must have annotations
+  to be saved in BIDS format`` on subject 1's personalized-stimulus game run:
+  the loader's own documented policy of dropping all trial labels when a
+  run's ``Trial Started`` marker count drifts more than 10%% from its
+  movements-CSV row count (true for that run, 15%% drift) produced a
+  zero-annotation ``Raw``, which ``bids_interface``'s writer then rejected.
+  ``_get_single_subject_data`` now skips a run that ends up with zero
+  events instead of returning it, logging a warning that names the subject
+  and run; the docstring documents this (:gh:`1225` by `Bruno Aristimunha`_).
+- Fix :class:`moabb.datasets.Lenaig2026` crashing ``convert_to_bids()`` with
+  ``AttributeError: 'int' object has no attribute 'items'``:
+  ``METADATA.experiment.trials_per_class`` was a bare int (``10``) instead
+  of the ``Dict[str, int]`` the schema declares, and
+  ``bids_interface._build_readme`` unconditionally calls
+  ``_format_dict()`` on it. Now a per-class dict (``{"Stimulus": 10,
+  "Silence": 10}``), matching the documented 10 repetitions per condition
+  (:gh:`1225` by `Bruno Aristimunha`_).
+- Fix :func:`moabb.datasets.Dataset.convert_to_bids` aborting the whole
+  multi-subject convert when exactly one subject raises
+  ``FileNotFoundError`` (a loader's own "nothing to write for this subject"
+  signal, e.g. :class:`moabb.datasets.Schrag2026Pediatric` subject 16's
+  single game run being dropped entirely by the >10%% drift policy): every
+  subject after the one that raised was previously silently skipped as
+  well. The per-subject loop now catches ``FileNotFoundError``, logs a
+  warning naming the subject, and continues converting the rest
+  (:gh:`1225` by `Bruno Aristimunha`_).
+- Keep :class:`moabb.evaluations.CrossSubjectEvaluation` result provenance subject-specific when a grouped cross-validation fold holds out multiple subjects at once. The estimator is still fitted once per fold, while scores, cache identities, and saved-model paths are emitted per held-out subject and session instead of assigning the whole fold to its first subject (by `lindicaphxag-tech`_).
 - Fix :func:`moabb.datasets.Dataset.convert_to_bids` crashing on datasets whose
   MOABB run-label suffix is literally ``"calibration"`` or ``"crosstalk"``
   (Wang2025, Leeuwis2021, Brandl2020, Romani_BF2025_ERP). After the ``acq-``

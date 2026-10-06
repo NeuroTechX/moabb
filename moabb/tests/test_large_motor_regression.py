@@ -62,6 +62,10 @@ def test_thapa_transport_and_missing_sessions(tmp_path, monkeypatch):
     monkeypatch.setattr(thapa2025.dl, "get_dataset_path", Mock(return_value=tmp_path))
     monkeypatch.setattr(thapa2025.dl, "data_dl", data_dl)
     dataset = Thapa2025()
+    # Rule (b): declared sessions_per_subject follows MOABB's minimum
+    # convention (1), because sub-02 and sub-17 only recorded one session;
+    # the true per-subject count is data-borne.
+    assert dataset.n_sessions == 1
     paths = dataset.data_path(1, path=str(tmp_path), verbose=False)
     assert len(paths) == 1
     assert paths[0].session == "01"
