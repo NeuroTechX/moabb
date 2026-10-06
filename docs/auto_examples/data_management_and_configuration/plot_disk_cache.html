@@ -714,6 +714,10 @@ paradigm except that it will save un-processed raw recordings.</p>
 </span><span class="w">
 </span><a class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function reference internal" href="../../generated/moabb.set_log_level.html#moabb.set_log_level" title="moabb.set_log_level"><span class="n">set_log_level</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">info</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/optuna/integration/sklearn.py:14: FutureWarning: `optuna.integration.sklearn` has been deprecated in v4.9.0. This feature will be removed in v6.0.0. See https://github.com/optuna/optuna/releases/tag/v4.9.0. Use `optuna_integration.sklearn` instead.
+  optuna_warn(f"{msg} Use `optuna_integration.sklearn` instead.", FutureWarning)
+</pre></div>
+</div>
 <section id="basic-usage">
 <h2>Basic usage<a class="headerlink" href="#basic-usage" title="Link to this heading">#</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">cache_config</span></code> parameter is a dictionary that has the
@@ -758,8 +762,32 @@ in the <code class="docutils literal notranslate"><span class="pre">cache_config
 </span></pre></div></div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>This is nemar-py 0.3.3.
 Preparing to download nm000115 from https://data.nemar.org/
+2026-10-06 15:35:16,480 INFO MainThread httpx HTTP Request: GET https://data.nemar.org/nm000115/ "HTTP/1.1 200 OK"
+2026-10-06 15:35:16,776 INFO MainThread httpx HTTP Request: GET https://data.nemar.org/nm000115/metadata.json "HTTP/1.1 200 OK"
+2026-10-06 15:35:17,058 INFO MainThread httpx HTTP Request: GET https://data.nemar.org/nm000115/v1.0.0/manifest.json "HTTP/1.1 200 OK"
+/home/runner/work/moabb/moabb/moabb/datasets/base.py:890: RuntimeWarning: Could not fetch Zhou2016 subject 1 sourcedata from NEMAR (nm000115); its load will use the dataset's own downloader. Original error: NEMAR dataset nm000115 publishes no sourcedata manifest -- the original distribution is not mirrored there.
+  self._prefetch_nemar_sourcedata(
+2026-10-06 15:35:17,073 INFO MainThread moabb.datasets.bids_interface Attempting to retrieve cache of 'Zhou2016' sub-1 suffix-array desc-468de1e...
+2026-10-06 15:35:17,077 INFO MainThread moabb.datasets.bids_interface No cache found at /tmp/tmp55q5udr0/MNE-BIDS-zhou2016/code.
+2026-10-06 15:35:17,077 INFO MainThread moabb.datasets.bids_interface Attempting to retrieve cache of 'Zhou2016' sub-1 suffix-epo desc-eb4b442...
+2026-10-06 15:35:17,080 INFO MainThread moabb.datasets.bids_interface No cache found at /tmp/tmp55q5udr0/MNE-BIDS-zhou2016/code.
+2026-10-06 15:35:17,080 INFO MainThread moabb.datasets.bids_interface Attempting to retrieve cache of 'Zhou2016' sub-1 suffix-eeg desc-13877a2...
+2026-10-06 15:35:17,082 INFO MainThread moabb.datasets.bids_interface No cache found at /tmp/tmp55q5udr0/MNE-BIDS-zhou2016/code.
+2026-10-06 15:35:17,082 INFO MainThread moabb.datasets.bids_interface Attempting to retrieve cache of 'Zhou2016' sub-1 suffix-eeg desc-bcfb35b...
+2026-10-06 15:35:17,084 INFO MainThread moabb.datasets.bids_interface No cache found at /tmp/tmp55q5udr0/MNE-BIDS-zhou2016/code.
 This is nemar-py 0.3.3.
 Preparing to download nm000115 from https://data.nemar.org/
+2026-10-06 15:35:17,380 INFO MainThread httpx HTTP Request: GET https://data.nemar.org/nm000115/ "HTTP/1.1 200 OK"
+2026-10-06 15:35:17,621 INFO MainThread httpx HTTP Request: GET https://data.nemar.org/nm000115/metadata.json "HTTP/1.1 200 OK"
+2026-10-06 15:35:17,913 INFO MainThread httpx HTTP Request: GET https://data.nemar.org/nm000115/v1.0.0/manifest.json "HTTP/1.1 200 OK"
+/home/runner/work/moabb/moabb/moabb/datasets/base.py:1466: RuntimeWarning: Could not fetch Zhou2016 subject 1 sourcedata from NEMAR (nm000115); its load will use the dataset's own downloader. Original error: NEMAR dataset nm000115 publishes no sourcedata manifest -- the original distribution is not mirrored there.
+  self._prefetch_nemar_sourcedata([subject])
+2026-10-06 15:35:19,143 INFO MainThread moabb.datasets.bids_interface Starting caching 'Zhou2016' sub-1 suffix-eeg desc-13877a2
+2026-10-06 15:35:19,620 INFO MainThread moabb.datasets.bids_interface Finished caching 'Zhou2016' sub-1 suffix-eeg desc-13877a2 to disk.
+2026-10-06 15:35:19,686 INFO MainThread moabb.datasets.bids_interface Starting caching 'Zhou2016' sub-1 suffix-epo desc-eb4b442
+2026-10-06 15:35:19,740 INFO MainThread moabb.datasets.bids_interface Finished caching 'Zhou2016' sub-1 suffix-epo desc-eb4b442 to disk.
+2026-10-06 15:35:19,747 INFO MainThread moabb.datasets.bids_interface Starting caching 'Zhou2016' sub-1 suffix-array desc-468de1e
+2026-10-06 15:35:19,776 INFO MainThread moabb.datasets.bids_interface Finished caching 'Zhou2016' sub-1 suffix-array desc-468de1e to disk.
 </pre></div>
 </div>
 </section>
@@ -785,6 +813,10 @@ number of missing steps.</p>
 </span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">_</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-moabb-paradigms-base sphx-glr-backref-type-py-method reference internal" href="../../generated/moabb.paradigms.base.BaseProcessing.html#moabb.paradigms.base.BaseProcessing.get_data" title="moabb.paradigms.base.BaseProcessing.get_data"><span class="n">paradigm</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><a class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/moabb.datasets.Zhou2016.html#moabb.datasets.Zhou2016" title="moabb.datasets.Zhou2016"><span class="n">dataset</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">subjects</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">cache_config</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">cache_config</span></a><span class="p">)</span><span class="w">
 </span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">t_array</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function reference external" href="https://docs.python.org/3/library/time.html#time.time" title="time.time"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">(</span><span class="p">)</span> <span class="o">-</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">t0</span></a><span class="w">
 </span></pre></div></div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2026-10-06 15:35:19,796 INFO MainThread moabb.datasets.bids_interface Attempting to retrieve cache of 'Zhou2016' sub-1 suffix-array desc-468de1e...
+2026-10-06 15:35:19,809 INFO MainThread moabb.datasets.bids_interface Finished reading cache of 'Zhou2016' sub-1 suffix-array desc-468de1e
+</pre></div>
+</div>
 <p>Using epochs cache:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">cache_config</span></a> <span class="o">=</span> <span class="p">{</span><span class="w">
 </span>    <span class="s2">&quot;</span><span class="s2">use</span><span class="s2">&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span><span class="w">
@@ -800,6 +832,12 @@ number of missing steps.</p>
 </span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">_</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-moabb-paradigms-base sphx-glr-backref-type-py-method reference internal" href="../../generated/moabb.paradigms.base.BaseProcessing.html#moabb.paradigms.base.BaseProcessing.get_data" title="moabb.paradigms.base.BaseProcessing.get_data"><span class="n">paradigm</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><a class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/moabb.datasets.Zhou2016.html#moabb.datasets.Zhou2016" title="moabb.datasets.Zhou2016"><span class="n">dataset</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">subjects</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">cache_config</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">cache_config</span></a><span class="p">)</span><span class="w">
 </span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">t_epochs</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function reference external" href="https://docs.python.org/3/library/time.html#time.time" title="time.time"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">(</span><span class="p">)</span> <span class="o">-</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">t0</span></a><span class="w">
 </span></pre></div></div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2026-10-06 15:35:19,827 INFO MainThread moabb.datasets.bids_interface Starting erasing cache of 'Zhou2016' sub-1 suffix-array desc-468de1e...
+2026-10-06 15:35:19,850 INFO MainThread moabb.datasets.bids_interface Finished erasing cache of 'Zhou2016' sub-1 suffix-array desc-468de1e.
+2026-10-06 15:35:19,850 INFO MainThread moabb.datasets.bids_interface Attempting to retrieve cache of 'Zhou2016' sub-1 suffix-epo desc-eb4b442...
+2026-10-06 15:35:19,889 INFO MainThread moabb.datasets.bids_interface Finished reading cache of 'Zhou2016' sub-1 suffix-epo desc-eb4b442
+</pre></div>
+</div>
 <p>Using raw cache:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">cache_config</span></a> <span class="o">=</span> <span class="p">{</span><span class="w">
 </span>    <span class="s2">&quot;</span><span class="s2">use</span><span class="s2">&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span><span class="w">
@@ -815,6 +853,59 @@ number of missing steps.</p>
 </span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="tuple"><span class="n">_</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-moabb-paradigms-base sphx-glr-backref-type-py-method reference internal" href="../../generated/moabb.paradigms.base.BaseProcessing.html#moabb.paradigms.base.BaseProcessing.get_data" title="moabb.paradigms.base.BaseProcessing.get_data"><span class="n">paradigm</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><a class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/moabb.datasets.Zhou2016.html#moabb.datasets.Zhou2016" title="moabb.datasets.Zhou2016"><span class="n">dataset</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">subjects</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">cache_config</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">cache_config</span></a><span class="p">)</span><span class="w">
 </span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">t_raw</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function reference external" href="https://docs.python.org/3/library/time.html#time.time" title="time.time"><span class="n">time</span><span class="o">.</span><span class="n">time</span></a><span class="p">(</span><span class="p">)</span> <span class="o">-</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">t0</span></a><span class="w">
 </span></pre></div></div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2026-10-06 15:35:19,929 INFO MainThread moabb.datasets.bids_interface Starting erasing cache of 'Zhou2016' sub-1 suffix-array desc-468de1e...
+2026-10-06 15:35:19,933 INFO MainThread moabb.datasets.bids_interface Finished erasing cache of 'Zhou2016' sub-1 suffix-array desc-468de1e.
+2026-10-06 15:35:19,933 INFO MainThread moabb.datasets.bids_interface Starting erasing cache of 'Zhou2016' sub-1 suffix-epo desc-eb4b442...
+2026-10-06 15:35:19,951 INFO MainThread moabb.datasets.bids_interface Finished erasing cache of 'Zhou2016' sub-1 suffix-epo desc-eb4b442.
+2026-10-06 15:35:19,951 INFO MainThread moabb.datasets.bids_interface Attempting to retrieve cache of 'Zhou2016' sub-1 suffix-eeg desc-13877a2...
+/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:2563: RuntimeWarning: HED annotations were detected but HEDAnnotations could not be used because some event rows have 'n/a' HED strings. Falling back to regular Annotations (HED strings preserved in extras).
+  raw = mne_bids.read_raw_bids(
+/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:2563: RuntimeWarning: Unable to map the following column(s) to MNE:
+group: healthy
+species: homo sapiens
+bci_experience: experienced
+  raw = mne_bids.read_raw_bids(
+/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:2563: RuntimeWarning: HED annotations were detected but HEDAnnotations could not be used because some event rows have 'n/a' HED strings. Falling back to regular Annotations (HED strings preserved in extras).
+  raw = mne_bids.read_raw_bids(
+/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:2563: RuntimeWarning: Unable to map the following column(s) to MNE:
+group: healthy
+species: homo sapiens
+bci_experience: experienced
+  raw = mne_bids.read_raw_bids(
+/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:2563: RuntimeWarning: HED annotations were detected but HEDAnnotations could not be used because some event rows have 'n/a' HED strings. Falling back to regular Annotations (HED strings preserved in extras).
+  raw = mne_bids.read_raw_bids(
+/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:2563: RuntimeWarning: Unable to map the following column(s) to MNE:
+group: healthy
+species: homo sapiens
+bci_experience: experienced
+  raw = mne_bids.read_raw_bids(
+/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:2563: RuntimeWarning: HED annotations were detected but HEDAnnotations could not be used because some event rows have 'n/a' HED strings. Falling back to regular Annotations (HED strings preserved in extras).
+  raw = mne_bids.read_raw_bids(
+/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:2563: RuntimeWarning: Unable to map the following column(s) to MNE:
+group: healthy
+species: homo sapiens
+bci_experience: experienced
+  raw = mne_bids.read_raw_bids(
+/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:2563: RuntimeWarning: HED annotations were detected but could not be parsed: For validation of HED tags in annotations to work, the module hed is needed, but it could not be imported. Use the following installation method appropriate for your environment:
+
+    pip install hedtools
+    conda install -c conda-forge hedtools. Falling back to regular Annotations (HED strings preserved in extras).
+  raw = mne_bids.read_raw_bids(
+/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:2563: RuntimeWarning: Unable to map the following column(s) to MNE:
+group: healthy
+species: homo sapiens
+bci_experience: experienced
+  raw = mne_bids.read_raw_bids(
+/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:2563: RuntimeWarning: HED annotations were detected but HEDAnnotations could not be used because some event rows have 'n/a' HED strings. Falling back to regular Annotations (HED strings preserved in extras).
+  raw = mne_bids.read_raw_bids(
+/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:2563: RuntimeWarning: Unable to map the following column(s) to MNE:
+group: healthy
+species: homo sapiens
+bci_experience: experienced
+  raw = mne_bids.read_raw_bids(
+2026-10-06 15:35:20,100 INFO MainThread moabb.datasets.bids_interface Finished reading cache of 'Zhou2016' sub-1 suffix-eeg desc-13877a2
+</pre></div>
+</div>
 <p>Using no cache:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">cache_config</span></a> <span class="o">=</span> <span class="p">{</span><span class="w">
 </span>    <span class="s2">&quot;</span><span class="s2">use</span><span class="s2">&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span><span class="w">
@@ -832,9 +923,18 @@ number of missing steps.</p>
 </span></pre></div></div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>This is nemar-py 0.3.3.
 Preparing to download nm000115 from https://data.nemar.org/
+2026-10-06 15:35:20,564 INFO MainThread httpx HTTP Request: GET https://data.nemar.org/nm000115/ "HTTP/1.1 200 OK"
+2026-10-06 15:35:20,866 INFO MainThread httpx HTTP Request: GET https://data.nemar.org/nm000115/metadata.json "HTTP/1.1 200 OK"
+2026-10-06 15:35:21,117 INFO MainThread httpx HTTP Request: GET https://data.nemar.org/nm000115/v1.0.0/manifest.json "HTTP/1.1 200 OK"
+/home/runner/work/moabb/moabb/moabb/datasets/base.py:890: RuntimeWarning: Could not fetch Zhou2016 subject 1 sourcedata from NEMAR (nm000115); its load will use the dataset's own downloader. Original error: NEMAR dataset nm000115 publishes no sourcedata manifest -- the original distribution is not mirrored there.
+  self._prefetch_nemar_sourcedata(
 This is nemar-py 0.3.3.
 Preparing to download nm000115 from https://data.nemar.org/
-Retrying after failure when retrieving NEMAR index for nm000115 (5 retries remain).
+2026-10-06 15:35:21,363 INFO MainThread httpx HTTP Request: GET https://data.nemar.org/nm000115/ "HTTP/1.1 200 OK"
+2026-10-06 15:35:21,578 INFO MainThread httpx HTTP Request: GET https://data.nemar.org/nm000115/metadata.json "HTTP/1.1 200 OK"
+2026-10-06 15:35:21,693 INFO MainThread httpx HTTP Request: GET https://data.nemar.org/nm000115/v1.0.0/manifest.json "HTTP/1.1 200 OK"
+/home/runner/work/moabb/moabb/moabb/datasets/base.py:1466: RuntimeWarning: Could not fetch Zhou2016 subject 1 sourcedata from NEMAR (nm000115); its load will use the dataset's own downloader. Original error: NEMAR dataset nm000115 publishes no sourcedata manifest -- the original distribution is not mirrored there.
+  self._prefetch_nemar_sourcedata([subject])
 </pre></div>
 </div>
 <p>Time needed to load the data with different levels of cache:</p>
@@ -843,10 +943,10 @@ Retrying after failure when retrieving NEMAR index for nm000115 (5 retries remai
 </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">Using raw cache: </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">t_raw</span></a><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> seconds</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
 </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">Without cache: </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">t_nocache</span></a><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> seconds</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using array cache: 0.10 seconds
-Using epochs cache: 0.09 seconds
-Using raw cache: 0.27 seconds
-Without cache: 2.73 seconds
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using array cache: 0.03 seconds
+Using epochs cache: 0.10 seconds
+Using raw cache: 0.33 seconds
+Without cache: 2.25 seconds
 </pre></div>
 </div>
 <p>As you can see, using a raw cache is more than 5 times faster than
@@ -899,8 +999,7 @@ to decode the description key.</p></li>
 <p>Finally, we can delete the temporary folder:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-shutil sphx-glr-backref-type-py-function reference external" href="https://docs.python.org/3/library/shutil.html#shutil.rmtree" title="shutil.rmtree"><span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span></a><span class="p">(</span><a class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath"><span class="n">temp_dir</span></a><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 8.303 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  765 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 10.840 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-data-management-and-configuration-plot-disk-cache-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/b843884d191ec86afaa081573b87c5dc/plot_disk_cache.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_disk_cache.ipynb</span></code></a></p>

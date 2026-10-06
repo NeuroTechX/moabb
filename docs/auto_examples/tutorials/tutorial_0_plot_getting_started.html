@@ -673,6 +673,10 @@ use the standard python logging commands through the top-level moabb module</p>
 </span><span class="kn">from</span><span class="w"> </span><span class="nn">moabb</span><span class="nn">.</span><span class="nn">paradigms</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class reference internal" href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery"><span class="n">LeftRightImagery</span></a><span class="w">
 </span><span class="kn">from</span><span class="w"> </span><span class="nn">moabb</span><span class="nn">.</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="nn">pipelines</span></a><span class="nn">.</span><span class="nn">features</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-moabb-pipelines sphx-glr-backref-type-py-class reference internal" href="../../generated/moabb.pipelines.features.LogVariance.html#moabb.pipelines.features.LogVariance" title="moabb.pipelines.LogVariance"><span class="n">LogVariance</span></a><span class="w">
 </span></pre></div></div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/optuna/integration/sklearn.py:14: FutureWarning: `optuna.integration.sklearn` has been deprecated in v4.9.0. This feature will be removed in v6.0.0. See https://github.com/optuna/optuna/releases/tag/v4.9.0. Use `optuna_integration.sklearn` instead.
+  optuna_warn(f"{msg} Use `optuna_integration.sklearn` instead.", FutureWarning)
+</pre></div>
+</div>
 <p>In order to create pipelines within a script, you will likely need at least
 the make_pipeline function. They can also be specified via a .yml file. Here
 we will make a couple pipelines just for convenience</p>
@@ -741,18 +745,15 @@ subjects. This also is the correct place to specify multiple threads.</p>
 </span><span class="p">)</span><span class="w">
 </span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">results</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-moabb-evaluations-base sphx-glr-backref-type-py-method reference internal" href="../../generated/moabb.evaluations.base.BaseEvaluation.html#moabb.evaluations.base.BaseEvaluation.process" title="moabb.evaluations.base.BaseEvaluation.process"><span class="n">evaluation</span><span class="o">.</span><span class="n">process</span></a><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">pipelines</span></a><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2026-10-06 14:04:50,871 INFO MainThread moabb.datasets.download Filling A01T.mat from the local NEMAR store instead of downloading https://lampx.tugraz.at/~bci/database/001-2014/A01T.mat.
-2026-10-06 14:04:51,313 INFO MainThread moabb.datasets.download Filling A01E.mat from the local NEMAR store instead of downloading https://lampx.tugraz.at/~bci/database/001-2014/A01E.mat.
-2026-10-06 14:04:53,020 INFO MainThread moabb.datasets.download Filling A02T.mat from the local NEMAR store instead of downloading https://lampx.tugraz.at/~bci/database/001-2014/A02T.mat.
-2026-10-06 14:04:53,451 INFO MainThread moabb.datasets.download Filling A02E.mat from the local NEMAR store instead of downloading https://lampx.tugraz.at/~bci/database/001-2014/A02E.mat.
-2026-10-06 14:04:56,789 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 1 | 0train: Score 0.729
-2026-10-06 14:04:56,789 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 1 | 0train: Score 0.743
-2026-10-06 14:04:56,789 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 1 | 1test: Score 0.715
-2026-10-06 14:04:56,789 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 1 | 1test: Score 0.715
-2026-10-06 14:04:56,789 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 2 | 0train: Score 0.597
-2026-10-06 14:04:56,789 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 2 | 0train: Score 0.500
-2026-10-06 14:04:56,789 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 2 | 1test: Score 0.521
-2026-10-06 14:04:56,789 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 2 | 1test: Score 0.500
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[codecarbon WARNING @ 15:27:22] Multiple instances of codecarbon are allowed to run at the same time.
+2026-10-06 15:27:25,725 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 1 | 0train: Score 0.729
+2026-10-06 15:27:25,725 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 1 | 0train: Score 0.743
+2026-10-06 15:27:25,725 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 1 | 1test: Score 0.715
+2026-10-06 15:27:25,725 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 1 | 1test: Score 0.715
+2026-10-06 15:27:25,725 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 2 | 0train: Score 0.597
+2026-10-06 15:27:25,725 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 2 | 0train: Score 0.500
+2026-10-06 15:27:25,725 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 2 | 1test: Score 0.521
+2026-10-06 15:27:25,725 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 2 | 1test: Score 0.500
 /home/runner/work/moabb/moabb/moabb/analysis/results.py:189: H5pyDeprecationWarning: Creating a dataset without passing data or dtype is deprecated. Pass an explicit dtype. Using dtype='f4' will keep the current default behaviour.
   dset.create_dataset(
 </pre></div>
@@ -763,17 +764,16 @@ provided, MOABB adds a primary <cite>score</cite> plus one column per metric
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span class="nb">print</span><span class="p">(</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-method reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.head.html#pandas.DataFrame.head" title="pandas.DataFrame.head"><span class="n">results</span><span class="o">.</span><span class="n">head</span></a><span class="p">(</span><span class="p">)</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>      score      time  ...  pipeline                  codecarbon_task_name
-0  0.729167  0.009102  ...    AM+LDA  d44df166-fd35-4a0f-b7a6-f419a8cee1ff
-1  0.715278  0.009082  ...    AM+LDA  ee8d67f6-495c-4284-9a68-20bf5e02709d
-2  0.597222  0.009150  ...    AM+LDA  5dbb5b13-e55c-4e98-827c-d729d2029eec
-3  0.520833  0.009286  ...    AM+LDA  80b0afcd-e458-4aff-8c97-b9cdd90c1c3c
-4  0.743056  0.088420  ...    AM+SVM  f0f68a22-9364-4f36-b230-148d5ffbbfd0
+0  0.729167  0.013534  ...    AM+LDA  f449599a-863f-4b31-83a1-f82ea9681642
+1  0.715278  0.013849  ...    AM+LDA  871944cf-8cfe-4ff8-aee0-c7160b90b656
+2  0.597222  0.013449  ...    AM+LDA  e29dedaf-3e10-432f-9d2a-e88f8491fa65
+3  0.520833  0.012279  ...    AM+LDA  fd291c5b-dea8-4674-a292-c2774a50c329
+4  0.743056  0.161136  ...    AM+SVM  21c47d90-f88b-4bf0-9c4a-be40d2109cbf
 
 [5 rows x 15 columns]
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 7.357 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  1053 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 13.234 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-tutorials-tutorial-0-plot-getting-started-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/cc78b19f551dfa48627d09f644ea18ad/tutorial_0_plot_getting_started.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">tutorial_0_plot_getting_started.ipynb</span></code></a></p>
