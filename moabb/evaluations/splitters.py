@@ -1325,3 +1325,148 @@ class LearningCurveSplitter(GroupsConsumerMixin, BaseCrossValidator):
             Only valid during or after iteration.
         """
         return {"permutation": self._current_perm, "data_size": self._current_data_size}
+
+
+def epoch_interval_groups(metadata):
+    """Return run-local epoch timing consumed by PurgedEpochKFold."""
+    required = ("run", "event_sample", "epoch_n_samples")
+    missing = [name for name in required if name not in metadata.columns]
+    if missing:
+        raise ValueError(
+            "PurgedEpochKFold requires epoch timing metadata columns "
+            f"{required}; missing {tuple(missing)}."
+        )
+    return metadata.loc[:, required].to_numpy(dtype=object)
+
+
+class PurgedEpochKFold(GroupsConsumerMixin, BaseCrossValidator):
+    """Contiguous within-run CV with exact purging of overlapping epochs.
+
+    Runs are split into contiguous temporal test blocks. A candidate training
+    epoch is removed when its half-open sample interval overlaps any test
+    epoch from the same run. Different runs are independent recording
+    segments and are never purged against one another.
+
+    True timing metadata is mandatory; row order is never used as a proxy
+    for time.
+    """
+
+    requires_epoch_timing = True
+    metadata_columns = ("n_purged_overlap", "purge_fraction")
+
+    def __init__(self, n_splits=5):
+        if not isinstance(n_splits, (int, np.integer)) or n_splits < 2:
+            raise ValueError("n_splits must be an integer >= 2.")
+        self.n_splits = int(n_splits)
+        self._last_split_metadata = None
+
+    def get_n_splits(self, X=None, y=None, groups=None):
+        return self.n_splits
+
+    @staticmethod
+    def _parse_groups(groups, n_samples):
+        if groups is None:
+            raise ValueError(
+                "PurgedEpochKFold requires true run/event timing metadata; "
+                "pass groups=epoch_interval_groups(metadata)."
+            )
+        values = np.asarray(groups, dtype=object)
+        if values.ndim != 2 or values.shape != (n_samples, 3):
+            raise ValueError(
+                "groups must have shape (n_epochs, 3) with columns "
+                "(run, event_sample, epoch_n_samples)."
+            )
+        runs = values[:, 0]
+        try:
+            event_samples = np.asarray(values[:, 1], dtype=np.int64)
+            epoch_n_samples = np.asarray(values[:, 2], dtype=np.int64)
+        except (TypeError, ValueError) as error:
+            raise ValueError(
+                "event_sample and epoch_n_samples must be integer-valued."
+            ) from error
+        if np.any(epoch_n_samples <= 0):
+            raise ValueError("epoch_n_samples must be strictly positive.")
+        return runs, event_samples, epoch_n_samples
+
+    @staticmethod
+    def _stable_unique(values):
+        return list(dict.fromkeys(values.tolist()))
+
+    @staticmethod
+    def _overlap_mask(train_start, train_stop, test_start, test_stop):
+        if len(train_start) == 0 or len(test_start) == 0:
+            return np.zeros(len(train_start), dtype=bool)
+        return np.any(
+            (train_start[:, None] < test_stop[None, :])
+            & (test_start[None, :] < train_stop[:, None]),
+            axis=1,
+        )
+
+    def split(self, X, y=None, groups=None):
+        n_samples = len(X)
+        if n_samples < self.n_splits:
+            raise ValueError(
+                f"Cannot create {self.n_splits} folds from {n_samples} epochs."
+            )
+        runs, event_samples, epoch_n_samples = self._parse_groups(
+            groups, n_samples
+        )
+        run_values = self._stable_unique(runs)
+        ordered_by_run = {}
+        for run in run_values:
+            run_indices = np.flatnonzero(runs == run)
+            if len(run_indices) < self.n_splits:
+                raise ValueError(
+                    f"Run {run!r} has {len(run_indices)} epochs, fewer than "
+                    f"n_splits={self.n_splits}."
+                )
+            order = np.lexsort((run_indices, event_samples[run_indices]))
+            ordered_by_run[run] = run_indices[order]
+
+        run_blocks = {
+            run: np.array_split(indices, self.n_splits)
+            for run, indices in ordered_by_run.items()
+        }
+        for fold_index in range(self.n_splits):
+            test = np.sort(
+                np.concatenate([
+                    run_blocks[run][fold_index] for run in run_values
+                ])
+            )
+            is_test = np.zeros(n_samples, dtype=bool)
+            is_test[test] = True
+            is_purged = np.zeros(n_samples, dtype=bool)
+
+            for run in run_values:
+                run_test = test[runs[test] == run]
+                run_train = np.flatnonzero((runs == run) & ~is_test)
+                test_start = event_samples[run_test]
+                test_stop = test_start + epoch_n_samples[run_test]
+                train_start = event_samples[run_train]
+                train_stop = train_start + epoch_n_samples[run_train]
+                overlap = self._overlap_mask(
+                    train_start, train_stop, test_start, test_stop
+                )
+                is_purged[run_train[overlap]] = True
+
+            train = np.flatnonzero(~is_test & ~is_purged)
+            if len(train) == 0 or len(test) == 0:
+                raise ValueError(
+                    "Purging removed an entire train or test fold; reduce "
+                    "n_splits or use longer independent runs."
+                )
+            n_purged = int(is_purged.sum())
+            candidate_train = n_samples - len(test)
+            self._last_split_metadata = {
+                "n_purged_overlap": n_purged,
+                "purge_fraction": (
+                    float(n_purged / candidate_train)
+                    if candidate_train
+                    else 0.0
+                ),
+            }
+            yield train, test
+
+    def get_metadata(self):
+        """Return purge diagnostics for the most recently yielded fold."""
+        return self._last_split_metadata
