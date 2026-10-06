@@ -1378,12 +1378,23 @@ class PurgedEpochKFold(GroupsConsumerMixin, BaseCrossValidator):
             )
         runs = values[:, 0]
         try:
-            event_samples = np.asarray(values[:, 1], dtype=np.int64)
-            epoch_n_samples = np.asarray(values[:, 2], dtype=np.int64)
+            raw_event_samples = np.asarray(values[:, 1], dtype=float)
+            raw_epoch_n_samples = np.asarray(values[:, 2], dtype=float)
         except (TypeError, ValueError) as error:
             raise ValueError(
                 "event_sample and epoch_n_samples must be integer-valued."
             ) from error
+        if (
+            not np.all(np.isfinite(raw_event_samples))
+            or not np.all(np.isfinite(raw_epoch_n_samples))
+            or not np.all(raw_event_samples == np.rint(raw_event_samples))
+            or not np.all(raw_epoch_n_samples == np.rint(raw_epoch_n_samples))
+        ):
+            raise ValueError(
+                "event_sample and epoch_n_samples must be finite integers."
+            )
+        event_samples = raw_event_samples.astype(np.int64)
+        epoch_n_samples = raw_epoch_n_samples.astype(np.int64)
         if np.any(epoch_n_samples <= 0):
             raise ValueError("epoch_n_samples must be strictly positive.")
         return runs, event_samples, epoch_n_samples
@@ -1451,6 +1462,18 @@ class PurgedEpochKFold(GroupsConsumerMixin, BaseCrossValidator):
                     "Purging removed an entire train or test fold; reduce "
                     "n_splits or use longer independent runs."
                 )
+            if y is not None:
+                y_array = np.asarray(y)
+                classes = np.unique(y_array)
+                if (
+                    len(np.unique(y_array[train])) != len(classes)
+                    or len(np.unique(y_array[test])) != len(classes)
+                ):
+                    raise ValueError(
+                        "A purged fold does not contain every class in both "
+                        "train and test. Reduce n_splits or use a dedicated "
+                        "calibration/test protocol."
+                    )
             n_purged = int(is_purged.sum())
             candidate_train = n_samples - len(test)
             self._last_split_metadata = {
