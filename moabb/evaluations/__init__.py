@@ -16,6 +16,7 @@ from .splitters import (
     CrossSessionSplitter,
     CrossSubjectSplitter,
     LearningCurveSplitter,
+    PurgedEpochKFold,
     WithinSessionSplitter,
     WithinSubjectSplitter,
 )
