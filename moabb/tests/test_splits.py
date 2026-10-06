@@ -27,7 +27,9 @@ from moabb.evaluations.splitters import (
     CrossSessionSplitter,
     CrossSubjectSplitter,
     LearningCurveSplitter,
+    PurgedEpochKFold,
     WithinSessionSplitter,
+    epoch_interval_groups,
     WithinSubjectSplitter,
 )
 from moabb.paradigms.motor_imagery import FakeImageryParadigm
@@ -1358,3 +1360,124 @@ def test_cross_subject_calibration_keeps_every_target_session(data):
                 index=False, name=None
             )
         )
+
+
+
+def _timing_metadata(event_samples, *, runs=None, epoch_n_samples=500):
+    event_samples = np.asarray(event_samples, dtype=int)
+    if runs is None:
+        runs = np.repeat("0", len(event_samples))
+    return pd.DataFrame(
+        {
+            "run": np.asarray(runs, dtype=object),
+            "event_sample": event_samples,
+            "epoch_n_samples": np.full(len(event_samples), epoch_n_samples),
+        }
+    )
+
+
+def _fold_has_interval_overlap(train, test, timing):
+    runs = timing["run"].to_numpy()
+    starts = timing["event_sample"].to_numpy()
+    stops = starts + timing["epoch_n_samples"].to_numpy()
+    for train_index in train:
+        same_run_test = test[runs[test] == runs[train_index]]
+        if np.any(
+            (starts[train_index] < stops[same_run_test])
+            & (starts[same_run_test] < stops[train_index])
+        ):
+            return True
+    return False
+
+
+def test_purged_epoch_kfold_removes_underlying_signal_overlap():
+    timing = _timing_metadata(np.arange(20) * 100, epoch_n_samples=500)
+    groups = epoch_interval_groups(timing)
+    y = np.tile([0, 1], 10)
+
+    naive = StratifiedKFold(n_splits=5, shuffle=True, random_state=7)
+    naive_folds = list(naive.split(np.zeros(len(y)), y))
+    assert any(
+        _fold_has_interval_overlap(train, test, timing)
+        for train, test in naive_folds
+    )
+
+    purged = PurgedEpochKFold(n_splits=5)
+    purged_folds = list(purged.split(np.zeros(len(y)), y, groups))
+    assert len(purged_folds) == 5
+    assert all(
+        not _fold_has_interval_overlap(train, test, timing)
+        for train, test in purged_folds
+    )
+
+    tested = np.concatenate([test for _train, test in purged_folds])
+    np.testing.assert_array_equal(np.sort(tested), np.arange(len(y)))
+
+
+def test_purged_epoch_kfold_does_not_purge_across_run_boundaries():
+    timing = _timing_metadata(
+        [0, 100, 200, 300, 400, 0, 100, 200, 300, 400],
+        runs=["a"] * 5 + ["b"] * 5,
+        epoch_n_samples=500,
+    )
+    splitter = PurgedEpochKFold(n_splits=5)
+    folds = list(
+        splitter.split(
+            np.zeros(len(timing)),
+            groups=epoch_interval_groups(timing),
+        )
+    )
+    for train, test in folds:
+        assert not _fold_has_interval_overlap(train, test, timing)
+        test_runs = set(timing.iloc[test]["run"])
+        assert test_runs == {"a", "b"}
+
+
+def test_purged_epoch_kfold_fails_closed_without_true_timing():
+    splitter = PurgedEpochKFold(n_splits=2)
+    with pytest.raises(ValueError, match="requires true run/event timing"):
+        next(splitter.split(np.zeros(6), groups=None))
+
+    bad = np.asarray([["0", 0], ["0", 100]], dtype=object)
+    with pytest.raises(ValueError, match="shape"):
+        next(splitter.split(np.zeros(2), groups=bad))
+
+
+def test_purged_epoch_kfold_reports_purge_diagnostics():
+    timing = _timing_metadata(np.arange(10) * 100, epoch_n_samples=300)
+    splitter = PurgedEpochKFold(n_splits=5)
+    generator = splitter.split(
+        np.zeros(len(timing)),
+        groups=epoch_interval_groups(timing),
+    )
+    next(generator)
+    metadata = splitter.get_metadata()
+
+    assert metadata["n_purged_overlap"] > 0
+    assert 0 < metadata["purge_fraction"] <= 1
+
+
+def test_within_session_splitter_routes_epoch_timing_to_purged_cv():
+    metadata = _timing_metadata(
+        list(np.arange(10) * 100) + list(np.arange(10) * 100),
+        runs=["0"] * 10 + ["1"] * 10,
+        epoch_n_samples=300,
+    )
+    metadata["subject"] = 1
+    metadata["session"] = "0"
+    metadata.index = np.arange(len(metadata))
+    y = np.tile([0, 1], 10)
+
+    splitter = WithinSessionSplitter(
+        n_folds=5,
+        shuffle=False,
+        cv_class=PurgedEpochKFold,
+        groups=epoch_interval_groups,
+    )
+    folds = list(splitter.split(y, metadata))
+
+    assert len(folds) == 5
+    assert all(
+        not _fold_has_interval_overlap(train, test, metadata)
+        for train, test in folds
+    )
