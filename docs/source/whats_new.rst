@@ -18,8 +18,8 @@ What's new
 
 .. _current:
 
-Version 1.8  (Source - GitHub)
--------------------------------
+Version 1.8.0 (2026-10-06)
+--------------------------
 
 Enhancements
 ~~~~~~~~~~~~
@@ -152,6 +152,7 @@ Bugs
 - Fix the two install pages asking for optional extras MOABB does not have: the pip install page gave ``pip install moabb[deepleaning,carbonemission,docs]``, which is missing the ``r`` of ``deeplearning``, and pip only warns about an unrecognised extra, so following that page left ``braindecode`` uninstalled. The from-sources page asked for ``external``, removed in 1.2.0 (by `Iain`_).
 - Fix evaluations passing NumPy arrays instead of :class:`mne.Epochs` to :class:`moabb.pipelines.classification.SSVEP_itCCA` and :class:`moabb.pipelines.classification.SSVEP_eCCA`, whose ``fit`` then raised ``ValueError: X should be an MNE Epochs object.`` The check that switches an evaluation to epochs only listed ``SSVEP_CCA``, ``SSVEP_TRCA`` and ``SSVEP_MsetCCA`` (by `Arthur031221`_)
 - Fix :func:`moabb.analysis.meta_analysis.compute_pvals_wilcoxon` reporting the wrong tail when the sign of the mean paired difference disagrees with the signed-rank statistic: the one-tailed p-value is now taken directly from ``scipy.stats.wilcoxon(..., alternative="greater")`` instead of halving the two-sided value and choosing the side from the mean (:gh:`1177` by `Azra Bano`_)
+- Fix equation formatting in :func:`moabb.analysis.meta_analysis.compute_pvals_corrected_ttest` and the surrounding docstrings so Sphinx renders the Nadeau & Bengio variance correction and :math:`n_2/n_1` ratio instead of raw ``\frac`` source (:gh:`1204` by `Quentin Barthelemy`_).
 - Resample the 600 Hz recordings of subject ``zdvm`` (bases 2, 3, 5 and 7) in :class:`moabb.datasets.MartinezCagigal2023Pary` to the declared 256 Hz on load, fixing the ``ValueError`` raised when the ``CVEP`` paradigm concatenated the 601-sample epochs of those sessions with the 257-sample epochs of every other recording (:gh:`1201` by `LiQing`_)
 - Read and write the BIDS JSON sidecars and the electrodes TSV in ``bids_interface`` as UTF-8, the encoding ``mne_bids`` writes them in, completing :gh:`1059`. On Windows the locale codepage was used, so adding ``PublicationYear`` to a ``dataset_description.json`` with non-ASCII author names wrote them back garbled, or raised ``UnicodeDecodeError`` (:gh:`1231` by `Rızgar Ozan`_)
 
