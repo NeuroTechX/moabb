@@ -638,8 +638,9 @@ class BaseEvaluation(ABC):
             "cache_config": self.cache_config,
             "postprocess_pipeline": postprocess_pipeline,
             "process_pipelines": None if requires_epochs else [process_pipeline],
-            "include_epoch_timing": requires_epoch_timing,
         }
+        if requires_epoch_timing:
+            kwargs["include_epoch_timing"] = True
         if subjects is not None:
             kwargs["subjects"] = subjects
         return self.paradigm.get_data(**kwargs)
