@@ -1,7 +1,7 @@
 """
-=====================================
+======================================
 Check paradigm metadata before loading
-=====================================
+======================================
 
 Use :meth:`moabb.paradigms.MotorImagery.is_valid` on an existing MOABB dataset
 instance to check its declared paradigm and events without loading recordings.
@@ -25,7 +25,7 @@ from moabb.paradigms import MotorImagery
 
 ###############################################################################
 # Require two overlapping classes explicitly
-# -----------------------------------------
+# ------------------------------------------
 # AlexMI declares right-hand, feet and rest events, but not left-hand events.
 # BNCI2014_001 declares both requested hand events. Neither constructor below
 # downloads data. The check does not call ``get_data``, ``data_path``,
@@ -47,7 +47,7 @@ print(json.dumps(report, indent=2))
 
 ###############################################################################
 # Preserve the native n_classes semantics
-# --------------------------------------
+# ---------------------------------------
 # With ``n_classes=None`` (the default), naming events does NOT require two
 # overlapping classes. Thus this predicate accepts AlexMI. It still rejects a
 # non-imagery dataset. Use ``n_classes=2`` when two overlapping classes are your
