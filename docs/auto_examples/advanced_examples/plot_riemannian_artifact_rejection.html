@@ -67,7 +67,7 @@
 
     <script src="../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../_static/documentation_options.js?v=797ada32"></script>
+    <script src="../../_static/documentation_options.js?v=1e7238b3"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -144,7 +144,7 @@
     
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.8.0dev0" />
+  <meta name="docsearch:version" content="1.8.0" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -540,6 +540,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/plot_disk_cache.html">Cache on disk intermediate data processing states</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/plot_explore_paradigm.html">Explore Paradigm Object</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/plot_fixed_interval_windows.html">Fixed interval windows processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/plot_metadata_preflight.html">Check paradigm metadata before loading</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../how_to_benchmark/index.html">Benchmarking and Pipeline Evaluation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -2965,7 +2966,7 @@ events: [Target, NonTarget] | interval: [0, 0.8]</div></div></label><div class="
             func: callable, default=None<br><br>The callable to use for the transformation. This will be passed<br>the same arguments as transform, with args and kwargs forwarded.<br>If func is None, then func will be the identity function.</span>
         </a>
     </td>
-            <td class="value">&lt;function imp...x7efcad1bec00&gt;</td>
+            <td class="value">&lt;function imp...x7f3a293cf240&gt;</td>
         </tr>
 
 
@@ -3479,42 +3480,42 @@ downstream classification performance.</p>
 </span>    <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">r</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">preprocessing</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s2">iRPF</span><span class="s2">&quot;</span><span class="w">
 </span></pre></div></div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>BNCI2014-009-WithinSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]
-BNCI2014-009-WithinSession:  50%|█████     | 1/2 [00:20&lt;00:20, 20.08s/it]
-BNCI2014-009-WithinSession: 100%|██████████| 2/2 [00:40&lt;00:00, 20.07s/it]
-BNCI2014-009-WithinSession: 100%|██████████| 2/2 [00:40&lt;00:00, 20.07s/it]
+BNCI2014-009-WithinSession:  50%|█████     | 1/2 [00:15&lt;00:15, 15.35s/it]
+BNCI2014-009-WithinSession: 100%|██████████| 2/2 [00:30&lt;00:00, 15.18s/it]
+BNCI2014-009-WithinSession: 100%|██████████| 2/2 [00:30&lt;00:00, 15.20s/it]
 
 BNCI2014-009-WithinSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]  RP: rejected 5/576 epochs
   RP: rejected 10/576 epochs
   RP: rejected 9/576 epochs
 
-BNCI2014-009-WithinSession:  50%|█████     | 1/2 [00:21&lt;00:21, 21.59s/it]  RP: rejected 12/576 epochs
+BNCI2014-009-WithinSession:  50%|█████     | 1/2 [00:16&lt;00:16, 16.13s/it]  RP: rejected 12/576 epochs
   RP: rejected 11/576 epochs
   RP: rejected 1/576 epochs
 
-BNCI2014-009-WithinSession: 100%|██████████| 2/2 [00:43&lt;00:00, 21.56s/it]
-BNCI2014-009-WithinSession: 100%|██████████| 2/2 [00:43&lt;00:00, 21.56s/it]
+BNCI2014-009-WithinSession: 100%|██████████| 2/2 [00:32&lt;00:00, 16.37s/it]
+BNCI2014-009-WithinSession: 100%|██████████| 2/2 [00:32&lt;00:00, 16.33s/it]
 
 BNCI2014-009-WithinSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]  RPF: rejected 30/576 epochs
   RPF: rejected 35/576 epochs
   RPF: rejected 23/576 epochs
 
-BNCI2014-009-WithinSession:  50%|█████     | 1/2 [00:24&lt;00:24, 24.13s/it]  RPF: rejected 26/576 epochs
+BNCI2014-009-WithinSession:  50%|█████     | 1/2 [00:18&lt;00:18, 18.30s/it]  RPF: rejected 26/576 epochs
   RPF: rejected 18/576 epochs
   RPF: rejected 29/576 epochs
 
-BNCI2014-009-WithinSession: 100%|██████████| 2/2 [00:48&lt;00:00, 24.02s/it]
-BNCI2014-009-WithinSession: 100%|██████████| 2/2 [00:48&lt;00:00, 24.04s/it]
+BNCI2014-009-WithinSession: 100%|██████████| 2/2 [00:36&lt;00:00, 18.42s/it]
+BNCI2014-009-WithinSession: 100%|██████████| 2/2 [00:36&lt;00:00, 18.40s/it]
 
 BNCI2014-009-WithinSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]  iRPF: GFRMS=9, RPF=39, union=48/576 epochs rejected
   iRPF: GFRMS=9, RPF=43, union=52/576 epochs rejected
   iRPF: GFRMS=9, RPF=41, union=50/576 epochs rejected
 
-BNCI2014-009-WithinSession:  50%|█████     | 1/2 [00:23&lt;00:23, 23.54s/it]  iRPF: GFRMS=9, RPF=37, union=46/576 epochs rejected
+BNCI2014-009-WithinSession:  50%|█████     | 1/2 [00:17&lt;00:17, 17.97s/it]  iRPF: GFRMS=9, RPF=37, union=46/576 epochs rejected
   iRPF: GFRMS=9, RPF=27, union=36/576 epochs rejected
   iRPF: GFRMS=9, RPF=29, union=38/576 epochs rejected
 
-BNCI2014-009-WithinSession: 100%|██████████| 2/2 [00:46&lt;00:00, 23.34s/it]
-BNCI2014-009-WithinSession: 100%|██████████| 2/2 [00:46&lt;00:00, 23.37s/it]
+BNCI2014-009-WithinSession: 100%|██████████| 2/2 [00:35&lt;00:00, 17.99s/it]
+BNCI2014-009-WithinSession: 100%|██████████| 2/2 [00:35&lt;00:00, 17.98s/it]
 </pre></div>
 </div>
 </section>
@@ -3713,8 +3714,8 @@ artifact cleaning in under 8 ms per epoch. The RP, RPF, and iRPF
 methods demonstrated here can be readily integrated into any MOABB
 analysis pipeline using the pipeline surgery approach shown in this
 tutorial.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (3 minutes 16.029 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  825 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (2 minutes 31.750 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  771 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-riemannian-artifact-rejection-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/7860f210d422090c0b7ae4e7200ef3d1/plot_riemannian_artifact_rejection.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_riemannian_artifact_rejection.ipynb</span></code></a></p>

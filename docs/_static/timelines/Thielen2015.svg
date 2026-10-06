@@ -6,7 +6,7 @@
   <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:date>2026-10-06T01:08:42.798566</dc:date>
+    <dc:date>2026-10-06T14:32:56.736886</dc:date>
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
@@ -40,7 +40,7 @@ Q 20.202221 44.111787 20.202221 47.362342
 L 20.202221 108.310252 
 Q 20.202221 111.560808 23.452776 111.560808 
 z
-" clip-path="url(#p93d1cb0d98)" style="fill: #80cbc4; stroke: #00695c; stroke-width: 1.2"/>
+" clip-path="url(#p1f18b150e3)" style="fill: #80cbc4; stroke: #00695c; stroke-width: 1.2"/>
    </g>
    <g id="patch_3">
     <path d="M 81.498405 111.560808 
@@ -53,7 +53,7 @@ Q 78.24785 44.111787 78.24785 47.362342
 L 78.24785 108.310252 
 Q 78.24785 111.560808 81.498405 111.560808 
 z
-" clip-path="url(#p93d1cb0d98)" style="fill: url(#h313131705e); stroke: #004d40; stroke-width: 1.2"/>
+" clip-path="url(#p1f18b150e3)" style="fill: url(#h32ebb46a34); stroke: #004d40; stroke-width: 1.2"/>
    </g>
    <g id="patch_4">
     <path d="M 452.990431 111.560808 
@@ -66,30 +66,30 @@ Q 449.739875 44.111787 449.739875 47.362342
 L 449.739875 108.310252 
 Q 449.739875 111.560808 452.990431 111.560808 
 z
-" clip-path="url(#p93d1cb0d98)" style="fill: #4db6ac; stroke: #00695c; stroke-width: 1.2"/>
+" clip-path="url(#p1f18b150e3)" style="fill: #4db6ac; stroke: #00695c; stroke-width: 1.2"/>
    </g>
    <g id="line2d_1">
     <path d="M 23.452776 112.373446 
 L 23.452776 117.249279 
-" clip-path="url(#p93d1cb0d98)" style="fill: none; stroke: #7f7f7f; stroke-width: 0.8; stroke-linecap: square"/>
+" clip-path="url(#p1f18b150e3)" style="fill: none; stroke: #7f7f7f; stroke-width: 0.8; stroke-linecap: square"/>
    </g>
    <g id="line2d_2">
     <path d="M 81.498405 112.373446 
 L 81.498405 117.249279 
-" clip-path="url(#p93d1cb0d98)" style="fill: none; stroke: #7f7f7f; stroke-width: 0.8; stroke-linecap: square"/>
+" clip-path="url(#p1f18b150e3)" style="fill: none; stroke: #7f7f7f; stroke-width: 0.8; stroke-linecap: square"/>
    </g>
    <g id="line2d_3">
     <path d="M 452.990431 112.373446 
 L 452.990431 117.249279 
-" clip-path="url(#p93d1cb0d98)" style="fill: none; stroke: #7f7f7f; stroke-width: 0.8; stroke-linecap: square"/>
+" clip-path="url(#p1f18b150e3)" style="fill: none; stroke: #7f7f7f; stroke-width: 0.8; stroke-linecap: square"/>
    </g>
    <g id="line2d_4">
     <path d="M 511.03606 112.373446 
 L 511.03606 117.249279 
-" clip-path="url(#p93d1cb0d98)" style="fill: none; stroke: #7f7f7f; stroke-width: 0.8; stroke-linecap: square"/>
+" clip-path="url(#p1f18b150e3)" style="fill: none; stroke: #7f7f7f; stroke-width: 0.8; stroke-linecap: square"/>
    </g>
    <g id="text_1">
-    <g clip-path="url(#p93d1cb0d98)">
+    <g clip-path="url(#p1f18b150e3)">
      <!-- Cue -->
      <g style="fill: #2c3e50" transform="translate(41.324262 80.563836) scale(0.105 -0.105)">
       <defs>
@@ -170,7 +170,7 @@ z
     </g>
    </g>
    <g id="text_2">
-    <g clip-path="url(#p93d1cb0d98)">
+    <g clip-path="url(#p1f18b150e3)">
      <!-- Code Stimulation -->
      <g style="fill: #ffffff" transform="translate(221.191684 80.304442) scale(0.095 -0.095)">
       <defs>
@@ -402,7 +402,7 @@ z
     </g>
    </g>
    <g id="text_3">
-    <g clip-path="url(#p93d1cb0d98)">
+    <g clip-path="url(#p1f18b150e3)">
      <!-- Feedback -->
      <g style="fill: #ffffff" transform="translate(453.855198 80.564246) scale(0.105 -0.105)">
       <defs>
@@ -1955,12 +1955,12 @@ z
   </g>
  </g>
  <defs>
-  <clipPath id="p93d1cb0d98">
+  <clipPath id="p1f18b150e3">
    <rect x="7.2" y="29.077969" width="544.468" height="121.895821"/>
   </clipPath>
  </defs>
  <defs>
-  <pattern id="h313131705e" patternUnits="userSpaceOnUse" x="0" y="0" width="72" height="72">
+  <pattern id="h32ebb46a34" patternUnits="userSpaceOnUse" x="0" y="0" width="72" height="72">
    <rect x="0" y="0" width="73" height="73" fill="#00897b"/>
    <path d="M 3 72 
 L 3 0 

@@ -67,7 +67,7 @@
 
     <script src="../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../_static/documentation_options.js?v=797ada32"></script>
+    <script src="../../_static/documentation_options.js?v=1e7238b3"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -143,7 +143,7 @@
     
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.8.0dev0" />
+  <meta name="docsearch:version" content="1.8.0" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -539,6 +539,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/plot_disk_cache.html">Cache on disk intermediate data processing states</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/plot_explore_paradigm.html">Explore Paradigm Object</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/plot_fixed_interval_windows.html">Fixed interval windows processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/plot_metadata_preflight.html">Check paradigm metadata before loading</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../how_to_benchmark/index.html">Benchmarking and Pipeline Evaluation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -695,20 +696,20 @@ a sampling rate of 200 Hz.</p>
 </span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">results</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-moabb-evaluations-base sphx-glr-backref-type-py-method reference internal" href="../../generated/moabb.evaluations.base.BaseEvaluation.html#moabb.evaluations.base.BaseEvaluation.process" title="moabb.evaluations.base.BaseEvaluation.process"><span class="n">evaluation</span><span class="o">.</span><span class="n">process</span></a><span class="p">(</span><span class="p">{</span><span class="s2">&quot;</span><span class="s2">csp+lda</span><span class="s2">&quot;</span><span class="p">:</span> <a class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="sklearn.pipeline.Pipeline"><span class="n">csp_lda</span></a><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">ts+lr</span><span class="s2">&quot;</span><span class="p">:</span> <a class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="sklearn.pipeline.Pipeline"><span class="n">ts_lr</span></a><span class="p">}</span><span class="p">)</span><span class="w">
 </span><span class="nb">print</span><span class="p">(</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-method reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.head.html#pandas.DataFrame.head" title="pandas.DataFrame.head"><span class="n">results</span><span class="o">.</span><span class="n">head</span></a><span class="p">(</span><span class="p">)</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>This is nemar-py 0.3.2.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>This is nemar-py 0.3.3.
 Preparing to download nm000115 from https://data.nemar.org/
-This is nemar-py 0.3.2.
+This is nemar-py 0.3.3.
 Preparing to download nm000115 from https://data.nemar.org/
-This is nemar-py 0.3.2.
+This is nemar-py 0.3.3.
 Preparing to download nm000115 from https://data.nemar.org/
-This is nemar-py 0.3.2.
+This is nemar-py 0.3.3.
 Preparing to download nm000115 from https://data.nemar.org/
       score      time  samples  ...   dataset  pipeline  codecarbon_task_name
-0  0.908000  0.030923    100.0  ...  Zhou2016     ts+lr
-1  0.821970  0.036208    119.0  ...  Zhou2016     ts+lr
-2  0.954000  0.031469    100.0  ...  Zhou2016     ts+lr
-3  0.837037  0.029081     90.0  ...  Zhou2016     ts+lr
-4  0.920000  0.031479    100.0  ...  Zhou2016     ts+lr
+0  0.908000  0.023484    100.0  ...  Zhou2016     ts+lr
+1  0.821970  0.026734    119.0  ...  Zhou2016     ts+lr
+2  0.954000  0.023679    100.0  ...  Zhou2016     ts+lr
+3  0.837037  0.021062     90.0  ...  Zhou2016     ts+lr
+4  0.920000  0.022249    100.0  ...  Zhou2016     ts+lr
 
 [5 rows x 13 columns]
 </pre></div>
@@ -727,24 +728,24 @@ as well as the list of datasets with valid channels.</p>
 </span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">results</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-moabb-evaluations-base sphx-glr-backref-type-py-method reference internal" href="../../generated/moabb.evaluations.base.BaseEvaluation.html#moabb.evaluations.base.BaseEvaluation.process" title="moabb.evaluations.base.BaseEvaluation.process"><span class="n">evaluation</span><span class="o">.</span><span class="n">process</span></a><span class="p">(</span><span class="p">{</span><span class="s2">&quot;</span><span class="s2">csp+lda</span><span class="s2">&quot;</span><span class="p">:</span> <a class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="sklearn.pipeline.Pipeline"><span class="n">csp_lda</span></a><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">ts+lr</span><span class="s2">&quot;</span><span class="p">:</span> <a class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="sklearn.pipeline.Pipeline"><span class="n">ts_lr</span></a><span class="p">}</span><span class="p">)</span><span class="w">
 </span><span class="nb">print</span><span class="p">(</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-method reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.head.html#pandas.DataFrame.head" title="pandas.DataFrame.head"><span class="n">results</span><span class="o">.</span><span class="n">head</span></a><span class="p">(</span><span class="p">)</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>This is nemar-py 0.3.2.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>This is nemar-py 0.3.3.
 Preparing to download nm000115 from https://data.nemar.org/
-This is nemar-py 0.3.2.
+This is nemar-py 0.3.3.
 Preparing to download nm000115 from https://data.nemar.org/
-This is nemar-py 0.3.2.
+This is nemar-py 0.3.3.
 Preparing to download nm000115 from https://data.nemar.org/
-This is nemar-py 0.3.2.
+This is nemar-py 0.3.3.
 Preparing to download nm000115 from https://data.nemar.org/
-This is nemar-py 0.3.2.
+This is nemar-py 0.3.3.
 Preparing to download nm000115 from https://data.nemar.org/
-This is nemar-py 0.3.2.
+This is nemar-py 0.3.3.
 Preparing to download nm000115 from https://data.nemar.org/
       score      time  samples  ...   dataset  pipeline  codecarbon_task_name
-0  0.920000  0.031582    100.0  ...  Zhou2016     ts+lr
-1  0.928000  0.031466    100.0  ...  Zhou2016     ts+lr
-2  0.832099  0.029186     90.0  ...  Zhou2016     ts+lr
-3  0.855429  0.035755    119.0  ...  Zhou2016     ts+lr
-4  0.918000  0.032109    100.0  ...  Zhou2016     ts+lr
+0  0.920000  0.022282    100.0  ...  Zhou2016     ts+lr
+1  0.928000  0.024541    100.0  ...  Zhou2016     ts+lr
+2  0.832099  0.021223     90.0  ...  Zhou2016     ts+lr
+3  0.855429  0.025423    119.0  ...  Zhou2016     ts+lr
+4  0.918000  0.022494    100.0  ...  Zhou2016     ts+lr
 
 [5 rows x 13 columns]
 </pre></div>
@@ -759,8 +760,8 @@ regression computed in the tangent space of the covariance matrices.</p>
 </span><a class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure"><span class="n">fig</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-moabb-analysis-plotting sphx-glr-backref-type-py-function reference internal" href="../../generated/moabb.analysis.plotting.paired_plot.html#moabb.analysis.plotting.paired_plot" title="moabb.analysis.plotting.paired_plot"><span class="n">moabb_plt</span><span class="o">.</span><span class="n">paired_plot</span></a><span class="p">(</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">results</span></a><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">csp+lda</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">ts+lr</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">chance_level</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">chance_levels</span></a><span class="p">)</span><span class="w">
 </span><a class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">(</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" srcset="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" alt="plot select electrodes resample" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 38.301 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  800 MB</p>
+<img src="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" srcset="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" alt="plot select electrodes resample" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 38.235 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  908 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-select-electrodes-resample-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/657e87726c4d308a5b176dbb4277773e/plot_select_electrodes_resample.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_select_electrodes_resample.ipynb</span></code></a></p>

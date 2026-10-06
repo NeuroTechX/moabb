@@ -6,7 +6,7 @@
   <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:date>2026-10-06T01:08:39.238032</dc:date>
+    <dc:date>2026-10-06T14:32:53.520359</dc:date>
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
@@ -40,7 +40,7 @@ Q 11.607424 34.174053 11.607424 35.275908
 L 11.607424 55.935707 
 Q 11.607424 57.037563 12.70928 57.037563 
 z
-" clip-path="url(#p4c98fad970)" style="fill: #bbdefb; stroke: #64b5f6; stroke-width: 1.2"/>
+" clip-path="url(#pb11538088b)" style="fill: #bbdefb; stroke: #64b5f6; stroke-width: 1.2"/>
    </g>
    <g id="patch_3">
     <path d="M 679.154409 57.037563 
@@ -53,20 +53,20 @@ Q 678.052553 34.174053 678.052553 35.275908
 L 678.052553 55.935707 
 Q 678.052553 57.037563 679.154409 57.037563 
 z
-" clip-path="url(#p4c98fad970)" style="fill: #4285f4; stroke: #1565c0; stroke-width: 1.2"/>
+" clip-path="url(#pb11538088b)" style="fill: #4285f4; stroke: #1565c0; stroke-width: 1.2"/>
    </g>
    <g id="line2d_1">
     <path d="M 12.70928 57.313027 
 L 12.70928 58.965811 
-" clip-path="url(#p4c98fad970)" style="fill: none; stroke: #7f7f7f; stroke-width: 0.8; stroke-linecap: square"/>
+" clip-path="url(#pb11538088b)" style="fill: none; stroke: #7f7f7f; stroke-width: 0.8; stroke-linecap: square"/>
    </g>
    <g id="line2d_2">
     <path d="M 679.154409 57.313027 
 L 679.154409 58.965811 
-" clip-path="url(#p4c98fad970)" style="fill: none; stroke: #7f7f7f; stroke-width: 0.8; stroke-linecap: square"/>
+" clip-path="url(#pb11538088b)" style="fill: none; stroke: #7f7f7f; stroke-width: 0.8; stroke-linecap: square"/>
    </g>
    <g id="text_1">
-    <g clip-path="url(#p4c98fad970)">
+    <g clip-path="url(#pb11538088b)">
      <!-- Fixation + -->
      <g style="fill: #2c3e50" transform="translate(315.736141 48.333757) scale(0.105 -0.105)">
       <defs>
@@ -239,7 +239,7 @@ z
     </g>
    </g>
    <g id="text_2">
-    <g clip-path="url(#p4c98fad970)">
+    <g clip-path="url(#pb11538088b)">
      <!-- Motor Imagery -->
      <g style="fill: #ffffff" transform="translate(645.849419 48.073581) scale(0.095 -0.095)">
       <defs>
@@ -930,7 +930,7 @@ z
   </g>
  </g>
  <defs>
-  <clipPath id="p4c98fad970">
+  <clipPath id="pb11538088b">
    <rect x="7.2" y="29.077969" width="698.123488" height="35.810318"/>
   </clipPath>
  </defs>

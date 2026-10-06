@@ -14,10 +14,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://moabb.neurotechx.com/docs/generated/moabb.paradigms.MotorImagery.html" />
 <meta property="og:site_name" content="MOABB - Mother of all BCI Benchmarks" />
-<meta property="og:description" content="Examples using moabb.paradigms.MotorImagery: Explore Paradigm Object Fixed interval windows processing Examples of analysis of a Dreyer2023 A dataset. GridSearch within a session Pseudo-Online Moto..." />
+<meta property="og:description" content="Examples using moabb.paradigms.MotorImagery: Explore Paradigm Object Fixed interval windows processing Check paradigm metadata before loading Examples of analysis of a Dreyer2023 A dataset. GridSea..." />
 <meta property="og:image" content="https://moabb.neurotechx.com/docs/_static/moabb_og_card.png" />
 <meta property="og:image:alt" content="MOABB - Mother of all BCI Benchmarks: 158 open EEG datasets for reproducible BCI research" />
-<meta name="description" content="Examples using moabb.paradigms.MotorImagery: Explore Paradigm Object Fixed interval windows processing Examples of analysis of a Dreyer2023 A dataset. GridSearch within a session Pseudo-Online Moto..." />
+<meta name="description" content="Examples using moabb.paradigms.MotorImagery: Explore Paradigm Object Fixed interval windows processing Check paradigm metadata before loading Examples of analysis of a Dreyer2023 A dataset. GridSea..." />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:site" content="@NeuroTechX" />
 
@@ -67,7 +67,7 @@
 
     <script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=797ada32"></script>
+    <script src="../_static/documentation_options.js?v=1e7238b3"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -143,7 +143,7 @@
     
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.8.0dev0" />
+  <meta name="docsearch:version" content="1.8.0" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -687,6 +687,7 @@
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Mainsah2025_S2.html">moabb.datasets.Mainsah2025_S2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Simoes2020.html">moabb.datasets.Simoes2020</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Speier2017.html">moabb.datasets.Speier2017</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Yagan2023.html">moabb.datasets.Yagan2023</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Zhang2025.html">moabb.datasets.Zhang2025</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Zheng2020.html">moabb.datasets.Zheng2020</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BCIComp2020WalkingERP.html">moabb.datasets.BCIComp2020WalkingERP</a></li>
@@ -987,6 +988,9 @@ sklearn scorer.</p>
 </div><div class="sphx-glr-thumbcontainer" tooltip="This example shows how to process a dataset using the moabb.paradigms.FixedIntervalWindowsProcessing paradigm. This paradigm creates epochs at fixed intervals, ignoring the stim channel and events of the datasets. Therefore, it is compatible with all the datasets. Unfortunately, this paradigm is not compatible with the MOABB evaluation framework. However, it can be used to process datasets for unsupervised algorithms."><img alt="" src="../_images/sphx_glr_plot_fixed_interval_windows_thumb.png" />
 <p><a class="reference internal" href="../auto_examples/data_management_and_configuration/plot_fixed_interval_windows.html"><span class="doc">Fixed interval windows processing</span></a></p>
   <div class="sphx-glr-thumbnail-title">Fixed interval windows processing</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Use moabb.paradigms.MotorImagery.is_valid on an existing MOABB dataset instance to check its declared paradigm and events without loading recordings. This is a paradigm-only check, not a guarantee that an evaluation can run. The constructors used below only initialize metadata; that is not a guarantee about every dataset constructor, especially custom ones."><img alt="" src="../_images/sphx_glr_plot_metadata_preflight_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/data_management_and_configuration/plot_metadata_preflight.html"><span class="doc">Check paradigm metadata before loading</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Check paradigm metadata before loading</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="This example shows how to plot Dreyer2023A Left-Right Imagery ROC AUC scores obtained with CSP+LDA pipeline versus demographic information of the examined subjects (gender and age) and experimenters (gender)."><img alt="" src="../_images/sphx_glr_plot_dreyer_clf_scores_vs_subj_info_thumb.png" />
 <p><a class="reference internal" href="../auto_examples/advanced_examples/plot_dreyer_clf_scores_vs_subj_info.html"><span class="doc">Examples of analysis of a Dreyer2023 A dataset.</span></a></p>
   <div class="sphx-glr-thumbnail-title">Examples of analysis of a Dreyer2023 A dataset.</div>

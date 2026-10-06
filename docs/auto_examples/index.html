@@ -67,7 +67,7 @@
 
     <script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=797ada32"></script>
+    <script src="../_static/documentation_options.js?v=1e7238b3"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -143,7 +143,7 @@
     
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.8.0dev0" />
+  <meta name="docsearch:version" content="1.8.0" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -539,6 +539,7 @@
 <li class="toctree-l2"><a class="reference internal" href="data_management_and_configuration/plot_disk_cache.html">Cache on disk intermediate data processing states</a></li>
 <li class="toctree-l2"><a class="reference internal" href="data_management_and_configuration/plot_explore_paradigm.html">Explore Paradigm Object</a></li>
 <li class="toctree-l2"><a class="reference internal" href="data_management_and_configuration/plot_fixed_interval_windows.html">Fixed interval windows processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_management_and_configuration/plot_metadata_preflight.html">Check paradigm metadata before loading</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="how_to_benchmark/index.html">Benchmarking and Pipeline Evaluation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -718,6 +719,9 @@ They reflect best practices in assessing model generalization across sessions an
 </div><div class="sphx-glr-thumbcontainer" tooltip="This example shows how to process a dataset using the moabb.paradigms.FixedIntervalWindowsProcessing paradigm. This paradigm creates epochs at fixed intervals, ignoring the stim channel and events of the datasets. Therefore, it is compatible with all the datasets. Unfortunately, this paradigm is not compatible with the MOABB evaluation framework. However, it can be used to process datasets for unsupervised algorithms."><img alt="" src="../_images/sphx_glr_plot_fixed_interval_windows_thumb.png" />
 <p><a class="reference internal" href="data_management_and_configuration/plot_fixed_interval_windows.html"><span class="doc">Fixed interval windows processing</span></a></p>
   <div class="sphx-glr-thumbnail-title">Fixed interval windows processing</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Use moabb.paradigms.MotorImagery.is_valid on an existing MOABB dataset instance to check its declared paradigm and events without loading recordings. This is a paradigm-only check, not a guarantee that an evaluation can run. The constructors used below only initialize metadata; that is not a guarantee about every dataset constructor, especially custom ones."><img alt="" src="../_images/sphx_glr_plot_metadata_preflight_thumb.png" />
+<p><a class="reference internal" href="data_management_and_configuration/plot_metadata_preflight.html"><span class="doc">Check paradigm metadata before loading</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Check paradigm metadata before loading</div>
 </div></div></section>
 <section id="benchmarking-and-pipeline-evaluation">
 <h1>Benchmarking and Pipeline Evaluation<a class="headerlink" href="#benchmarking-and-pipeline-evaluation" title="Link to this heading">#</a></h1>

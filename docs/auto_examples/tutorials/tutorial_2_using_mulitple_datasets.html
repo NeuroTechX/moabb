@@ -67,7 +67,7 @@
 
     <script src="../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../_static/documentation_options.js?v=797ada32"></script>
+    <script src="../../_static/documentation_options.js?v=1e7238b3"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -143,7 +143,7 @@
     
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.8.0dev0" />
+  <meta name="docsearch:version" content="1.8.0" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -539,6 +539,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/plot_disk_cache.html">Cache on disk intermediate data processing states</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/plot_explore_paradigm.html">Explore Paradigm Object</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/plot_fixed_interval_windows.html">Fixed interval windows processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/plot_metadata_preflight.html">Check paradigm metadata before loading</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../how_to_benchmark/index.html">Benchmarking and Pipeline Evaluation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -691,19 +692,18 @@ the evaluation from scratch if a problem occurs.</p>
 </span><a class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="sklearn.pipeline.Pipeline"><span class="n">pipeline</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline"><span class="n">make_pipeline</span></a><span class="p">(</span><a class="sphx-glr-backref-module-mne-decoding sphx-glr-backref-type-py-class reference external" href="https://mne.tools/stable/generated/mne.decoding.CSP.html#mne.decoding.CSP" title="mne.decoding.CSP"><span class="n">CSP</span></a><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span><span class="p">,</span> <a class="sphx-glr-backref-module-sklearn-discriminant_analysis sphx-glr-backref-type-py-class reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html#sklearn.discriminant_analysis.LinearDiscriminantAnalysis" title="sklearn.discriminant_analysis.LinearDiscriminantAnalysis"><span class="n">LDA</span></a><span class="p">(</span><span class="p">)</span><span class="p">)</span><span class="w">
 </span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">results</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-moabb-evaluations-base sphx-glr-backref-type-py-method reference internal" href="../../generated/moabb.evaluations.base.BaseEvaluation.html#moabb.evaluations.base.BaseEvaluation.process" title="moabb.evaluations.base.BaseEvaluation.process"><span class="n">evaluation</span><span class="o">.</span><span class="n">process</span></a><span class="p">(</span><span class="p">{</span><span class="s2">&quot;</span><span class="s2">csp+lda</span><span class="s2">&quot;</span><span class="p">:</span> <a class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="sklearn.pipeline.Pipeline"><span class="n">pipeline</span></a><span class="p">}</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>This is nemar-py 0.3.2.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>This is nemar-py 0.3.3.
 Preparing to download nm000115 from https://data.nemar.org/
-This is nemar-py 0.3.2.
+This is nemar-py 0.3.3.
 Preparing to download nm000115 from https://data.nemar.org/
-This is nemar-py 0.3.2.
+This is nemar-py 0.3.3.
 Preparing to download nm000115 from https://data.nemar.org/
-This is nemar-py 0.3.2.
+This is nemar-py 0.3.3.
 Preparing to download nm000115 from https://data.nemar.org/
-This is nemar-py 0.3.2.
+This is nemar-py 0.3.3.
 Preparing to download nm000115 from https://data.nemar.org/
-This is nemar-py 0.3.2.
+This is nemar-py 0.3.3.
 Preparing to download nm000115 from https://data.nemar.org/
-Retrying after failure when retrieving NEMAR index for nm000115 (5 retries remain).
 </pre></div>
 </div>
 </section>
@@ -723,8 +723,8 @@ is to plot the results from the three datasets with just one line.</p>
 </span><span class="p">)</span><span class="w">
 </span><a class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">(</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../../_images/sphx_glr_tutorial_2_using_mulitple_datasets_001.png" srcset="../../_images/sphx_glr_tutorial_2_using_mulitple_datasets_001.png" alt="dataset = Zhou2016, dataset = BNCI2014-001" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 16.986 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  631 MB</p>
+<img src="../../_images/sphx_glr_tutorial_2_using_mulitple_datasets_001.png" srcset="../../_images/sphx_glr_tutorial_2_using_mulitple_datasets_001.png" alt="dataset = Zhou2016, dataset = BNCI2014-001" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 17.345 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  652 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-tutorials-tutorial-2-using-mulitple-datasets-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/84cd0e0e206f46e9ff11a482df8a9b57/tutorial_2_using_mulitple_datasets.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">tutorial_2_using_mulitple_datasets.ipynb</span></code></a></p>

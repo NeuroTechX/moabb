@@ -6,7 +6,7 @@
   <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:date>2026-10-06T01:08:42.847093</dc:date>
+    <dc:date>2026-10-06T14:32:56.777625</dc:date>
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
@@ -40,7 +40,7 @@ Q 21.669639 45.808489 21.669639 49.425899
 L 21.669639 117.252332 
 Q 21.669639 120.869742 25.287049 120.869742 
 z
-" clip-path="url(#p226a7228f9)" style="fill: #80cbc4; stroke: #00695c; stroke-width: 1.2"/>
+" clip-path="url(#pad77f84ae8)" style="fill: #80cbc4; stroke: #00695c; stroke-width: 1.2"/>
    </g>
    <g id="patch_3">
     <path d="M 65.982909 120.869742 
@@ -53,7 +53,7 @@ Q 62.365499 45.808489 62.365499 49.425899
 L 62.365499 117.252332 
 Q 62.365499 120.869742 65.982909 120.869742 
 z
-" clip-path="url(#p226a7228f9)" style="fill: url(#h6cb9094e30); stroke: #004d40; stroke-width: 1.2"/>
+" clip-path="url(#pad77f84ae8)" style="fill: url(#h8d526c7ff7); stroke: #004d40; stroke-width: 1.2"/>
    </g>
    <g id="patch_4">
     <path d="M 591.368613 120.869742 
@@ -66,30 +66,30 @@ Q 587.751203 45.808489 587.751203 49.425899
 L 587.751203 117.252332 
 Q 587.751203 120.869742 591.368613 120.869742 
 z
-" clip-path="url(#p226a7228f9)" style="fill: #4db6ac; stroke: #00695c; stroke-width: 1.2"/>
+" clip-path="url(#pad77f84ae8)" style="fill: #4db6ac; stroke: #00695c; stroke-width: 1.2"/>
    </g>
    <g id="line2d_1">
     <path d="M 25.287049 121.774094 
 L 25.287049 127.200209 
-" clip-path="url(#p226a7228f9)" style="fill: none; stroke: #7f7f7f; stroke-width: 0.8; stroke-linecap: square"/>
+" clip-path="url(#pad77f84ae8)" style="fill: none; stroke: #7f7f7f; stroke-width: 0.8; stroke-linecap: square"/>
    </g>
    <g id="line2d_2">
     <path d="M 65.982909 121.774094 
 L 65.982909 127.200209 
-" clip-path="url(#p226a7228f9)" style="fill: none; stroke: #7f7f7f; stroke-width: 0.8; stroke-linecap: square"/>
+" clip-path="url(#pad77f84ae8)" style="fill: none; stroke: #7f7f7f; stroke-width: 0.8; stroke-linecap: square"/>
    </g>
    <g id="line2d_3">
     <path d="M 591.368613 121.774094 
 L 591.368613 127.200209 
-" clip-path="url(#p226a7228f9)" style="fill: none; stroke: #7f7f7f; stroke-width: 0.8; stroke-linecap: square"/>
+" clip-path="url(#pad77f84ae8)" style="fill: none; stroke: #7f7f7f; stroke-width: 0.8; stroke-linecap: square"/>
    </g>
    <g id="line2d_4">
     <path d="M 632.064473 121.774094 
 L 632.064473 127.200209 
-" clip-path="url(#p226a7228f9)" style="fill: none; stroke: #7f7f7f; stroke-width: 0.8; stroke-linecap: square"/>
+" clip-path="url(#pad77f84ae8)" style="fill: none; stroke: #7f7f7f; stroke-width: 0.8; stroke-linecap: square"/>
    </g>
    <g id="text_1">
-    <g clip-path="url(#p226a7228f9)">
+    <g clip-path="url(#pad77f84ae8)">
      <!-- Cue -->
      <g style="fill: #2c3e50" transform="translate(34.483651 86.066654) scale(0.105 -0.105)">
       <defs>
@@ -170,7 +170,7 @@ z
     </g>
    </g>
    <g id="text_2">
-    <g clip-path="url(#p226a7228f9)">
+    <g clip-path="url(#pad77f84ae8)">
      <!-- Code Stimulation -->
      <g style="fill: #ffffff" transform="translate(282.623027 85.80726) scale(0.095 -0.095)">
       <defs>
@@ -402,7 +402,7 @@ z
     </g>
    </g>
    <g id="text_3">
-    <g clip-path="url(#p226a7228f9)">
+    <g clip-path="url(#pad77f84ae8)">
      <!-- Feedback -->
      <g style="fill: #ffffff" transform="translate(583.558496 86.067064) scale(0.105 -0.105)">
       <defs>
@@ -1899,12 +1899,12 @@ z
   </g>
  </g>
  <defs>
-  <clipPath id="p226a7228f9">
+  <clipPath id="pad77f84ae8">
    <rect x="7.2" y="29.077969" width="670.082095" height="135.652866"/>
   </clipPath>
  </defs>
  <defs>
-  <pattern id="h6cb9094e30" patternUnits="userSpaceOnUse" x="0" y="0" width="72" height="72">
+  <pattern id="h8d526c7ff7" patternUnits="userSpaceOnUse" x="0" y="0" width="72" height="72">
    <rect x="0" y="0" width="73" height="73" fill="#00897b"/>
    <path d="M 3 72 
 L 3 0 

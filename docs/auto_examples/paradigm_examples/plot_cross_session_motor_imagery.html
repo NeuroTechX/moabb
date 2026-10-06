@@ -67,7 +67,7 @@
 
     <script src="../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../_static/documentation_options.js?v=797ada32"></script>
+    <script src="../../_static/documentation_options.js?v=1e7238b3"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -143,7 +143,7 @@
     
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.8.0dev0" />
+  <meta name="docsearch:version" content="1.8.0" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -539,6 +539,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/plot_disk_cache.html">Cache on disk intermediate data processing states</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/plot_explore_paradigm.html">Explore Paradigm Object</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/plot_fixed_interval_windows.html">Fixed interval windows processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/plot_metadata_preflight.html">Check paradigm metadata before loading</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../how_to_benchmark/index.html">Benchmarking and Pipeline Evaluation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -719,11 +720,11 @@ be overwritten if necessary.</p>
 </span><span class="nb">print</span><span class="p">(</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-method reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.head.html#pandas.DataFrame.head" title="pandas.DataFrame.head"><span class="n">results</span><span class="o">.</span><span class="n">head</span></a><span class="p">(</span><span class="p">)</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>      score      time  ...  pipeline                  codecarbon_task_name
-0  0.931713  0.289120  ...   CSP+LDA  8c79be3c-7de8-4b85-bda3-0440e315f347
-1  0.955440  0.178993  ...   CSP+LDA  604c7dac-b681-4743-b3cd-08b784ca51bd
-2  0.527199  0.185048  ...   CSP+LDA  c61ab3ce-98e1-4ebd-995e-26fe11197a51
-3  0.646219  0.179669  ...   CSP+LDA  d6aaca7a-468e-4cbb-a91e-75e7a83c11a9
-4  0.950424  0.080310  ...     RG+LR  9d20501b-7f06-4ca7-b3e7-8a786ca2d818
+0  0.931713  0.228357  ...   CSP+LDA  611199c3-1028-4b24-bb82-0b4601c082e0
+1  0.955440  0.205361  ...   CSP+LDA  8f6fe2d6-0386-474c-8839-b7cf9336370e
+2  0.527199  0.120877  ...   CSP+LDA  d9a3c273-5c19-4f77-9d42-7711b197fdb4
+3  0.646219  0.159650  ...   CSP+LDA  a4baa510-e951-4d15-b8dc-c522c3c76a6c
+4  0.950424  0.066865  ...     RG+LR  f9ba7cb9-dd98-40a7-937f-5f7a4851c137
 
 [5 rows x 13 columns]
 </pre></div>
@@ -746,8 +747,8 @@ points fall in its quadrant.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure"><span class="n">fig</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-moabb-analysis-plotting sphx-glr-backref-type-py-function reference internal" href="../../generated/moabb.analysis.plotting.paired_plot.html#moabb.analysis.plotting.paired_plot" title="moabb.analysis.plotting.paired_plot"><span class="n">moabb_plt</span><span class="o">.</span><span class="n">paired_plot</span></a><span class="p">(</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">results</span></a><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">CSP+LDA</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">RG+LR</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">chance_level</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">chance_levels</span></a><span class="p">)</span><span class="w">
 </span><a class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">(</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../../_images/sphx_glr_plot_cross_session_motor_imagery_002.png" srcset="../../_images/sphx_glr_plot_cross_session_motor_imagery_002.png" alt="plot cross session motor imagery" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 6.468 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  895 MB</p>
+<img src="../../_images/sphx_glr_plot_cross_session_motor_imagery_002.png" srcset="../../_images/sphx_glr_plot_cross_session_motor_imagery_002.png" alt="plot cross session motor imagery" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 6.144 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  888 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-paradigm-examples-plot-cross-session-motor-imagery-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/846c627146b8b580609ce7662075b0e9/plot_cross_session_motor_imagery.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_cross_session_motor_imagery.ipynb</span></code></a></p>
