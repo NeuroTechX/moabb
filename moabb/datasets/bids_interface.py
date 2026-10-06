@@ -26,7 +26,8 @@ from typing import TYPE_CHECKING, Dict, Type
 
 import mne
 import mne_bids
-import pandas as pd
+
+
 try:
     from mne_bids._fileio import _open_lock as _bids_lock
 except ImportError:  # pragma: no cover - defensive fallback
@@ -35,6 +36,8 @@ except ImportError:  # pragma: no cover - defensive fallback
     @contextlib.contextmanager
     def _bids_lock(_path):
         yield
+
+
 from numpy import load as np_load
 from numpy import save as np_save
 
