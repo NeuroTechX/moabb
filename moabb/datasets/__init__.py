@@ -174,6 +174,7 @@ from .wairagkar2018 import Wairagkar2018
 from .wang2026 import Wang2026
 from .Weibo2014 import Weibo2014
 from .wu2020 import Wu2020
+from .yagan2023 import Yagan2023
 from .yang2025 import Yang2025
 from .yi2025 import Yi2025
 from .zhang2017 import Zhang2017

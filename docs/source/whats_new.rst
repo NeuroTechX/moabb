@@ -18,11 +18,13 @@ What's new
 
 .. _current:
 
-Version 1.8  (Source - GitHub)
--------------------------------
+Version 1.8.0 (2026-10-06)
+--------------------------
 
 Enhancements
 ~~~~~~~~~~~~
+- Add :class:`moabb.datasets.Yagan2023`, a P300 row-column speller dataset (Mendeley Data, CC-BY 4.0; 18 healthy subjects, 160-character copy-spelling in 10 blocks, 32-channel BrainVision EEG at 1 kHz, ~560k intensification events with an exact 2/13 target ratio per block). S14 target markers are stamped 2-3 ms after their flash in the released marker files, so each S1-S13 flash is relabelled ``Target``/``NonTarget`` by pairing it with any S14 within 10 ms (:gh:`1220` by `LiQing`_).
+- Document a download-free, paradigm-only metadata preflight using the existing ``MotorImagery.is_valid`` API, including explicit ``n_classes`` semantics and unknown evaluation compatibility; add a no-I/O regression test for the recipe (by `Bruno Aristimunha`_).
 - Ship MOABB's reference benchmark pipeline configs as package data and add :func:`moabb.pipelines.get_benchmark_pipelines`, so published baseline pipelines are available from normal wheel/sdist installs instead of only from a source checkout. Pipeline parsing now also accepts a single ``.py`` config and rejects valid-but-empty config directories instead of silently returning no pipelines (:gh:`1149` by `lindicaphxag-tech`_).
 - Allow :class:`~moabb.evaluations.CrossSubjectEvaluation` to accept an optional top-level ``splitter`` instance, enabling transfer-learning protocols to reuse MOABB's existing caching, parallel execution, and result handling while preserving the default protocol (:gh:`1088` by `lindicaphxag-tech`_).
 - Add Leelakittisin2025 sit-stand transition imagery, PerezBlanco2026 wrist motor-execution, and Vagaja2023 VR motor-imagery datasets (:pr:`1199`) (by `Bruno Aristimunha`_).
@@ -38,7 +40,7 @@ Enhancements
 - Add three OpenNeuro motor-imagery datasets: :class:`moabb.datasets.Peterson2020`, :class:`moabb.datasets.Daly2020`, and :class:`moabb.datasets.Damm2026` (:pr:`1189`, by `Bruno Aristimunha`_).
 - Add :class:`moabb.datasets.NETBCI2026` (NETBCI, Recherche Data Gouv doi:10.57745/RBJRC7): 19 subjects, 74-channel EEG, right-hand motor imagery vs rest over 4 longitudinal sessions x 6 online feedback runs; per-subject EEG is read out of the 49 GB archive by HTTP range requests (:gh:`1188` by `Bruno Aristimunha`_).
 - Add four OpenNeuro motor-imagery datasets: :class:`moabb.datasets.Lee2022` (ds004022, 7 orthopedic-impairment patients, 4 upper-limb MI tasks), :class:`moabb.datasets.Lioi2020_XP1` (ds002336) and :class:`moabb.datasets.Lioi2020_XP2` (ds002338), the two EEG-fMRI right-hand MI / neurofeedback experiments of Lioi et al., and :class:`moabb.datasets.Iwama2023` (ds004444, 30 subjects, 129-channel HD-EEG, up to 16 sessions) (:gh:`1186` by `Bruno Aristimunha`_).
-- Audit every dataset's ``METADATA`` and docstring against its primary paper and data-repository record with a new reusable tool (``scripts/paper_audit/``): ``country`` is now an ISO 3166-1 alpha-2 code everywhere, loader declarations (``sessions_per_subject``, ``subjects``, ``runs_per_session``) and the ``summary_*.csv`` tables match what each loader actually returns, and per-dataset fields (reference/ground, hardware, filters, licence, demographics, trial counts, DOIs) are corrected with quoted evidence; ``Cattan2019_VR`` declares its two sessions, ``Nakanishi2015`` exposes subject 10, ``PhysionetMI``/``MAMEM3``/``BI2015b`` metadata now come from their own records (:gh:`1203` by `Bruno Aristimunha`_).
+- Audit every dataset's ``METADATA`` and docstring against its primary paper and data-repository record: ``country`` is now an ISO 3166-1 alpha-2 code everywhere, loader declarations (``sessions_per_subject``, ``subjects``, ``runs_per_session``) and the ``summary_*.csv`` tables match what each loader actually returns, and per-dataset fields (reference/ground, hardware, filters, licence, demographics, trial counts, DOIs) are corrected with quoted evidence; ``Cattan2019_VR`` declares its two sessions, ``Nakanishi2015`` exposes subject 10, ``PhysionetMI``/``MAMEM3``/``BI2015b`` metadata now come from their own records (:gh:`1203` by `Bruno Aristimunha`_).
 - Add :func:`moabb.analysis.plotting.plot_critical_difference` for comparing pipelines across complete multi-dataset benchmarks with Friedman ranks and Nemenyi critical-difference groups (:gh:`1127` by `lindicaphxag-tech`_).
 - Spell MNE's renamed template montages everywhere: MNE 1.13 renamed ``standard_1005``/``standard_1020`` (and the other ``standard_*`` templates) to ``colin27_*`` (identical electrode files), warns on the old names and MNE 1.14 removes them, so every ``make_standard_montage``/``set_montage`` call in MOABB now spells ``colin27_*``. ``METADATA`` montage labels are descriptive and unchanged (:gh:`1200` by `Bruno Aristimunha`_).
 - Add :class:`moabb.datasets.Ma2022`, the SHU cross-session motor-imagery dataset: 25 subjects, five sessions, 32 EEG channels at 250 Hz and 11,988 retained 4 s trials. Read the authors' EDF release and BIDS events from NEMAR ``nm000288`` (publication pending), preserving bad-channel flags. These are authors-preprocessed, concatenated imagery windows, not continuous amplifier recordings. The ``Ma-edf2022`` code prevents reuse of legacy MATLAB caches; there is no MATLAB fallback (:gh:`1178` by `LiQing`_ and `Bruno Aristimunha`_)
@@ -61,9 +63,11 @@ API changes
 Requirements
 ~~~~~~~~~~~~
 - Require ``mne>=1.13`` for the ``colin27_*`` montage names and :func:`mne.io.read_raw_brainvision`'s ``overrides`` (:gh:`1200` by `Bruno Aristimunha`_).
+- Require ``mne-bids>=0.20`` (no change to the ``mne`` floor) (by `Bruno Aristimunha`_).
 
 Bugs
 ~~~~
+- Fix :class:`moabb.datasets.MIND2026` download 404ing immediately on every fresh fetch: the loader hardcoded ScienceDB's ``getZipFile?...&version=V3`` endpoint, which ScienceDB has since removed (``HEAD`` -> 404). ``version=V4`` is the current replacement and was confirmed live with an exact byte-count match to this loader's own ~74 GB docstring estimate (``HEAD`` -> 200, ``content-length: 74409645600``). No other behavior changes; the synthetic regression test is unaffected since it never hits the network (by `Bruno Aristimunha`_).
 - Fix :class:`moabb.datasets.Lenaig2026`'s ``data_path()`` raising
   ``FileNotFoundError: Some data files are missing.`` on every subject: it
   hard-coded an ``EEG_24Chan_AudioStim/`` wrapper directory for the extracted
@@ -150,11 +154,14 @@ Bugs
 - Fix the two install pages asking for optional extras MOABB does not have: the pip install page gave ``pip install moabb[deepleaning,carbonemission,docs]``, which is missing the ``r`` of ``deeplearning``, and pip only warns about an unrecognised extra, so following that page left ``braindecode`` uninstalled. The from-sources page asked for ``external``, removed in 1.2.0 (by `Iain`_).
 - Fix evaluations passing NumPy arrays instead of :class:`mne.Epochs` to :class:`moabb.pipelines.classification.SSVEP_itCCA` and :class:`moabb.pipelines.classification.SSVEP_eCCA`, whose ``fit`` then raised ``ValueError: X should be an MNE Epochs object.`` The check that switches an evaluation to epochs only listed ``SSVEP_CCA``, ``SSVEP_TRCA`` and ``SSVEP_MsetCCA`` (by `Arthur031221`_)
 - Fix :func:`moabb.analysis.meta_analysis.compute_pvals_wilcoxon` reporting the wrong tail when the sign of the mean paired difference disagrees with the signed-rank statistic: the one-tailed p-value is now taken directly from ``scipy.stats.wilcoxon(..., alternative="greater")`` instead of halving the two-sided value and choosing the side from the mean (:gh:`1177` by `Azra Bano`_)
+- Fix equation formatting in :func:`moabb.analysis.meta_analysis.compute_pvals_corrected_ttest` and the surrounding docstrings so Sphinx renders the Nadeau & Bengio variance correction and :math:`n_2/n_1` ratio instead of raw ``\frac`` source (:gh:`1204` by `Quentin Barthelemy`_).
 - Resample the 600 Hz recordings of subject ``zdvm`` (bases 2, 3, 5 and 7) in :class:`moabb.datasets.MartinezCagigal2023Pary` to the declared 256 Hz on load, fixing the ``ValueError`` raised when the ``CVEP`` paradigm concatenated the 601-sample epochs of those sessions with the 257-sample epochs of every other recording (:gh:`1201` by `LiQing`_)
+- Read and write the BIDS JSON sidecars and the electrodes TSV in ``bids_interface`` as UTF-8, the encoding ``mne_bids`` writes them in, completing :gh:`1059`. On Windows the locale codepage was used, so adding ``PublicationYear`` to a ``dataset_description.json`` with non-ASCII author names wrote them back garbled, or raised ``UnicodeDecodeError`` (:gh:`1231` by `Rızgar Ozan`_)
 
 Code health
 ~~~~~~~~~~~
 - Share loader code across the new dataset PRs instead of private copies: :func:`~moabb.datasets.utils.download_and_extract_subject_zip` gains ``fname`` and ``redownload_corrupted`` (one warned re-download of a corrupted archive), :func:`~moabb.datasets.utils.rename_stimulus_codes` maps BrainVision ``Stimulus/S <n>`` markers to class labels, ``SetRawAnnotations`` keeps ``EDGE boundary`` markers, and the OpenNeuro raw-mirror mixin (``moabb.datasets._openneuro_mirror``) lives here once (:gh:`1200` by `Bruno Aristimunha`_).
+- Modernise the BIDS layer on ``mne-bids>=0.20`` and drop MOABB workarounds it made obsolete: use :func:`mne_bids.find_matching_paths` with ``ignore_json=True`` and the public :meth:`mne_bids.BIDSPath.find_matching_sidecar` instead of a private helper, let :func:`mne_bids.write_raw_bids` serialise annotation extras into ``events.tsv`` and skip its README (``readme=False``) instead of patching both after writing, rely on mne-bids for the standard ``participants.json`` column descriptions, remove an obsolete EDF-conversion warning filter, and locate Thapa2025 files with ``find_matching_paths`` instead of probing every session/run pair (by `Bruno Aristimunha`_).
 
 Version 1.7.1  (Stable - PyPi)
 -------------------------------
@@ -1178,3 +1185,5 @@ API changes
 .. _Arthur031221: https://github.com/Arthur031221
 
 .. _lindicaphxag-tech: https://github.com/lindicaphxag-tech
+
+.. _Rızgar Ozan: https://github.com/RizgarOzan
