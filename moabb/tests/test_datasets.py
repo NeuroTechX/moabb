@@ -69,6 +69,7 @@ NEMAR_ID_EXEMPT = {
     "Han2026",  # no public NEMAR mirror yet; tracked in #1194
     "Brodu2012",  # no public NEMAR mirror yet; tracked in #1193
     "MIBMPI2024",  # no public NEMAR mirror yet; tracked in #1190
+    "Yagan2023",  # hosted on Mendeley Data; no NEMAR deposit
 }
 # Datasets whose NEMAR deposit is assigned but not yet public (private,
 # pending publication). Their ids are valid and still checked; tracked here

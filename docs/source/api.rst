@@ -246,6 +246,7 @@ ERP/P300 Datasets
     Mainsah2025_S2
     Simoes2020
     Speier2017
+    Yagan2023
     Zhang2025
     Zheng2020
     BCIComp2020WalkingERP
