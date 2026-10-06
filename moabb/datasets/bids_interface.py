@@ -970,7 +970,7 @@ def _update_participants_tsv_locked(tsv_path, root, subject, participants, raw):
     json_path = Path(root) / "participants.json"
     sidecar = {}
     if json_path.exists():
-        with open(json_path) as f:
+        with open(json_path, encoding="utf-8") as f:
             sidecar = json.load(f)
 
     updated = False
@@ -1039,7 +1039,7 @@ def _update_participants_tsv_locked(tsv_path, root, subject, participants, raw):
         updated = True
 
     if updated:
-        with open(json_path, "w") as f:
+        with open(json_path, "w", encoding="utf-8") as f:
             json.dump(sidecar, f, indent="\t")
 
 
@@ -1100,7 +1100,7 @@ def _update_electrodes_tsv(bids_path, metadata):
             changed = True
 
         if changed:
-            with open(tsv_path, "w", newline="") as f:
+            with open(tsv_path, "w", newline="", encoding="utf-8") as f:
                 writer = csv.DictWriter(f, fieldnames=fieldnames, delimiter="\t")
                 writer.writeheader()
                 writer.writerows(rows)
@@ -1186,7 +1186,7 @@ def _update_events_json_sidecar(bids_path, hed_tags, metadata):
     if not events_json_path.exists():
         return
 
-    with open(events_json_path) as f:
+    with open(events_json_path, encoding="utf-8") as f:
         sidecar = json.load(f)
 
     changed = False
@@ -1249,7 +1249,7 @@ def _update_events_json_sidecar(bids_path, hed_tags, metadata):
             changed = True
 
     if changed:
-        with open(events_json_path, "w") as f:
+        with open(events_json_path, "w", encoding="utf-8") as f:
             json.dump(sidecar, f, indent="\t")
 
 
@@ -1282,14 +1282,14 @@ def _update_dataset_description_extra(root, metadata):
     # Lock the read-modify-write so concurrent per-subject workers
     # (get_data(n_jobs>1)) can't read a half-written file or clobber each other.
     with _bids_lock(desc_path):
-        with open(desc_path) as f:
+        with open(desc_path, encoding="utf-8") as f:
             desc = json.load(f)
 
         if "PublicationYear" in desc:
             return
         desc["PublicationYear"] = doc.publication_year
 
-        with open(desc_path, "w") as f:
+        with open(desc_path, "w", encoding="utf-8") as f:
             json.dump(desc, f, indent="\t")
 
 
@@ -2711,11 +2711,11 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
             # Fix mne_bids key casing: MiscChannelCount → MISCChannelCount
             sidecar_fpath = bids_path.copy().update(extension=".json").fpath
             if sidecar_fpath.exists():
-                with open(sidecar_fpath) as f:
+                with open(sidecar_fpath, encoding="utf-8") as f:
                     sc = json.load(f)
                 if "MiscChannelCount" in sc and "MISCChannelCount" not in sc:
                     sc["MISCChannelCount"] = sc.pop("MiscChannelCount")
-                    with open(sidecar_fpath, "w") as f:
+                    with open(sidecar_fpath, "w", encoding="utf-8") as f:
                         json.dump(sc, f, indent="\t")
 
             # Patch participants.tsv with demographic data
@@ -2731,7 +2731,7 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
         FIFF = mne.io.constants.FIFF
         coordsystem_files = list(bids_path.root.rglob("*_coordsystem.json"))
         for cs_path in coordsystem_files:
-            with open(cs_path) as f:
+            with open(cs_path, encoding="utf-8") as f:
                 cs = json.load(f)
             if "FiducialsCoordinates" not in cs:
                 montage = raw.get_montage() if raw is not None else None
@@ -2754,7 +2754,7 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
                         "FiducialsCoordinateSystem",
                         cs.get("EEGCoordinateSystem", "CapTrak"),
                     )
-                    with open(cs_path, "w") as f:
+                    with open(cs_path, "w", encoding="utf-8") as f:
                         json.dump(cs, f, indent="\t")
 
         # Enrich events.json sidecar with HED annotations and stimulus info
@@ -2774,7 +2774,7 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
                     "filename": {"Description": "Relative path to the data file."},
                     "acq_time": {"Description": "Acquisition date and time."},
                 }
-                with open(scans_json_path, "w") as f:
+                with open(scans_json_path, "w", encoding="utf-8") as f:
                     json.dump(scans_sidecar, f, indent="\t")
 
         # Create channels.json sidecar (Description RECOMMENDED)
@@ -2811,7 +2811,7 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
                                 + "."
                             )
                 channels_sidecar = {"Description": channels_desc}
-                with open(channels_json_path, "w") as f:
+                with open(channels_json_path, "w", encoding="utf-8") as f:
                     json.dump(channels_sidecar, f, indent="\t")
 
 

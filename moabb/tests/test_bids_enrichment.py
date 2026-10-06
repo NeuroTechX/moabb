@@ -1362,6 +1362,27 @@ class TestUpdateDatasetDescriptionExtra:
             desc = json.load(f)
         assert desc["PublicationYear"] == 2019
 
+    def test_non_ascii_authors_survive_update(self, tmp_path):
+        # mne_bids writes the description as UTF-8 with ensure_ascii=False
+        authors = ["Gernot R. Müller-Putz", "Łukasz Kowalski"]
+        desc_path = tmp_path / "dataset_description.json"
+        desc_path.write_text(
+            json.dumps({"Name": "Test", "Authors": authors}, ensure_ascii=False),
+            encoding="utf-8",
+        )
+
+        metadata = DatasetMetadata(
+            acquisition=AcquisitionMetadata(sampling_rate=256, channel_types={"eeg": 2}),
+            participants=ParticipantMetadata(n_subjects=1),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+            documentation=DocumentationMetadata(publication_year=2021),
+        )
+        _update_dataset_description_extra(tmp_path, metadata)
+
+        desc = json.loads(desc_path.read_text(encoding="utf-8"))
+        assert desc["Authors"] == authors
+        assert desc["PublicationYear"] == 2021
+
 
 # ============================================================
 # _build_hed_sidecar_annotations
