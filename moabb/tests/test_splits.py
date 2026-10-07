@@ -1413,10 +1413,13 @@ def test_purged_epoch_kfold_removes_underlying_signal_overlap():
 
 
 def test_purged_epoch_kfold_does_not_purge_across_run_boundaries():
+    # Runs have the same time coordinate range but are independent recordings.
+    # The 50-sample offset makes a cross-run-overlapping train candidate exist
+    # in every fold, while adjacent epochs within a run only touch at a boundary.
     timing = _timing_metadata(
-        [0, 100, 200, 300, 400, 0, 100, 200, 300, 400],
+        [0, 100, 200, 300, 400, 50, 150, 250, 350, 450],
         runs=["a"] * 5 + ["b"] * 5,
-        epoch_n_samples=500,
+        epoch_n_samples=100,
     )
     splitter = PurgedEpochKFold(n_splits=5)
     folds = list(
@@ -1426,6 +1429,13 @@ def test_purged_epoch_kfold_does_not_purge_across_run_boundaries():
         assert not _fold_has_interval_overlap(train, test, timing)
         test_runs = set(timing.iloc[test]["run"])
         assert test_runs == {"a", "b"}
+
+    # In fold 0, run A's 100-sample epoch overlaps run B's 50-sample test
+    # interval numerically. It must remain in train because runs are separate.
+    cross_run_candidate = timing.index[
+        (timing["run"] == "a") & (timing["event_sample"] == 100)
+    ][0]
+    assert cross_run_candidate in folds[0][0]
 
 
 def test_purged_epoch_kfold_fails_closed_without_true_timing():

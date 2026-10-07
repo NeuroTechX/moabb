@@ -1482,6 +1482,12 @@ class TestMetadata:
         assert (metadata2 == epo2.metadata).all().all()
 
         assert (metadata1.columns == ["subject", "session", "run"]).all()
+        assert "value" in metadata2.columns
+        assert "value" in metadata3.columns
+        assert "value" in metadata4.columns
+        assert "duration" in metadata4.columns
+        assert "sample" not in metadata3.columns
+        assert "sample" not in metadata4.columns
 
     def test_epoch_timing_metadata_is_opt_in_and_matches_processed_events(
         self, cached_dataset_root
@@ -1506,9 +1512,17 @@ class TestMetadata:
 
         assert "event_sample" in metadata_epochs
         assert "epoch_n_samples" in metadata_epochs
-        np.testing.assert_array_equal(
-            metadata_epochs["event_sample"].to_numpy(), epochs.events[:, 0]
-        )
+        event_samples = metadata_epochs["event_sample"].to_numpy()
+        # MNE offsets event samples when independently processed runs are
+        # concatenated into one Epochs object. Timing metadata is run-local, so
+        # compare event spacing within each run rather than across that offset.
+        run_indices = metadata_epochs.groupby(["session", "run"], sort=False).indices
+        for indices in run_indices.values():
+            indices = np.asarray(indices)
+            returned_events = epochs.events[indices, 0]
+            np.testing.assert_array_equal(
+                np.diff(event_samples[indices]), np.diff(returned_events)
+            )
         assert (metadata_epochs["epoch_n_samples"] == len(epochs.times)).all()
         np.testing.assert_array_equal(
             metadata_array["event_sample"].to_numpy(),
@@ -1520,13 +1534,6 @@ class TestMetadata:
         )
         np.testing.assert_array_equal(labels_array, labels_epochs)
         assert array.shape[0] == len(metadata_array)
-
-        assert "value" in metadata2.columns
-        assert "value" in metadata3.columns
-        assert "value" in metadata4.columns
-        assert "duration" in metadata4.columns
-        assert "sample" not in metadata3.columns
-        assert "sample" not in metadata4.columns
 
     def test_additional_metadata_extracts_non_aligned(self, cached_dataset_root):
         """
