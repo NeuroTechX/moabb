@@ -2682,16 +2682,6 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
                 sidecar_path = bids_path.copy().update(extension=".json")
                 mne_bids.update_sidecar_json(sidecar_path, sidecar_entries)
 
-            # Fix mne_bids key casing: MiscChannelCount → MISCChannelCount
-            sidecar_fpath = bids_path.copy().update(extension=".json").fpath
-            if sidecar_fpath.exists():
-                with open(sidecar_fpath, encoding="utf-8") as f:
-                    sc = json.load(f)
-                if "MiscChannelCount" in sc and "MISCChannelCount" not in sc:
-                    sc["MISCChannelCount"] = sc.pop("MiscChannelCount")
-                    with open(sidecar_fpath, "w", encoding="utf-8") as f:
-                        json.dump(sc, f, indent="\t")
-
             # Patch participants.tsv with demographic data
             _update_participants_tsv(bids_path.root, self.subject, metadata, raw=raw)
 
