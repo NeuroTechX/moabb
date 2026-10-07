@@ -24,6 +24,7 @@ Version 1.8.0 (2026-10-06)
 Enhancements
 ~~~~~~~~~~~~
 - Add :class:`moabb.evaluations.PurgedEpochKFold` for leakage-safe within-session ERP/P300 evaluation. It partitions each recording run into contiguous test blocks and purges training epochs whose processed event-locked sample intervals overlap a test epoch from the same run. True `event_sample` / `epoch_n_samples` metadata are loaded only when this splitter is selected; missing timing fails closed instead of inferring chronology from row order. This addresses the temporal-overlap leakage described in :gh:`280` (by `lindicaphxag-tech`_).
+- :class:`moabb.datasets.Dreyer2023` (and its ``A``/``B``/``C`` subclasses) now load their EEG from NEMAR's ``nm000250`` ``sourcedata/`` store when the download provider allows it, falling back to the OSF host exactly like other NEMAR-mirrored datasets; this stops MOABB's docs/example builds from failing on OSF's ``files.de-1.osf.io`` 429 rate limiting. ``get_subject_info()`` reads the demographic ``performance.csv`` from the store once it is published there, else falls back to OSF (:gh:`1237` by `Bruno Aristimunha`_).
 - Add :class:`moabb.datasets.Yagan2023`, a P300 row-column speller dataset (Mendeley Data, CC-BY 4.0; 18 healthy subjects, 160-character copy-spelling in 10 blocks, 32-channel BrainVision EEG at 1 kHz, ~560k intensification events with an exact 2/13 target ratio per block). S14 target markers are stamped 2-3 ms after their flash in the released marker files, so each S1-S13 flash is relabelled ``Target``/``NonTarget`` by pairing it with any S14 within 10 ms (:gh:`1220` by `LiQing`_).
 - Document a download-free, paradigm-only metadata preflight using the existing ``MotorImagery.is_valid`` API, including explicit ``n_classes`` semantics and unknown evaluation compatibility; add a no-I/O regression test for the recipe (by `Bruno Aristimunha`_).
 - Ship MOABB's reference benchmark pipeline configs as package data and add :func:`moabb.pipelines.get_benchmark_pipelines`, so published baseline pipelines are available from normal wheel/sdist installs instead of only from a source checkout. Pipeline parsing now also accepts a single ``.py`` config and rejects valid-but-empty config directories instead of silently returning no pipelines (:gh:`1149` by `lindicaphxag-tech`_).
@@ -44,6 +45,7 @@ Enhancements
 - Audit every dataset's ``METADATA`` and docstring against its primary paper and data-repository record: ``country`` is now an ISO 3166-1 alpha-2 code everywhere, loader declarations (``sessions_per_subject``, ``subjects``, ``runs_per_session``) and the ``summary_*.csv`` tables match what each loader actually returns, and per-dataset fields (reference/ground, hardware, filters, licence, demographics, trial counts, DOIs) are corrected with quoted evidence; ``Cattan2019_VR`` declares its two sessions, ``Nakanishi2015`` exposes subject 10, ``PhysionetMI``/``MAMEM3``/``BI2015b`` metadata now come from their own records (:gh:`1203` by `Bruno Aristimunha`_).
 - Add :func:`moabb.analysis.plotting.plot_critical_difference` for comparing pipelines across complete multi-dataset benchmarks with Friedman ranks and Nemenyi critical-difference groups (:gh:`1127` by `lindicaphxag-tech`_).
 - Spell MNE's renamed template montages everywhere: MNE 1.13 renamed ``standard_1005``/``standard_1020`` (and the other ``standard_*`` templates) to ``colin27_*`` (identical electrode files), warns on the old names and MNE 1.14 removes them, so every ``make_standard_montage``/``set_montage`` call in MOABB now spells ``colin27_*``. ``METADATA`` montage labels are descriptive and unchanged (:gh:`1200` by `Bruno Aristimunha`_).
+- Add :class:`moabb.datasets.Ma2022`, the SHU cross-session motor-imagery dataset: 25 subjects, five sessions, 32 EEG channels at 250 Hz and 11,988 retained 4 s trials. Read the authors' EDF release and BIDS events from NEMAR ``nm000288`` (publication pending), preserving bad-channel flags. These are authors-preprocessed, concatenated imagery windows, not continuous amplifier recordings. The ``Ma-edf2022`` code prevents reuse of legacy MATLAB caches; there is no MATLAB fallback (:gh:`1178` by `LiQing`_ and `Bruno Aristimunha`_)
 
 API changes
 ~~~~~~~~~~~
@@ -63,6 +65,7 @@ API changes
 Requirements
 ~~~~~~~~~~~~
 - Require ``mne>=1.13`` for the ``colin27_*`` montage names and :func:`mne.io.read_raw_brainvision`'s ``overrides`` (:gh:`1200` by `Bruno Aristimunha`_).
+- Require ``mne-bids>=0.20`` (no change to the ``mne`` floor) (by `Bruno Aristimunha`_).
 
 Bugs
 ~~~~
@@ -160,6 +163,7 @@ Bugs
 Code health
 ~~~~~~~~~~~
 - Share loader code across the new dataset PRs instead of private copies: :func:`~moabb.datasets.utils.download_and_extract_subject_zip` gains ``fname`` and ``redownload_corrupted`` (one warned re-download of a corrupted archive), :func:`~moabb.datasets.utils.rename_stimulus_codes` maps BrainVision ``Stimulus/S <n>`` markers to class labels, ``SetRawAnnotations`` keeps ``EDGE boundary`` markers, and the OpenNeuro raw-mirror mixin (``moabb.datasets._openneuro_mirror``) lives here once (:gh:`1200` by `Bruno Aristimunha`_).
+- Modernise the BIDS layer on ``mne-bids>=0.20`` and drop MOABB workarounds it made obsolete: use :func:`mne_bids.find_matching_paths` with ``ignore_json=True`` and the public :meth:`mne_bids.BIDSPath.find_matching_sidecar` instead of a private helper, let :func:`mne_bids.write_raw_bids` serialise annotation extras into ``events.tsv`` and skip its README (``readme=False``) instead of patching both after writing, rely on mne-bids for the standard ``participants.json`` column descriptions, remove an obsolete EDF-conversion warning filter, and locate Thapa2025 files with ``find_matching_paths`` instead of probing every session/run pair (by `Bruno Aristimunha`_).
 
 Version 1.7.1  (Stable - PyPi)
 -------------------------------
@@ -1104,6 +1108,7 @@ API changes
 .. _LiQing: https://github.com/qinxwew
 .. _Zheyu Yao: https://github.com/zyao197
 .. _Martin Wimpff: https://github.com/martinwimpff
+.. _LiQing: https://github.com/qinxwew
 .. _Reinmar Kobler: https://github.com/rkobler
 .. _Gabriel Schwartz: https://github.com/Kaos9001
 .. _Sara Sedlar: https://github.com/Sara04

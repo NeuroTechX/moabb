@@ -139,6 +139,7 @@ Motor Imagery Datasets
     Lioi2020_XP2
     Liu2025
     Ma2020
+    Ma2022
     NETBCI2026
     Rozado2015
     Tavakolan2017

@@ -1658,12 +1658,6 @@ class BaseBIDSDataset(BaseDataset):
         """Return the ``extra_params`` argument for the ``mne_bids.read_raw_bids`` function."""
         return None
 
-    @staticmethod
-    def _find_matching_paths(root, **kwargs) -> list[mne_bids.BIDSPath]:
-        bids_paths = mne_bids.find_matching_paths(root=root, **kwargs)
-        # Remove JSON files manually (the ignore_json argument only arrives in mne-bids=0.16)
-        return [bids_path for bids_path in bids_paths if bids_path.extension != ".json"]
-
     @abc.abstractmethod
     def _download_subject(self, subject, path, force_update, update_path, verbose) -> str:
         """Download the data of a single subject and return the local path to the ROOT of the BIDS dataset.
@@ -1679,8 +1673,8 @@ class BaseBIDSDataset(BaseDataset):
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ) -> list[mne_bids.BIDSPath]:
         root = self._download_subject(subject, path, force_update, update_path, verbose)
-        return self._find_matching_paths(
-            root=root, **self._get_path_search_params(subject)
+        return mne_bids.find_matching_paths(
+            root=root, ignore_json=True, **self._get_path_search_params(subject)
         )
 
     def data_path(
@@ -1836,8 +1830,8 @@ class LocalBIDSDataset(BaseBIDSDataset):
         self.bids_root = bids_root
         self.path_search_params = path_search_params
         self.read_extra_params = read_extra_params
-        bids_paths = self._find_matching_paths(
-            root=bids_root, **self._get_path_search_params(None)
+        bids_paths = mne_bids.find_matching_paths(
+            root=bids_root, ignore_json=True, **self._get_path_search_params(None)
         )
         if len(bids_paths) == 0:
             raise ValueError(f"No BIDS dataset found in {bids_root}")
