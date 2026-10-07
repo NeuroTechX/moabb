@@ -1412,6 +1412,40 @@ def test_purged_epoch_kfold_removes_underlying_signal_overlap():
     np.testing.assert_array_equal(np.sort(tested), np.arange(len(y)))
 
 
+def test_purged_epoch_kfold_stratifies_contiguous_time_blocks():
+    # Equal-size chronological blocks are badly imbalanced for this sequence;
+    # shifting cut points within a narrow size range can balance them while
+    # keeping each test fold contiguous and preserving class support.
+    y = np.asarray([0] * 5 + [1] * 2 + [0] + [1] * 4 + [0] * 4 + [1] + [0] * 2 + [1] * 5)
+    timing = _timing_metadata(np.arange(len(y)) * 100, epoch_n_samples=500)
+    splitter = PurgedEpochKFold(n_splits=4)
+    folds = list(splitter.split(np.zeros(len(y)), y, epoch_interval_groups(timing)))
+
+    target_proportions = np.bincount(y) / len(y)
+    stratified_error = []
+    equal_block_error = []
+    for (train, test), equal_test in zip(folds, np.array_split(np.arange(len(y)), 4)):
+        assert np.all(np.diff(test) == 1)
+        assert set(np.unique(y[test])) == set(np.unique(y))
+        assert set(np.unique(y[train])) == set(np.unique(y))
+        assert not _fold_has_interval_overlap(train, test, timing)
+        stratified_error.append(
+            np.linalg.norm(
+                np.bincount(y[test], minlength=2) / len(test) - target_proportions
+            )
+        )
+        equal_block_error.append(
+            np.linalg.norm(
+                np.bincount(y[equal_test], minlength=2) / len(equal_test)
+                - target_proportions
+            )
+        )
+
+    assert np.mean(stratified_error) < np.mean(equal_block_error)
+    tested = np.concatenate([test for _train, test in folds])
+    np.testing.assert_array_equal(np.sort(tested), np.arange(len(y)))
+
+
 def test_purged_epoch_kfold_does_not_purge_across_run_boundaries():
     # Runs have the same time coordinate range but are independent recordings.
     # The 50-sample offset makes a cross-run-overlapping train candidate exist

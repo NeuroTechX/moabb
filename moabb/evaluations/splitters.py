@@ -1411,6 +1411,84 @@ class PurgedEpochKFold(GroupsConsumerMixin, BaseCrossValidator):
             axis=1,
         )
 
+    @staticmethod
+    def _contiguous_blocks(indices, y, n_splits):
+        """Partition a chronological run into near-equal, label-balanced blocks.
+
+        Boundaries are chosen by dynamic programming. Test folds stay
+        contiguous in time; labels only influence where the boundaries fall,
+        so the splitter does not shuffle temporally adjacent epochs across
+        folds as StratifiedKFold would.
+        """
+        if y is None:
+            return np.array_split(indices, n_splits)
+
+        labels = np.asarray(y)[indices]
+        classes, inverse, counts = np.unique(
+            labels, return_inverse=True, return_counts=True
+        )
+        if len(classes) < 2:
+            return np.array_split(indices, n_splits)
+
+        n_epochs = len(indices)
+        target_size = n_epochs / n_splits
+        min_size = max(1, int(np.floor(target_size * 0.75)))
+        max_size = max(min_size, int(np.ceil(target_size * 1.25)))
+        # Permit the last fold to absorb rounding remainder while keeping
+        # fold sizes close enough that training-set sizes remain comparable.
+        max_size = max(max_size, int(np.ceil(target_size)))
+        if n_epochs < n_splits * min_size or n_epochs > n_splits * max_size:
+            return np.array_split(indices, n_splits)
+
+        n_classes = len(classes)
+        prefix = np.zeros((n_epochs + 1, n_classes), dtype=np.int64)
+        prefix[1:] = np.cumsum(np.eye(n_classes, dtype=np.int64)[inverse], axis=0)
+        target_proportions = counts / n_epochs
+        require_all_classes = np.all(counts >= n_splits)
+        costs = np.full((n_splits + 1, n_epochs + 1), np.inf)
+        previous = np.full((n_splits + 1, n_epochs + 1), -1, dtype=np.int64)
+        costs[0, 0] = 0.0
+
+        for n_blocks in range(1, n_splits + 1):
+            min_end = n_blocks * min_size
+            max_end = min(
+                n_epochs - (n_splits - n_blocks) * min_size, n_blocks * max_size
+            )
+            for end in range(min_end, max_end + 1):
+                start_min = max((n_blocks - 1) * min_size, end - max_size)
+                start_max = min((n_blocks - 1) * max_size, end - min_size)
+                for start in range(start_min, start_max + 1):
+                    prior_cost = costs[n_blocks - 1, start]
+                    if not np.isfinite(prior_cost):
+                        continue
+                    block_size = end - start
+                    block_counts = prefix[end] - prefix[start]
+                    if require_all_classes and np.any(block_counts == 0):
+                        continue
+                    block_proportions = block_counts / block_size
+                    label_cost = np.sum(
+                        (block_proportions - target_proportions) ** 2
+                        / np.maximum(target_proportions, 1 / n_epochs)
+                    )
+                    size_cost = ((block_size - target_size) / target_size) ** 2
+                    candidate = prior_cost + label_cost + 0.1 * size_cost
+                    if candidate < costs[n_blocks, end]:
+                        costs[n_blocks, end] = candidate
+                        previous[n_blocks, end] = start
+
+        if not np.isfinite(costs[n_splits, n_epochs]):
+            return np.array_split(indices, n_splits)
+
+        boundaries = [n_epochs]
+        end = n_epochs
+        for n_blocks in range(n_splits, 0, -1):
+            end = previous[n_blocks, end]
+            boundaries.append(end)
+        boundaries.reverse()
+        return [
+            indices[start:stop] for start, stop in zip(boundaries[:-1], boundaries[1:])
+        ]
+
     def split(self, X, y=None, groups=None):
         n_samples = len(X)
         if n_samples < self.n_splits:
@@ -1430,8 +1508,11 @@ class PurgedEpochKFold(GroupsConsumerMixin, BaseCrossValidator):
             order = np.lexsort((run_indices, event_samples[run_indices]))
             ordered_by_run[run] = run_indices[order]
 
+        y_array = None if y is None else np.asarray(y)
+        if y_array is not None and len(y_array) != n_samples:
+            raise ValueError("y must contain one label per epoch.")
         run_blocks = {
-            run: np.array_split(indices, self.n_splits)
+            run: self._contiguous_blocks(indices, y_array, self.n_splits)
             for run, indices in ordered_by_run.items()
         }
         for fold_index in range(self.n_splits):
@@ -1460,8 +1541,7 @@ class PurgedEpochKFold(GroupsConsumerMixin, BaseCrossValidator):
                     "Purging removed an entire train or test fold; reduce "
                     "n_splits or use longer independent runs."
                 )
-            if y is not None:
-                y_array = np.asarray(y)
+            if y_array is not None:
                 classes = np.unique(y_array)
                 if len(np.unique(y_array[train])) != len(classes) or len(
                     np.unique(y_array[test])
