@@ -3,6 +3,7 @@
 Never manually invent figure train/test/purge cells: every SVG matrix cell
 must match the real PurgedEpochKFold splitter on the described toy events.
 """
+
 from pathlib import Path
 from xml.etree import ElementTree
 
@@ -26,10 +27,14 @@ def test_purged_epoch_kfold_svg_matches_actual_split_for_every_cell():
     folds = list(splitter.split(X, labels, groups))
     assert len(folds) == 5
 
-    svg = Path(__file__).resolve().parents[2] / "docs/source/images/purged_epoch_kfold.svg"
+    svg = (
+        Path(__file__).resolve().parents[2] / "docs/source/images/purged_epoch_kfold.svg"
+    )
     root = ElementTree.parse(svg).getroot()
     cells = {
-        (int(el.attrib["data-fold"]), int(el.attrib["data-epoch"])): el.attrib["data-role"]
+        (int(el.attrib["data-fold"]), int(el.attrib["data-epoch"])): el.attrib[
+            "data-role"
+        ]
         for el in root.iter()
         if "data-role" in el.attrib
     }
@@ -47,18 +52,16 @@ def test_purged_epoch_kfold_svg_matches_actual_split_for_every_cell():
         assert len(purged) == (4 if fold in (0, 4) else 8)
 
         for i in range(n_epochs):
-            expected = (
-                "test" if i in testing
-                else "train" if i in training
-                else "purged"
-            )
+            expected = "test" if i in testing else "train" if i in training else "purged"
             assert cells[(fold, i)] == expected
 
         # Strict half-open interval purging: zero shared source samples.
         for i in training:
             assert all(
-                not (events[i] < events[j] + epoch_length
-                     and events[j] < events[i] + epoch_length)
+                not (
+                    events[i] < events[j] + epoch_length
+                    and events[j] < events[i] + epoch_length
+                )
                 for j in testing
             )
 
