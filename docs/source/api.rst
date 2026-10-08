@@ -515,6 +515,19 @@ accuracy, across-subject accuracy, or other transfer learning settings.
     CrossSessionSplitter
     CrossSubjectSplitter
 
+.. figure:: images/purged_epoch_kfold.svg
+    :alt: Chronological ERP epochs split into contiguous test folds with adjacent overlapping epochs purged
+    :width: 100%
+
+    **PurgedEpochKFold**, illustrated on one continuous run with 30 epochs,
+    100-sample event spacing and 500-sample half-open epoch intervals.
+    Orange epochs form one contiguous test block per fold; red epochs are
+    excluded from training because their sample windows overlap test epochs.
+    Blue epochs remain in training. The diagram's 150 cell assignments are
+    checked against the actual splitter by
+    ``moabb/tests/test_purged_cv_figure.py``. Runs are independent: a test
+    epoch in one run does not purge an epoch from another run.
+
 A cross-subject transfer protocol additionally states what the estimator is
 allowed to see of the held-out target subject, and how the rest of that
 subject is scored.
