@@ -106,6 +106,8 @@ class MOVING2024(BaseDataset):
 
     """
 
+    nemar_id = "nm000293"
+
     # Trigger label -> class label. Rest triggers are shared between the MI and
     # ME variants; the movement triggers differ.
     _IMAGERY_MAP = {

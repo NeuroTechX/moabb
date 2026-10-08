@@ -98,6 +98,8 @@ class Jia2019(BaseDataset):
 
     """
 
+    nemar_id = "nm000306"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=JIA2019_SFREQ,

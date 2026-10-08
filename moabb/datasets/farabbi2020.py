@@ -66,6 +66,8 @@ class Farabbi2020(BaseDataset):
 
     """
 
+    nemar_id = "nm000294"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,

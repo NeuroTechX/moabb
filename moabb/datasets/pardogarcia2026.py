@@ -132,6 +132,8 @@ class PardoGarcia2026(BaseDataset):
 
     """
 
+    nemar_id = "nm000309"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,

@@ -65,6 +65,8 @@ class Pan2025(_PanDataverse):
 
     """
 
+    nemar_id = "nm000300"
+
     _file_ids = PAN2025_FILE_IDS
 
     METADATA = DatasetMetadata(

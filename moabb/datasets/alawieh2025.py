@@ -105,6 +105,8 @@ class Alawieh2025(BaseDataset):
 
     """
 
+    nemar_id = "nm000312"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,

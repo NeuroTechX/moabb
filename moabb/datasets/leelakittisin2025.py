@@ -107,6 +107,8 @@ class Leelakittisin2025(BaseDataset):
 
     """
 
+    nemar_id = "nm000330"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1200.0,

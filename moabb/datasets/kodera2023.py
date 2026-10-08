@@ -121,6 +121,8 @@ class Kodera2023(BaseDataset):
 
     """
 
+    nemar_id = "nm000295"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,

@@ -153,6 +153,8 @@ class Schrag2026Pediatric(BaseDataset):
        Zenodo. DOI: 10.5281/zenodo.19440997
     """
 
+    nemar_id = "nm000334"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=_SFREQ,
