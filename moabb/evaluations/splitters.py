@@ -1349,6 +1349,14 @@ class PurgedEpochKFold(GroupsConsumerMixin, BaseCrossValidator):
 
     True timing metadata is mandatory; row order is never used as a proxy
     for time.
+
+    This guarantees only disjoint declared raw epoch-extraction intervals
+    within a run. It does NOT guarantee independence of already-filtered
+    epoch signals: the standard MOABB paradigm filters the *continuous*
+    Raw recording before selecting train/test epochs. In particular,
+    the IIR filter can propagate information across nonoverlapping epoch
+    boundaries. Exact post-filter signal isolation would require a
+    preprocessing-aware protocol beyond this sample-interval splitter.
     """
 
     requires_epoch_timing = True
