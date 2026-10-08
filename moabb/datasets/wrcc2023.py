@@ -134,6 +134,8 @@ class WRCC2023_MI_A(_WRCC2023):
 
     """
 
+    nemar_id = "nm000297"
+
     FILE_IDS = {
         1: 10358829,
         2: 10358821,
@@ -251,6 +253,8 @@ class WRCC2023_MI_B(_WRCC2023):
 
     """
 
+    nemar_id = "nm000298"
+
     FILE_IDS = {
         1: 10358839,
         2: 10358833,
@@ -360,6 +364,8 @@ class WRCC2023_MI_C(_WRCC2023):
     .. versionadded:: 1.8
 
     """
+
+    nemar_id = "nm000299"
 
     FILE_IDS = {
         1: 10358845,

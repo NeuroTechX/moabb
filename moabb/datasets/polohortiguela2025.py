@@ -75,6 +75,8 @@ class PoloHortiguela2025(BaseDataset):
 
     """
 
+    nemar_id = "nm000302"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=SFREQ,

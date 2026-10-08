@@ -135,6 +135,8 @@ class NeBULA2025(BaseDataset):
     .. versionadded:: 1.8
     """
 
+    nemar_id = "nm000322"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,

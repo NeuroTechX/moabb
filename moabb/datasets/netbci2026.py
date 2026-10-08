@@ -218,6 +218,8 @@ class NETBCI2026(BaseBIDSDataset):
            https://doi.org/10.1038/s41597-026-08237-5
     """
 
+    nemar_id = "nm000305"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,

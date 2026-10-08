@@ -102,6 +102,8 @@ class MILimbEEG(BaseDataset):
 
     """
 
+    nemar_id = "nm000328"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=125.0,

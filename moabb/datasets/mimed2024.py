@@ -85,6 +85,8 @@ class MIMED2024(BaseDataset):
 
     """
 
+    nemar_id = "nm000296"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=128.0,

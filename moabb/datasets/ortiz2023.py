@@ -96,6 +96,8 @@ class Ortiz2023(BaseDataset):
 
     """
 
+    nemar_id = "nm000320"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=SFREQ,

@@ -93,6 +93,8 @@ class Shin2022(BaseDataset):
        DOI: 10.6084/m9.figshare.20383716
     """
 
+    nemar_id = "nm000315"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,

@@ -98,6 +98,8 @@ class Batista2022(BaseDataset):
 
     """
 
+    nemar_id = "nm000318"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,

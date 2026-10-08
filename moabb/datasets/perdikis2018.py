@@ -94,6 +94,8 @@ class Perdikis2018(BaseDataset):
 
     """
 
+    nemar_id = "nm000307"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,

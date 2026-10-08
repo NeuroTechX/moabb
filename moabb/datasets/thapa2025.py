@@ -115,6 +115,8 @@ class Thapa2025(BaseDataset):
            https://doi.org/10.1038/s41597-025-06039-9
     """
 
+    nemar_id = "nm000324"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,

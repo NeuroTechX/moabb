@@ -83,6 +83,8 @@ class Kueper2024(BaseDataset):
 
     """
 
+    nemar_id = "nm000319"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
