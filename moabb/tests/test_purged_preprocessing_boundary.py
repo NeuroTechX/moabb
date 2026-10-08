@@ -6,6 +6,7 @@ interval into a training interval. No claim is made that this is label leakage
 or that the splitter is incorrect; it is a reason not to promise complete
 post-filter signal independence.
 """
+
 import numpy as np
 from scipy.signal import butter, sosfiltfilt
 
@@ -22,15 +23,13 @@ def test_raw_disjoint_epochs_can_still_share_prefilter_source_influence():
     # MOABB's fixed Raw filter runs on continuous data before epoching.
     # A zero-phase IIR has nonlocal support, so this counterexample does
     # not rely on raw epoch windows sharing any physical samples.
-    sos = butter(2, (2., 35.), btype="bandpass", fs=sfreq, output="sos")
+    sos = butter(2, (2.0, 35.0), btype="bandpass", fs=sfreq, output="sos")
     baseline = sosfiltfilt(sos, recording)
     perturbed = sosfiltfilt(sos, changed)
 
     train = slice(200, 300)
     test = slice(300, 400)
-    assert set(range(train.start, train.stop)).isdisjoint(
-        range(test.start, test.stop)
-    )
+    assert set(range(train.start, train.stop)).isdisjoint(range(test.start, test.stop))
     assert not np.any(recording[train] != changed[train])
     assert not np.any(recording[100:200] != changed[100:200])
     assert np.max(np.abs(perturbed[train] - baseline[train])) > 1e-7
