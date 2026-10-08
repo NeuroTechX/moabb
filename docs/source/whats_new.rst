@@ -68,6 +68,15 @@ Requirements
 
 Bugs
 ~~~~
+- Warn that :class:`moabb.datasets.Han2024Fatigue` session ``'1'`` (fatigue) trial labels
+  are unreliable: the fatigue MAT blocks do not store trials in the documented
+  target order — single-trial SSVEP scoring against the loader-assigned labels
+  sits at the 1/16 chance level while training-session labels verify at
+  0.70-0.87 accuracy, and per-block one-to-one assignments show no fixed
+  permutation, so the intended order must come from the authors' acquisition
+  logs. The loader now emits a ``UserWarning`` when the fatigue session is
+  loaded, documents the caveat, and keeps both sessions loadable; the
+  training-session event order is regression-tested (:gh:`1238` by `LiQing`_).
 - Fix :class:`moabb.datasets.MIND2026` download 404ing immediately on every fresh fetch: the loader hardcoded ScienceDB's ``getZipFile?...&version=V3`` endpoint, which ScienceDB has since removed (``HEAD`` -> 404). ``version=V4`` is the current replacement and was confirmed live with an exact byte-count match to this loader's own ~74 GB docstring estimate (``HEAD`` -> 200, ``content-length: 74409645600``). No other behavior changes; the synthetic regression test is unaffected since it never hits the network (by `Bruno Aristimunha`_).
 - Fix :class:`moabb.datasets.Lenaig2026`'s ``data_path()`` raising
   ``FileNotFoundError: Some data files are missing.`` on every subject: it

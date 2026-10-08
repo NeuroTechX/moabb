@@ -4,6 +4,7 @@ Han et al. (2024), IEEE TNSRE.
 DOI: 10.1109/TNSRE.2024.3380635
 """
 
+import warnings
 import zipfile
 from pathlib import Path
 
@@ -38,6 +39,21 @@ _CONDITIONS = [
     ("high_frequency_train_data", "high", "train"),
     ("high_frequency_fatigue_data", "high", "fatigue"),
 ]
+
+# The fatigue MAT blocks do not store trials in the documented target order:
+# per-trial SSVEP scoring against the axis-order labels sits at the 1/16
+# chance level while the training-session labels verify well, and the
+# per-block order appears randomised (see issue #1184 for the analysis).
+# Until the dataset authors publish the authoritative per-trial target
+# sequences, session '1' labels must not be treated as ground truth.
+_FATIGUE_LABELS_NOTICE = (
+    "Han2024Fatigue session '1' (fatigue): the fatigue blocks do not store "
+    "trials in the documented target order, so the labels assigned by this "
+    "loader are unreliable for this session (single-trial SSVEP scoring sits "
+    "at chance level; see issue #1184). Use session '0' for labelled "
+    "analyses until the dataset authors publish the authoritative "
+    "per-trial target sequences."
+)
 
 # fmt: off
 # Low-frequency events (16): 8.0-15.5 Hz, 0.5 Hz step
@@ -89,6 +105,19 @@ class Han2024Fatigue(BaseDataset):
        '0', testing on fatigued session '1') is a challenging domain-shift
        problem that standard CCA/TRCA may not handle well without
        fatigue-aware strategies.
+
+       .. warning::
+
+          **Fatigue-session (session ``'1'``) labels are currently
+          unreliable.** The fatigue MAT blocks do not store trials in the
+          documented target order: single-trial SSVEP scoring against the
+          loader-assigned labels sits at the 1/16 chance level (while the
+          training-session labels verify at ~0.70-0.87 accuracy), and the
+          per-block trial order appears randomised (`issue #1184
+          <https://github.com/NeuroTechX/moabb/issues/1184>`_). Loading this
+          dataset emits a :exc:`UserWarning` for the fatigue session; use
+          session ``'0'`` for labelled analyses until the dataset authors
+          publish the authoritative per-trial target sequences.
 
     Data is stored as [16, 64, 3000, N_blocks] matrices (targets, channels,
     timepoints, blocks) in per-subject zip files on Zenodo. Each subject has
@@ -214,7 +243,14 @@ class Han2024Fatigue(BaseDataset):
         Each file has shape [16, 64, 3000, N_blocks] = (targets, channels,
         timepoints, blocks). Training files have 6 blocks, fatigue files
         have 24 blocks.
+
+        For the fatigue files the first array axis does *not* index targets
+        in the documented order (see ``_FATIGUE_LABELS_NOTICE`` and issue
+        #1184); a :exc:`UserWarning` is emitted and the axis-order labels are
+        kept only so that the session remains loadable.
         """
+        warnings.warn(_FATIGUE_LABELS_NOTICE, stacklevel=2)
+
         n_targets = 16
         sfreq = 1000
 
