@@ -35,6 +35,47 @@ LEADERBOARD_ARTICLE_ID = 14839650
 FINAL_EVALUATION_ARTICLE_ID = 16586213
 FINAL_LABEL_TXT_ARTICLE_ID = 21602622
 
+# ``final_MI_label.txt`` (figshare 21602622) holds the competition's *three-class*
+# test labels: 1000 integers, 200 per subject in the order S1-S3 (dataset A) then
+# S4-S5 (dataset B), 50/50/100 per subject. Class 2 is "other": the two imagery
+# tasks the final test does not score separately, right hand or feet for dataset A
+# and feet or rest for dataset B (starter kit, ``5.FinalTestingDataGuide.ipynb``).
+# The training runs keep the four-class maps declared on each dataset.
+FINAL_TEST_EVENT_DESC_A = {0: "rest", 1: "left_hand", 2: "right_hand_or_feet"}
+FINAL_TEST_EVENT_DESC_B = {0: "left_hand", 1: "right_hand", 2: "feet_or_rest"}
+
+
+def _trials_to_raw(trials, labels, info, event_desc):
+    """Concatenate back-to-back trials into one annotated :class:`mne.io.RawArray`.
+
+    ``trials`` is ``(n_trials, n_channels, n_samples)`` in volts, ``labels`` has one
+    integer per trial and ``event_desc`` maps those integers to MOABB event names.
+    """
+    labels = np.asarray(labels).astype(int)
+    n_trials, _, n_samples = trials.shape
+    if len(labels) != n_trials:
+        raise ValueError(
+            f"Got {len(labels)} labels for {n_trials} trials; the label file and the "
+            "data files do not describe the same trials."
+        )
+    unknown = sorted(set(labels.tolist()) - set(event_desc))
+    if unknown:
+        raise ValueError(f"Labels {unknown} are not in the event map {event_desc}.")
+    events = np.column_stack(
+        (
+            np.arange(0, n_trials * n_samples, n_samples),
+            np.zeros(n_trials, dtype=int),
+            labels,
+        )
+    )
+    raw = mne.io.RawArray(np.hstack(trials), info)
+    raw.set_annotations(
+        mne.annotations_from_events(
+            events=events, event_desc=event_desc, sfreq=info["sfreq"]
+        )
+    )
+    return raw
+
 
 class Beetl2021_A(BaseDataset):
     """Motor Imagery dataset from BEETL Competition - Dataset A.
@@ -63,11 +104,21 @@ class Beetl2021_A(BaseDataset):
     Data is sampled at 500 Hz and contains 63 EEG channels. The data underwent frequency-domain preprocessing
     using a bandpass filter (1-100 Hz) and a 50 Hz notch filter to attenuate power line interference.
 
-    Motor imagery tasks include:
+    Motor imagery tasks in the training runs:
     - Rest (label 0)
     - Left hand (label 1)
     - Right hand (label 2)
     - Feet (label 3)
+
+    The final phase's test run is scored on three classes only: rest, left hand and
+    "other", which is right hand or feet (label 2 in ``final_MI_label.txt``). MOABB
+    names that merged class ``right_hand_or_feet`` and never folds it into
+    ``right_hand`` or ``feet``. A paradigm given no ``events`` uses every entry of
+    ``event_id``, this one included; ``LeftRightImagery`` leaves it out. Pass
+    ``events=["rest", "left_hand", "right_hand", "feet"]`` for the four training
+    classes, or ``events=["rest", "left_hand", "right_hand_or_feet"]`` with
+    ``n_classes=3`` for the competition task. The leaderboard phase's test labels were
+    never released, so that phase serves its training run only.
 
     Attributes
     ----------
@@ -165,9 +216,21 @@ class Beetl2021_A(BaseDataset):
         experiment=ExperimentMetadata(
             paradigm="imagery",
             task_type="motor_imagery_4_class",
-            events={"rest": 0, "left_hand": 1, "right_hand": 2, "feet": 3},
-            n_classes=4,
-            class_labels=["rest", "left_hand", "right_hand", "feet"],
+            events={
+                "rest": 0,
+                "left_hand": 1,
+                "right_hand": 2,
+                "feet": 3,
+                "right_hand_or_feet": 4,
+            },
+            n_classes=5,
+            class_labels=[
+                "rest",
+                "left_hand",
+                "right_hand",
+                "feet",
+                "right_hand_or_feet",
+            ],
             trial_duration=4.0,
             mode="online",
             synchronicity=None,
@@ -370,9 +433,19 @@ class Beetl2021_A(BaseDataset):
         super().__init__(
             subjects=all_subjects,
             sessions_per_subject=1,  # Data is concatenated into one session
-            events={"rest": 0, "left_hand": 1, "right_hand": 2, "feet": 3},
+            events={
+                "rest": 0,
+                "left_hand": 1,
+                "right_hand": 2,
+                "feet": 3,
+                # The final test run's "other" class (see FINAL_TEST_EVENT_DESC_A).
+                "right_hand_or_feet": 4,
+            },
             code="Beetl2021-A",
-            interval=[0, 4],  # 4s trial window
+            # 4 s trials laid back to back. MNE epochs include ``tmax``, so stop one
+            # sample early or the last trial of every run reaches past the end of
+            # the data and is dropped.
+            interval=[0, 4 - 1 / 500],
             paradigm="imagery",
             selected_subjects=subjects,
             selected_sessions=sessions,
@@ -410,23 +483,14 @@ class Beetl2021_A(BaseDataset):
         data = np.concatenate(data_list)
         labels = np.concatenate(labels_list)
 
-        # Create events array
-        events = np.column_stack(
-            (
-                np.arange(0, len(labels) * data.shape[-1], data.shape[-1]),
-                np.zeros(len(labels), dtype=int),
-                labels,
-            )
-        )
-
-        # Create Raw object
+        # Training trials carry the four-class labels declared in ``event_id``.
         event_desc = {int(code): name for name, code in self.event_id.items()}
-        raw = mne.io.RawArray(np.hstack(data), info)
-        raw.set_annotations(
-            mne.annotations_from_events(
-                events=events, event_desc=event_desc, sfreq=self.sfreq
-            )
-        )
+        raw = _trials_to_raw(data, labels, info, event_desc)
+
+        if self.phase == "leaderboard":
+            # The competition never released the leaderboard test labels, so there
+            # is nothing to annotate the leaderboard test trials with.
+            return {"0": {f"0{self.phase}train": raw}}
 
         # Load test data
         test_data_list = []
@@ -437,28 +501,14 @@ class Beetl2021_A(BaseDataset):
 
         test_data = np.concatenate(test_data_list)
 
-        # load labels from .txt
+        # Final test labels: one block of 200 per subject, S1-S3 then S4-S5, with the
+        # competition's three-class map (see FINAL_TEST_EVENT_DESC_A).
         test_labels = np.loadtxt(Path(file_paths[0]) / "final_MI_label.txt", dtype=int)
         subject_labels = test_labels[
             (subject - 1) * test_data.shape[0] : (subject) * test_data.shape[0]
         ]
-
-        test_events = np.column_stack(
-            (
-                np.arange(
-                    0, len(subject_labels) * test_data.shape[-1], test_data.shape[-1]
-                ),
-                np.zeros(len(subject_labels), dtype=int),
-                subject_labels,
-            )
-        )
-
-        # Create Raw object
-        test_raw = mne.io.RawArray(np.hstack(test_data), info)
-        test_raw.set_annotations(
-            mne.annotations_from_events(
-                events=test_events, event_desc=event_desc, sfreq=self.sfreq
-            )
+        test_raw = _trials_to_raw(
+            test_data, subject_labels, info, FINAL_TEST_EVENT_DESC_A
         )
 
         return {"0": {f"0{self.phase}train": raw, f"1{self.phase}test": test_raw}}
@@ -557,11 +607,21 @@ class Beetl2021_B(BaseDataset):
     The data was filtered using a highpass filter with a cutoff frequency of 1 Hz and a
     lowpass filter with a cutoff frequency of 100 Hz.
 
-    Motor imagery tasks include:
+    Motor imagery tasks in the training runs:
     - Left hand (label 0)
     - Right hand (label 1)
     - Feet (label 2)
     - Rest (label 3)
+
+    The final phase's test run is scored on three classes only: left hand, right hand
+    and "other", which is feet or rest (label 2 in ``final_MI_label.txt``). MOABB names
+    that merged class ``feet_or_rest`` and never folds it into ``feet`` or ``rest``. A
+    paradigm given no ``events`` uses every entry of ``event_id``, this one included;
+    ``LeftRightImagery`` leaves it out. Pass ``events=["left_hand", "right_hand",
+    "feet", "rest"]`` for the four training classes, or ``events=["left_hand",
+    "right_hand", "feet_or_rest"]`` with ``n_classes=3`` for the competition task. The
+    leaderboard phase's test labels were never released, so that phase serves its
+    training run only.
 
     Attributes
     ----------
@@ -630,9 +690,15 @@ class Beetl2021_B(BaseDataset):
         experiment=ExperimentMetadata(
             paradigm="imagery",
             task_type="motor imagery",
-            events={"left_hand": 0, "right_hand": 1, "feet": 2, "rest": 3},
-            n_classes=4,
-            class_labels=["left_hand", "right_hand", "feet", "rest"],
+            events={
+                "left_hand": 0,
+                "right_hand": 1,
+                "feet": 2,
+                "rest": 3,
+                "feet_or_rest": 4,
+            },
+            n_classes=5,
+            class_labels=["left_hand", "right_hand", "feet", "rest", "feet_or_rest"],
             trial_duration=4.0,
             study_design="cross-dataset transfer learning",
             study_domain="Brain-Computer Interface",
@@ -793,9 +859,19 @@ class Beetl2021_B(BaseDataset):
         super().__init__(
             subjects=all_subjects,
             sessions_per_subject=1,  # Data is concatenated into one session
-            events={"left_hand": 0, "right_hand": 1, "feet": 2, "rest": 3},
+            events={
+                "left_hand": 0,
+                "right_hand": 1,
+                "feet": 2,
+                "rest": 3,
+                # The final test run's "other" class (see FINAL_TEST_EVENT_DESC_B).
+                "feet_or_rest": 4,
+            },
             code="Beetl2021-B",
-            interval=[0, 4],  # 4s trial window
+            # 4 s trials laid back to back. MNE epochs include ``tmax``, so stop one
+            # sample early or the last trial of every run reaches past the end of
+            # the data and is dropped.
+            interval=[0, 4 - 1 / 200],
             paradigm="imagery",
             selected_subjects=subjects,
             selected_sessions=sessions,
@@ -865,52 +941,28 @@ class Beetl2021_B(BaseDataset):
             subject_dir / "training" / f"training_s{subject}y.npy", allow_pickle=True
         )
 
-        # Create events array
-        events = np.column_stack(
-            (
-                np.arange(
-                    0, len(train_labels) * train_data.shape[-1], train_data.shape[-1]
-                ),
-                np.zeros(len(train_labels), dtype=int),
-                train_labels,
-            )
-        )
-
-        # Create Raw object
+        # Files are in microvolts; training trials carry the four-class labels
+        # declared in ``event_id``.
         event_desc = {int(code): name for name, code in self.event_id.items()}
-        raw = mne.io.RawArray(np.hstack(train_data * 1e-6), info)
-        raw.set_annotations(
-            mne.annotations_from_events(
-                events=events, event_desc=event_desc, sfreq=self.sfreq
-            )
-        )
+        raw = _trials_to_raw(train_data * 1e-6, train_labels, info, event_desc)
+
+        if self.phase == "leaderboard":
+            # The competition never released the leaderboard test labels, so there
+            # is nothing to annotate the leaderboard test trials with.
+            return {"0": {f"0{self.phase}train": raw}}
 
         # Load test data
         test_data = np.load(
             subject_dir / "testing" / f"testing_s{subject}X.npy", allow_pickle=True
         )
-        # load labels from .txt
+        # Final test labels: one block of 200 per subject, S1-S3 then S4-S5, with the
+        # competition's three-class map (see FINAL_TEST_EVENT_DESC_B).
         test_labels = np.loadtxt(Path(file_paths[0]) / "final_MI_label.txt", dtype=int)
         subject_labels = test_labels[
             (subject - 1) * test_data.shape[0] : (subject) * test_data.shape[0]
         ]
-
-        test_events = np.column_stack(
-            (
-                np.arange(
-                    0, len(subject_labels) * test_data.shape[-1], test_data.shape[-1]
-                ),
-                np.zeros(len(subject_labels), dtype=int),
-                subject_labels,
-            )
-        )
-
-        # Create Raw object
-        test_raw = mne.io.RawArray(np.hstack(test_data * 1e-6), info)
-        test_raw.set_annotations(
-            mne.annotations_from_events(
-                events=test_events, event_desc=event_desc, sfreq=self.sfreq
-            )
+        test_raw = _trials_to_raw(
+            test_data * 1e-6, subject_labels, info, FINAL_TEST_EVENT_DESC_B
         )
 
         return {"0": {f"0{self.phase}train": raw, f"1{self.phase}test": test_raw}}
