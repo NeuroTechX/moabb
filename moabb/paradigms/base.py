@@ -461,8 +461,10 @@ class BaseProcessing(metaclass=MoabbMetaClass):
             datasets with many subjects, with identical numerical results.
         include_epoch_timing : bool
             If True, append event_sample and epoch_n_samples to returned trial
-            metadata using the processed event stream and epoch grid. Defaults
-            to False.
+            metadata using the original (non-resampled) epoch sample clock.
+            Defaults to False. Paradigm-level resampling is rejected for this
+            option because MNE event sample indices may remain in the source
+            clock after the epoch length changes to a new sampling rate.
 
         Returns
         -------
