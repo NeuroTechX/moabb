@@ -1632,8 +1632,14 @@ def test_mne_resampling_changes_epoch_units_not_raw_event_indices():
     raw = mne.io.RawArray(np.zeros((1, 4000)), info, verbose=False)
     events = np.array([[1000, 0, 1], [1500, 0, 1]])
     epochs = mne.Epochs(
-        raw, events, event_id={"cue": 1}, tmin=-0.2, tmax=0.8,
-        baseline=None, preload=True, verbose=False,
+        raw,
+        events,
+        event_id={"cue": 1},
+        tmin=-0.2,
+        tmax=0.8,
+        baseline=None,
+        preload=True,
+        verbose=False,
     )
     source_n_times = len(epochs.times)
     source_events = epochs.events.copy()
