@@ -1623,3 +1623,25 @@ def test_epoch_timing_rejects_resampled_event_clock_mismatch():
     paradigm = MotorImagery(resample=128)
     with pytest.raises(ValueError, match="original event samples"):
         paradigm.get_data(dataset=None, include_epoch_timing=True)
+
+
+def test_mne_resampling_changes_epoch_units_not_raw_event_indices():
+    """A real in-memory MNE witness for the forbidden clock mismatch."""
+    info = mne.create_info(["EEG001"], sfreq=1000.0, ch_types="eeg")
+    raw = mne.io.RawArray(np.zeros((1, 4000)), info, verbose=False)
+    events = np.array([[1000, 0, 1], [1500, 0, 1]])
+    epochs = mne.Epochs(
+        raw, events, event_id={"cue": 1}, tmin=-0.2, tmax=0.8,
+        baseline=None, preload=True, verbose=False,
+    )
+    source_n_times = len(epochs.times)
+    source_events = epochs.events.copy()
+    epochs.resample(100.0, verbose=False)
+    np.testing.assert_array_equal(epochs.events, source_events)
+    assert source_n_times > 500
+    assert len(epochs.times) < 500
+    # The source windows overlap (500 < 1001), although the invalid
+    # resampled-length comparison would incorrectly declare them disjoint.
+    gap = source_events[1, 0] - source_events[0, 0]
+    assert gap < source_n_times
+    assert gap >= len(epochs.times)
