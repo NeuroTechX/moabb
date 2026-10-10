@@ -1533,3 +1533,49 @@ def test_purged_epoch_kfold_fails_when_fold_loses_class_support():
 
     with pytest.raises(ValueError, match="does not contain every class"):
         list(splitter.split(np.zeros(len(y)), y, groups=epoch_interval_groups(timing)))
+
+
+def test_purged_epoch_overlap_fast_matches_independent_dense_oracle():
+    """Random unsorted/nested intervals obey the same half-open semantics."""
+    rng = np.random.default_rng(54321)
+    for _ in range(200):
+        n_train = int(rng.integers(0, 90))
+        n_test = int(rng.integers(0, 90))
+        train_start = rng.integers(-2000, 2000, size=n_train)
+        train_stop = train_start + rng.integers(1, 200, size=n_train)
+        test_start = rng.integers(-2000, 2000, size=n_test)
+        test_stop = test_start + rng.integers(1, 200, size=n_test)
+        expected = np.any(
+            (train_start[:, None] < test_stop[None, :])
+            & (test_start[None, :] < train_stop[:, None]),
+            axis=1,
+        )
+        actual = PurgedEpochKFold._overlap_mask(
+            train_start, train_stop, test_start, test_stop
+        )
+        np.testing.assert_array_equal(actual, expected)
+
+    # A nested long test interval cannot be masked by a later short one.
+    np.testing.assert_array_equal(
+        PurgedEpochKFold._overlap_mask(
+            np.array([10, 30, 40]),
+            np.array([20, 40, 50]),
+            np.array([0, 4, 20]),
+            np.array([35, 6, 30]),
+        ),
+        np.array([True, True, False]),
+    )
+
+
+def test_purged_epoch_overlap_30000_by_30000_avoids_quadratic_matrix():
+    """Exact large-cohort behavior without constructing 900M Boolean cells."""
+    n = 30_000
+    ids = np.arange(n, dtype=np.int64)
+    test_start = ids * 10
+    test_stop = test_start + 6
+    train_start = ids * 10 + np.where(ids % 2 == 0, 5, 6)
+    train_stop = train_start + 4
+    actual = PurgedEpochKFold._overlap_mask(
+        train_start, train_stop, test_start, test_stop
+    )
+    np.testing.assert_array_equal(actual, ids % 2 == 0)
