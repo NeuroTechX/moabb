@@ -1585,10 +1585,7 @@ def test_purged_epoch_stratification_dp_matches_exhaustive_small_oracle():
     """Vectorized DP minimizes the same constrained temporal-fold objective."""
     from itertools import combinations
 
-    y = np.asarray(
-        [0] * 5 + [1] * 2 + [0] + [1] * 4
-        + [0] * 4 + [1] + [0] * 2 + [1] * 5
-    )
+    y = np.asarray([0] * 5 + [1] * 2 + [0] + [1] * 4 + [0] * 4 + [1] + [0] * 2 + [1] * 5)
     n = len(y)
     n_folds = 4
     target_size = n / n_folds
@@ -1606,15 +1603,14 @@ def test_purged_epoch_stratification_dp_matches_exhaustive_small_oracle():
             if np.any(counts == 0):
                 return np.inf
             class_ratios = counts / width
-            total += np.sum(
-                (class_ratios - proportions) ** 2
-                / np.maximum(proportions, 1 / n)
-            ) + 0.1 * ((width - target_size) / target_size) ** 2
+            total += (
+                np.sum((class_ratios - proportions) ** 2 / np.maximum(proportions, 1 / n))
+                + 0.1 * ((width - target_size) / target_size) ** 2
+            )
         return total
 
     optimum = min(
-        partition_cost((0, *cuts, n))
-        for cuts in combinations(range(1, n), n_folds - 1)
+        partition_cost((0, *cuts, n)) for cuts in combinations(range(1, n), n_folds - 1)
     )
     blocks = PurgedEpochKFold._contiguous_blocks(np.arange(n), y, n_folds)
     actual_cuts = [0] + [int(block[-1]) + 1 for block in blocks]
