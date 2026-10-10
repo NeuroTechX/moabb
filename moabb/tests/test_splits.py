@@ -1579,3 +1579,59 @@ def test_purged_epoch_overlap_30000_by_30000_avoids_quadratic_matrix():
         train_start, train_stop, test_start, test_stop
     )
     np.testing.assert_array_equal(actual, ids % 2 == 0)
+
+
+def test_purged_epoch_stratification_dp_matches_exhaustive_small_oracle():
+    """Vectorized DP minimizes the same constrained temporal-fold objective."""
+    from itertools import combinations
+
+    y = np.asarray(
+        [0] * 5 + [1] * 2 + [0] + [1] * 4
+        + [0] * 4 + [1] + [0] * 2 + [1] * 5
+    )
+    n = len(y)
+    n_folds = 4
+    target_size = n / n_folds
+    min_size = max(1, int(np.floor(target_size * 0.75)))
+    max_size = max(min_size, int(np.ceil(target_size * 1.25)))
+    proportions = np.bincount(y) / n
+
+    def partition_cost(boundaries):
+        total = 0.0
+        for a, b in zip(boundaries[:-1], boundaries[1:]):
+            width = b - a
+            if not min_size <= width <= max_size:
+                return np.inf
+            counts = np.bincount(y[a:b], minlength=2)
+            if np.any(counts == 0):
+                return np.inf
+            class_ratios = counts / width
+            total += np.sum(
+                (class_ratios - proportions) ** 2
+                / np.maximum(proportions, 1 / n)
+            ) + 0.1 * ((width - target_size) / target_size) ** 2
+        return total
+
+    optimum = min(
+        partition_cost((0, *cuts, n))
+        for cuts in combinations(range(1, n), n_folds - 1)
+    )
+    blocks = PurgedEpochKFold._contiguous_blocks(np.arange(n), y, n_folds)
+    actual_cuts = [0] + [int(block[-1]) + 1 for block in blocks]
+    np.testing.assert_array_equal(np.concatenate(blocks), np.arange(n))
+    assert np.isclose(partition_cost(actual_cuts), optimum, rtol=1e-12, atol=1e-12)
+
+
+def test_purged_epoch_stratification_dp_large_run_is_deterministic():
+    """A large ERP run should not need millions of Python scalar DP steps."""
+    n = 10_000
+    y = np.tile(np.array([0, 1], dtype=int), n // 2)
+    index = np.arange(n)
+    first = PurgedEpochKFold._contiguous_blocks(index, y, n_splits=5)
+    second = PurgedEpochKFold._contiguous_blocks(index, y, n_splits=5)
+    assert len(first) == len(second) == 5
+    for a, b in zip(first, second):
+        np.testing.assert_array_equal(a, b)
+        np.testing.assert_array_equal(np.diff(a), np.ones(len(a) - 1, dtype=int))
+        assert set(y[a]) == {0, 1}
+    np.testing.assert_array_equal(np.concatenate(first), index)
