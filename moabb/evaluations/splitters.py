@@ -1411,13 +1411,27 @@ class PurgedEpochKFold(GroupsConsumerMixin, BaseCrossValidator):
 
     @staticmethod
     def _overlap_mask(train_start, train_stop, test_start, test_stop):
+        """Exact half-open overlap without a train-by-test matrix.
+
+        A train interval [a, b) overlaps a test interval [s, t) precisely
+        when s < b and t > a. Sort test starts, retain prefix-maximal test
+        stops, then binary-search each train stop. This handles unsorted,
+        nested and touching intervals in O(M log M + N log M) time and
+        O(N + M) memory (N train, M test), instead of O(N*M) memory.
+        """
         if len(train_start) == 0 or len(test_start) == 0:
             return np.zeros(len(train_start), dtype=bool)
-        return np.any(
-            (train_start[:, None] < test_stop[None, :])
-            & (test_start[None, :] < train_stop[:, None]),
-            axis=1,
+        order = np.argsort(test_start, kind="stable")
+        sorted_starts = test_start[order]
+        prefix_max_stops = np.maximum.accumulate(test_stop[order])
+        # Strict start < stop ensures touching half-open intervals do not
+        # overlap. The prefix max also handles nested test intervals.
+        eligible = np.searchsorted(sorted_starts, train_stop, side="left")
+        overlap = eligible > 0
+        overlap[overlap] = (
+            prefix_max_stops[eligible[overlap] - 1] > train_start[overlap]
         )
+        return overlap
 
     @staticmethod
     def _contiguous_blocks(indices, y, n_splits):
