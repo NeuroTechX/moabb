@@ -1428,9 +1428,7 @@ class PurgedEpochKFold(GroupsConsumerMixin, BaseCrossValidator):
         # overlap. The prefix max also handles nested test intervals.
         eligible = np.searchsorted(sorted_starts, train_stop, side="left")
         overlap = eligible > 0
-        overlap[overlap] = (
-            prefix_max_stops[eligible[overlap] - 1] > train_start[overlap]
-        )
+        overlap[overlap] = prefix_max_stops[eligible[overlap] - 1] > train_start[overlap]
         return overlap
 
     @staticmethod
