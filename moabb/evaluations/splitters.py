@@ -1477,24 +1477,39 @@ class PurgedEpochKFold(GroupsConsumerMixin, BaseCrossValidator):
             for end in range(min_end, max_end + 1):
                 start_min = max((n_blocks - 1) * min_size, end - max_size)
                 start_max = min((n_blocks - 1) * max_size, end - min_size)
-                for start in range(start_min, start_max + 1):
-                    prior_cost = costs[n_blocks - 1, start]
-                    if not np.isfinite(prior_cost):
+                # Evaluate candidate boundaries as one bounded NumPy batch.
+                # The old scalar loop performs millions of interpreted Python
+                # iterations for large ERP cohorts; this is the same DP
+                # recurrence with the same tie-break (earliest start).
+                starts = np.arange(start_min, start_max + 1)
+                prior_cost = costs[n_blocks - 1, starts]
+                valid = np.isfinite(prior_cost)
+                if not np.any(valid):
+                    continue
+                starts = starts[valid]
+                prior_cost = prior_cost[valid]
+                block_sizes = end - starts
+                block_counts = prefix[end] - prefix[starts]
+                if require_all_classes:
+                    valid_classes = np.all(block_counts > 0, axis=1)
+                    if not np.any(valid_classes):
                         continue
-                    block_size = end - start
-                    block_counts = prefix[end] - prefix[start]
-                    if require_all_classes and np.any(block_counts == 0):
-                        continue
-                    block_proportions = block_counts / block_size
-                    label_cost = np.sum(
-                        (block_proportions - target_proportions) ** 2
-                        / np.maximum(target_proportions, 1 / n_epochs)
-                    )
-                    size_cost = ((block_size - target_size) / target_size) ** 2
-                    candidate = prior_cost + label_cost + 0.1 * size_cost
-                    if candidate < costs[n_blocks, end]:
-                        costs[n_blocks, end] = candidate
-                        previous[n_blocks, end] = start
+                    starts = starts[valid_classes]
+                    prior_cost = prior_cost[valid_classes]
+                    block_sizes = block_sizes[valid_classes]
+                    block_counts = block_counts[valid_classes]
+                block_proportions = block_counts / block_sizes[:, None]
+                label_cost = np.sum(
+                    (block_proportions - target_proportions) ** 2
+                    / np.maximum(target_proportions, 1 / n_epochs),
+                    axis=1,
+                )
+                size_cost = ((block_sizes - target_size) / target_size) ** 2
+                candidates = prior_cost + label_cost + 0.1 * size_cost
+                best = int(np.argmin(candidates))
+                if candidates[best] < costs[n_blocks, end]:
+                    costs[n_blocks, end] = candidates[best]
+                    previous[n_blocks, end] = starts[best]
 
         if not np.isfinite(costs[n_splits, n_epochs]):
             return np.array_split(indices, n_splits)
