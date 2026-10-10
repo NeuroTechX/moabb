@@ -1616,3 +1616,10 @@ class TestMetadata:
         # Verify specific extra fields are present
         non_empty = [e for e in raw_out.annotations.extras if len(e) > 0]
         assert all("value" in e and "custom_col" in e for e in non_empty)
+
+
+def test_epoch_timing_rejects_resampled_event_clock_mismatch():
+    """MNE resampling preserves raw event indices but changes epoch n_times."""
+    paradigm = MotorImagery(resample=128)
+    with pytest.raises(ValueError, match="original event samples"):
+        paradigm.get_data(dataset=None, include_epoch_timing=True)
