@@ -476,6 +476,19 @@ class BaseProcessing(metaclass=MoabbMetaClass):
             A dataframe containing the metadata.
         """
 
+        if include_epoch_timing and self.resample is not None:
+            # MNE preserves original Raw event sample indices when Epochs are
+            # resampled, whereas len(Epochs.times) / array.shape[-1] counts
+            # samples at the NEW rate. Comparing these unconverted coordinates
+            # would silently miss overlaps between original extraction windows.
+            # Until the source sample clock/interval is carried explicitly
+            # through preprocessing, reject this unsupported combination.
+            raise ValueError(
+                "include_epoch_timing with paradigm resampling cannot safely "
+                "compare original event samples to resampled epoch lengths; "
+                "use resample=None or preserve source-clock epoch intervals."
+            )
+
         if process_pipelines is not None:
             assert isinstance(process_pipelines, list)
             assert isinstance(process_pipelines[0], Pipeline)
