@@ -4,6 +4,7 @@ import tempfile
 import unittest
 from math import ceil
 
+import mne
 import numpy as np
 import pandas as pd
 import pytest
