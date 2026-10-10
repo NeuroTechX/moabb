@@ -4,6 +4,7 @@ import tempfile
 import unittest
 from math import ceil
 
+import mne
 import numpy as np
 import pandas as pd
 import pytest
@@ -1482,13 +1483,58 @@ class TestMetadata:
         assert (metadata2 == epo2.metadata).all().all()
 
         assert (metadata1.columns == ["subject", "session", "run"]).all()
-
         assert "value" in metadata2.columns
         assert "value" in metadata3.columns
         assert "value" in metadata4.columns
         assert "duration" in metadata4.columns
         assert "sample" not in metadata3.columns
         assert "sample" not in metadata4.columns
+
+    def test_epoch_timing_metadata_is_opt_in_and_matches_processed_events(
+        self, cached_dataset_root
+    ):
+        dataset = LocalBIDSDataset(
+            cached_dataset_root,
+            events={"fake1": 1, "fake2": 2},
+            interval=[0, 3],
+            paradigm="imagery",
+        )
+        paradigm = MotorImagery()
+
+        epochs, labels_epochs, metadata_epochs = paradigm.get_data(
+            dataset=dataset, subjects=["1"], return_epochs=True, include_epoch_timing=True
+        )
+        array, labels_array, metadata_array = paradigm.get_data(
+            dataset=dataset,
+            subjects=["1"],
+            return_epochs=False,
+            include_epoch_timing=True,
+        )
+
+        assert "event_sample" in metadata_epochs
+        assert "epoch_n_samples" in metadata_epochs
+        event_samples = metadata_epochs["event_sample"].to_numpy()
+        # MNE offsets event samples when independently processed runs are
+        # concatenated into one Epochs object. Timing metadata is run-local, so
+        # compare event spacing within each run rather than across that offset.
+        run_indices = metadata_epochs.groupby(["session", "run"], sort=False).indices
+        for indices in run_indices.values():
+            indices = np.asarray(indices)
+            returned_events = epochs.events[indices, 0]
+            np.testing.assert_array_equal(
+                np.diff(event_samples[indices]), np.diff(returned_events)
+            )
+        assert (metadata_epochs["epoch_n_samples"] == len(epochs.times)).all()
+        np.testing.assert_array_equal(
+            metadata_array["event_sample"].to_numpy(),
+            metadata_epochs["event_sample"].to_numpy(),
+        )
+        np.testing.assert_array_equal(
+            metadata_array["epoch_n_samples"].to_numpy(),
+            metadata_epochs["epoch_n_samples"].to_numpy(),
+        )
+        np.testing.assert_array_equal(labels_array, labels_epochs)
+        assert array.shape[0] == len(metadata_array)
 
     def test_additional_metadata_extracts_non_aligned(self, cached_dataset_root):
         """
@@ -1571,3 +1617,38 @@ class TestMetadata:
         # Verify specific extra fields are present
         non_empty = [e for e in raw_out.annotations.extras if len(e) > 0]
         assert all("value" in e and "custom_col" in e for e in non_empty)
+
+
+def test_epoch_timing_rejects_resampled_event_clock_mismatch():
+    """MNE resampling preserves raw event indices but changes epoch n_times."""
+    paradigm = MotorImagery(resample=128)
+    with pytest.raises(ValueError, match="original event samples"):
+        paradigm.get_data(dataset=None, include_epoch_timing=True)
+
+
+def test_mne_resampling_changes_epoch_units_not_raw_event_indices():
+    """A real in-memory MNE witness for the forbidden clock mismatch."""
+    info = mne.create_info(["EEG001"], sfreq=1000.0, ch_types="eeg")
+    raw = mne.io.RawArray(np.zeros((1, 4000)), info, verbose=False)
+    events = np.array([[1000, 0, 1], [1500, 0, 1]])
+    epochs = mne.Epochs(
+        raw,
+        events,
+        event_id={"cue": 1},
+        tmin=-0.2,
+        tmax=0.8,
+        baseline=None,
+        preload=True,
+        verbose=False,
+    )
+    source_n_times = len(epochs.times)
+    source_events = epochs.events.copy()
+    epochs.resample(100.0, verbose=False)
+    np.testing.assert_array_equal(epochs.events, source_events)
+    assert source_n_times > 500
+    assert len(epochs.times) < 500
+    # The source windows overlap (500 < 1001), although the invalid
+    # resampled-length comparison would incorrectly declare them disjoint.
+    gap = source_events[1, 0] - source_events[0, 0]
+    assert gap < source_n_times
+    assert gap >= len(epochs.times)

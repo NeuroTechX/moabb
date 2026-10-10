@@ -406,6 +406,7 @@ class BaseProcessing(metaclass=MoabbMetaClass):
         process_pipelines=None,
         additional_metadata: Literal["all"] | list[str] = None,
         n_jobs=1,
+        include_epoch_timing=False,
     ):
         """
         Return the data for a list of subject.
@@ -458,6 +459,12 @@ class BaseProcessing(metaclass=MoabbMetaClass):
             preprocessing the data. Default ``1`` (sequential). Per-subject
             processing is independent, so this gives a near-linear speedup for
             datasets with many subjects, with identical numerical results.
+        include_epoch_timing : bool
+            If True, append event_sample and epoch_n_samples to returned trial
+            metadata using the original (non-resampled) epoch sample clock.
+            Defaults to False. Paradigm-level resampling is rejected for this
+            option because MNE event sample indices may remain in the source
+            clock after the epoch length changes to a new sampling rate.
 
         Returns
         -------
@@ -470,6 +477,19 @@ class BaseProcessing(metaclass=MoabbMetaClass):
         metadata: :class:`pandas.DataFrame`
             A dataframe containing the metadata.
         """
+
+        if include_epoch_timing and self.resample is not None:
+            # MNE preserves original Raw event sample indices when Epochs are
+            # resampled, whereas len(Epochs.times) / array.shape[-1] counts
+            # samples at the NEW rate. Comparing these unconverted coordinates
+            # would silently miss overlaps between original extraction windows.
+            # Until the source sample clock/interval is carried explicitly
+            # through preprocessing, reject this unsupported combination.
+            raise ValueError(
+                "include_epoch_timing with paradigm resampling cannot safely "
+                "compare original event samples to resampled epoch lengths; "
+                "use resample=None or preserve source-clock epoch intervals."
+            )
 
         if process_pipelines is not None:
             assert isinstance(process_pipelines, list)
@@ -591,6 +611,28 @@ class BaseProcessing(metaclass=MoabbMetaClass):
                             else pd.DataFrame()
                         )
                         metadata[-1] = dmeta_ext
+
+                    if include_epoch_timing:
+                        if return_raws:
+                            raise ValueError(
+                                "include_epoch_timing is defined for epoched "
+                                "data, not return_raws=True."
+                            )
+                        if return_epochs:
+                            timing_events = np.asarray(proc[0].events)
+                            epoch_n_samples = len(proc[0].times)
+                        else:
+                            timing_events = np.asarray(proc[0]["events"])
+                            epoch_n_samples = proc[0]["X"].shape[-1]
+                        if len(timing_events) != len(metadata[-1]):
+                            raise ValueError(
+                                "Epoch timing metadata is not aligned with the "
+                                "returned trial metadata."
+                            )
+                        metadata[-1]["event_sample"] = timing_events[:, 0].astype(
+                            np.int64
+                        )
+                        metadata[-1]["epoch_n_samples"] = int(epoch_n_samples)
 
                     if return_epochs:
                         x.metadata = (

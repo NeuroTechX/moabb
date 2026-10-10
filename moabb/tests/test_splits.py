@@ -27,8 +27,10 @@ from moabb.evaluations.splitters import (
     CrossSessionSplitter,
     CrossSubjectSplitter,
     LearningCurveSplitter,
+    PurgedEpochKFold,
     WithinSessionSplitter,
     WithinSubjectSplitter,
+    epoch_interval_groups,
 )
 from moabb.paradigms.motor_imagery import FakeImageryParadigm
 
@@ -1358,3 +1360,274 @@ def test_cross_subject_calibration_keeps_every_target_session(data):
                 index=False, name=None
             )
         )
+
+
+def _timing_metadata(event_samples, *, runs=None, epoch_n_samples=500):
+    event_samples = np.asarray(event_samples, dtype=int)
+    if runs is None:
+        runs = np.repeat("0", len(event_samples))
+    return pd.DataFrame(
+        {
+            "run": np.asarray(runs, dtype=object),
+            "event_sample": event_samples,
+            "epoch_n_samples": np.full(len(event_samples), epoch_n_samples),
+        }
+    )
+
+
+def _fold_has_interval_overlap(train, test, timing):
+    runs = timing["run"].to_numpy()
+    starts = timing["event_sample"].to_numpy()
+    stops = starts + timing["epoch_n_samples"].to_numpy()
+    for train_index in train:
+        same_run_test = test[runs[test] == runs[train_index]]
+        if np.any(
+            (starts[train_index] < stops[same_run_test])
+            & (starts[same_run_test] < stops[train_index])
+        ):
+            return True
+    return False
+
+
+def test_purged_epoch_kfold_removes_underlying_signal_overlap():
+    timing = _timing_metadata(np.arange(20) * 100, epoch_n_samples=500)
+    groups = epoch_interval_groups(timing)
+    y = np.tile([0, 1], 10)
+
+    naive = StratifiedKFold(n_splits=5, shuffle=True, random_state=7)
+    naive_folds = list(naive.split(np.zeros(len(y)), y))
+    assert any(
+        _fold_has_interval_overlap(train, test, timing) for train, test in naive_folds
+    )
+
+    purged = PurgedEpochKFold(n_splits=5)
+    purged_folds = list(purged.split(np.zeros(len(y)), y, groups))
+    assert len(purged_folds) == 5
+    assert all(
+        not _fold_has_interval_overlap(train, test, timing)
+        for train, test in purged_folds
+    )
+
+    tested = np.concatenate([test for _train, test in purged_folds])
+    np.testing.assert_array_equal(np.sort(tested), np.arange(len(y)))
+
+
+def test_purged_epoch_kfold_stratifies_contiguous_time_blocks():
+    # Equal-size chronological blocks are badly imbalanced for this sequence;
+    # shifting cut points within a narrow size range can balance them while
+    # keeping each test fold contiguous and preserving class support.
+    y = np.asarray([0] * 5 + [1] * 2 + [0] + [1] * 4 + [0] * 4 + [1] + [0] * 2 + [1] * 5)
+    timing = _timing_metadata(np.arange(len(y)) * 100, epoch_n_samples=500)
+    splitter = PurgedEpochKFold(n_splits=4)
+    folds = list(splitter.split(np.zeros(len(y)), y, epoch_interval_groups(timing)))
+
+    target_proportions = np.bincount(y) / len(y)
+    stratified_error = []
+    equal_block_error = []
+    for (train, test), equal_test in zip(folds, np.array_split(np.arange(len(y)), 4)):
+        assert np.all(np.diff(test) == 1)
+        assert set(np.unique(y[test])) == set(np.unique(y))
+        assert set(np.unique(y[train])) == set(np.unique(y))
+        assert not _fold_has_interval_overlap(train, test, timing)
+        stratified_error.append(
+            np.linalg.norm(
+                np.bincount(y[test], minlength=2) / len(test) - target_proportions
+            )
+        )
+        equal_block_error.append(
+            np.linalg.norm(
+                np.bincount(y[equal_test], minlength=2) / len(equal_test)
+                - target_proportions
+            )
+        )
+
+    assert np.mean(stratified_error) < np.mean(equal_block_error)
+    tested = np.concatenate([test for _train, test in folds])
+    np.testing.assert_array_equal(np.sort(tested), np.arange(len(y)))
+
+
+def test_purged_epoch_kfold_does_not_purge_across_run_boundaries():
+    # Runs have the same time coordinate range but are independent recordings.
+    # The 50-sample offset makes a cross-run-overlapping train candidate exist
+    # in every fold, while adjacent epochs within a run only touch at a boundary.
+    timing = _timing_metadata(
+        [0, 100, 200, 300, 400, 50, 150, 250, 350, 450],
+        runs=["a"] * 5 + ["b"] * 5,
+        epoch_n_samples=100,
+    )
+    splitter = PurgedEpochKFold(n_splits=5)
+    folds = list(
+        splitter.split(np.zeros(len(timing)), groups=epoch_interval_groups(timing))
+    )
+    for train, test in folds:
+        assert not _fold_has_interval_overlap(train, test, timing)
+        test_runs = set(timing.iloc[test]["run"])
+        assert test_runs == {"a", "b"}
+
+    # In fold 0, run A's 100-sample epoch overlaps run B's 50-sample test
+    # interval numerically. It must remain in train because runs are separate.
+    cross_run_candidate = timing.index[
+        (timing["run"] == "a") & (timing["event_sample"] == 100)
+    ][0]
+    assert cross_run_candidate in folds[0][0]
+
+
+def test_purged_epoch_kfold_fails_closed_without_true_timing():
+    splitter = PurgedEpochKFold(n_splits=2)
+    with pytest.raises(ValueError, match="requires true run/event timing"):
+        next(splitter.split(np.zeros(6), groups=None))
+
+    bad = np.asarray([["0", 0], ["0", 100]], dtype=object)
+    with pytest.raises(ValueError, match="shape"):
+        next(splitter.split(np.zeros(2), groups=bad))
+
+
+def test_purged_epoch_kfold_reports_purge_diagnostics():
+    timing = _timing_metadata(np.arange(10) * 100, epoch_n_samples=300)
+    splitter = PurgedEpochKFold(n_splits=5)
+    generator = splitter.split(
+        np.zeros(len(timing)), groups=epoch_interval_groups(timing)
+    )
+    next(generator)
+    metadata = splitter.get_metadata()
+
+    assert metadata["n_purged_overlap"] > 0
+    assert 0 < metadata["purge_fraction"] <= 1
+
+
+def test_within_session_splitter_routes_epoch_timing_to_purged_cv():
+    metadata = _timing_metadata(
+        list(np.arange(10) * 100) + list(np.arange(10) * 100),
+        runs=["0"] * 10 + ["1"] * 10,
+        epoch_n_samples=300,
+    )
+    metadata["subject"] = 1
+    metadata["session"] = "0"
+    metadata.index = np.arange(len(metadata))
+    y = np.tile([0, 1], 10)
+
+    splitter = WithinSessionSplitter(
+        n_folds=5, shuffle=False, cv_class=PurgedEpochKFold, groups=epoch_interval_groups
+    )
+    folds = list(splitter.split(y, metadata))
+
+    assert len(folds) == 5
+    assert all(
+        not _fold_has_interval_overlap(train, test, metadata) for train, test in folds
+    )
+
+
+def test_purged_epoch_kfold_rejects_fractional_timing():
+    splitter = PurgedEpochKFold(n_splits=2)
+    groups = np.asarray(
+        [["0", 0.5, 100], ["0", 100, 100], ["0", 200, 100], ["0", 300, 100]], dtype=object
+    )
+    with pytest.raises(ValueError, match="finite integers"):
+        next(splitter.split(np.zeros(4), groups=groups))
+
+
+def test_purged_epoch_kfold_fails_when_fold_loses_class_support():
+    timing = _timing_metadata(np.arange(10) * 600, epoch_n_samples=500)
+    y = np.asarray([0] * 8 + [1, 1])
+    splitter = PurgedEpochKFold(n_splits=5)
+
+    with pytest.raises(ValueError, match="does not contain every class"):
+        list(splitter.split(np.zeros(len(y)), y, groups=epoch_interval_groups(timing)))
+
+
+def test_purged_epoch_overlap_fast_matches_independent_dense_oracle():
+    """Random unsorted/nested intervals obey the same half-open semantics."""
+    rng = np.random.default_rng(54321)
+    for _ in range(200):
+        n_train = int(rng.integers(0, 90))
+        n_test = int(rng.integers(0, 90))
+        train_start = rng.integers(-2000, 2000, size=n_train)
+        train_stop = train_start + rng.integers(1, 200, size=n_train)
+        test_start = rng.integers(-2000, 2000, size=n_test)
+        test_stop = test_start + rng.integers(1, 200, size=n_test)
+        expected = np.any(
+            (train_start[:, None] < test_stop[None, :])
+            & (test_start[None, :] < train_stop[:, None]),
+            axis=1,
+        )
+        actual = PurgedEpochKFold._overlap_mask(
+            train_start, train_stop, test_start, test_stop
+        )
+        np.testing.assert_array_equal(actual, expected)
+
+    # A nested long test interval cannot be masked by a later short one.
+    np.testing.assert_array_equal(
+        PurgedEpochKFold._overlap_mask(
+            np.array([10, 30, 40]),
+            np.array([20, 40, 50]),
+            np.array([0, 4, 20]),
+            np.array([35, 6, 30]),
+        ),
+        np.array([True, True, False]),
+    )
+
+
+def test_purged_epoch_overlap_30000_by_30000_avoids_quadratic_matrix():
+    """Exact large-cohort behavior without constructing 900M Boolean cells."""
+    n = 30_000
+    ids = np.arange(n, dtype=np.int64)
+    test_start = ids * 10
+    test_stop = test_start + 6
+    train_start = ids * 10 + np.where(ids % 2 == 0, 5, 6)
+    train_stop = train_start + 4
+    actual = PurgedEpochKFold._overlap_mask(
+        train_start, train_stop, test_start, test_stop
+    )
+    np.testing.assert_array_equal(actual, ids % 2 == 0)
+
+
+def test_purged_epoch_stratification_dp_matches_exhaustive_small_oracle():
+    """Vectorized DP minimizes the same constrained temporal-fold objective."""
+    from itertools import combinations
+
+    y = np.asarray([0] * 5 + [1] * 2 + [0] + [1] * 4 + [0] * 4 + [1] + [0] * 2 + [1] * 5)
+    n = len(y)
+    n_folds = 4
+    target_size = n / n_folds
+    min_size = max(1, int(np.floor(target_size * 0.75)))
+    max_size = max(min_size, int(np.ceil(target_size * 1.25)))
+    proportions = np.bincount(y) / n
+
+    def partition_cost(boundaries):
+        total = 0.0
+        for a, b in zip(boundaries[:-1], boundaries[1:]):
+            width = b - a
+            if not min_size <= width <= max_size:
+                return np.inf
+            counts = np.bincount(y[a:b], minlength=2)
+            if np.any(counts == 0):
+                return np.inf
+            class_ratios = counts / width
+            total += (
+                np.sum((class_ratios - proportions) ** 2 / np.maximum(proportions, 1 / n))
+                + 0.1 * ((width - target_size) / target_size) ** 2
+            )
+        return total
+
+    optimum = min(
+        partition_cost((0, *cuts, n)) for cuts in combinations(range(1, n), n_folds - 1)
+    )
+    blocks = PurgedEpochKFold._contiguous_blocks(np.arange(n), y, n_folds)
+    actual_cuts = [0] + [int(block[-1]) + 1 for block in blocks]
+    np.testing.assert_array_equal(np.concatenate(blocks), np.arange(n))
+    assert np.isclose(partition_cost(actual_cuts), optimum, rtol=1e-12, atol=1e-12)
+
+
+def test_purged_epoch_stratification_dp_large_run_is_deterministic():
+    """A large ERP run should not need millions of Python scalar DP steps."""
+    n = 10_000
+    y = np.tile(np.array([0, 1], dtype=int), n // 2)
+    index = np.arange(n)
+    first = PurgedEpochKFold._contiguous_blocks(index, y, n_splits=5)
+    second = PurgedEpochKFold._contiguous_blocks(index, y, n_splits=5)
+    assert len(first) == len(second) == 5
+    for a, b in zip(first, second):
+        np.testing.assert_array_equal(a, b)
+        np.testing.assert_array_equal(np.diff(a), np.ones(len(a) - 1, dtype=int))
+        assert set(y[a]) == {0, 1}
+    np.testing.assert_array_equal(np.concatenate(first), index)
