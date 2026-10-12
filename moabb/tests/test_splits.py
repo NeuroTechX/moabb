@@ -1523,9 +1523,7 @@ def test_purged_epoch_same_named_run_in_distinct_sessions_is_not_one_recording()
     # purges: B's 140..230 interval overlaps A's 200..290 numerically,
     # though they are separate physical raw files.
     timing = _timing_metadata(
-        [0, 100, 200, 300, 40, 140, 240, 340],
-        runs=["0"] * 8,
-        epoch_n_samples=90,
+        [0, 100, 200, 300, 40, 140, 240, 340], runs=["0"] * 8, epoch_n_samples=90
     )
     timing["subject"] = [1] * 8
     timing["session"] = ["A"] * 4 + ["B"] * 4
@@ -1542,9 +1540,7 @@ def test_purged_epoch_same_named_run_in_distinct_sessions_is_not_one_recording()
 
 def test_purged_epoch_same_named_run_across_subjects_not_cross_purged():
     timing = _timing_metadata(
-        [0, 100, 200, 300, 40, 140, 240, 340],
-        runs=["0"] * 8,
-        epoch_n_samples=90,
+        [0, 100, 200, 300, 40, 140, 240, 340], runs=["0"] * 8, epoch_n_samples=90
     )
     timing["subject"] = [1] * 4 + [2] * 4
     timing["session"] = ["A"] * 8
