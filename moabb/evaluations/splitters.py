@@ -1385,24 +1385,49 @@ class PurgedEpochKFold(GroupsConsumerMixin, BaseCrossValidator):
                 "(run, event_sample, epoch_n_samples)."
             )
         runs = values[:, 0]
-        try:
-            raw_event_samples = np.asarray(values[:, 1], dtype=float)
-            raw_epoch_n_samples = np.asarray(values[:, 2], dtype=float)
-        except (TypeError, ValueError) as error:
-            raise ValueError(
-                "event_sample and epoch_n_samples must be integer-valued."
-            ) from error
-        if (
-            not np.all(np.isfinite(raw_event_samples))
-            or not np.all(np.isfinite(raw_epoch_n_samples))
-            or not np.all(raw_event_samples == np.rint(raw_event_samples))
-            or not np.all(raw_epoch_n_samples == np.rint(raw_epoch_n_samples))
-        ):
-            raise ValueError("event_sample and epoch_n_samples must be finite integers.")
-        event_samples = raw_event_samples.astype(np.int64)
-        epoch_n_samples = raw_epoch_n_samples.astype(np.int64)
+        # A float64 round-trip silently changes valid int64 sample indices
+        # above 2**53. That can manufacture or remove half-open overlaps.
+        # Preserve integral objects exactly; permit legacy integral floats
+        # only when their original integer identity is unambiguous.
+        def strict_int64_samples(column):
+            parsed = []
+            bound = np.iinfo(np.int64)
+            for raw in column:
+                if isinstance(raw, (bool, np.bool_)):
+                    raise ValueError(
+                        "event_sample and epoch_n_samples must be finite integers."
+                    )
+                if isinstance(raw, (int, np.integer)):
+                    value = int(raw)
+                else:
+                    try:
+                        number = float(raw)
+                    except (TypeError, ValueError, OverflowError) as error:
+                        raise ValueError(
+                            "event_sample and epoch_n_samples must be finite integers."
+                        ) from error
+                    if (
+                        not np.isfinite(number)
+                        or number != np.floor(number)
+                        or abs(number) >= 2**53
+                    ):
+                        raise ValueError(
+                            "event_sample and epoch_n_samples must be finite integers "
+                            "with unambiguous sample coordinates."
+                        )
+                    value = int(number)
+                if value < bound.min or value > bound.max:
+                    raise ValueError("Sample interval coordinates exceed int64 range.")
+                parsed.append(value)
+            return np.asarray(parsed, dtype=np.int64)
+
+        event_samples = strict_int64_samples(values[:, 1])
+        epoch_n_samples = strict_int64_samples(values[:, 2])
         if np.any(epoch_n_samples <= 0):
             raise ValueError("epoch_n_samples must be strictly positive.")
+        # Prevent wraparound when forming half-open interval endpoints.
+        if np.any(event_samples > np.iinfo(np.int64).max - epoch_n_samples):
+            raise ValueError("Epoch interval stop exceeds int64 sample range.")
         return runs, event_samples, epoch_n_samples
 
     @staticmethod
