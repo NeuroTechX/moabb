@@ -1783,9 +1783,7 @@ def test_purged_epoch_rejects_float32_ambiguous_interval_width():
 def test_purged_epoch_nullable_float32_metadata_preserves_provenance():
     # Pandas nullable Float32Dtype is not an np.dtype. A conversion to
     # object yields Python float and hides the original float32 precision.
-    timing = _timing_metadata(
-        np.arange(8, dtype=np.int64) * 100, epoch_n_samples=90
-    )
+    timing = _timing_metadata(np.arange(8, dtype=np.int64) * 100, epoch_n_samples=90)
     timing["event_sample"] = pd.Series(
         timing["event_sample"].to_numpy(dtype=np.float32),
         index=timing.index,
@@ -1798,9 +1796,7 @@ def test_purged_epoch_nullable_float32_metadata_preserves_provenance():
 
 
 def test_purged_epoch_nullable_float32_missing_sample_fails_closed():
-    timing = _timing_metadata(
-        np.arange(8, dtype=np.int64) * 100, epoch_n_samples=90
-    )
+    timing = _timing_metadata(np.arange(8, dtype=np.int64) * 100, epoch_n_samples=90)
     timing["event_sample"] = pd.Series(
         timing["event_sample"].to_numpy(dtype=np.float32),
         index=timing.index,
