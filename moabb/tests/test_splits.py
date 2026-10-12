@@ -1723,3 +1723,70 @@ def test_purged_epoch_rejects_overflow_and_ambiguous_float_timing():
     large[1, 1] = 2**65
     with pytest.raises(ValueError, match="int64 range"):
         list(PurgedEpochKFold(2).split(np.zeros(8), groups=large))
+
+
+def test_purged_epoch_rejects_float32_metadata_colliding_sample_indices():
+    # float32(2**24 + 1) rounds to float32(2**24) BEFORE pandas converts
+    # its column to object; rejecting only float64 >=2**53 is not enough.
+    timing = _timing_metadata(
+        np.arange(8, dtype=np.int64) * 200, epoch_n_samples=100
+    )
+    timing["event_sample"] = (
+        timing["event_sample"].to_numpy(dtype=np.float32)
+    )
+    timing.loc[7, "event_sample"] = np.float32(2**24 + 1)
+    assert timing["event_sample"].dtype == np.dtype("float32")
+    with pytest.raises(ValueError, match="unambiguous sample coordinates"):
+        epoch_interval_groups(timing)
+
+
+def test_purged_epoch_rejects_float16_metadata_colliding_sample_indices():
+    timing = _timing_metadata(
+        np.arange(8, dtype=np.int64) * 100, epoch_n_samples=10
+    )
+    timing["event_sample"] = timing["event_sample"].to_numpy(
+        dtype=np.float16
+    )
+    timing.loc[7, "event_sample"] = np.float16(2**11 + 1)
+    assert timing["event_sample"].dtype == np.dtype("float16")
+    with pytest.raises(ValueError, match="unambiguous sample coordinates"):
+        epoch_interval_groups(timing)
+
+
+def test_purged_epoch_accepts_exact_small_float32_timing_and_preserves_folds():
+    starts = np.arange(8, dtype=np.int64) * 150
+    reference = _timing_metadata(starts, epoch_n_samples=100)
+    float32_timing = reference.copy()
+    float32_timing["event_sample"] = starts.astype(np.float32)
+    float32_timing["epoch_n_samples"] = np.float32(100)
+    integer_folds = list(PurgedEpochKFold(2).split(
+        np.zeros(8), groups=epoch_interval_groups(reference)
+    ))
+    float_folds = list(PurgedEpochKFold(2).split(
+        np.zeros(8), groups=epoch_interval_groups(float32_timing)
+    ))
+    for (train0, test0), (train1, test1) in zip(
+        integer_folds, float_folds
+    ):
+        np.testing.assert_array_equal(train0, train1)
+        np.testing.assert_array_equal(test0, test1)
+
+
+def test_purged_epoch_direct_numpy_float32_object_scalar_must_not_widen():
+    timing = _timing_metadata(
+        np.arange(8) * 100, epoch_n_samples=90
+    )
+    groups = epoch_interval_groups(timing)
+    groups[1, 1] = np.float32(2**24 + 1)
+    with pytest.raises(ValueError, match="unambiguous sample coordinates"):
+        list(PurgedEpochKFold(2).split(np.zeros(8), groups=groups))
+
+
+def test_purged_epoch_rejects_float32_ambiguous_interval_width():
+    timing = _timing_metadata(
+        np.arange(8) * 100, epoch_n_samples=90
+    )
+    timing["epoch_n_samples"] = np.full(8, 90, dtype=np.float32)
+    timing.loc[2, "epoch_n_samples"] = np.float32(2**24 + 1)
+    with pytest.raises(ValueError, match="unambiguous sample coordinates"):
+        epoch_interval_groups(timing)
