@@ -1638,19 +1638,17 @@ def test_purged_epoch_int64_translation_invariance():
     # Pure translation of integer sample coordinates must not change
     # half-open epoch intersections or chronological fold membership.
     shift = 2**53 + 101
-    original = _timing_metadata(np.arange(12, dtype=np.int64) * 200,
-                                epoch_n_samples=220)
-    moved = _timing_metadata(shift + np.arange(12, dtype=np.int64) * 200,
-                             epoch_n_samples=220)
+    original = _timing_metadata(np.arange(12, dtype=np.int64) * 200, epoch_n_samples=220)
+    moved = _timing_metadata(
+        shift + np.arange(12, dtype=np.int64) * 200, epoch_n_samples=220
+    )
     groups = epoch_interval_groups(moved)
     _, recovered, widths = PurgedEpochKFold._parse_groups(groups, 12)
-    np.testing.assert_array_equal(
-        recovered, shift + np.arange(12, dtype=np.int64) * 200
-    )
+    np.testing.assert_array_equal(recovered, shift + np.arange(12, dtype=np.int64) * 200)
     np.testing.assert_array_equal(widths, np.full(12, 220))
-    baseline = list(PurgedEpochKFold(3).split(
-        np.zeros(12), groups=epoch_interval_groups(original)
-    ))
+    baseline = list(
+        PurgedEpochKFold(3).split(np.zeros(12), groups=epoch_interval_groups(original))
+    )
     translated = list(PurgedEpochKFold(3).split(np.zeros(12), groups=groups))
     for (train0, test0), (train1, test1) in zip(baseline, translated):
         np.testing.assert_array_equal(train0, train1)
@@ -1661,20 +1659,17 @@ def test_purged_epoch_int64_translation_invariance():
 def test_purged_epoch_rejects_overflow_and_ambiguous_float_timing():
     limit = np.iinfo(np.int64).max
     safe = _timing_metadata(
-        np.array([limit - 90, limit - 70, limit - 50, limit - 30],
-                 dtype=np.int64),
+        np.array([limit - 90, limit - 70, limit - 50, limit - 30], dtype=np.int64),
         epoch_n_samples=20,
     )
-    folds = list(PurgedEpochKFold(2).split(
-        np.zeros(4), groups=epoch_interval_groups(safe)
-    ))
+    folds = list(
+        PurgedEpochKFold(2).split(np.zeros(4), groups=epoch_interval_groups(safe))
+    )
     assert len(folds) == 2
     unsafe = safe.copy()
     unsafe.loc[3, "epoch_n_samples"] = 40
     with pytest.raises(ValueError, match="stop exceeds int64"):
-        list(PurgedEpochKFold(2).split(
-            np.zeros(4), groups=epoch_interval_groups(unsafe)
-        ))
+        list(PurgedEpochKFold(2).split(np.zeros(4), groups=epoch_interval_groups(unsafe)))
 
     groups = epoch_interval_groups(
         _timing_metadata(np.arange(8) * 100, epoch_n_samples=90)
