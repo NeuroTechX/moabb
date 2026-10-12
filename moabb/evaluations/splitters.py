@@ -1385,6 +1385,7 @@ class PurgedEpochKFold(GroupsConsumerMixin, BaseCrossValidator):
                 "(run, event_sample, epoch_n_samples)."
             )
         runs = values[:, 0]
+
         # A float64 round-trip silently changes valid int64 sample indices
         # above 2**53. That can manufacture or remove half-open overlaps.
         # Preserve integral objects exactly; permit legacy integral floats
