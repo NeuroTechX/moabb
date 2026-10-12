@@ -1354,13 +1354,20 @@ def epoch_interval_groups(metadata):
     # *before* the original dtype information is discarded.
     for timing_column in ("event_sample", "epoch_n_samples"):
         source_dtype = metadata[timing_column].dtype
-        if isinstance(source_dtype, np.dtype) and np.issubdtype(
-            source_dtype, np.floating
+        # Nullable pandas Float32/Float64 extension columns also widen
+        # their scalar values to Python float during object conversion.
+        # Their declared numpy_dtype (unlike dtype itself) preserves that
+        # precision limit; do not overlook it.
+        numpy_dtype = getattr(source_dtype, "numpy_dtype", source_dtype)
+        if isinstance(numpy_dtype, np.dtype) and np.issubdtype(
+            numpy_dtype, np.floating
         ):
-            exact_integer_limit = 2 ** min(53, np.finfo(source_dtype).nmant + 1)
-            timing_values = metadata[timing_column].to_numpy()
+            exact_integer_limit = 2 ** min(53, np.finfo(numpy_dtype).nmant + 1)
+            timing_values = metadata[timing_column].to_numpy(
+                dtype=np.float64, na_value=np.nan
+            )
             if np.any(~np.isfinite(timing_values)) or np.any(
-                np.abs(timing_values.astype(np.float64)) >= exact_integer_limit
+                np.abs(timing_values) >= exact_integer_limit
             ):
                 raise ValueError(
                     "Epoch timing must have unambiguous sample coordinates "
