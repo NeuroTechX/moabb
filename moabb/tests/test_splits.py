@@ -1517,6 +1517,50 @@ def test_within_session_splitter_routes_epoch_timing_to_purged_cv():
     )
 
 
+def test_purged_epoch_same_named_run_in_distinct_sessions_is_not_one_recording():
+    # Independent recordings frequently share the run label "0". Treating
+    # only that label as the recording identity creates cross-session false
+    # purges: B's 140..230 interval overlaps A's 200..290 numerically,
+    # though they are separate physical raw files.
+    timing = _timing_metadata(
+        [0, 100, 200, 300, 40, 140, 240, 340],
+        runs=["0"] * 8,
+        epoch_n_samples=90,
+    )
+    timing["subject"] = [1] * 8
+    timing["session"] = ["A"] * 4 + ["B"] * 4
+    groups = epoch_interval_groups(timing)
+    assert len(set(groups[:, 0])) == 2
+    folds = list(PurgedEpochKFold(2).split(np.zeros(8), groups=groups))
+    assert len(folds) == 2
+    for train, test in folds:
+        assert len(train) == 4
+        assert len(test) == 4
+        assert set(timing.iloc[test]["session"]) == {"A", "B"}
+        assert set(timing.iloc[train]["session"]) == {"A", "B"}
+
+
+def test_purged_epoch_same_named_run_across_subjects_not_cross_purged():
+    timing = _timing_metadata(
+        [0, 100, 200, 300, 40, 140, 240, 340],
+        runs=["0"] * 8,
+        epoch_n_samples=90,
+    )
+    timing["subject"] = [1] * 4 + [2] * 4
+    timing["session"] = ["A"] * 8
+    groups = epoch_interval_groups(timing)
+    assert len(set(groups[:, 0])) == 2
+    folds = list(PurgedEpochKFold(2).split(np.zeros(8), groups=groups))
+    assert all(len(train) == 4 and len(test) == 4 for train, test in folds)
+
+
+def test_purged_epoch_rejects_missing_recording_identity():
+    timing = _timing_metadata(np.arange(8) * 100, epoch_n_samples=90)
+    timing["session"] = ["A"] * 7 + [None]
+    with pytest.raises(ValueError, match="Recording identity"):
+        epoch_interval_groups(timing)
+
+
 def test_purged_epoch_kfold_rejects_fractional_timing():
     splitter = PurgedEpochKFold(n_splits=2)
     groups = np.asarray(
