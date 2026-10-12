@@ -1346,6 +1346,26 @@ def epoch_interval_groups(metadata):
     ]
     if metadata.loc[:, recording_cols].isna().any().any():
         raise ValueError("Recording identity columns must not contain missing values.")
+    # Pandas may cast float16/float32 sample columns to Python float while
+    # constructing an object array. If the source value was rounded at its
+    # original precision, checking only the resulting float64 coordinate
+    # misses collisions from e.g. float32(2**24 + 1) == float32(2**24).
+    # Reject values at that dtype's first ambiguous integer coordinate
+    # *before* the original dtype information is discarded.
+    for timing_column in ("event_sample", "epoch_n_samples"):
+        source_dtype = metadata[timing_column].dtype
+        if isinstance(source_dtype, np.dtype) and np.issubdtype(
+            source_dtype, np.floating
+        ):
+            exact_integer_limit = 2 ** min(53, np.finfo(source_dtype).nmant + 1)
+            timing_values = metadata[timing_column].to_numpy()
+            if np.any(~np.isfinite(timing_values)) or np.any(
+                np.abs(timing_values.astype(np.float64)) >= exact_integer_limit
+            ):
+                raise ValueError(
+                    "Epoch timing must have unambiguous sample coordinates "
+                    "at its original floating-point precision."
+                )
     recording_codes = {}
     groups = metadata.loc[:, required].to_numpy(dtype=object)
     groups[:, 0] = [
@@ -1423,10 +1443,18 @@ class PurgedEpochKFold(GroupsConsumerMixin, BaseCrossValidator):
                         raise ValueError(
                             "event_sample and epoch_n_samples must be finite integers."
                         ) from error
+                    # Direct object-array callers may retain NumPy
+                    # float16/float32 scalars. Do not first widen their
+                    # possibly-rounded sample coordinates to Python float.
+                    source_limit = (
+                        2 ** min(53, np.finfo(type(raw)).nmant + 1)
+                        if isinstance(raw, np.floating)
+                        else 2**53
+                    )
                     if (
                         not np.isfinite(number)
                         or number != np.floor(number)
-                        or abs(number) >= 2**53
+                        or abs(number) >= source_limit
                     ):
                         raise ValueError(
                             "event_sample and epoch_n_samples must be finite integers "
