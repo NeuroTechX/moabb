@@ -1342,9 +1342,7 @@ def epoch_interval_groups(metadata):
             f"{required}; missing {tuple(missing)}."
         )
     recording_cols = [
-        column
-        for column in ("subject", "session", "run")
-        if column in metadata.columns
+        column for column in ("subject", "session", "run") if column in metadata.columns
     ]
     if metadata.loc[:, recording_cols].isna().any().any():
         raise ValueError("Recording identity columns must not contain missing values.")
@@ -1352,9 +1350,7 @@ def epoch_interval_groups(metadata):
     groups = metadata.loc[:, required].to_numpy(dtype=object)
     groups[:, 0] = [
         recording_codes.setdefault(identity, len(recording_codes))
-        for identity in metadata.loc[:, recording_cols].itertuples(
-            index=False, name=None
-        )
+        for identity in metadata.loc[:, recording_cols].itertuples(index=False, name=None)
     ]
     return groups
 
