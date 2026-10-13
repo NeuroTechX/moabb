@@ -44,6 +44,11 @@ FINAL_LABEL_TXT_ARTICLE_ID = 21602622
 FINAL_TEST_EVENT_DESC_A = {0: "rest", 1: "left_hand", 2: "right_hand_or_feet"}
 FINAL_TEST_EVENT_DESC_B = {0: "left_hand", 1: "right_hand", 2: "feet_or_rest"}
 
+# Label-file layout: one block per subject, S1-S5 in order (200 trials each
+# in the release). The stride comes from the file, not the data, so a short
+# subject file fails loudly instead of misaligning later subjects.
+N_SUBJECTS_IN_LABEL_FILE = 5
+
 
 def _trials_to_raw(trials, labels, info, event_desc):
     """Concatenate back-to-back trials into one annotated :class:`mne.io.RawArray`.
@@ -504,9 +509,12 @@ class Beetl2021_A(BaseDataset):
         # Final test labels: one block of 200 per subject, S1-S3 then S4-S5, with the
         # competition's three-class map (see FINAL_TEST_EVENT_DESC_A).
         test_labels = np.loadtxt(Path(file_paths[0]) / "final_MI_label.txt", dtype=int)
-        subject_labels = test_labels[
-            (subject - 1) * test_data.shape[0] : (subject) * test_data.shape[0]
-        ]
+        n_block, n_left = divmod(len(test_labels), N_SUBJECTS_IN_LABEL_FILE)
+        assert n_left == 0, f"{len(test_labels)} labels not divisible by 5 subjects"
+        assert test_data.shape[0] == n_block, (
+            f"{test_data.shape[0]} test trials, expected block of {n_block}"
+        )
+        subject_labels = test_labels[(subject - 1) * n_block : subject * n_block]
         test_raw = _trials_to_raw(
             test_data, subject_labels, info, FINAL_TEST_EVENT_DESC_A
         )
@@ -958,9 +966,12 @@ class Beetl2021_B(BaseDataset):
         # Final test labels: one block of 200 per subject, S1-S3 then S4-S5, with the
         # competition's three-class map (see FINAL_TEST_EVENT_DESC_B).
         test_labels = np.loadtxt(Path(file_paths[0]) / "final_MI_label.txt", dtype=int)
-        subject_labels = test_labels[
-            (subject - 1) * test_data.shape[0] : (subject) * test_data.shape[0]
-        ]
+        n_block, n_left = divmod(len(test_labels), N_SUBJECTS_IN_LABEL_FILE)
+        assert n_left == 0, f"{len(test_labels)} labels not divisible by 5 subjects"
+        assert test_data.shape[0] == n_block, (
+            f"{test_data.shape[0]} test trials, expected block of {n_block}"
+        )
+        subject_labels = test_labels[(subject - 1) * n_block : subject * n_block]
         test_raw = _trials_to_raw(
             test_data * 1e-6, subject_labels, info, FINAL_TEST_EVENT_DESC_B
         )
