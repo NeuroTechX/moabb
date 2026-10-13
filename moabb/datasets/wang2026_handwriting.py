@@ -153,7 +153,7 @@ _TRIAL_TYPE_TO_LABEL = {
 
 
 class Wang2026Handwriting(BaseBIDSDataset):
-    """Chinese handwriting imagery dataset (CCS-HI / SV-HI) from Wang et al. 2026.
+    """Chinese handwriting imagery dataset (CCS-HI / SV-HI) from Wang et al. 2026 (cognitive paradigm).
 
     Dataset from [1]_.
 
@@ -236,7 +236,7 @@ class Wang2026Handwriting(BaseBIDSDataset):
             sexes=[_DEMOGRAPHICS[s][0] for s in _SUBJECT_IDS],
         ),
         experiment=ExperimentMetadata(
-            paradigm="imagery",
+            paradigm="cognitive",
             events=dict(WANG2026_EVENTS),
             n_classes=5,
             class_labels=[
@@ -310,7 +310,7 @@ class Wang2026Handwriting(BaseBIDSDataset):
             ),
         ),
         paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="motor_imagery_handwriting",
+            detected_paradigm="cognitive",
             imagery_tasks=[
                 "horizontal",
                 "vertical",
@@ -340,7 +340,7 @@ class Wang2026Handwriting(BaseBIDSDataset):
             online_feedback=False,
             applications=["communication"],
         ),
-        tags=Tags(pathology=["healthy"], modality=["motor"], type=["imagery"]),
+        tags=Tags(pathology=["healthy"], modality=["cognitive"], type=["cognitive"]),
     )
 
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
@@ -355,7 +355,7 @@ class Wang2026Handwriting(BaseBIDSDataset):
             events=dict(WANG2026_EVENTS),
             code="Wang2026Handwriting",
             interval=[0.0, _TRIAL_DURATION - 1.0 / _SFREQ],
-            paradigm="imagery",
+            paradigm="cognitive",
             doi="10.1038/s41597-026-06708-3",
             selected_subjects=subjects,
             selected_sessions=sessions,
