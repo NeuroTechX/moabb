@@ -56,8 +56,11 @@ def bids_root(tmp_path):
                 f"{onset:.3f}\t0.5\t{label}\tn/a\t{int(onset * _SFREQ)}\n"
                 for onset, label in zip(onsets, labels)
             )
+            # The trial_type labels embed Chinese characters; write with an
+            # explicit encoding so Windows' charmap default does not choke.
             (folder / f"{stem}_events.tsv").write_text(
-                "onset\tduration\ttrial_type\tresponse_time\tsample\n" + body
+                "onset\tduration\ttrial_type\tresponse_time\tsample\n" + body,
+                encoding="utf-8",
             )
     return root
 
