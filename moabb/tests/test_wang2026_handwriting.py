@@ -9,7 +9,7 @@ from numpy.testing import assert_array_equal
 
 from moabb.datasets import Wang2026Handwriting
 from moabb.datasets.wang2026_handwriting import _SFREQ, WANG2026_CH_NAMES, WANG2026_EVENTS
-from moabb.paradigms import MotorImagery
+from moabb.paradigms import CognitiveTask
 
 
 # Both tasks of one session, at their released trial counts (200 / 240) but
@@ -79,14 +79,9 @@ def test_metadata():
     assert ds.METADATA.file_format == "BDF"
     assert ds.METADATA.participants.n_subjects == 21
     assert ds.METADATA.acquisition.sampling_rate == 1000.0
-    # MOABB's metadata catalog rewrites detected_paradigm from the dataset's
-    # paradigm ("imagery" -> "motor_imagery") in place the first time the
-    # catalog is touched, for every dataset (BNCI2024_001 included); the
-    # handwriting-specific value survives until then.
-    assert ds.METADATA.paradigm_specific.detected_paradigm in (
-        "motor_imagery_handwriting",
-        "motor_imagery",
-    )
+    assert ds.METADATA.paradigm_specific.detected_paradigm == "cognitive"
+    assert ds.METADATA.experiment.paradigm == "cognitive"
+    assert ds.paradigm == "cognitive"
     assert ds.METADATA.paradigm_specific.imagery_tasks == [
         "horizontal",
         "vertical",
@@ -135,7 +130,7 @@ def test_trial_type_labels_are_normalized(dataset):
 
 
 def test_paradigm_ccs(dataset):
-    paradigm = MotorImagery(
+    paradigm = CognitiveTask(
         fmin=8,
         fmax=32,
         resample=100,
@@ -154,7 +149,7 @@ def test_paradigm_ccs(dataset):
 
 
 def test_paradigm_sv(dataset):
-    paradigm = MotorImagery(
+    paradigm = CognitiveTask(
         fmin=8, fmax=32, resample=100, events=["a", "o", "e", "i", "u", "v"], n_classes=6
     )
     X, y, metadata = paradigm.get_data(dataset, [1], cache_config={"use": False})
