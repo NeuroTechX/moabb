@@ -420,6 +420,21 @@ work (Aguilera-Rodriguez et al. 2025).
     FilterBankLeftRightImagery
     FilterBankMotorImagery
 
+-----------------------
+Cognitive Task Paradigms
+-----------------------
+
+Standalone ``cognitive`` paradigm for non-motor endogenous tasks
+(handwriting/stroke imagery, mental arithmetic, mental rotation,
+word generation, music imagery). Valid on both ``paradigm="cognitive"``
+datasets and the existing ``paradigm="imagery"`` tag.
+
+.. autosummary::
+    :toctree: generated/
+    :template: class.rst
+
+    CognitiveTask
+
 --------------
 P300 Paradigms
 --------------

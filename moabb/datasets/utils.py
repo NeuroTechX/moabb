@@ -68,7 +68,7 @@ def dataset_search(  # noqa: C901
     Parameters
     ----------
     paradigm: str | None
-        'imagery', 'p300', 'ssvep', 'cvep', None
+        'imagery', 'cognitive', 'p300', 'ssvep', 'cvep', None
 
     multi_session: bool
         if True only returns datasets with more than one session per subject.
@@ -104,9 +104,16 @@ def dataset_search(  # noqa: C901
         n_classes = len(events)
     else:
         n_classes = None
-    if paradigm not in ["imagery", "p300", "ssvep", "cvep", None]:  # was assert
+    if paradigm not in [
+        "imagery",
+        "cognitive",
+        "p300",
+        "ssvep",
+        "cvep",
+        None,
+    ]:  # was assert
         raise ValueError(
-            f"paradigm must be one of 'imagery', 'p300', 'ssvep', 'cvep', or None, "
+            f"paradigm must be one of 'imagery', 'cognitive', 'p300', 'ssvep', 'cvep', or None, "
             f"got '{paradigm}'"
         )
 

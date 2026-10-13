@@ -26,6 +26,8 @@ from moabb.paradigms import (
     BaseMotorImagery,
     BaseP300,
     BaseSSVEP,
+    CognitiveTask,
+    FakeCognitiveParadigm,
     FakeCVEPParadigm,
     FilterBankCVEP,
     FilterBankFixedIntervalWindowsProcessing,
@@ -733,6 +735,52 @@ class TestP300:
         # should return epochs
         epochs, _, _ = paradigm.get_data(dataset, subjects=[1], return_epochs=True)
         assert isinstance(epochs, BaseEpochs)
+
+
+class TestCognitiveTask:
+    def test_is_valid(self):
+        paradigm = CognitiveTask(events=["horizontal", "vertical"], n_classes=2)
+        events = ["horizontal", "vertical", "turning"]
+        assert paradigm.is_valid(FakeDataset(paradigm="cognitive", event_list=events))
+        # existing imagery tag stays valid (e.g. Wang2026Handwriting)
+        assert paradigm.is_valid(FakeDataset(paradigm="imagery", event_list=events))
+        assert not paradigm.is_valid(
+            FakeDataset(paradigm="p300", event_list=["Target", "NonTarget"])
+        )
+
+    def test_used_events_n_classes(self):
+        paradigm = CognitiveTask(
+            events=["horizontal", "vertical", "turning"], n_classes=2
+        )
+        dataset = FakeDataset(
+            paradigm="cognitive", event_list=["horizontal", "vertical", "turning"]
+        )
+        assert list(paradigm.used_events(dataset)) == ["horizontal", "vertical"]
+        with pytest.raises(ValueError, match="did not have enough"):
+            CognitiveTask(events=["horizontal", "missing"], n_classes=2).used_events(
+                dataset
+            )
+
+    def test_paradigm_get_data(self):
+        paradigm = CognitiveTask(n_classes=3)
+        dataset = FakeDataset(paradigm="cognitive")
+        X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
+        assert len(X) == len(labels) == len(metadata)
+        assert len(X.shape) == 3
+        assert len(np.unique(labels)) == 3
+        assert "subject" in metadata.columns
+        epochs, _, _ = paradigm.get_data(dataset, subjects=[1], return_epochs=True)
+        assert isinstance(epochs, BaseEpochs)
+
+    def test_scoring(self):
+        assert CognitiveTask(n_classes=2).scoring == "roc_auc"
+        assert CognitiveTask(n_classes=5).scoring == "accuracy"
+
+    def test_fake_paradigm(self):
+        paradigm = FakeCognitiveParadigm()
+        assert len(paradigm.datasets) == 1
+        assert paradigm.is_valid(FakeDataset(paradigm="cognitive"))
+        assert paradigm.is_valid(FakeDataset(paradigm="imagery"))
 
 
 class TestRestingState:
