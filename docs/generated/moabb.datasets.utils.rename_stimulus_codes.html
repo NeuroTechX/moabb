@@ -566,7 +566,6 @@
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2019_001.html">moabb.datasets.BNCI2019_001</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2020_001.html">moabb.datasets.BNCI2020_001</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2022_001.html">moabb.datasets.BNCI2022_001</a></li>
-<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2024_001.html">moabb.datasets.BNCI2024_001</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2025_001.html">moabb.datasets.BNCI2025_001</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2025_002.html">moabb.datasets.BNCI2025_002</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Cho2017.html">moabb.datasets.Cho2017</a></li>
@@ -592,7 +591,6 @@
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.NeuroTUMBCI2025.html">moabb.datasets.NeuroTUMBCI2025</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Shin2022.html">moabb.datasets.Shin2022</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Shin2017A.html">moabb.datasets.Shin2017A</a></li>
-<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Shin2017B.html">moabb.datasets.Shin2017B</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Weibo2014.html">moabb.datasets.Weibo2014</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Zhou2016.html">moabb.datasets.Zhou2016</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.MIMED2024.html">moabb.datasets.MIMED2024</a></li>
@@ -642,6 +640,11 @@
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Nguyen2017_V.html">moabb.datasets.Nguyen2017_V</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Nieto2022.html">moabb.datasets.Nieto2022</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Pressel2016.html">moabb.datasets.Pressel2016</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Shin2017B.html">moabb.datasets.Shin2017B</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2024_001.html">moabb.datasets.BNCI2024_001</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Wang2026Handwriting.html">moabb.datasets.Wang2026Handwriting</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BI2012.html">moabb.datasets.BI2012</a></li>
@@ -806,6 +809,9 @@
 <li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.FilterBankMotorImagery.html">moabb.paradigms.FilterBankMotorImagery</a></li>
 </ul>
 <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.CognitiveTask.html">moabb.paradigms.CognitiveTask</a></li>
+</ul>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.P300.html">moabb.paradigms.P300</a></li>
 </ul>
 <ul class="nav bd-sidenav">
@@ -953,13 +959,13 @@
 <h1>moabb.datasets.utils.rename_stimulus_codes<a class="headerlink" href="#moabb-datasets-utils-rename-stimulus-codes" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="moabb.datasets.utils.rename_stimulus_codes">
-<span class="sig-prename descclassname"><span class="pre">moabb.datasets.utils.</span></span><span class="sig-name descname"><span class="pre">rename_stimulus_codes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">codes</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/utils.py#L213-L229"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.utils.rename_stimulus_codes" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">moabb.datasets.utils.</span></span><span class="sig-name descname"><span class="pre">rename_stimulus_codes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">codes</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/utils.py#L220-L236"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.utils.rename_stimulus_codes" title="Link to this definition">#</a></dt>
 <dd><p>Rename BrainVision <code class="docutils literal notranslate"><span class="pre">Stimulus/S</span>&#160; <span class="pre">&lt;n&gt;</span></code> annotations to class labels.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>raw</strong> (<a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.13)"><em>mne.io.Raw</em></a>) – Recording whose annotations are renamed in place.</p></li>
-<li><p><strong>codes</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em> of </em><em>int to str</em>) – Marker number to label, e.g. <code class="docutils literal notranslate"><span class="pre">{7:</span> <span class="pre">&quot;left_hand&quot;,</span> <span class="pre">8:</span> <span class="pre">&quot;right_hand&quot;}</span></code>.
+<li><p><strong>codes</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><em>dict</em></a><em> of </em><em>int to str</em>) – Marker number to label, e.g. <code class="docutils literal notranslate"><span class="pre">{7:</span> <span class="pre">&quot;left_hand&quot;,</span> <span class="pre">8:</span> <span class="pre">&quot;right_hand&quot;}</span></code>.
 Descriptions whose trailing <code class="docutils literal notranslate"><span class="pre">S</span> <span class="pre">&lt;n&gt;</span></code> is not in <code class="docutils literal notranslate"><span class="pre">codes</span></code> are kept.</p></li>
 </ul>
 </dd>

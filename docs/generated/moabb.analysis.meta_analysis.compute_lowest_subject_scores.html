@@ -545,7 +545,6 @@
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2019_001.html">moabb.datasets.BNCI2019_001</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2020_001.html">moabb.datasets.BNCI2020_001</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2022_001.html">moabb.datasets.BNCI2022_001</a></li>
-<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2024_001.html">moabb.datasets.BNCI2024_001</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2025_001.html">moabb.datasets.BNCI2025_001</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2025_002.html">moabb.datasets.BNCI2025_002</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Cho2017.html">moabb.datasets.Cho2017</a></li>
@@ -571,7 +570,6 @@
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.NeuroTUMBCI2025.html">moabb.datasets.NeuroTUMBCI2025</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Shin2022.html">moabb.datasets.Shin2022</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Shin2017A.html">moabb.datasets.Shin2017A</a></li>
-<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Shin2017B.html">moabb.datasets.Shin2017B</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Weibo2014.html">moabb.datasets.Weibo2014</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Zhou2016.html">moabb.datasets.Zhou2016</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.MIMED2024.html">moabb.datasets.MIMED2024</a></li>
@@ -621,6 +619,11 @@
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Nguyen2017_V.html">moabb.datasets.Nguyen2017_V</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Nieto2022.html">moabb.datasets.Nieto2022</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Pressel2016.html">moabb.datasets.Pressel2016</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Shin2017B.html">moabb.datasets.Shin2017B</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2024_001.html">moabb.datasets.BNCI2024_001</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Wang2026Handwriting.html">moabb.datasets.Wang2026Handwriting</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BI2012.html">moabb.datasets.BI2012</a></li>
@@ -785,6 +788,9 @@
 <li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.FilterBankMotorImagery.html">moabb.paradigms.FilterBankMotorImagery</a></li>
 </ul>
 <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.CognitiveTask.html">moabb.paradigms.CognitiveTask</a></li>
+</ul>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.P300.html">moabb.paradigms.P300</a></li>
 </ul>
 <ul class="nav bd-sidenav">
@@ -945,10 +951,10 @@ This helper does not recompute subject-level F1 scores from predictions.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>df</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v3.0.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – results obtained by an evaluation, with at least the <code class="docutils literal notranslate"><span class="pre">dataset</span></code>,
 <code class="docutils literal notranslate"><span class="pre">pipeline</span></code>, <code class="docutils literal notranslate"><span class="pre">subject</span></code> and <code class="docutils literal notranslate"><span class="pre">score</span></code> columns</p></li>
-<li><p><strong>reference_pipeline</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Pipeline whose per-subject scores define the lowest-performing cohort
+<li><p><strong>reference_pipeline</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>) – Pipeline whose per-subject scores define the lowest-performing cohort
 separately for each dataset. Every pipeline in a dataset must contain
 exactly the same subjects as this reference.</p></li>
-<li><p><strong>percentile</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>default=20</em>) – percentage of subjects to keep, in <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">100]</span></code>. The number of
+<li><p><strong>percentile</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><em>float</em></a><em>, </em><em>default=20</em>) – percentage of subjects to keep, in <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">100]</span></code>. The number of
 retained subjects is rounded up, and is at least one, so a value
 small enough always falls back to the single worst subject.</p></li>
 </ul>

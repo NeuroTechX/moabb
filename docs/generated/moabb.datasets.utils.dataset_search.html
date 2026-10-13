@@ -568,7 +568,6 @@
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2019_001.html">moabb.datasets.BNCI2019_001</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2020_001.html">moabb.datasets.BNCI2020_001</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2022_001.html">moabb.datasets.BNCI2022_001</a></li>
-<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2024_001.html">moabb.datasets.BNCI2024_001</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2025_001.html">moabb.datasets.BNCI2025_001</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2025_002.html">moabb.datasets.BNCI2025_002</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Cho2017.html">moabb.datasets.Cho2017</a></li>
@@ -594,7 +593,6 @@
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.NeuroTUMBCI2025.html">moabb.datasets.NeuroTUMBCI2025</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Shin2022.html">moabb.datasets.Shin2022</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Shin2017A.html">moabb.datasets.Shin2017A</a></li>
-<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Shin2017B.html">moabb.datasets.Shin2017B</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Weibo2014.html">moabb.datasets.Weibo2014</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Zhou2016.html">moabb.datasets.Zhou2016</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.MIMED2024.html">moabb.datasets.MIMED2024</a></li>
@@ -644,6 +642,11 @@
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Nguyen2017_V.html">moabb.datasets.Nguyen2017_V</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Nieto2022.html">moabb.datasets.Nieto2022</a></li>
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Pressel2016.html">moabb.datasets.Pressel2016</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Shin2017B.html">moabb.datasets.Shin2017B</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BNCI2024_001.html">moabb.datasets.BNCI2024_001</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moabb.datasets.Wang2026Handwriting.html">moabb.datasets.Wang2026Handwriting</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="moabb.datasets.BI2012.html">moabb.datasets.BI2012</a></li>
@@ -808,6 +811,9 @@
 <li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.FilterBankMotorImagery.html">moabb.paradigms.FilterBankMotorImagery</a></li>
 </ul>
 <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.CognitiveTask.html">moabb.paradigms.CognitiveTask</a></li>
+</ul>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="moabb.paradigms.P300.html">moabb.paradigms.P300</a></li>
 </ul>
 <ul class="nav bd-sidenav">
@@ -955,20 +961,20 @@
 <h1>moabb.datasets.utils.dataset_search<a class="headerlink" href="#moabb-datasets-utils-dataset-search" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="moabb.datasets.utils.dataset_search">
-<span class="sig-prename descclassname"><span class="pre">moabb.datasets.utils.</span></span><span class="sig-name descname"><span class="pre">dataset_search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paradigm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multi_session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">events</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">has_all_events</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/utils.py#L57-L157"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.utils.dataset_search" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">moabb.datasets.utils.</span></span><span class="sig-name descname"><span class="pre">dataset_search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paradigm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multi_session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">events</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">has_all_events</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/utils.py#L57-L164"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.utils.dataset_search" title="Link to this definition">#</a></dt>
 <dd><p>Returns a list of datasets that match a given criteria.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>paradigm</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – ‘imagery’, ‘p300’, ‘ssvep’, ‘cvep’, None</p></li>
-<li><p><strong>multi_session</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – if True only returns datasets with more than one session per subject.
+<li><p><strong>paradigm</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a><em> | </em><em>None</em>) – ‘imagery’, ‘cognitive’, ‘p300’, ‘ssvep’, ‘cvep’, None</p></li>
+<li><p><strong>multi_session</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><em>bool</em></a>) – if True only returns datasets with more than one session per subject.
 If False return all</p></li>
-<li><p><strong>events</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><em>strings</em>) – events to select</p></li>
-<li><p><strong>has_all_events</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – skip datasets that don’t have all events in events</p></li>
+<li><p><strong>events</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><em>list</em></a><em> of </em><em>strings</em>) – events to select</p></li>
+<li><p><strong>has_all_events</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><em>bool</em></a>) – skip datasets that don’t have all events in events</p></li>
 <li><p><strong>interval</strong> – Length of motor imagery interval, in seconds. Only used in imagery
 paradigm</p></li>
-<li><p><strong>min_subjects</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>,</em>) – minimum subjects in dataset</p></li>
-<li><p><strong>channels</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – list or set of channels</p></li>
+<li><p><strong>min_subjects</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a><em>,</em>) – minimum subjects in dataset</p></li>
+<li><p><strong>channels</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>) – list or set of channels</p></li>
 </ul>
 </dd>
 </dl>
