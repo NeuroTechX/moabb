@@ -127,9 +127,7 @@ def test_trial_type_labels_are_normalized(dataset):
         assert descriptions - {"BAD_ACQ_SKIP", "EDGE boundary"} <= set(WANG2026_EVENTS)
     # The discontinuous trials are separated by EDGE annotations.
     ccs = sessions["0"]["1CCSHI"]
-    n_edges = sum(
-        1 for d in ccs.annotations.description if d == "EDGE boundary"
-    )
+    n_edges = sum(1 for d in ccs.annotations.description if d == "EDGE boundary")
     assert n_edges == len(_CCS_LABELS) - 1
 
 
@@ -154,11 +152,7 @@ def test_paradigm_ccs(dataset):
 
 def test_paradigm_sv(dataset):
     paradigm = MotorImagery(
-        fmin=8,
-        fmax=32,
-        resample=100,
-        events=["a", "o", "e", "i", "u", "v"],
-        n_classes=6,
+        fmin=8, fmax=32, resample=100, events=["a", "o", "e", "i", "u", "v"], n_classes=6
     )
     X, y, metadata = paradigm.get_data(dataset, [1], cache_config={"use": False})
     assert X.shape == (2 * len(_SV_LABELS), len(WANG2026_CH_NAMES), 400)
