@@ -21,6 +21,7 @@ from moabb.evaluations.splitters import (
     WithinSessionSplitter,
     WithinSubjectSplitter,
     _ResolvedCV,
+    epoch_interval_groups,
 )
 
 
@@ -102,8 +103,11 @@ class WithinSessionEvaluation(BaseEvaluation):
         }
         if not splitter_kwargs["shuffle"] and "random_state" not in explicit_keys:
             splitter_kwargs["random_state"] = None
-        if self.groups is not None:
-            splitter_kwargs["groups"] = self.groups
+        groups = self.groups
+        if groups is None and getattr(cv_class, "requires_epoch_timing", False):
+            groups = epoch_interval_groups
+        if groups is not None:
+            splitter_kwargs["groups"] = groups
         return WithinSessionSplitter(cv_class=cv_class, **splitter_kwargs)
 
     # flake8: noqa: C901

@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="575" viewBox="0 0 1120 575" role="img" aria-labelledby="title desc">
+<title id="title">Purged Epoch K-Fold, five chronological folds on one continuous ERP recording</title>
+<desc id="desc">Each test fold is a contiguous time block. Epochs whose half-open sample windows overlap test epochs are purged from training, not randomly mixed. The labels are alternating classes in a fixed thirty-epoch synthetic example.</desc>
+<rect width="1120" height="575" fill="#FFFFFF"/>
+<text x="42" y="37" font-family="DejaVu Sans,Arial,sans-serif" font-size="21" font-weight="700" fill="#203448">PurgedEpochKFold: 5-fold chronological cross-validation</text>
+<text x="42" y="62" font-family="DejaVu Sans,Arial,sans-serif" font-size="13" fill="#596B7A">One run · 30 chronological epochs · event spacing 100 samples · epoch window 500 samples · balanced classes A/B</text>
+<rect x="43" y="82" width="16" height="15" rx="2" fill="#377CB4"/><text x="66" y="95" font-size="13" font-family="DejaVu Sans,Arial" fill="#344A5E">Train</text>
+<rect x="150" y="82" width="16" height="15" rx="2" fill="#F3AF4E"/><text x="173" y="95" font-size="13" font-family="DejaVu Sans,Arial" fill="#344A5E">Test (contiguous)</text>
+<rect x="331" y="82" width="16" height="15" rx="2" fill="#D97073"/><text x="354" y="95" font-size="13" font-family="DejaVu Sans,Arial" fill="#344A5E">Purged overlap</text>
+<text x="597" y="95" font-size="12" font-family="DejaVu Sans,Arial" fill="#64748B">Colors follow the actual split semantics; no resampling of event order</text>
+<text x="42" y="131" font-size="12" font-family="DejaVu Sans,Arial" font-weight="600" fill="#344A5E">CV split</text>
+<text x="162" y="131" font-size="12" font-family="DejaVu Sans,Arial" font-weight="600" fill="#344A5E">Event index / acquisition time →</text>
+<text x="874" y="131" font-size="12" font-family="DejaVu Sans,Arial" font-weight="600" fill="#344A5E">Counts (train / test / purge)</text>
+<text x="167" y="145" font-size="10.5" font-family="DejaVu Sans,Arial" fill="#607386">0</text>
+<text x="282" y="145" font-size="10.5" font-family="DejaVu Sans,Arial" fill="#607386">5</text>
+<text x="397" y="145" font-size="10.5" font-family="DejaVu Sans,Arial" fill="#607386">10</text>
+<text x="512" y="145" font-size="10.5" font-family="DejaVu Sans,Arial" fill="#607386">15</text>
+<text x="627" y="145" font-size="10.5" font-family="DejaVu Sans,Arial" fill="#607386">20</text>
+<text x="742" y="145" font-size="10.5" font-family="DejaVu Sans,Arial" fill="#607386">25</text>
+<text x="43" y="175" font-family="DejaVu Sans,Arial" font-size="13" font-weight="600" fill="#243C50">Fold 1</text>
+<rect x="162" y="158" width="20" height="25" rx="1.5" fill="#F3AF4E" data-fold="0" data-epoch="0" data-role="test"/>
+<rect x="185" y="158" width="20" height="25" rx="1.5" fill="#F3AF4E" data-fold="0" data-epoch="1" data-role="test"/>
+<rect x="208" y="158" width="20" height="25" rx="1.5" fill="#F3AF4E" data-fold="0" data-epoch="2" data-role="test"/>
+<rect x="231" y="158" width="20" height="25" rx="1.5" fill="#F3AF4E" data-fold="0" data-epoch="3" data-role="test"/>
+<rect x="254" y="158" width="20" height="25" rx="1.5" fill="#F3AF4E" data-fold="0" data-epoch="4" data-role="test"/>
+<rect x="277" y="158" width="20" height="25" rx="1.5" fill="#F3AF4E" data-fold="0" data-epoch="5" data-role="test"/>
+<rect x="300" y="158" width="20" height="25" rx="1.5" fill="#D97073" data-fold="0" data-epoch="6" data-role="purged"/>
+<rect x="323" y="158" width="20" height="25" rx="1.5" fill="#D97073" data-fold="0" data-epoch="7" data-role="purged"/>
+<rect x="346" y="158" width="20" height="25" rx="1.5" fill="#D97073" data-fold="0" data-epoch="8" data-role="purged"/>
+<rect x="369" y="158" width="20" height="25" rx="1.5" fill="#D97073" data-fold="0" data-epoch="9" data-role="purged"/>
+<rect x="392" y="158" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="0" data-epoch="10" data-role="train"/>
+<rect x="415" y="158" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="0" data-epoch="11" data-role="train"/>
+<rect x="438" y="158" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="0" data-epoch="12" data-role="train"/>
+<rect x="461" y="158" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="0" data-epoch="13" data-role="train"/>
+<rect x="484" y="158" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="0" data-epoch="14" data-role="train"/>
+<rect x="507" y="158" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="0" data-epoch="15" data-role="train"/>
+<rect x="530" y="158" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="0" data-epoch="16" data-role="train"/>
+<rect x="553" y="158" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="0" data-epoch="17" data-role="train"/>
+<rect x="576" y="158" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="0" data-epoch="18" data-role="train"/>
+<rect x="599" y="158" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="0" data-epoch="19" data-role="train"/>
+<rect x="622" y="158" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="0" data-epoch="20" data-role="train"/>
+<rect x="645" y="158" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="0" data-epoch="21" data-role="train"/>
+<rect x="668" y="158" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="0" data-epoch="22" data-role="train"/>
+<rect x="691" y="158" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="0" data-epoch="23" data-role="train"/>
+<rect x="714" y="158" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="0" data-epoch="24" data-role="train"/>
+<rect x="737" y="158" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="0" data-epoch="25" data-role="train"/>
+<rect x="760" y="158" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="0" data-epoch="26" data-role="train"/>
+<rect x="783" y="158" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="0" data-epoch="27" data-role="train"/>
+<rect x="806" y="158" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="0" data-epoch="28" data-role="train"/>
+<rect x="829" y="158" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="0" data-epoch="29" data-role="train"/>
+<text x="913" y="175" font-family="DejaVu Sans,Arial" font-size="13" fill="#3E5365">20 / 6 / 4</text>
+<text x="43" y="218" font-family="DejaVu Sans,Arial" font-size="13" font-weight="600" fill="#243C50">Fold 2</text>
+<rect x="162" y="201" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="1" data-epoch="0" data-role="train"/>
+<rect x="185" y="201" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="1" data-epoch="1" data-role="train"/>
+<rect x="208" y="201" width="20" height="25" rx="1.5" fill="#D97073" data-fold="1" data-epoch="2" data-role="purged"/>
+<rect x="231" y="201" width="20" height="25" rx="1.5" fill="#D97073" data-fold="1" data-epoch="3" data-role="purged"/>
+<rect x="254" y="201" width="20" height="25" rx="1.5" fill="#D97073" data-fold="1" data-epoch="4" data-role="purged"/>
+<rect x="277" y="201" width="20" height="25" rx="1.5" fill="#D97073" data-fold="1" data-epoch="5" data-role="purged"/>
+<rect x="300" y="201" width="20" height="25" rx="1.5" fill="#F3AF4E" data-fold="1" data-epoch="6" data-role="test"/>
+<rect x="323" y="201" width="20" height="25" rx="1.5" fill="#F3AF4E" data-fold="1" data-epoch="7" data-role="test"/>
+<rect x="346" y="201" width="20" height="25" rx="1.5" fill="#F3AF4E" data-fold="1" data-epoch="8" data-role="test"/>
+<rect x="369" y="201" width="20" height="25" rx="1.5" fill="#F3AF4E" data-fold="1" data-epoch="9" data-role="test"/>
+<rect x="392" y="201" width="20" height="25" rx="1.5" fill="#F3AF4E" data-fold="1" data-epoch="10" data-role="test"/>
+<rect x="415" y="201" width="20" height="25" rx="1.5" fill="#F3AF4E" data-fold="1" data-epoch="11" data-role="test"/>
+<rect x="438" y="201" width="20" height="25" rx="1.5" fill="#D97073" data-fold="1" data-epoch="12" data-role="purged"/>
+<rect x="461" y="201" width="20" height="25" rx="1.5" fill="#D97073" data-fold="1" data-epoch="13" data-role="purged"/>
+<rect x="484" y="201" width="20" height="25" rx="1.5" fill="#D97073" data-fold="1" data-epoch="14" data-role="purged"/>
+<rect x="507" y="201" width="20" height="25" rx="1.5" fill="#D97073" data-fold="1" data-epoch="15" data-role="purged"/>
+<rect x="530" y="201" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="1" data-epoch="16" data-role="train"/>
+<rect x="553" y="201" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="1" data-epoch="17" data-role="train"/>
+<rect x="576" y="201" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="1" data-epoch="18" data-role="train"/>
+<rect x="599" y="201" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="1" data-epoch="19" data-role="train"/>
+<rect x="622" y="201" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="1" data-epoch="20" data-role="train"/>
+<rect x="645" y="201" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="1" data-epoch="21" data-role="train"/>
+<rect x="668" y="201" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="1" data-epoch="22" data-role="train"/>
+<rect x="691" y="201" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="1" data-epoch="23" data-role="train"/>
+<rect x="714" y="201" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="1" data-epoch="24" data-role="train"/>
+<rect x="737" y="201" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="1" data-epoch="25" data-role="train"/>
+<rect x="760" y="201" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="1" data-epoch="26" data-role="train"/>
+<rect x="783" y="201" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="1" data-epoch="27" data-role="train"/>
+<rect x="806" y="201" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="1" data-epoch="28" data-role="train"/>
+<rect x="829" y="201" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="1" data-epoch="29" data-role="train"/>
+<text x="913" y="218" font-family="DejaVu Sans,Arial" font-size="13" fill="#3E5365">16 / 6 / 8</text>
+<text x="43" y="261" font-family="DejaVu Sans,Arial" font-size="13" font-weight="600" fill="#243C50">Fold 3</text>
+<rect x="162" y="244" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="2" data-epoch="0" data-role="train"/>
+<rect x="185" y="244" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="2" data-epoch="1" data-role="train"/>
+<rect x="208" y="244" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="2" data-epoch="2" data-role="train"/>
+<rect x="231" y="244" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="2" data-epoch="3" data-role="train"/>
+<rect x="254" y="244" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="2" data-epoch="4" data-role="train"/>
+<rect x="277" y="244" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="2" data-epoch="5" data-role="train"/>
+<rect x="300" y="244" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="2" data-epoch="6" data-role="train"/>
+<rect x="323" y="244" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="2" data-epoch="7" data-role="train"/>
+<rect x="346" y="244" width="20" height="25" rx="1.5" fill="#D97073" data-fold="2" data-epoch="8" data-role="purged"/>
+<rect x="369" y="244" width="20" height="25" rx="1.5" fill="#D97073" data-fold="2" data-epoch="9" data-role="purged"/>
+<rect x="392" y="244" width="20" height="25" rx="1.5" fill="#D97073" data-fold="2" data-epoch="10" data-role="purged"/>
+<rect x="415" y="244" width="20" height="25" rx="1.5" fill="#D97073" data-fold="2" data-epoch="11" data-role="purged"/>
+<rect x="438" y="244" width="20" height="25" rx="1.5" fill="#F3AF4E" data-fold="2" data-epoch="12" data-role="test"/>
+<rect x="461" y="244" width="20" height="25" rx="1.5" fill="#F3AF4E" data-fold="2" data-epoch="13" data-role="test"/>
+<rect x="484" y="244" width="20" height="25" rx="1.5" fill="#F3AF4E" data-fold="2" data-epoch="14" data-role="test"/>
+<rect x="507" y="244" width="20" height="25" rx="1.5" fill="#F3AF4E" data-fold="2" data-epoch="15" data-role="test"/>
+<rect x="530" y="244" width="20" height="25" rx="1.5" fill="#F3AF4E" data-fold="2" data-epoch="16" data-role="test"/>
+<rect x="553" y="244" width="20" height="25" rx="1.5" fill="#F3AF4E" data-fold="2" data-epoch="17" data-role="test"/>
+<rect x="576" y="244" width="20" height="25" rx="1.5" fill="#D97073" data-fold="2" data-epoch="18" data-role="purged"/>
+<rect x="599" y="244" width="20" height="25" rx="1.5" fill="#D97073" data-fold="2" data-epoch="19" data-role="purged"/>
+<rect x="622" y="244" width="20" height="25" rx="1.5" fill="#D97073" data-fold="2" data-epoch="20" data-role="purged"/>
+<rect x="645" y="244" width="20" height="25" rx="1.5" fill="#D97073" data-fold="2" data-epoch="21" data-role="purged"/>
+<rect x="668" y="244" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="2" data-epoch="22" data-role="train"/>
+<rect x="691" y="244" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="2" data-epoch="23" data-role="train"/>
+<rect x="714" y="244" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="2" data-epoch="24" data-role="train"/>
+<rect x="737" y="244" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="2" data-epoch="25" data-role="train"/>
+<rect x="760" y="244" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="2" data-epoch="26" data-role="train"/>
+<rect x="783" y="244" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="2" data-epoch="27" data-role="train"/>
+<rect x="806" y="244" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="2" data-epoch="28" data-role="train"/>
+<rect x="829" y="244" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="2" data-epoch="29" data-role="train"/>
+<text x="913" y="261" font-family="DejaVu Sans,Arial" font-size="13" fill="#3E5365">16 / 6 / 8</text>
+<text x="43" y="304" font-family="DejaVu Sans,Arial" font-size="13" font-weight="600" fill="#243C50">Fold 4</text>
+<rect x="162" y="287" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="3" data-epoch="0" data-role="train"/>
+<rect x="185" y="287" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="3" data-epoch="1" data-role="train"/>
+<rect x="208" y="287" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="3" data-epoch="2" data-role="train"/>
+<rect x="231" y="287" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="3" data-epoch="3" data-role="train"/>
+<rect x="254" y="287" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="3" data-epoch="4" data-role="train"/>
+<rect x="277" y="287" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="3" data-epoch="5" data-role="train"/>
+<rect x="300" y="287" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="3" data-epoch="6" data-role="train"/>
+<rect x="323" y="287" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="3" data-epoch="7" data-role="train"/>
+<rect x="346" y="287" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="3" data-epoch="8" data-role="train"/>
+<rect x="369" y="287" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="3" data-epoch="9" data-role="train"/>
+<rect x="392" y="287" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="3" data-epoch="10" data-role="train"/>
+<rect x="415" y="287" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="3" data-epoch="11" data-role="train"/>
+<rect x="438" y="287" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="3" data-epoch="12" data-role="train"/>
+<rect x="461" y="287" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="3" data-epoch="13" data-role="train"/>
+<rect x="484" y="287" width="20" height="25" rx="1.5" fill="#D97073" data-fold="3" data-epoch="14" data-role="purged"/>
+<rect x="507" y="287" width="20" height="25" rx="1.5" fill="#D97073" data-fold="3" data-epoch="15" data-role="purged"/>
+<rect x="530" y="287" width="20" height="25" rx="1.5" fill="#D97073" data-fold="3" data-epoch="16" data-role="purged"/>
+<rect x="553" y="287" width="20" height="25" rx="1.5" fill="#D97073" data-fold="3" data-epoch="17" data-role="purged"/>
+<rect x="576" y="287" width="20" height="25" rx="1.5" fill="#F3AF4E" data-fold="3" data-epoch="18" data-role="test"/>
+<rect x="599" y="287" width="20" height="25" rx="1.5" fill="#F3AF4E" data-fold="3" data-epoch="19" data-role="test"/>
+<rect x="622" y="287" width="20" height="25" rx="1.5" fill="#F3AF4E" data-fold="3" data-epoch="20" data-role="test"/>
+<rect x="645" y="287" width="20" height="25" rx="1.5" fill="#F3AF4E" data-fold="3" data-epoch="21" data-role="test"/>
+<rect x="668" y="287" width="20" height="25" rx="1.5" fill="#F3AF4E" data-fold="3" data-epoch="22" data-role="test"/>
+<rect x="691" y="287" width="20" height="25" rx="1.5" fill="#F3AF4E" data-fold="3" data-epoch="23" data-role="test"/>
+<rect x="714" y="287" width="20" height="25" rx="1.5" fill="#D97073" data-fold="3" data-epoch="24" data-role="purged"/>
+<rect x="737" y="287" width="20" height="25" rx="1.5" fill="#D97073" data-fold="3" data-epoch="25" data-role="purged"/>
+<rect x="760" y="287" width="20" height="25" rx="1.5" fill="#D97073" data-fold="3" data-epoch="26" data-role="purged"/>
+<rect x="783" y="287" width="20" height="25" rx="1.5" fill="#D97073" data-fold="3" data-epoch="27" data-role="purged"/>
+<rect x="806" y="287" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="3" data-epoch="28" data-role="train"/>
+<rect x="829" y="287" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="3" data-epoch="29" data-role="train"/>
+<text x="913" y="304" font-family="DejaVu Sans,Arial" font-size="13" fill="#3E5365">16 / 6 / 8</text>
+<text x="43" y="347" font-family="DejaVu Sans,Arial" font-size="13" font-weight="600" fill="#243C50">Fold 5</text>
+<rect x="162" y="330" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="4" data-epoch="0" data-role="train"/>
+<rect x="185" y="330" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="4" data-epoch="1" data-role="train"/>
+<rect x="208" y="330" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="4" data-epoch="2" data-role="train"/>
+<rect x="231" y="330" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="4" data-epoch="3" data-role="train"/>
+<rect x="254" y="330" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="4" data-epoch="4" data-role="train"/>
+<rect x="277" y="330" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="4" data-epoch="5" data-role="train"/>
+<rect x="300" y="330" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="4" data-epoch="6" data-role="train"/>
+<rect x="323" y="330" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="4" data-epoch="7" data-role="train"/>
+<rect x="346" y="330" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="4" data-epoch="8" data-role="train"/>
+<rect x="369" y="330" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="4" data-epoch="9" data-role="train"/>
+<rect x="392" y="330" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="4" data-epoch="10" data-role="train"/>
+<rect x="415" y="330" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="4" data-epoch="11" data-role="train"/>
+<rect x="438" y="330" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="4" data-epoch="12" data-role="train"/>
+<rect x="461" y="330" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="4" data-epoch="13" data-role="train"/>
+<rect x="484" y="330" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="4" data-epoch="14" data-role="train"/>
+<rect x="507" y="330" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="4" data-epoch="15" data-role="train"/>
+<rect x="530" y="330" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="4" data-epoch="16" data-role="train"/>
+<rect x="553" y="330" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="4" data-epoch="17" data-role="train"/>
+<rect x="576" y="330" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="4" data-epoch="18" data-role="train"/>
+<rect x="599" y="330" width="20" height="25" rx="1.5" fill="#377CB4" data-fold="4" data-epoch="19" data-role="train"/>
+<rect x="622" y="330" width="20" height="25" rx="1.5" fill="#D97073" data-fold="4" data-epoch="20" data-role="purged"/>
+<rect x="645" y="330" width="20" height="25" rx="1.5" fill="#D97073" data-fold="4" data-epoch="21" data-role="purged"/>
+<rect x="668" y="330" width="20" height="25" rx="1.5" fill="#D97073" data-fold="4" data-epoch="22" data-role="purged"/>
+<rect x="691" y="330" width="20" height="25" rx="1.5" fill="#D97073" data-fold="4" data-epoch="23" data-role="purged"/>
+<rect x="714" y="330" width="20" height="25" rx="1.5" fill="#F3AF4E" data-fold="4" data-epoch="24" data-role="test"/>
+<rect x="737" y="330" width="20" height="25" rx="1.5" fill="#F3AF4E" data-fold="4" data-epoch="25" data-role="test"/>
+<rect x="760" y="330" width="20" height="25" rx="1.5" fill="#F3AF4E" data-fold="4" data-epoch="26" data-role="test"/>
+<rect x="783" y="330" width="20" height="25" rx="1.5" fill="#F3AF4E" data-fold="4" data-epoch="27" data-role="test"/>
+<rect x="806" y="330" width="20" height="25" rx="1.5" fill="#F3AF4E" data-fold="4" data-epoch="28" data-role="test"/>
+<rect x="829" y="330" width="20" height="25" rx="1.5" fill="#F3AF4E" data-fold="4" data-epoch="29" data-role="test"/>
+<text x="913" y="347" font-family="DejaVu Sans,Arial" font-size="13" fill="#3E5365">20 / 6 / 4</text>
+<line x1="42" y1="382" x2="1076" y2="382" stroke="#D8E1E9"/>
+<text x="42" y="406" font-family="DejaVu Sans,Arial" font-size="15" font-weight="700" fill="#203448">Why a neighboring epoch is purged (fold 1)</text>
+<text x="42" y="425" font-family="DejaVu Sans,Arial" font-size="12" fill="#607386">Half-open sample intervals [start, stop): touching at the boundary does not count as overlap</text>
+<line x1="290" y1="520" x2="740" y2="520" stroke="#A6B5C3" stroke-width="1.5"/>
+<text x="273" y="539" font-size="11" font-family="DejaVu Sans,Arial" fill="#51677B">500</text>
+<text x="481" y="539" font-size="11" font-family="DejaVu Sans,Arial" fill="#51677B">1000</text>
+<text x="707" y="539" font-size="11" font-family="DejaVu Sans,Arial" fill="#51677B">1500</text>
+<text x="42" y="454" font-family="DejaVu Sans,Arial" font-size="12" fill="#40556A">Test epoch 5 [500,1000)</text>
+<rect x="290" y="443" width="225" height="13" rx="2" fill="#F3AF4E"/>
+<text x="42" y="476" font-family="DejaVu Sans,Arial" font-size="12" fill="#40556A">Train candidate 6 [600,1100)</text>
+<rect x="335" y="465" width="225" height="13" rx="2" fill="#D97073"/>
+<text x="42" y="498" font-family="DejaVu Sans,Arial" font-size="12" fill="#40556A">Train candidate 10 [1000,1500)</text>
+<rect x="515" y="487" width="225" height="13" rx="2" fill="#377CB4"/>
+<text x="42" y="561" font-size="11.5" font-family="DejaVu Sans,Arial" fill="#607386">Overlap: train.start &lt; test.stop AND test.start &lt; train.stop. Each run is purged independently; adjacent runs do not share sample indices.</text>
+</svg>

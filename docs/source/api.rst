@@ -510,9 +510,39 @@ accuracy, across-subject accuracy, or other transfer learning settings.
     :template: class.rst
 
     WithinSessionSplitter
+    PurgedEpochKFold
     WithinSubjectSplitter
     CrossSessionSplitter
     CrossSubjectSplitter
+
+.. figure:: images/purged_epoch_kfold.svg
+    :alt: Chronological ERP epochs split into contiguous test folds with adjacent overlapping epochs purged
+    :width: 100%
+
+    **PurgedEpochKFold**, illustrated on one continuous run with 30 epochs,
+    100-sample event spacing and 500-sample half-open epoch intervals.
+    Orange epochs form one contiguous test block per fold; red epochs are
+    excluded from training because their sample windows overlap test epochs.
+    Blue epochs remain in training. The diagram's 150 cell assignments are
+    checked against the actual splitter by
+    ``moabb/tests/test_purged_cv_figure.py``. Runs are independent: a test
+    epoch in one run does not purge an epoch from another run.
+
+    **Scope of the guarantee:** this splitter enforces zero overlap of the
+    specified *epoch extraction intervals* within each recording run. It
+    does **not** establish independence of the *preprocessed signals*.
+    In the standard MOABB paradigm, continuous Raw data is band-pass
+    filtered **before** the epoch boundaries are applied. IIR filtering
+    (including backward/zero-phase filtering) can propagate information
+    across a nominal train/test boundary even if the extracted epoch
+    intervals are disjoint. Later epoch resampling or other operations
+    can further extend the effective source-sample support. Therefore
+    the splitter fixes direct **raw-window reuse**, not all possible
+    preprocessing-induced temporal dependence. For strict independence
+    of filtered observations, preprocessing must be partition-aware
+    (or an independently justified filter/transformation support gap
+    must be enforced). An unverified finite embargo around an IIR
+    filter is not a proof of zero cross-boundary influence.
 
 A cross-subject transfer protocol additionally states what the estimator is
 allowed to see of the held-out target subject, and how the rest of that
