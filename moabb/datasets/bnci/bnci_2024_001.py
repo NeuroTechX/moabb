@@ -229,7 +229,7 @@ def _convert_run_001_2024(run, verbose=None):
 
 
 class BNCI2024_001(BNCIBaseDataset):
-    """BNCI 2024-001 Handwritten Character Classification dataset.
+    """BNCI 2024-001 Handwritten Character Classification dataset (cognitive paradigm).
 
     Dataset from [1]_.
 
@@ -400,7 +400,7 @@ class BNCI2024_001(BNCIBaseDataset):
                 "letter_t": 9,
                 "letter_v": 10,
             },
-            paradigm="imagery",
+            paradigm="cognitive",
             task_type="handwriting",
             n_classes=10,
             class_labels=[
@@ -513,7 +513,7 @@ class BNCI2024_001(BNCIBaseDataset):
             online_feedback=False,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="motor_imagery_handwriting",
+            detected_paradigm="cognitive",
             imagery_tasks=["handwriting of letters a, d, e, f, j, n, o, s, t, v"],
             cue_duration_s=2.0,
             imagery_duration_s=4.0,
@@ -548,7 +548,7 @@ class BNCI2024_001(BNCIBaseDataset):
             },
             code="BNCI2024-001",
             interval=[0, 3],
-            paradigm="imagery",
+            paradigm="cognitive",
             doi="10.1016/j.compbiomed.2024.109132",
             load_fn=_load_data_001_2024,
             base_url=BNCI_URL,

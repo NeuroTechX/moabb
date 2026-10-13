@@ -85,7 +85,6 @@ Motor Imagery Datasets
     BNCI2019_001
     BNCI2020_001
     BNCI2022_001
-    BNCI2024_001
     BNCI2025_001
     BNCI2025_002
     Cho2017
@@ -188,6 +187,7 @@ word generation, music imagery.
     :template: class.rst
 
     Shin2017B
+    BNCI2024_001
 
 -----------------
 ERP/P300 Datasets
