@@ -172,6 +172,7 @@ from .thapa2025 import Thapa2025
 from .utils import _init_dataset, dataset_dict
 from .wairagkar2018 import Wairagkar2018
 from .wang2026 import Wang2026
+from .wang2026_handwriting import Wang2026Handwriting
 from .Weibo2014 import Weibo2014
 from .wu2020 import Wu2020
 from .yagan2023 import Yagan2023
