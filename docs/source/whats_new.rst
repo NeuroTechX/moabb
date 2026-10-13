@@ -68,6 +68,20 @@ Requirements
 
 Bugs
 ~~~~
+- Fix :class:`moabb.datasets.Beetl2021_A` and :class:`moabb.datasets.Beetl2021_B`
+  annotating the final phase's test run with the training runs' four-class map.
+  ``final_MI_label.txt`` holds the competition's three-class labels, whose class 2
+  is "other" (right hand or feet for A, feet or rest for B; 100 of each subject's
+  200 test trials), so those trials were served as ``right_hand`` (A) or ``feet``
+  (B). The test run now has its own map and the merged class is a separate event,
+  ``right_hand_or_feet`` / ``feet_or_rest``, listed last in ``event_id``; pass
+  ``events`` to select the four training classes or the competition's three. The
+  leaderboard phase, whose test labels were never released, now serves its training
+  run only instead of slices of the final-phase label file. ``interval`` stops one
+  sample before 4 s, so MNE's inclusive ``tmax`` no longer drops the last trial of
+  every run (300 instead of 298 trials per dataset-A subject). Synthetic regression
+  tests cover the maps, the paradigm selection, the leaderboard phase and the trial
+  count (:gh:`1241` by `Bhargav Kowshik`_).
 - Warn that :class:`moabb.datasets.Han2024Fatigue` session ``'1'`` (fatigue) trial labels
   are unreliable: the fatigue MAT blocks do not store trials in the documented
   target order — single-trial SSVEP scoring against the loader-assigned labels
