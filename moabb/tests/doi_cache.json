@@ -1,6 +1,6 @@
 {
     "_metadata": {
-        "total": 229
+        "total": 231
     },
     "10.1002/hbm.23730": {
         "title": "Deep learning with convolutional neural networks for EEG decoding and visualization",
@@ -2727,5 +2727,26 @@
             "Shuang Qiu",
             "Huiguang He"
         ]
+    },
+    "10.1038/s41597-026-06708-3": {
+        "title": "An EEG dataset for handwriting imagery decoding of Chinese character strokes and Pinyin single vowels",
+        "authors": [
+            "Fan Wang",
+            "Yanxiao Chen",
+            "Peng Wang",
+            "Anmin Gong",
+            "Hui Xu",
+            "Yunfa Fu"
+        ],
+        "year": 2026,
+        "doi": "10.1038/s41597-026-06708-3"
+    },
+    "10.6084/m9.figshare.29987758.v4": {
+        "title": "EEG dataset for multi-class Chinese character stroke and pinyin vowel handwriting imagery (21 subjects, CCS-HI & SV-HI)",
+        "authors": [
+            "Fan Wang"
+        ],
+        "year": 2025,
+        "doi": "10.6084/m9.figshare.29987758.v4"
     }
 }
