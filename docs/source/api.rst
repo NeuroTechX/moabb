@@ -111,7 +111,6 @@ Motor Imagery Datasets
     NeuroTUMBCI2025
     Shin2022
     Shin2017A
-    Shin2017B
     Weibo2014
     Zhou2016
     MIMED2024
@@ -174,6 +173,21 @@ tag with motor imagery and can be decoded with the existing
     Nguyen2017_V
     Nieto2022
     Pressel2016
+
+-----------------------
+Cognitive Task Datasets
+-----------------------
+
+Non-motor endogenous tasks decoded with
+:class:`~moabb.paradigms.CognitiveTask` (``paradigm="cognitive"``):
+mental arithmetic, handwriting/stroke imagery, mental rotation,
+word generation, music imagery.
+
+.. autosummary::
+    :toctree: generated/
+    :template: class.rst
+
+    Shin2017B
 
 -----------------
 ERP/P300 Datasets
@@ -420,9 +434,9 @@ work (Aguilera-Rodriguez et al. 2025).
     FilterBankLeftRightImagery
     FilterBankMotorImagery
 
------------------------
+------------------------
 Cognitive Task Paradigms
------------------------
+------------------------
 
 Standalone ``cognitive`` paradigm for non-motor endogenous tasks
 (handwriting/stroke imagery, mental arithmetic, mental rotation,

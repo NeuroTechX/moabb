@@ -150,7 +150,9 @@ class BaseShin2017(BaseDataset):
             code="Shin2017" + suffix,
             # marker is for *task* start not cue start
             interval=[0, 10],
-            paradigm="imagery",  # no arithmetic paradigm in MOABB at the moment
+            paradigm="cognitive"
+            if mental_arithmetic and not motor_imagery
+            else "imagery",
             doi="10.1109/TNSRE.2016.2628057",
             selected_subjects=subjects,
             selected_sessions=sessions,
@@ -574,7 +576,7 @@ class Shin2017A(BaseShin2017):
 
 
 class Shin2017B(BaseShin2017):
-    """Mental Arithmetic Dataset from Shin et al 2017.
+    """Mental Arithmetic Dataset from Shin et al 2017 (cognitive paradigm).
 
     Dataset from [1]_.
 
@@ -746,7 +748,7 @@ class Shin2017B(BaseShin2017):
             species="human",
         ),
         experiment=ExperimentMetadata(
-            paradigm="imagery",
+            paradigm="cognitive",
             n_classes=2,
             class_labels=["subtraction", "rest"],
             trial_duration=10.0,
@@ -851,7 +853,7 @@ class Shin2017B(BaseShin2017):
             online_feedback=False,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="imagery",
+            detected_paradigm="cognitive",
             n_repetitions=20,
             imagery_tasks=None,
             imagery_duration_s=None,

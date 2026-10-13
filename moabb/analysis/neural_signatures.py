@@ -225,7 +225,7 @@ def _relabel_signature(sig: "NeuralSignatureData", label_map: dict[str, str]):
 class NeuralSignatureData:
     """Container for computed neural signature data."""
 
-    paradigm: str  # "imagery", "p300", "ssvep", "cvep", "rstate"
+    paradigm: str  # "imagery", "cognitive", "p300", "ssvep", "cvep", "rstate"
     dataset_name: str
     dataset_code: str
     signature_type: str  # "erd_ers", "erp", "psd_snr", "cvep_response", "rstate_psd"
@@ -1521,6 +1521,7 @@ def plot_rstate_interactive(sig: NeuralSignatureData) -> "go.Figure":
 
 _PARADIGM_HANDLERS = {
     "imagery": (compute_erd_ers_signature, plot_erd_ers_interactive),
+    "cognitive": (compute_erd_ers_signature, plot_erd_ers_interactive),
     "p300": (compute_erp_signature, plot_erp_interactive),
     "ssvep": (compute_ssvep_signature, plot_ssvep_interactive),
     "cvep": (compute_cvep_signature, plot_cvep_interactive),
@@ -1530,10 +1531,20 @@ _PARADIGM_HANDLERS = {
 
 def _get_paradigm_instance(paradigm_name: str, dataset=None):
     """Instantiate the appropriate paradigm for data loading."""
-    from moabb.paradigms import CVEP, P300, SSVEP, MotorImagery, RestingStateToP300Adapter
+    from moabb.paradigms import (
+        CVEP,
+        P300,
+        SSVEP,
+        CognitiveTask,
+        MotorImagery,
+        RestingStateToP300Adapter,
+    )
 
     _paradigm_factories = {
         "imagery": lambda _ds: MotorImagery(n_classes=2, fmin=1, fmax=45, resample=128),
+        "cognitive": lambda _ds: CognitiveTask(
+            n_classes=2, fmin=1, fmax=45, resample=128
+        ),
         "p300": lambda _ds: P300(),
         "ssvep": lambda _ds: SSVEP(n_classes=2, resample=256),
         "cvep": lambda _ds: CVEP(n_classes=2, resample=256),

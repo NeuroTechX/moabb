@@ -128,6 +128,25 @@ motor band:
    :class: sortable
 
 
+Cognitive Tasks
+======================
+
+Non-motor endogenous tasks decoded with
+:class:`~moabb.paradigms.CognitiveTask` (``paradigm="cognitive"``):
+mental arithmetic, handwriting/stroke imagery, mental rotation,
+word generation, music imagery.
+
+Cognitive-specific definitions:
+
+- **#Classes** is the number of different cognitive tasks.
+- **Trial** is one repetition of the cognitive task.
+
+.. csv-table::
+   :file: ../build/summary_cognitive.csv
+   :header-rows: 1
+   :class: sortable
+
+
 P300/ERP
 ======================
 

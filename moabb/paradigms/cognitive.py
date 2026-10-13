@@ -78,6 +78,9 @@ class CognitiveTask(BaseParadigm):
         )
         self.n_classes = n_classes
 
+        if self.events is not None and len(self.events) == 0:
+            raise ValueError("events must be None or a non-empty list of event names")
+
         if self.events is None:
             log.warning("Choosing from all possible events")
         elif self.n_classes is not None:
@@ -96,10 +99,10 @@ class CognitiveTask(BaseParadigm):
             if not len(dataset.event_id) >= self.n_classes:
                 ret = False
         else:
-            overlap = len(set(self.events) & set(dataset.event_id.keys()))
-            if self.n_classes is not None and not overlap >= self.n_classes:
+            n_overlap = len(set(self.events) & set(dataset.event_id.keys()))
+            if self.n_classes is not None and not n_overlap >= self.n_classes:
                 ret = False
-            elif self.n_classes is None and overlap == 0:
+            elif self.n_classes is None and n_overlap == 0:
                 ret = False
         return ret
 
@@ -108,8 +111,6 @@ class CognitiveTask(BaseParadigm):
         if self.events is None:
             for k, v in dataset.event_id.items():
                 out[k] = v
-            if self.n_classes is None:
-                self.n_classes = len(out)
         else:
             for event in self.events:
                 if event in dataset.event_id.keys():
@@ -127,6 +128,10 @@ class CognitiveTask(BaseParadigm):
 
     @property
     def datasets(self):
+        # Transitional bridge: imagery search keeps current loaders
+        # (e.g. Wang2026Handwriting) discoverable until they adopt
+        # paradigm="cognitive". Costs ~2x catalog scan; scope down
+        # once the migration lands.
         if self.tmax is None:
             interval = None
         else:
@@ -159,7 +164,7 @@ class FakeCognitiveParadigm(CognitiveTask):
 
     @property
     def datasets(self):
-        return [FakeDataset(["left_hand", "right_hand"], paradigm="cognitive")]
+        return [FakeDataset(["subtraction", "rest"], paradigm="cognitive")]
 
     def is_valid(self, dataset):
         return getattr(dataset, "paradigm", None) in ("cognitive", "imagery")
