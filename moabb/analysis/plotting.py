@@ -1902,8 +1902,10 @@ def dataset_bubble_plot(
         The default, 0, produces reproducible layouts. Pass ``None`` for a fresh,
         non-deterministic layout on each call.
     """
-    p = sea.color_palette("tab10", 5)
-    color_map = color_map or dict(zip(["imagery", "p300", "ssvep", "cvep", "rstate"], p))
+    p = sea.color_palette("tab10", 6)
+    color_map = color_map or dict(
+        zip(["imagery", "cognitive", "p300", "ssvep", "cvep", "rstate"], p)
+    )
 
     alphas = alphas or [0.8, 0.65, 0.5, 0.35, 0.2]
 

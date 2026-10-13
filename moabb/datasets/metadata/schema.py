@@ -537,7 +537,7 @@ class ExperimentMetadata:
     Parameters
     ----------
     paradigm : str
-        BCI paradigm type: "imagery", "p300", "ssvep", "cvep", "erp", or "rstate".
+        BCI paradigm type: "imagery", "cognitive", "p300", "ssvep", "cvep", "erp", or "rstate".
     task_type : str, optional
         Specific task variant, e.g., "left_right_hand", "4_class",
         "row_col_speller".

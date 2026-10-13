@@ -501,6 +501,7 @@ class TestMetadataCatalog:
             # Experiment required field
             assert metadata.experiment.paradigm in [
                 "imagery",
+                "cognitive",
                 "p300",
                 "ssvep",
                 "cvep",
@@ -570,7 +571,9 @@ class TestMetadataCatalog:
             assert metadata.experiment.paradigm == "p300"
             assert "10.1016/j.neuroimage.2020.117465" in metadata.documentation.doi
 
-    @pytest.mark.parametrize("paradigm", ["imagery", "p300", "ssvep", "cvep", "rstate"])
+    @pytest.mark.parametrize(
+        "paradigm", ["imagery", "cognitive", "p300", "ssvep", "cvep", "rstate"]
+    )
     def test_paradigm_counts(self, paradigm):
         """Cross-check catalog paradigm counts against summary CSV rows."""
         catalog_names = {
@@ -606,6 +609,7 @@ class TestMetadataCatalog:
         """Test that detected_paradigm agrees with experiment.paradigm."""
         expected_by_paradigm = {
             "imagery": "motor_imagery",
+            "cognitive": "cognitive",
             "p300": "p300",
             "ssvep": "ssvep",
             "cvep": "cvep",
