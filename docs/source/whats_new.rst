@@ -84,6 +84,13 @@ Bugs
 - Saving a fold model (``save_model=True``) for a hyper-parameter search (``GridSearchCV`` / Optuna) over a torch (skorch/braindecode) pipeline pickled the whole search object with the live network instead of using the torch-aware path used for unwrapped pipelines. :func:`moabb.evaluations.utils._save_model_cv` now saves the search's ``best_estimator_`` like an unwrapped pipeline (``save_params`` for the net) and writes ``best_params_<fold>.json``; searches over non-torch pipelines are saved as before (:gh:`1256` by `Bruno Aristimunha`_).
 - :func:`moabb.benchmark` matched ``include_datasets`` given as dataset objects by code but then evaluated the paradigm's freshly constructed default instances, silently dropping the caller's constructor arguments (e.g. ``Shin2017A(accept=True)`` still failed with the licence error, subject restrictions were ignored). The caller's instances are now used (:gh:`1254` by `Bruno Aristimunha`_).
 - :func:`moabb.benchmark` chose the epochs branch (``return_epochs=True, mne_labels=True``) by pipeline *name*, so SSVEP template classifiers (:class:`~moabb.pipelines.classification.SSVEP_TRCA`, :class:`~moabb.pipelines.classification.SSVEP_CCA`, ...) in a config named e.g. ``TRCA`` instead of ``TRCA-SSVEP`` still received epochs but with label-encoded integers, which they read as stimulus frequencies: no error, chance-level scores (Wang2016 TRCA 0.04 instead of 0.81 on subject 1). Routing now also uses the estimator type (:func:`~moabb.evaluations.utils._pipeline_requires_epochs`) (:gh:`1255` by `Bruno Aristimunha`_).
+- Fix :class:`moabb.datasets.Hinss2021` building its recording at a hard-coded 500 Hz
+  from EEGLAB files that hold 2 s epochs at 250 Hz: every time span was halved and
+  every frequency doubled, so each "2 s" trial covered two released epochs (4 s), and
+  each event sat one sample after its epoch's start, which dropped the last trial of
+  every session in MOABB and braindecode. The sampling rate is now read from the files,
+  events mark the first sample of each epoch, and ``interval`` is ``[0, 1.996]`` so a
+  trial is exactly one released epoch (:gh:`663` by `Bruno Aristimunha`_).
 - Fix :class:`moabb.datasets.Beetl2021_A` and :class:`moabb.datasets.Beetl2021_B`
   annotating the final phase's test run with the training runs' four-class map.
   ``final_MI_label.txt`` holds the competition's three-class labels, whose class 2
