@@ -1,5 +1,7 @@
+import json
 import os
 import os.path as osp
+import pickle
 import platform
 import warnings
 from collections import OrderedDict
@@ -15,6 +17,7 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.dummy import DummyClassifier as Dummy
 from sklearn.model_selection import (
     BaseCrossValidator,
+    GridSearchCV,
     GroupKFold,
     GroupShuffleSplit,
     LeaveOneGroupOut,
@@ -1631,6 +1634,48 @@ class TestUtilEvaluation:
         assert os.path.isfile(os.path.join(save_path, "step_fitted_0_optim.pkl"))
         assert os.path.isfile(os.path.join(save_path, "step_fitted_0_history.json"))
         assert os.path.isfile(os.path.join(save_path, "step_fitted_0_criterion.pkl"))
+
+    def test_save_model_cv_search_over_pytorch_pipeline(self, tmp_path):
+        torch = pytest.importorskip("torch")
+        skorch = pytest.importorskip("skorch")
+
+        net = skorch.NeuralNetClassifier(
+            module=torch.nn.Linear(10, 2),
+            criterion=torch.nn.CrossEntropyLoss,
+            max_epochs=1,
+            train_split=None,
+            verbose=0,
+        )
+        search = GridSearchCV(
+            Pipeline([("scale", FunctionTransformer()), ("step", net)]),
+            {"step__lr": [0.01, 0.1]},
+            cv=2,
+        )
+        rng = np.random.default_rng(0)
+        X = rng.standard_normal((40, 10)).astype(np.float32)
+        y = np.tile([0, 1], 20).astype(np.int64)
+        search.fit(X, y)
+
+        save_model_cv(search, tmp_path, 0)
+
+        # The best pipeline is saved like an unwrapped torch pipeline ...
+        assert (tmp_path / "step_fitted_0_model.pkl").is_file()
+        assert (tmp_path / "scale_fitted_0.pkl").is_file()
+        assert not (tmp_path / "fitted_model_0.pkl").exists()
+        # ... and the selected hyper-parameters are recorded.
+        with open(tmp_path / "best_params_0.json") as file:
+            assert json.load(file) == {"step__lr": search.best_params_["step__lr"]}
+
+    def test_save_model_cv_search_over_sklearn_pipeline_unchanged(self, tmp_path):
+        search = GridSearchCV(LDA(), {"solver": ["svd", "lsqr"]}, cv=2)
+        rng = np.random.default_rng(0)
+        search.fit(rng.standard_normal((40, 4)), np.tile([0, 1], 20))
+
+        save_model_cv(search, tmp_path, 0)
+
+        with open(tmp_path / "fitted_model_0.pkl", "rb") as file:
+            assert isinstance(pickle.load(file), GridSearchCV)
+        assert not (tmp_path / "best_params_0.json").exists()
 
     def test_create_save_path_with_cross_session_evaluation(self):
         hdf5_path = "base_path"
