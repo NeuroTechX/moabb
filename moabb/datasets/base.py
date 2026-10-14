@@ -7,7 +7,7 @@ import logging
 import re
 import traceback
 import warnings
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from functools import cached_property
 from inspect import signature
@@ -602,9 +602,14 @@ class BaseDataset(metaclass=MetaclassDataset):
         DOI for the dataset.
     nemar_id : str | None
         NEMAR dataset identifier used by :meth:`download` when available.
-    nemar_subject_template : str | None
-        Template for formatting subject IDs for NEMAR downloads. For example,
-        ``"{subject:03d}"`` formats subject ``1`` as ``"001"``.
+    nemar_subject_template : str | Mapping | None
+        How a MOABB subject id maps to the deposit's BIDS subject label (the
+        part after ``sub-``). Either a format template, e.g.
+        ``"{subject:03d}"`` formats subject ``1`` as ``"001"``; or, for labels
+        no template can produce (BIDS labels are any alphanumeric string),
+        an explicit ``{moabb_subject: label}`` mapping, e.g.
+        ``dict(enumerate(["zdvm", "A01"], start=1))``. ``None`` disables
+        subject filtering.
 
     return_all_modalities : bool | dict, optional
         Controls which channel types are retained when data is picked:
@@ -618,7 +623,7 @@ class BaseDataset(metaclass=MetaclassDataset):
 
     _summary_table: dict[str, Any]
     nemar_id: str | None = None
-    nemar_subject_template: str | None = "{subject}"
+    nemar_subject_template: str | Mapping[Any, str] | None = "{subject}"
     nemar_bids_filters: dict[str, Any] | None = None
 
     def __init__(
@@ -1083,10 +1088,19 @@ class BaseDataset(metaclass=MetaclassDataset):
         Raises
         ------
         RuntimeError
-            If ``nemar_subject_template`` cannot format the subject value.
+            If ``nemar_subject_template`` cannot format the subject value, or
+            is a mapping without an entry for it.
         """
         if self.nemar_subject_template is None:
             return None
+        if isinstance(self.nemar_subject_template, Mapping):
+            try:
+                return str(self.nemar_subject_template[subject])
+            except KeyError:
+                raise RuntimeError(
+                    f"{self.code} subject {subject!r} has no NEMAR label in "
+                    "its nemar_subject_template mapping."
+                ) from None
         try:
             return self.nemar_subject_template.format(subject=subject)
         except (IndexError, KeyError, ValueError) as exc:
