@@ -418,6 +418,79 @@ class Test_Datasets:
 
         assert calls[-1]["subject"] == expected
 
+    @pytest.mark.parametrize(
+        ("labels", "subject", "expected"),
+        [
+            pytest.param({1: "zdvm", 2: "bvgy"}, 1, "zdvm", id="lowercase-word"),
+            pytest.param({1: "A01", 2: "A02"}, 2, "A02", id="alphanumeric"),
+            pytest.param({1: "001"}, 1, "001", id="zero-padded-digits"),
+        ],
+    )
+    def test_nemar_subject_accepts_explicit_mapping(self, labels, subject, expected):
+        """BIDS subject labels can be any alphanumeric string (gh-1098).
+
+        A ``{moabb_subject: bids_label}`` mapping covers labels no format
+        template can produce, such as ``sub-zdvm`` or ``sub-A01``.
+        """
+        dataset = FakeDataset(n_subjects=2)
+        dataset.nemar_subject_template = labels
+
+        assert dataset._nemar_subject(subject) == expected
+
+    def test_nemar_subject_mapping_reaches_nemar_dl(self, monkeypatch, tmp_path):
+        """The mapped label, not the MOABB integer, is what NEMAR receives."""
+        dataset = FakeDataset(n_subjects=2)
+        dataset.nemar_id = "nm000001"
+        dataset.nemar_subject_template = {1: "zdvm", 2: "bvgy"}
+        calls = []
+
+        def nemar_dl(*args, **kwargs):
+            calls.append(kwargs["subject"])
+            return str(tmp_path)
+
+        monkeypatch.setattr("moabb.datasets.base.nemar_dl", nemar_dl)
+        dataset._download_nemar(subject=2, path=tmp_path)
+
+        assert calls == ["bvgy"]
+
+    def test_sourcedata_path_aliases_mapped_label(self, monkeypatch, tmp_path):
+        """A mapped label is offered alongside the raw MOABB id."""
+        dataset = FakeDataset(n_subjects=1)
+        dataset.nemar_id = "nm000001"
+        dataset.nemar_subject_template = {1: "A01"}
+        calls = []
+
+        def nemar_sourcedata_dl(*args, **kwargs):
+            calls.append(kwargs["subject"])
+            return str(tmp_path)
+
+        monkeypatch.setattr(
+            "moabb.datasets.base.nemar_sourcedata_dl", nemar_sourcedata_dl
+        )
+        dataset.sourcedata_path(subject=1, path=tmp_path)
+
+        assert calls == [[1, "A01"]]
+
+    def test_nemar_subject_mapping_missing_subject_raises(self):
+        dataset = FakeDataset(n_subjects=2)
+        dataset.nemar_subject_template = {1: "zdvm"}
+
+        with pytest.raises(RuntimeError, match=r"subject 2 .*no NEMAR label"):
+            dataset._nemar_subject(2)
+
+    def test_lioi2020_xp2_uses_declarative_subject_mapping(self):
+        """Lioi2020_XP2's non-contiguous labels need no method override."""
+        from moabb.datasets import Lioi2020_XP2
+        from moabb.datasets.base import BaseDataset
+
+        assert Lioi2020_XP2._nemar_subject is BaseDataset._nemar_subject
+        dataset = Lioi2020_XP2()
+        labels = [dataset._nemar_subject(s) for s in dataset.subject_list]
+        assert labels[:3] == ["xp201", "xp202", "xp203"]
+        assert dataset._nemar_subject(8) == "xp210"
+        assert labels[-1] == "xp222"
+        assert len(set(labels)) == len(dataset.subject_list) == 17
+
     def test_download_falls_back_from_nemar(self, monkeypatch, tmp_path):
         dataset = FakeDataset(n_subjects=1)
         dataset.nemar_id = "nm000001"
