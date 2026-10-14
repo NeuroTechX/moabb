@@ -86,6 +86,22 @@ class Liu2024(BaseDataset):
     To add the break and instruction events, set the `break_events` and
     `instr_events` parameters to True while instantiating the class.
 
+    **Preprocessed EDF content-overlap caveat (Figshare v5).**
+    An independent byte-level audit of the published *preprocessed EDF
+    products* found that released IDs 4 and 5 contain identical complete
+    digital time series for all 29 EEG channels; released IDs 47 and 49
+    share 6,957 of 9,280 aligned EEG-channel-by-EDF-record digital blocks
+    (approximately 75%). These blocks are *file storage segments*, not
+    independent clinical trials. See
+    https://github.com/NeuroTechX/moabb/issues/1248 for the reproducible,
+    version-pinned source and scope.
+
+    These observations concern released digital *content*, not independently
+    confirmed patient, session, or raw acquisition identities. Avoid assuming
+    that the preprocessed EDF released IDs are content-disjoint evaluation
+    groups until the source MAT-to-EDF processing lineage is clarified.
+    They do not establish that two patients are the same person.
+
     .. versionadded:: 1.1.1
 
     """
