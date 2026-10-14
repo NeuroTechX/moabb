@@ -130,3 +130,49 @@ def test_include_datasets_keeps_user_instances():
     # Codes still select the paradigm's own instances.
     by_code = _inc_exc_datasets(fresh, "LeftRightImagery", ["BNCI2014-001"], None)
     assert by_code[0] is fresh[0]
+def test_epoch_pipelines_routed_by_type_not_name(tmp_path):
+    """A template SSVEP classifier keeps its frequency labels under any name."""
+    from moabb.datasets.fake import FakeDataset
+    from moabb.pipelines.classification import SSVEP_CCA
+
+    ds = FakeDataset(["13", "15"], n_sessions=1, n_runs=1, n_subjects=1, paradigm="ssvep")
+    seen = {}
+
+    class SpyCCA(SSVEP_CCA):
+        def fit(self, X, y):
+            seen["labels"] = sorted(set(map(str, y)))
+            return super().fit(X, y)
+
+    benchmark(
+        pipelines=[{"name": "MyCCA", "paradigms": ["SSVEP"], "pipeline": SpyCCA()}],
+        evaluations=["WithinSession"],
+        paradigms=["SSVEP"],
+        include_datasets=[ds],
+        results=str(tmp_path / "res"),
+        output=str(tmp_path / "out"),
+        n_jobs=1,
+        overwrite=True,
+    )
+    # Routed to the epochs branch (mne_labels=True): CCA sees the stimulus
+    # frequencies, not label-encoded integers 0/1.
+    assert seen["labels"] == ["13", "15"]
+
+
+@pytest.mark.parametrize(
+    "name",
+    [
+        "SSVEP_CCA",
+        "SSVEP_TRCA",
+        "SSVEP_MsetCCA",
+        "SSVEP_itCCA",
+        "SSVEP_eCCA",
+        "SSVEP_TRCA_R",
+        "SSVEP_SSCOR",
+        "SSVEP_TDCA",
+    ],
+)
+def test_every_epochs_only_ssvep_classifier_is_detected(name):
+    from moabb.evaluations.utils import _pipeline_requires_epochs
+    from moabb.pipelines import classification
+
+    assert _pipeline_requires_epochs(getattr(classification, name)())

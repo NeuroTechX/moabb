@@ -516,13 +516,25 @@ def _pipeline_requires_epochs(pipeline):
     """Check if any step in the pipeline requires MNE Epochs objects."""
     from moabb.pipelines.classification import (
         SSVEP_CCA,
+        SSVEP_SSCOR,
+        SSVEP_TDCA,
         SSVEP_TRCA,
+        SSVEP_TRCA_R,
         SSVEP_eCCA,
         SSVEP_itCCA,
         SSVEP_MsetCCA,
     )
 
-    epochs_classifiers = (SSVEP_CCA, SSVEP_TRCA, SSVEP_MsetCCA, SSVEP_itCCA, SSVEP_eCCA)
+    epochs_classifiers = (
+        SSVEP_CCA,
+        SSVEP_TRCA,
+        SSVEP_MsetCCA,
+        SSVEP_itCCA,
+        SSVEP_eCCA,
+        SSVEP_TRCA_R,
+        SSVEP_SSCOR,
+        SSVEP_TDCA,
+    )
 
     # Handle non-pipeline classifiers (like DummyClassifier)
     if not hasattr(pipeline, "steps"):

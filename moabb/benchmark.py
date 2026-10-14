@@ -17,6 +17,7 @@ from moabb.evaluations import (
     CrossSubjectEvaluation,
     WithinSessionEvaluation,
 )
+from moabb.evaluations.utils import _pipeline_requires_epochs
 from moabb.pipelines.utils import (
     generate_paradigms,
     generate_param_grid,
@@ -269,7 +270,10 @@ def benchmark(  # noqa: C901
 
             ppl_with_epochs, ppl_with_array = {}, {}
             for pn, pv in prdgms_from_pipelines[paradigm].items():
-                if _ppl_needs_epochs(pn):
+                # By estimator type too: a renamed TRCA/CCA config otherwise
+                # gets label-encoded integers, which these classifiers read as
+                # stimulus frequencies (chance-level scores, no error).
+                if _ppl_needs_epochs(pn) or _pipeline_requires_epochs(pv):
                     ppl_with_epochs[pn] = pv
                 else:
                     ppl_with_array[pn] = pv
