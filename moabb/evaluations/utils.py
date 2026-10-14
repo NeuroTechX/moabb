@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import functools
+import json
 import logging
 import warnings
 from pathlib import Path
@@ -150,6 +151,15 @@ def _save_model_cv(model: object, save_path: str | Path, cv_index: str | int):
         raise IOError("No path to save the model")
     else:
         Path(save_path).mkdir(parents=True, exist_ok=True)
+
+    best = getattr(model, "best_estimator_", None)
+    if best is not None and _check_if_is_pytorch_steps(best):
+        # Search over a torch pipeline: save the refitted best pipeline like an
+        # unwrapped one (not a pickle of the search holding the live net) and
+        # keep the chosen hyper-parameters that the search pickle used to hold.
+        with open(Path(save_path) / f"best_params_{cv_index}.json", "w") as file:
+            json.dump(model.best_params_, file, default=str)
+        model = best
 
     if _check_if_is_pytorch_steps(model):
         for step_name in model.named_steps:
