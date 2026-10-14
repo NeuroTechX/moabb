@@ -102,10 +102,14 @@ def _grid_search_static(
             else:
                 search = search_methods["grid"]
 
-            if isinstance(scoring, dict):
-                refit = next(iter(scoring))
-            else:
-                refit = True
+            refit = True
+            if isinstance(scoring, (dict, list, tuple)):  # multi-metric
+                primary = next(iter(scoring))  # dict key or first metric name
+                if optuna:
+                    # OptunaSearchCV takes one scorer: optimise the primary.
+                    scoring = scoring[primary] if isinstance(scoring, dict) else primary
+                else:
+                    refit = primary  # GridSearchCV refits on the primary metric
 
             search = search(
                 grid_clf,
