@@ -189,10 +189,14 @@ def _retrieve_with_physionet_fallback(
                 downloader=mirror_downloader,
             )
         except Exception as exc:
-            warn(
+            # warnings.warn, not mne.utils.warn: the latter is silent when the
+            # MNE log level is above WARNING, and users should see the fallback.
+            warnings.warn(
                 f"S3 mirror download failed for {mirror} ({exc!r}); "
                 f"falling back to upstream {url}. Set MOABB_S3_MIRROR=0 to "
-                "skip the mirror."
+                "skip the mirror.",
+                RuntimeWarning,
+                stacklevel=2,
             )
     return retrieve(
         url,
