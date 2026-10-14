@@ -90,7 +90,7 @@ Bugs
   each event sat one sample after its epoch's start, which dropped the last trial of
   every session in MOABB and braindecode. The sampling rate is now read from the files,
   events mark the first sample of each epoch, and ``interval`` is ``[0, 1.996]`` so a
-  trial is exactly one released epoch (:gh:`663` by `Bruno Aristimunha`_).
+  trial is exactly one released epoch. Hinss2021 scores computed before this fix used time-compressed data: delete cached epochs and results and re-run (:gh:`663` by `Bruno Aristimunha`_).
 - Fix :class:`moabb.datasets.Beetl2021_A` and :class:`moabb.datasets.Beetl2021_B`
   annotating the final phase's test run with the training runs' four-class map.
   ``final_MI_label.txt`` holds the competition's three-class labels, whose class 2
