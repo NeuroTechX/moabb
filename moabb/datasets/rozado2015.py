@@ -34,6 +34,9 @@ from .utils import extract_rar
 
 log = logging.getLogger(__name__)
 
+# Spellings of microvolts seen in XDF/LSL stream metadata.
+_MICROVOLT_UNITS = frozenset({"microvolts", "microvolt", "uv", "\u00b5v", "\u03bcv"})
+
 # Harvard Dataverse access API URLs for the two RAR archives.
 # File IDs obtained from the Dataverse API for DOI:10.7910/DVN/28932.
 _DATAVERSE_BASE = "https://dataverse.harvard.edu/api/access/datafile/"
@@ -300,8 +303,8 @@ class Rozado2015(BaseDataset):
         # The stream declares every channel in microvolts. Treating the values
         # as raw BioSemi ADC counts (31.25 nV per step) made the EEG 32 times
         # too small.
-        pick_units = {units[i].lower() for i in picks if units[i]}
-        if pick_units - {"microvolts"}:
+        pick_units = {units[i].strip().lower() for i in picks if units[i]}
+        if pick_units - _MICROVOLT_UNITS:
             raise ValueError(
                 f"Unexpected EEG units {sorted(pick_units)} in {xdf_path}; "
                 "expected 'microvolts'."

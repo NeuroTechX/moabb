@@ -1097,9 +1097,13 @@ class BaseDataset(metaclass=MetaclassDataset):
             try:
                 return str(self.nemar_subject_template[subject])
             except KeyError:
+                key_types = sorted(
+                    {type(k).__name__ for k in self.nemar_subject_template}
+                )
                 raise RuntimeError(
-                    f"{self.code} subject {subject!r} has no NEMAR label in "
-                    "its nemar_subject_template mapping."
+                    f"{self.code} subject {subject!r} ({type(subject).__name__}) "
+                    "has no NEMAR label in its nemar_subject_template mapping "
+                    f"(keys are {', '.join(key_types)})."
                 ) from None
         try:
             return self.nemar_subject_template.format(subject=subject)

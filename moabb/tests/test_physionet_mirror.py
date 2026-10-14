@@ -31,6 +31,7 @@ def calls(monkeypatch):
         return f"{kwargs['path']}/{kwargs['fname']}"
 
     monkeypatch.setattr(dl, "retrieve", fake_retrieve)
+    monkeypatch.setattr(dl, "_S3_MIRROR_FAILED", False)
     monkeypatch.delenv("MOABB_S3_MIRROR", raising=False)
     return state
 
@@ -62,3 +63,18 @@ def test_non_physionet_url_untouched(calls):
         "https://zenodo.org/x.edf", fname="x.edf", path="/d"
     )
     assert calls.urls == ["https://zenodo.org/x.edf"]
+
+
+def test_mirror_skipped_after_first_failure(calls):
+    calls.fail_mirror = True
+    with pytest.warns(RuntimeWarning, match="falling back to upstream"):
+        _fetch()
+    _fetch()  # no second mirror attempt, no second warning
+    assert calls.urls == [MIRROR, UP, UP]
+
+
+def test_data_dl_routes_physionet_through_mirror(calls, tmp_path, monkeypatch):
+    monkeypatch.setattr(dl, "get_dataset_path", lambda sign, path: str(tmp_path))
+    monkeypatch.setattr(dl, "_store_lookup", lambda url, fname=None: None)
+    dl.data_dl(UP, "PHYSIONET")
+    assert calls.urls[0] == MIRROR

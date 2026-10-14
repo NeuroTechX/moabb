@@ -263,6 +263,13 @@ def benchmark(  # noqa: C901
             if not compatible_datasets:
                 print(f"WARNING: Paradigm {paradigm} skipped.")
                 continue
+            # Without include/exclude lists the selection is the paradigm's own,
+            # so let the evaluation auto-select and filter it quietly (#862).
+            eval_datasets = (
+                None
+                if include_datasets is None and exclude_datasets is None
+                else compatible_datasets
+            )
 
             print(
                 f"Datasets considered for {paradigm} paradigm {[dt.code for dt in compatible_datasets]}"
@@ -282,7 +289,7 @@ def benchmark(  # noqa: C901
                 # Keras pipelines require return_epochs=True
                 context = eval_type[evaluation](
                     paradigm=p,
-                    datasets=compatible_datasets,
+                    datasets=eval_datasets,
                     random_state=42,
                     hdf5_path=results,
                     n_jobs=n_jobs,
@@ -307,7 +314,7 @@ def benchmark(  # noqa: C901
             if len(ppl_with_array) > 0:
                 context = eval_type[evaluation](
                     paradigm=p,
-                    datasets=compatible_datasets,
+                    datasets=eval_datasets,
                     random_state=42,
                     hdf5_path=results,
                     n_jobs=n_jobs,

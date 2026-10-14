@@ -2,6 +2,7 @@
 
 import logging
 from pathlib import Path
+from types import MappingProxyType
 
 import mne_bids
 import requests
@@ -126,7 +127,7 @@ class Lioi2020_XP2(OpenNeuroMirrorMixin, BaseBIDSDataset):
 
     nemar_id = "on002338"
     # Non-contiguous OpenNeuro labels: MOABB subject n is sub-<_SUBJECT_IDS[n-1]>.
-    nemar_subject_template = dict(enumerate(_SUBJECT_IDS, start=1))
+    nemar_subject_template = MappingProxyType(dict(enumerate(_SUBJECT_IDS, start=1)))
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=5000.0,
