@@ -1,3 +1,5 @@
+import warnings
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -848,6 +850,42 @@ def test_learning_curve_partial_iteration_advances_only_one_base_fold(random_sta
         actual_state = np.random.get_state()
 
     _assert_random_states_equal(actual_state, expected_state)
+
+
+def test_learning_curve_ratio_subsets_are_stratified():
+    """Ratio subsets keep every class (minority last in the pool on purpose)."""
+    y = np.array([0] * 90 + [1] * 10)
+    values = [0.05, 0.1, 0.5, 1.0]
+    splitter = LearningCurveSplitter(
+        data_size={"policy": "ratio", "value": values}, n_perms=1, random_state=0
+    )
+    subsets = splitter._get_data_size_subsets(y)
+
+    assert [len(s) for s in subsets] == [5, 10, 50, 100]
+    for small, large in zip(subsets, subsets[1:]):
+        assert set(small) < set(large)
+    for subset in subsets:
+        labels = y[subset]
+        assert set(labels) == {0, 1}
+        # proportional up to rounding: 10% minority
+        assert abs((labels == 1).sum() - 0.1 * len(subset)) <= 1
+
+
+def test_learning_curve_ratio_split_never_yields_single_class_train():
+    rng = np.random.default_rng(0)
+    y = rng.permutation(np.array([0] * 45 + [1] * 5))
+    splitter = LearningCurveSplitter(
+        data_size={"policy": "ratio", "value": [0.1, 0.5]},
+        n_perms=4,
+        test_size=0.2,
+        random_state=0,
+    )
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", RuntimeWarning)  # no skipped splits
+        splits = list(splitter.split(np.arange(len(y)), y))
+    assert len(splits) == 8
+    for train, _ in splits:
+        assert set(y[train]) == {0, 1}
 
 
 @pytest.mark.parametrize(
