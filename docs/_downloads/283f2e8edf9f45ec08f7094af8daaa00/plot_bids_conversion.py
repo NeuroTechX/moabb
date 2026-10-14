@@ -12,7 +12,8 @@ The MOABB library allows to convert any MOABB dataset to
 BIDS [1]_ and [2]_.
 
 In this example, we will convert the AlexMI dataset to BIDS using the
-``convert_to_bids`` method from the dataset object.
+:meth:`~moabb.datasets.base.BaseDataset.convert_to_bids` method, which every
+MOABB dataset object provides.
 
 This will automatically save the raw data in the BIDS format.
 
@@ -28,8 +29,6 @@ import shutil
 import tempfile
 from pathlib import Path
 
-import mne
-
 from moabb import set_log_level
 from moabb.datasets import AlexMI
 
@@ -43,7 +42,11 @@ set_log_level("info")
 # Here, we will save the BIDS version of the dataset in a temporary folder
 temp_dir = Path(tempfile.mkdtemp())
 # The conversion of any MOABB dataset to a BIDS-compliant structure can be done
-# by simply calling its ``convert_to_bids`` method.
+# by simply calling its ``convert_to_bids`` method. It downloads the subjects
+# that are not on disk yet, writes them under ``path`` and returns the root of
+# the new BIDS dataset. ``format`` selects the file format (``"EDF"`` by
+# default, ``"BrainVision"`` or ``"EEGLAB"``), and subjects that were already
+# converted are skipped unless ``overwrite=True``.
 dataset = AlexMI()
 # Reducing the number of subjects to speed up the example
 subjects = dataset.subject_list[:1]
@@ -71,15 +74,17 @@ def print_tree(p: Path, last=True, header=""):
 
 
 ###############################################################################
-# Now, we will retrieve the location of the original dataset. It is stored
-# in the MNE data directory, which can be found with the ``"MNE_DATA"`` key:
-mne_data = Path(mne.get_config("MNE_DATA"))
-print(f"MNE data directory: {mne_data}")
+# Now, we will retrieve the location of the original files with the dataset's
+# :meth:`~moabb.datasets.base.BaseDataset.data_path` method. The data were
+# already downloaded by ``convert_to_bids``, so this only returns the local
+# path of the file:
+original_file = Path(dataset.data_path(subjects[0]))
+print(f"Original file of subject {subjects[0]}: {original_file}")
 
 ###############################################################################
 # Now, we can print the folder structure of the original dataset:
 print("Before conversion:")
-print_tree(mne_data / "MNE-alexeeg-data")
+print_tree(original_file.parent)
 
 ###############################################################################
 # As we can see, before conversion, all the data (i.e. from all subjects,
@@ -99,6 +104,10 @@ print_tree(bids_root)
 # and the `BIDS spec <https://bids-specification.readthedocs.io/en/stable/>`_.
 #
 # Only raw EEG files are officially supported by the BIDS specification.
+#
+# The BIDS copy can be loaded back into MOABB without writing a dataset class,
+# with :class:`~moabb.datasets.base.LocalBIDSDataset` (give it ``bids_root``
+# and the ``events``, ``interval`` and ``paradigm`` of the original dataset).
 #
 # Cleanup
 # -------
