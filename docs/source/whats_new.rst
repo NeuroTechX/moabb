@@ -190,6 +190,7 @@ Bugs
 - Fix equation formatting in :func:`moabb.analysis.meta_analysis.compute_pvals_corrected_ttest` and the surrounding docstrings so Sphinx renders the Nadeau & Bengio variance correction and :math:`n_2/n_1` ratio instead of raw ``\frac`` source (:gh:`1204` by `Quentin Barthelemy`_).
 - Resample the 600 Hz recordings of subject ``zdvm`` (bases 2, 3, 5 and 7) in :class:`moabb.datasets.MartinezCagigal2023Pary` to the declared 256 Hz on load, fixing the ``ValueError`` raised when the ``CVEP`` paradigm concatenated the 601-sample epochs of those sessions with the 257-sample epochs of every other recording (:gh:`1201` by `LiQing`_)
 - Read and write the BIDS JSON sidecars and the electrodes TSV in ``bids_interface`` as UTF-8, the encoding ``mne_bids`` writes them in, completing :gh:`1059`. On Windows the locale codepage was used, so adding ``PublicationYear`` to a ``dataset_description.json`` with non-ASCII author names wrote them back garbled, or raised ``UnicodeDecodeError`` (:gh:`1231` by `Rızgar Ozan`_)
+- Document why :class:`moabb.datasets.BNCI2015_003` subjects 1 and 2 have a 1:35 ``Target``/``NonTarget`` ratio (150 / 5250 epochs) instead of the 1:5 of subjects 3-10 (300 / 1500): ``s1.mat`` and ``s2.mat`` were recorded with the single-character speller (36 flash codes, one target), the others with the row/column speller (12 flash codes, two targets). The loader returns every flash in the released files; the counts come from the data, not from event decoding (:gh:`274` by `Bruno Aristimunha`_)
 
 Code health
 ~~~~~~~~~~~
