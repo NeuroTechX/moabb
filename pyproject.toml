@@ -62,7 +62,10 @@ dependencies = [
     "scipy>=1.9.3",
     "mne>=1.13",
     "pandas>=1.5.2",
-    "h5py>=3.10.0",
+    "h5py>=3.10.0; python_version < '3.14'",
+    # h5py 3.16.0 is the first release with free-threaded CPython 3.14 (cp314t)
+    # wheels; older h5py would have to be built from source against HDF5 (#829).
+    "h5py>=3.16.0; python_version >= '3.14'",
     "pymatreader>=1.2.2",
     "matplotlib>=3.6.2",
     "seaborn>=0.12.1",
