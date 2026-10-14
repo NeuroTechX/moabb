@@ -86,6 +86,10 @@ dependencies = [
     "docstring-inheritance>=2.0.0",
 ]
 
+[project.scripts]
+# ``moabb --pipelines=... --evaluations ...`` == ``python -m moabb.run ...``
+moabb = "moabb.run:main"
+
 [project.urls]
 Homepage = "https://moabb.neurotechx.com/docs/"
 Documentation = "https://moabb.neurotechx.com/docs/"

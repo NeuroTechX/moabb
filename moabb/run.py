@@ -11,7 +11,7 @@ log = logging.getLogger(__name__)
 
 
 def parser_init():
-    parser = ArgumentParser(description="Main run script for MOABB")
+    parser = ArgumentParser(prog="moabb", description="Main run script for MOABB")
 
     parser.add_argument(
         "-mne_p",
@@ -100,14 +100,30 @@ def parser_init():
     return parser
 
 
-if __name__ == "__main__":
+def main(argv=None):
+    """Run a MOABB benchmark from the command line.
+
+    Entry point of the ``moabb`` console script, also used by
+    ``python -m moabb.run``.
+
+    Parameters
+    ----------
+    argv : list of str | None
+        Command-line arguments without the program name. If None, they are
+        read from ``sys.argv``.
+
+    Returns
+    -------
+    int
+        Exit status (0 on success).
+    """
     # FIXME: The verbose and debug params are useless currently
     # set logs
     mne.set_log_level(False)
     # logging.basicConfig(level=logging.WARNING)
 
     parser = parser_init()
-    options = parser.parse_args()
+    options = parser.parse_args(argv)
 
     if options.mne_data is not None:
         set_download_dir(options.mne_data)
@@ -123,3 +139,8 @@ if __name__ == "__main__":
         plot=options.plot,
         contexts=options.context,
     )
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
