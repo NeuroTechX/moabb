@@ -111,3 +111,22 @@ class TestBenchmark:
         )
         # Flattened process path no longer produces the previous inflated count.
         assert len(res) == 80
+
+
+def test_include_datasets_keeps_user_instances():
+    """Dataset objects in include_datasets are used as given, not re-created."""
+    from moabb.benchmark import _inc_exc_datasets
+    from moabb.datasets import BNCI2014_001, Zhou2016
+
+    fresh = [BNCI2014_001(), Zhou2016()]
+    user = BNCI2014_001()
+    user.subject_list = [1, 2]  # a caller customisation
+
+    selected = _inc_exc_datasets(fresh, "LeftRightImagery", [user], None)
+    assert len(selected) == 1
+    assert selected[0] is user
+    assert selected[0].subject_list == [1, 2]
+
+    # Codes still select the paradigm's own instances.
+    by_code = _inc_exc_datasets(fresh, "LeftRightImagery", ["BNCI2014-001"], None)
+    assert by_code[0] is fresh[0]
