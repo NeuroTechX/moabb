@@ -12,7 +12,7 @@ from sklearn.model_selection import (
 from sklearn.preprocessing import LabelEncoder
 from tqdm import tqdm
 
-from moabb.evaluations.base import BaseEvaluation
+from moabb.evaluations.base import RESULT_COLUMNS, BaseEvaluation
 from moabb.evaluations.protocols import CrossSubjectMode, validate_transfer_protocol
 from moabb.evaluations.splitters import (
     _RESOLVED_CV_KEY,
@@ -576,7 +576,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
             self.trialwise = False
             additional_columns = list(kwargs.get("additional_columns") or ())
             for column in getattr(splitter, "metadata_columns", ()):
-                if column not in additional_columns:
+                if column not in additional_columns and column not in RESULT_COLUMNS:
                     additional_columns.append(column)
             kwargs["additional_columns"] = additional_columns
             super().__init__(*args, **kwargs)

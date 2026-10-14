@@ -2973,3 +2973,32 @@ def test_streamed_results_same_with_two_jobs(tmp_path):
 
     cols = ["subject", "session", "score", "samples", "samples_test", "n_classes"]
     pd.testing.assert_frame_equal(parallel[cols], reference[cols])
+class SubjectSessionMetadataSplitter(TargetSubjectSessionSplitter):
+    """The splitter from issue #1104: metadata_columns names reserved columns."""
+
+    metadata_columns = ("subject", "session")
+
+    def get_metadata(self):
+        return {"subject": self.target, "session": self.test_session}
+
+
+def test_cross_subject_cv_class_with_reserved_metadata_columns_saves(tmp_path):
+    ds = FakeDataset(["left_hand", "right_hand"], n_subjects=3, n_sessions=2, seed=18)
+    evaluation = ev.CrossSubjectEvaluation(
+        paradigm=FakeImageryParadigm(),
+        datasets=[ds],
+        hdf5_path=tmp_path,
+        overwrite=True,
+        n_jobs=1,
+        cv_class=SubjectSessionMetadataSplitter,
+        cv_kwargs={"target": 2, "test_session": "1"},
+    )
+    # subject/session are already result columns; they must not be added twice
+    assert "subject" not in evaluation.additional_columns
+    assert "session" not in evaluation.additional_columns
+
+    pipe = make_pipeline(Covariances("oas"), CSP(8), LDA())
+    results = evaluation.process(OrderedDict([("P", pipe)]))
+
+    assert set(results["subject"]) == {"2"}
+    assert set(results["session"]) == {"1"}
