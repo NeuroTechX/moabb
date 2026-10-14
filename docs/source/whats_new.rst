@@ -70,6 +70,7 @@ Requirements
 
 Bugs
 ~~~~
+- With ``optuna=True``, ROC-AUC scoring failed with ``AttributeError: ... has no attribute 'decision_function'`` for classifiers that only provide ``predict_proba`` (skorch/braindecode nets, ``GaussianNB``, ...): optuna-integration's ``OptunaSearchCV`` defines ``decision_function`` unconditionally, so scikit-learn's scorer picked it. ``OptunaSearchCVClassifier`` now exposes it only when the underlying estimator has it, as scikit-learn's ``BaseSearchCV`` does (:gh:`1251` by `Bruno Aristimunha`_).
 - Fix :class:`moabb.datasets.Beetl2021_A` and :class:`moabb.datasets.Beetl2021_B`
   annotating the final phase's test run with the training runs' four-class map.
   ``final_MI_label.txt`` holds the competition's three-class labels, whose class 2
