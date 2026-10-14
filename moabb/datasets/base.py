@@ -1644,6 +1644,39 @@ class BaseBIDSDataset(BaseDataset):
 
     If necessary, the methods ``_get_path_search_params`` and
     ``_get_read_extra_params`` can be implemented in the subclass.
+
+    See Also
+    --------
+    moabb.datasets.Zhou2016 : Reference implementation to copy when adding a
+        new BIDS dataset.
+    LocalBIDSDataset : Load a BIDS dataset that is already on disk, without
+        writing a subclass.
+
+    Notes
+    -----
+    **How to add a BIDS dataset.** Use :class:`moabb.datasets.Zhou2016` as the
+    template. It is the simplest ``BaseBIDSDataset`` subclass in MOABB: of
+    the base-class hooks it only implements ``__init__`` and
+    ``_download_subject`` (a Zenodo download), and it keeps the default BIDS
+    reading, so sessions and runs come from the BIDS entities. To add your
+    own dataset:
+
+    1. Create ``moabb/datasets/<yourdataset>.py`` with a class that inherits
+       from ``BaseBIDSDataset``.
+    2. In ``__init__``, call ``super().__init__`` with the subject list,
+       ``sessions_per_subject``, ``events`` (mapping from the event names in
+       ``events.tsv`` to integer codes), ``code``, ``interval``, ``paradigm``
+       and ``doi``, and forward ``selected_subjects`` / ``selected_sessions``.
+    3. Implement ``_download_subject`` so that it downloads (or reuses) the
+       data of one subject and returns the path to the **root** of the BIDS
+       dataset (the folder that contains ``dataset_description.json``).
+    4. Override ``_get_path_search_params`` only if the default search (all
+       raw EEG files of the subject) picks up files that should be skipped,
+       for example another task or modality.
+
+    The ``ExampleBIDSDataset`` skeleton in
+    :ref:`sphx_glr_auto_examples_tutorials_tutorial_4_adding_a_dataset.py`
+    walks through the same steps.
     """
 
     def _get_path_search_params(self, subject: int | None) -> dict[str, Any]:
