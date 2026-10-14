@@ -15,8 +15,6 @@ from moabb.datasets import Zhou2020
 from moabb.datasets.zhou2020 import _26CH_NAMES, _S_EXTRA_NAMES
 
 
-mne.set_log_level("ERROR")
-
 _N_SAMPLES = 6000  # 12 s at 500 Hz
 
 
@@ -80,6 +78,11 @@ def test_a_subject_layout(dataset):
 
 def test_events_and_default_eeg_only(zhou_root, monkeypatch):
     monkeypatch.setattr(Zhou2020, "data_path", lambda self, subject, **kw: str(zhou_root))
+    # get_data() would otherwise prefetch the NEMAR sourcedata tree (network)
+    monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", "upstream")
+    monkeypatch.setattr(
+        Zhou2020, "_prefetch_nemar_sourcedata", lambda self, *a, **kw: None
+    )
     data = Zhou2020().get_data([1])
     raw = data[1]["0"]["0"]
     types = raw.get_channel_types()

@@ -104,7 +104,7 @@ Bugs
   26-27 hEOG/vEOG, 28-29 M1/M2 and 30-44 F5, AF3, AF4, P5-P6, PO3, POz, PO4, Oz, F6,
   a placement confirmed against the recordings' correlation structure. Both cohorts get
   the ``colin27_1005`` montage; EOG (``eog``) and mastoids (``misc``) are kept only
-  with ``return_all_modalities`` (:gh:`1120` by `Bruno Aristimunha`_).
+  with ``return_all_modalities``. Results and cached epochs computed before this fix used the wrong channels: delete them and re-run (:gh:`1120` by `Bruno Aristimunha`_).
 - Fix :class:`moabb.datasets.Beetl2021_A` and :class:`moabb.datasets.Beetl2021_B`
   annotating the final phase's test run with the training runs' four-class map.
   ``final_MI_label.txt`` holds the competition's three-class labels, whose class 2
