@@ -2353,6 +2353,28 @@ class TestAggregateFoldResults:
         # score_f1: avg(0.7, 0.0) = 0.35
         np.testing.assert_almost_equal(res["score_f1"], 0.35)
 
+    def test_error_only_batch_gets_score_columns_seen_elsewhere(self):
+        """A batch of error folds still fills the score_* columns of the dataset.
+
+        Results are saved per (pipeline, subject) batch (gh-419), so an
+        error-only subject is aggregated alone; ``score_cols`` brings in the
+        columns the other subjects produced, as one big aggregation would.
+        """
+        from moabb.evaluations.base import BaseEvaluation
+
+        folds = [
+            self._make_fold(2, "0", "csp", 0.0, is_error=True),
+            self._make_fold(2, "0", "csp", 0.0, is_error=True),
+        ]
+        agg = BaseEvaluation._aggregate_fold_results(
+            folds, score_cols=["score_accuracy", "score_f1"]
+        )
+        assert len(agg) == 1
+        np.testing.assert_almost_equal(agg[0]["score_accuracy"], 0.0)
+        np.testing.assert_almost_equal(agg[0]["score_f1"], 0.0)
+        # Without score_cols the behaviour is unchanged.
+        assert "score_f1" not in BaseEvaluation._aggregate_fold_results(folds)[0]
+
     def test_non_numeric_score_fold_does_not_abort(self):
         """A fold with a non-numeric score becomes NaN, not a fatal TypeError."""
         from moabb.evaluations.base import BaseEvaluation
@@ -2674,3 +2696,195 @@ def test_within_session_passes_epochs(clf, tmp_path):
     )
     results = evaluation.process({"clf": clf})
     assert len(results) == 1
+
+
+# Fit counter shared by every clone of ``_CrashOnFitLDA``. The crash switch is
+# kept outside the estimator parameters so a crashing run and a clean rerun
+# share the same pipeline digest and therefore the same HDF5 entries.
+_CRASH_STATE = {"n_fits": 0, "crash_at": None}
+
+
+class _CrashOnFitLDA(sklearn.base.ClassifierMixin, sklearn.base.BaseEstimator):
+    """LDA on log-variance features that can be told to crash on a given fit."""
+
+    def fit(self, X, y):
+        _CRASH_STATE["n_fits"] += 1
+        if _CRASH_STATE["n_fits"] == _CRASH_STATE["crash_at"]:
+            raise RuntimeError("simulated pipeline crash")
+        self.lda_ = LDA().fit(self._features(X), y)
+        self.classes_ = self.lda_.classes_
+        return self
+
+    @staticmethod
+    def _features(X):
+        return np.log(np.var(np.asarray(X), axis=-1))
+
+    def predict(self, X):
+        return self.lda_.predict(self._features(X))
+
+    def predict_proba(self, X):
+        return self.lda_.predict_proba(self._features(X))
+
+    def decision_function(self, X):
+        return self.lda_.decision_function(self._features(X))
+
+
+def _run_crash_evaluation(evaluation_class, ds, hdf5_path, overwrite, crash_at=None):
+    _CRASH_STATE.update(n_fits=0, crash_at=crash_at)
+    evaluation = evaluation_class(
+        paradigm=FakeImageryParadigm(),
+        datasets=[ds],
+        overwrite=overwrite,
+        n_jobs=1,
+        random_state=42,
+        hdf5_path=str(hdf5_path),
+    )
+    pipes = {"crashy": make_pipeline(_CrashOnFitLDA())}
+    return evaluation, pipes
+
+
+@pytest.mark.parametrize(
+    "evaluation_class",
+    [
+        ev.WithinSessionEvaluation,
+        ev.WithinSubjectEvaluation,
+        ev.CrossSessionEvaluation,
+        ev.CrossSubjectEvaluation,
+    ],
+)
+def test_results_persisted_before_crash_and_resumed(evaluation_class, tmp_path):
+    """Finished subjects are saved before a later subject crashes (gh-419/775).
+
+    The pipeline crashes on the very last fit, which belongs to the last
+    subject evaluated. Every other subject must already be in the HDF5 file,
+    with the same rows, in the same order, as an uninterrupted run; the
+    crashing subject must not be there at all (no partial rows), and a rerun
+    with ``overwrite=False`` must only fit the missing subject.
+    """
+    ds = FakeDataset(["left_hand", "right_hand"], n_subjects=3, n_sessions=2, seed=7)
+    subjects = [str(s) for s in ds.subject_list]
+
+    # Reference: uninterrupted run, also tells how many fits a full run needs.
+    ref_eval, pipes = _run_crash_evaluation(
+        evaluation_class, ds, tmp_path / "ref", overwrite=True
+    )
+    reference = ref_eval.process(pipes)
+    n_fits_total = _CRASH_STATE["n_fits"]
+    assert n_fits_total % len(subjects) == 0
+    n_fits_per_subject = n_fits_total // len(subjects)
+
+    # Crashing run: dies on the last fit, i.e. inside the last subject.
+    crash_eval, pipes = _run_crash_evaluation(
+        evaluation_class, ds, tmp_path / "run", overwrite=True, crash_at=n_fits_total
+    )
+    with pytest.raises(RuntimeError, match="simulated pipeline crash"):
+        crash_eval.process(pipes)
+
+    saved = crash_eval.results.to_dataframe()
+    assert not saved.empty, "finished subjects were lost when the run crashed"
+    finished = list(saved["subject"].unique())
+    assert len(finished) == len(subjects) - 1
+    (crashed,) = set(subjects) - set(finished)
+
+    cols = ["subject", "session", "score", "samples", "samples_test", "n_classes"]
+    pd.testing.assert_frame_equal(
+        saved[cols].reset_index(drop=True),
+        reference.loc[reference["subject"] != crashed, cols].reset_index(drop=True),
+    )
+
+    # Rerun without overwrite: only the missing subject is computed.
+    resume_eval, pipes = _run_crash_evaluation(
+        evaluation_class, ds, tmp_path / "run", overwrite=False
+    )
+    resumed = resume_eval.process(pipes)
+    assert _CRASH_STATE["n_fits"] == n_fits_per_subject
+
+    # WithinSubjectSplitter shares one RNG across the subjects it is given, so
+    # a subject evaluated alone gets other folds than in a full run (this
+    # predates gh-419). Its scores are only compared for the finished subjects.
+    if evaluation_class is ev.WithinSubjectEvaluation:
+        cols.remove("score")
+    pd.testing.assert_frame_equal(
+        resumed[cols].sort_values(["subject", "session"]).reset_index(drop=True),
+        reference[cols].sort_values(["subject", "session"]).reset_index(drop=True),
+    )
+    assert not resumed.duplicated(["subject", "session"]).any()
+
+
+def test_results_pushed_per_subject_batch(tmp_path, monkeypatch):
+    """process() writes one (pipeline, subject) batch at a time (gh-419)."""
+    ds = FakeDataset(["left_hand", "right_hand"], n_subjects=3, n_sessions=2, seed=7)
+    evaluation, _ = _run_crash_evaluation(
+        ev.WithinSessionEvaluation, ds, tmp_path, overwrite=True
+    )
+    pipes = {
+        "a": make_pipeline(_CrashOnFitLDA()),
+        "b": make_pipeline(FunctionTransformer(_identity), _CrashOnFitLDA()),
+    }
+    pushed = []
+    original_add = evaluation.results.add
+
+    def spy_add(results, pipelines, process_pipeline):
+        pushed.append(
+            sorted(
+                {
+                    (name, str(r["subject"]))
+                    for name, rows in results.items()
+                    for r in rows
+                }
+            )
+        )
+        return original_add(results, pipelines, process_pipeline)
+
+    monkeypatch.setattr(evaluation.results, "add", spy_add)
+    results = evaluation.process(pipes)
+
+    # 3 subjects x 2 pipelines, each saved on its own, each exactly once.
+    assert all(len(batch) == 1 for batch in pushed)
+    assert sorted(b[0] for b in pushed) == sorted(
+        (name, str(s)) for name in pipes for s in ds.subject_list
+    )
+    assert len(results) == 3 * 2 * 2  # subjects x sessions x pipelines
+
+
+def test_streamed_results_match_without_return_as(tmp_path, monkeypatch):
+    """joblib < 1.3 (no ``return_as``) falls back to a list, same results."""
+    import moabb.evaluations.base as base_module
+
+    ds = FakeDataset(["left_hand", "right_hand"], n_subjects=2, n_sessions=2, seed=7)
+    ref_eval, pipes = _run_crash_evaluation(
+        ev.WithinSessionEvaluation, ds, tmp_path / "ref", overwrite=True
+    )
+    reference = ref_eval.process(pipes)
+
+    class OldParallel(base_module.Parallel):
+        def __init__(self, *args, **kwargs):
+            if "return_as" in kwargs:
+                raise TypeError("unexpected keyword argument 'return_as'")
+            super().__init__(*args, **kwargs)
+
+    monkeypatch.setattr(base_module, "Parallel", OldParallel)
+    old_eval, pipes = _run_crash_evaluation(
+        ev.WithinSessionEvaluation, ds, tmp_path / "old", overwrite=True
+    )
+    fallback = old_eval.process(pipes)
+
+    cols = ["subject", "session", "score", "samples", "samples_test", "n_classes"]
+    pd.testing.assert_frame_equal(fallback[cols], reference[cols])
+
+
+def test_streamed_results_same_with_two_jobs(tmp_path):
+    """Streaming from worker processes gives the same rows as n_jobs=1."""
+    ds = FakeDataset(["left_hand", "right_hand"], n_subjects=2, n_sessions=2, seed=7)
+    ref_eval, pipes = _run_crash_evaluation(
+        ev.WithinSessionEvaluation, ds, tmp_path / "one", overwrite=True
+    )
+    reference = ref_eval.process(pipes)
+    par_eval, pipes = _run_crash_evaluation(
+        ev.WithinSessionEvaluation, ds, tmp_path / "two", overwrite=True
+    )
+    par_eval.n_jobs = 2
+    parallel = par_eval.process(pipes)
+
+    cols = ["subject", "session", "score", "samples", "samples_test", "n_classes"]
+    pd.testing.assert_frame_equal(parallel[cols], reference[cols])
