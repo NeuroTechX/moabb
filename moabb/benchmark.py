@@ -447,8 +447,18 @@ def _inc_exc_datasets(
         include_codes = _validate_list_per_paradigm(
             all_paradigm_codes, paradigm_name, include_datasets, "include_datasets"
         )
-        # Keep only included datasets
-        filtered = [ds for ds in paradigm_datasets if ds.code in include_codes]
+        # Use the caller's dataset objects (e.g. Shin2017A(accept=True)), not
+        # fresh defaults. FakeDatasets are already handled in ``benchmark``.
+        user_instances = {
+            ds.code: ds
+            for ds in include_datasets
+            if isinstance(ds, BaseDataset) and not isinstance(ds, FakeDataset)
+        }
+        filtered = [
+            user_instances.get(ds.code, ds)
+            for ds in paradigm_datasets
+            if ds.code in include_codes
+        ]
         return filtered
 
     # --- Exclusion logic ---
