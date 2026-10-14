@@ -634,6 +634,21 @@ class BNCI2015_003(MNEBNCI):
     run (loaded as one session with two runs).
 
     .. note::
+        **Class ratio differs between subjects.** Subjects 1 and 2 were
+        recorded with the single-character speller: each of the 36 matrix
+        characters flashes on its own (36 distinct flash codes), so each run
+        holds 75 ``Target`` and 2625 ``NonTarget`` flashes (1:35, 150 /
+        5250 per subject). Subjects 3-10 used the row/column speller (12
+        flash codes, two of which contain the target), giving 150 ``Target``
+        and 750 ``NonTarget`` flashes per run (1:5, 300 / 1500 per
+        subject). The released files contain exactly these counts, so the
+        loader returns them unchanged; the dataset's description PDF says
+        every subject used the row/column paradigm, which does not hold for
+        ``s1.mat`` and ``s2.mat``. Use class-balanced metrics (e.g. ROC AUC)
+        or select ``subjects=list(range(3, 11))`` when a uniform 1:5 ratio
+        matters.
+
+    .. note::
         The primary publication [1]_ is not open access; acquisition details
         that are not present in the released files (amplifier, reference,
         ground, demographics) are therefore not declared in ``METADATA``.
