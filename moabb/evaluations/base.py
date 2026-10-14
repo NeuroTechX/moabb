@@ -549,6 +549,9 @@ class BaseEvaluation(ABC):
             raise (ValueError("mne_labels could only be set with return_epochs"))
 
         # if no dataset provided, then we get the list from the paradigm
+        # Auto-selected datasets are filtered quietly (INFO); datasets the user
+        # passed explicitly keep the WARNING when dropped (#862).
+        user_selected = datasets is not None
         if datasets is None:
             datasets = self.paradigm.datasets
 
@@ -562,11 +565,12 @@ class BaseEvaluation(ABC):
             if not (isinstance(dataset, BaseDataset)):
                 raise (ValueError("datasets must only contains dataset instance"))
         rm = []
+        report = log.warning if user_selected else log.info
         for dataset in datasets:
             valid_for_paradigm = self.paradigm.is_valid(dataset)
             valid_for_eval = self.is_valid(dataset)
             if not valid_for_paradigm:
-                log.warning(
+                report(
                     f"{dataset} not compatible with "
                     "paradigm. Removing this dataset from the list."
                 )
@@ -575,7 +579,7 @@ class BaseEvaluation(ABC):
                 # Get specific reason for incompatibility
                 eval_type = self.__class__.__name__
                 reason = self._get_incompatibility_reason(dataset)
-                log.warning(
+                report(
                     f"{dataset} not compatible with {eval_type}: {reason}. "
                     "Removing this dataset from the list."
                 )

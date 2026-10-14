@@ -54,3 +54,22 @@ def test_verbose_false_warning(caplog):
     # Check if warning was logged (since verbose=False -> WARNING) with new specific message
     assert "not compatible with CrossSessionEvaluation" in caplog.text
     assert "requires at least 2 sessions" in caplog.text
+
+
+def test_auto_selected_datasets_filtered_quietly(caplog):
+    """Datasets pulled from paradigm.datasets are dropped at INFO, not WARNING (#862)."""
+    from moabb.paradigms import FakeImageryParadigm
+
+    class OneSessionParadigm(FakeImageryParadigm):
+        @property
+        def datasets(self):
+            return [
+                FakeDataset(["left_hand", "right_hand"], n_sessions=1, n_subjects=2),
+                FakeDataset(["left_hand", "right_hand"], n_sessions=2, n_subjects=2),
+            ]
+
+    with caplog.at_level(logging.INFO, logger="moabb"):
+        CrossSessionEvaluation(paradigm=OneSessionParadigm())
+
+    filtered = [r for r in caplog.records if "not compatible with" in r.getMessage()]
+    assert filtered and all(r.levelno == logging.INFO for r in filtered)
