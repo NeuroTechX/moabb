@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import pytest
 from sklearn.model_selection import (
+    BaseCrossValidator,
     GroupKFold,
     GroupShuffleSplit,
     KFold,
@@ -1396,3 +1397,68 @@ def test_cross_subject_calibration_keeps_every_target_session(data):
                 index=False, name=None
             )
         )
+
+
+class _TargetSubjectSplitter(BaseCrossValidator):
+    """Metadata-aware top-level splitter with a 3-way train/test/excluded fold.
+
+    Train on every other subject, test on ``target`` at ``test_session``, and
+    drop the target's other sessions from both sets (issue #1104).
+    """
+
+    metadata_columns = ("subject", "session")
+
+    def __init__(self, target, test_session):
+        self.target = target
+        self.test_session = test_session
+
+    def split(self, y, metadata):
+        del y
+        subject = metadata["subject"].to_numpy()
+        session = metadata["session"].to_numpy()
+        positions = np.arange(len(metadata))
+        test = (subject == self.target) & (session == self.test_session)
+        yield positions[subject != self.target], positions[test]
+
+    def get_n_splits(self, *args, **kwargs):
+        return 1
+
+
+def _three_subject_two_session_metadata():
+    metadata = pd.DataFrame(
+        {
+            "subject": np.repeat([1, 2, 3], 4),
+            "session": np.tile(["0train", "0train", "1test", "1test"], 3),
+        }
+    )
+    return np.tile([0, 1], 6), metadata
+
+
+@pytest.mark.parametrize("splitter_class", [CrossSubjectSplitter, CrossSessionSplitter])
+def test_metadata_aware_cv_class_is_used_directly(splitter_class):
+    """A ``split(y, metadata)`` cv_class is called directly, not as inner CV."""
+    y, metadata = _three_subject_two_session_metadata()
+    split = splitter_class(
+        cv_class=_TargetSubjectSplitter, target=2, test_session="1test"
+    )
+
+    folds = list(split.split(y, metadata))
+
+    assert len(folds) == 1
+    assert split.get_n_splits(metadata) == 1
+    train, test = folds[0]
+    assert set(metadata.loc[train, "subject"]) == {1, 3}
+    assert set(map(tuple, metadata.loc[test, ["subject", "session"]].values)) == {
+        (2, "1test")
+    }
+    excluded = np.setdiff1d(metadata.index, np.concatenate([train, test]))
+    assert set(map(tuple, metadata.loc[excluded, ["subject", "session"]].values)) == {
+        (2, "0train")
+    }
+
+
+def test_learning_curve_splitter_is_not_a_top_level_splitter():
+    """``metadata_columns`` alone (no ``split(..., metadata)``) keeps inner-CV use."""
+    assert not splitters_module._is_metadata_splitter(LearningCurveSplitter)
+    assert not splitters_module._is_metadata_splitter(LeaveOneGroupOut)
+    assert splitters_module._is_metadata_splitter(_TargetSubjectSplitter)

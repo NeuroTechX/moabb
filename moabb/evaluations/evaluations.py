@@ -20,6 +20,7 @@ from moabb.evaluations.splitters import (
     CrossSubjectSplitter,
     WithinSessionSplitter,
     WithinSubjectSplitter,
+    _is_metadata_splitter,
     _ResolvedCV,
 )
 
@@ -485,6 +486,10 @@ class CrossSubjectEvaluation(BaseEvaluation):
         Cross-validation strategy used to hold out subjects (e.g.
         ``LeaveOneGroupOut``, ``GroupShuffleSplit``, ``GroupKFold``). Defaults to
         ``None`` (``LeaveOneGroupOut``, or ``GroupKFold`` when ``n_splits`` is set).
+        A metadata-aware splitter class (one that declares ``metadata_columns``
+        and implements ``split(self, y, metadata)``) is instead built with
+        ``cv_kwargs`` and used directly, like ``splitter``; it may leave rows
+        out of both train and test.
     cv_kwargs : dict
         Keyword arguments for ``cv_class``. ``calibration_size`` (float in
         ``[0, 1]``, default ``0.0``) enables transfer learning: when ``> 0`` each
@@ -537,14 +542,22 @@ class CrossSubjectEvaluation(BaseEvaluation):
             cs_mode = CrossSubjectMode.TRAIN
         cs_mode = CrossSubjectMode(cs_mode)
 
+        # A metadata-aware cv_class (``metadata_columns`` + ``split(y, metadata)``)
+        # owns the whole fold, so it is used directly as the top-level splitter
+        # instead of being wrapped as the inner groups-CV.
+        cv_class = kwargs.get("cv_class")
+        direct_cv_class = splitter is None and _is_metadata_splitter(cv_class)
+        if direct_cv_class:
+            splitter = cv_class(**(kwargs.get("cv_kwargs") or {}))
+
         if splitter is not None:
             if not isinstance(splitter, BaseCrossValidator):
                 raise TypeError("splitter must be a sklearn BaseCrossValidator instance.")
 
             conflicts = []
-            if kwargs.get("cv_class") is not None:
+            if kwargs.get("cv_class") is not None and not direct_cv_class:
                 conflicts.append("cv_class")
-            if kwargs.get("cv_kwargs"):
+            if kwargs.get("cv_kwargs") and not direct_cv_class:
                 conflicts.append("cv_kwargs")
             if kwargs.get("n_splits") is not None:
                 conflicts.append("n_splits")
