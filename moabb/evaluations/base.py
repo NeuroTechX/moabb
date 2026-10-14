@@ -583,33 +583,32 @@ class BaseEvaluation(ABC):
         for dataset in datasets:
             if not (isinstance(dataset, BaseDataset)):
                 raise (ValueError("datasets must only contains dataset instance"))
-        rm = []
+        rm, reasons = [], []
         report = log.warning if user_selected else log.info
         for dataset in datasets:
             valid_for_paradigm = self.paradigm.is_valid(dataset)
             valid_for_eval = self.is_valid(dataset)
             if not valid_for_paradigm:
-                report(
-                    f"{dataset} not compatible with "
-                    "paradigm. Removing this dataset from the list."
-                )
-                rm.append(dataset)
+                reasons.append(f"{dataset} not compatible with paradigm")
             elif not valid_for_eval:
                 # Get specific reason for incompatibility
                 eval_type = self.__class__.__name__
                 reason = self._get_incompatibility_reason(dataset)
-                report(
-                    f"{dataset} not compatible with {eval_type}: {reason}. "
-                    "Removing this dataset from the list."
-                )
-                rm.append(dataset)
+                reasons.append(f"{dataset} not compatible with {eval_type}: {reason}")
+            else:
+                continue
+            report(f"{reasons[-1]}. Removing this dataset from the list.")
+            rm.append(dataset)
 
         [datasets.remove(r) for r in rm]
         if len(datasets) > 0:
             self.datasets = datasets
         else:
-            raise Exception("""No datasets left after paradigm
-            and evaluation checks""")
+            # The per-dataset reasons may have been logged at INFO only.
+            raise Exception(
+                "No datasets left after paradigm and evaluation checks: "
+                + "; ".join(reasons)
+            )
 
         self.results = Results(
             type(self),
@@ -1277,7 +1276,10 @@ class BaseEvaluation(ABC):
         Results are written to the results file as soon as every fold of a
         ``(pipeline, subject)`` pair has finished, so a run that crashes keeps
         the subjects already evaluated; rerunning with ``overwrite=False``
-        computes only the missing ones.
+        computes only the missing ones. With ``n_jobs=1`` every finished
+        subject is kept. With ``n_jobs > 1`` this is best effort: joblib can
+        raise the worker error before the main process has consumed results
+        that other workers already finished, and those are then lost.
         """
 
         # check pipelines

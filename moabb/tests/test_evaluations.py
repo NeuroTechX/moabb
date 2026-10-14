@@ -2973,6 +2973,8 @@ def test_streamed_results_same_with_two_jobs(tmp_path):
 
     cols = ["subject", "session", "score", "samples", "samples_test", "n_classes"]
     pd.testing.assert_frame_equal(parallel[cols], reference[cols])
+
+
 class SubjectSessionMetadataSplitter(TargetSubjectSessionSplitter):
     """The splitter from issue #1104: metadata_columns names reserved columns."""
 

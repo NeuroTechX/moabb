@@ -162,6 +162,11 @@ def physionet_s3_mirror(url: str) -> str | None:
     return PHYSIONET_S3_MIRROR_BASE + "/" + rest
 
 
+# Set after the first mirror failure in this process: later files go straight
+# upstream instead of paying one timeout and one warning per file.
+_S3_MIRROR_FAILED = False
+
+
 def _retrieve_with_physionet_fallback(
     url, *, fname, path, known_hash=None, progressbar=True, downloader=None
 ):
@@ -170,10 +175,12 @@ def _retrieve_with_physionet_fallback(
     The destination is always ``path/fname`` (derived from the upstream URL
     by the caller), so a mirror hit lands exactly where the loader expects
     and pooch skips re-download afterwards. On any mirror transport failure
-    this warns once and retries the upstream URL; the upstream error (if it
-    also fails) is the one raised.
+    this warns, retries the upstream URL and skips the mirror for the rest
+    of the process; the upstream error (if it also fails) is the one raised.
     """
-    mirror = physionet_s3_mirror(url) if _s3_mirror_enabled() else None
+    global _S3_MIRROR_FAILED
+    use_mirror = _s3_mirror_enabled() and not _S3_MIRROR_FAILED
+    mirror = physionet_s3_mirror(url) if use_mirror else None
     if mirror is not None:
         # TLS verification stays on: the ``verify=False`` workaround the
         # callers apply is for upstream hosts with broken chains, not AWS.
@@ -189,12 +196,13 @@ def _retrieve_with_physionet_fallback(
                 downloader=mirror_downloader,
             )
         except Exception as exc:
+            _S3_MIRROR_FAILED = True
             # warnings.warn, not mne.utils.warn: the latter is silent when the
             # MNE log level is above WARNING, and users should see the fallback.
             warnings.warn(
                 f"S3 mirror download failed for {mirror} ({exc!r}); "
-                f"falling back to upstream {url}. Set MOABB_S3_MIRROR=0 to "
-                "skip the mirror.",
+                f"falling back to upstream {url} for this and later files. "
+                "Set MOABB_S3_MIRROR=0 to skip the mirror.",
                 RuntimeWarning,
                 stacklevel=2,
             )

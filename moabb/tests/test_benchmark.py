@@ -130,6 +130,8 @@ def test_include_datasets_keeps_user_instances():
     # Codes still select the paradigm's own instances.
     by_code = _inc_exc_datasets(fresh, "LeftRightImagery", ["BNCI2014-001"], None)
     assert by_code[0] is fresh[0]
+
+
 def test_epoch_pipelines_routed_by_type_not_name(tmp_path):
     """A template SSVEP classifier keeps its frequency labels under any name."""
     from moabb.datasets.fake import FakeDataset

@@ -14,8 +14,6 @@ import pytest
 from moabb.datasets import Hinss2021
 
 
-mne.set_log_level("ERROR")
-
 _SFREQ = 250.0
 _N_TIMES = 500  # 2 s
 _N_CH = 3

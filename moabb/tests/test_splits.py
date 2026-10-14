@@ -1462,3 +1462,27 @@ def test_learning_curve_splitter_is_not_a_top_level_splitter():
     assert not splitters_module._is_metadata_splitter(LearningCurveSplitter)
     assert not splitters_module._is_metadata_splitter(LeaveOneGroupOut)
     assert splitters_module._is_metadata_splitter(_TargetSubjectSplitter)
+
+
+class _DirectMetadataSplitter:
+    metadata_columns = ("target",)
+
+    def split(self, y, metadata):
+        yield np.arange(1), np.arange(1, 2)
+
+    def get_n_splits(self, metadata=None):
+        return 1
+
+
+@pytest.mark.parametrize(
+    "splitter_cls, default",
+    [
+        (splitters_module.CrossSubjectSplitter, "subject"),
+        (splitters_module.CrossSessionSplitter, "session"),
+    ],
+)
+def test_metadata_splitter_rejects_ignored_groups(splitter_cls, default):
+    # the default groups value is accepted (it is what evaluations pass)
+    splitter_cls(cv_class=_DirectMetadataSplitter, groups=default)
+    with pytest.raises(ValueError, match="metadata-aware"):
+        splitter_cls(cv_class=_DirectMetadataSplitter, groups=["subject", "session"])

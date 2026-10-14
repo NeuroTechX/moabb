@@ -72,6 +72,23 @@ def _is_metadata_splitter(cv_class):
     return "metadata" in parameters
 
 
+def _check_groups_unused(cv_class, groups, default):
+    """Reject a non-default ``groups`` for a metadata-aware ``cv_class``.
+
+    Such a splitter owns the whole fold and is called as
+    ``split(y, metadata)``, so ``groups`` would be silently ignored.
+    """
+    if _is_metadata_splitter(cv_class) and not (
+        isinstance(groups, str) and groups == default
+    ):
+        raise ValueError(
+            f"groups={groups!r} is not used when cv_class "
+            f"({getattr(cv_class, '__name__', cv_class)}) is a metadata-aware "
+            "splitter: it receives the full metadata and defines the folds "
+            "itself. Remove the groups argument."
+        )
+
+
 def _resolved_inner_kwargs(cv_class, direct_kwargs, resolved, control_keys):
     """Combine direct and evaluation-routed kwargs without losing provenance."""
     inner_kwargs = dict(direct_kwargs)
@@ -548,7 +565,11 @@ class CrossSessionSplitter(BaseCrossValidator):
     cv_class : type
         Inner cross-validation strategy for splitting the sessions of one subject.
         LeaveOneGroupOut is the most common default.
-        Defaults to ``LeaveOneGroupOut``.
+        Defaults to ``LeaveOneGroupOut``. A metadata-aware splitter (with
+        ``metadata_columns`` and ``split(y, metadata)``) is called directly on
+        the metadata it is given; note that
+        :class:`~moabb.evaluations.CrossSessionEvaluation` loads one subject at
+        a time, so such a splitter only ever sees one subject's rows there.
     shuffle : bool
         Whether to shuffle the session order for each subject. It can only be
         used when changing the `cv_class` to a class compatible with `shuffle`.
@@ -594,6 +615,7 @@ class CrossSessionSplitter(BaseCrossValidator):
         self.cv_class = cv_class
         # ``groups`` is the within-subject held-out axis (default: sessions),
         # resolved per subject and fed to the stock sklearn cv_class.
+        _check_groups_unused(cv_class, groups, default="session")
         self.groups = groups
         control_keys = {"shuffle", "random_state"}
         self.cv_kwargs = _public_cv_kwargs(cv_kwargs, resolved_cv, control_keys)
@@ -825,6 +847,7 @@ class CrossSubjectSplitter(BaseCrossValidator):
         # ``groups`` selects what defines a fold: a metadata column ("subject"),
         # a list of columns (["subject", "session"]), or a callable
         # ``metadata -> array``. Fed straight to the stock sklearn cv_class.
+        _check_groups_unused(cv_class, groups, default="subject")
         self.groups = groups
         self.calibration_size = calibration_size
         self.calibration_labeled = calibration_labeled

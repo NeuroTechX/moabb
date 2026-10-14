@@ -31,6 +31,11 @@ from .utils import download_and_extract_subject_zip
 
 log = logging.getLogger(__name__)
 
+
+class _ColumnLayoutError(ValueError):
+    """An NPZ file has fewer columns than the subject's channel layout."""
+
+
 # Zenodo re-hosted data (originally from IEEE DataPort DOI: 10.21227/f1c7-7x89).
 _ZENODO_RECORD = "18988317"
 _ZENODO_BASE = f"https://zenodo.org/records/{_ZENODO_RECORD}/files"
@@ -315,6 +320,10 @@ class Zhou2020(BaseDataset):
                 try:
                     raw = self._npz_to_raw(npz_file, *layout)
                     runs[str(run_idx)] = raw
+                except _ColumnLayoutError:
+                    # A file that does not match the channel layout would load
+                    # with the wrong channel names: fail instead of skipping it.
+                    raise
                 except Exception as e:
                     log.warning("Failed to load %s: %s", npz_file.name, e)
 
@@ -345,7 +354,7 @@ class Zhou2020(BaseDataset):
         sfreq = float(npz["SampleRate"][0])
 
         if signal.shape[1] <= max(columns):
-            raise ValueError(
+            raise _ColumnLayoutError(
                 f"{npz_path.name} has {signal.shape[1]} columns, expected more than "
                 f"{max(columns)} for this subject's channel layout"
             )
