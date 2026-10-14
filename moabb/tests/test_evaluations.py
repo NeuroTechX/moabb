@@ -544,6 +544,30 @@ class TestWithinSess:
         )
         assert any(Path(model_path).rglob("fitted_model_*.pkl"))
 
+    @pytest.mark.parametrize("n_jobs_data", [1, 2])
+    def test_n_jobs_data_forwarded_to_get_data(self, n_jobs_data, tmp_path, monkeypatch):
+        evaluation = ev.WithinSessionEvaluation(
+            paradigm=FakeImageryParadigm(),
+            datasets=[dataset],
+            hdf5_path=str(tmp_path),
+            n_jobs_data=n_jobs_data,
+        )
+        seen = {}
+        orig_get_data = evaluation.paradigm.get_data
+
+        def spy(*args, **kwargs):
+            seen["n_jobs"] = kwargs.get("n_jobs", 1)
+            return orig_get_data(*args, **kwargs)
+
+        monkeypatch.setattr(evaluation.paradigm, "get_data", spy)
+        process_pipeline = evaluation.paradigm.make_process_pipelines(dataset)[0]
+        X, y, metadata = evaluation._load_data(
+            dataset, pipelines, process_pipeline, None, subjects=[1, 2]
+        )
+        assert seen["n_jobs"] == n_jobs_data
+        assert len(X) == len(y) == len(metadata)
+        assert set(metadata["subject"]) == {1, 2}
+
     def test_lambda_warning(self):
         def explicit_kernel(x):
             return x**3

@@ -441,6 +441,14 @@ class BaseEvaluation(ABC):
         Can use combination of CodeCarbon environment variable and configuration files.
         See CodeCarbon developer documentation for more information.
         Defaults to ``dict(save_to_file=False, log_level="error")``.
+    n_jobs_data : int
+        Number of jobs used to load the subjects' data in parallel. It is
+        forwarded as ``n_jobs`` to
+        :meth:`~moabb.paradigms.base.BaseParadigm.get_data`, which reads
+        subjects concurrently. Independent of ``n_jobs`` (loading happens
+        before the folds are evaluated). Useful when reading is
+        latency-bound, e.g. raw files on a network filesystem. Defaults to
+        ``1`` (sequential, the previous behavior).
 
     Notes
     -----
@@ -450,6 +458,8 @@ class BaseEvaluation(ABC):
        optuna, time_out parameters.
     .. versionadded:: 1.5
        verbose parameter.
+    .. versionadded:: 1.8
+       n_jobs_data parameter.
     """
 
     search = False
@@ -484,6 +494,7 @@ class BaseEvaluation(ABC):
         time_out: int = 60 * 15,
         verbose: Optional[Union[bool, str, int]] = None,
         codecarbon_config: Optional[dict] = None,
+        n_jobs_data: int = 1,
     ):
         self.random_state = random_state
         self.n_jobs = n_jobs
@@ -505,6 +516,7 @@ class BaseEvaluation(ABC):
         self.time_out = time_out
         self.verbose = verbose
         self.emissions = Emissions(codecarbon_config=codecarbon_config)
+        self.n_jobs_data = n_jobs_data
 
         self.additional_columns = additional_columns
         if additional_columns is None:
@@ -641,6 +653,8 @@ class BaseEvaluation(ABC):
         }
         if subjects is not None:
             kwargs["subjects"] = subjects
+        if self.n_jobs_data != 1:  # keep custom get_data without n_jobs working
+            kwargs["n_jobs"] = self.n_jobs_data
         return self.paradigm.get_data(**kwargs)
 
     @staticmethod
