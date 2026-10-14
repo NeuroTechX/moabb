@@ -439,6 +439,31 @@ class TestWithinSess:
         # We should have 9 columns in the results data frame
         assert len(results[0].keys()) == _expected_result_key_count()
 
+    def test_optuna_search_roc_auc_without_decision_function(self):
+        if not optuna_available:
+            pytest.skip("Optuna is not installed")
+        from optuna.distributions import CategoricalDistribution
+        from sklearn.metrics import get_scorer
+        from sklearn.naive_bayes import GaussianNB
+
+        from moabb.evaluations.utils import check_search_available
+
+        search_methods, _ = check_search_available()
+        rng = np.random.default_rng(0)
+        X = rng.standard_normal((40, 3))
+        y = np.tile([0, 1], 20)
+        search = search_methods["optuna"](
+            GaussianNB(),
+            {"var_smoothing": CategoricalDistribution([1e-9, 1e-8])},
+            n_trials=2,
+            cv=2,
+        )
+        search.fit(X, y)
+        # GaussianNB has predict_proba but no decision_function: the search must
+        # not advertise one, so ROC-AUC falls back to predict_proba.
+        assert not hasattr(search, "decision_function")
+        assert 0.0 <= get_scorer("roc_auc")(search, X, y) <= 1.0
+
     def test_eval_grid_search_optuna(self):
         if not optuna_available:
             pytest.skip("Optuna is not available")

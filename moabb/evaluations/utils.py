@@ -14,6 +14,7 @@ from sklearn.base import ClassifierMixin
 from sklearn.metrics import check_scoring
 from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import Pipeline
+from sklearn.utils.metaestimators import available_if
 
 
 log = logging.getLogger(__name__)
@@ -320,6 +321,17 @@ try:
 
     class OptunaSearchCVClassifier(_BaseOptunaSearchCV, ClassifierMixin):
         _estimator_type = "classifier"
+
+        # optuna-integration defines decision_function unconditionally, so
+        # ROC-AUC scorers call it on predict_proba-only estimators (skorch nets,
+        # GaussianNB) and crash. Guard it like scikit-learn's BaseSearchCV.
+        @available_if(
+            lambda self: hasattr(
+                getattr(self, "best_estimator_", self.estimator), "decision_function"
+            )
+        )
+        def decision_function(self, X, **kwargs):
+            return super().decision_function(X, **kwargs)
 
         def __sklearn_tags__(self):  # scikit-learn >=1.7 tag override
             tags = super().__sklearn_tags__()
