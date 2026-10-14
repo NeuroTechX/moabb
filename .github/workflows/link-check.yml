@@ -27,10 +27,12 @@ jobs:
       - name: Check links in Markdown and RST files
         uses: lycheeverse/lychee-action@v2
         with:
+          # 5xx are transient server outages (dataia.eu 500, GitHub 503 seen on
+          # PRs); a dead link still fails on 404/410/DNS errors.
           args: >-
             --verbose
             --no-progress
-            --accept 200,204,206,301,302,303,307,308,429
+            --accept 200,204,206,301,302,303,307,308,429,500,502,503,504
             --timeout 30
             --max-retries 3
             --exclude "^mailto:"
