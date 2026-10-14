@@ -27,6 +27,8 @@ from moabb.datasets.metadata.schema import (
 URL = "https://zenodo.org/record/5055046/files/"
 # private dictionary to map events to integers
 _HINNS_EVENTS = {"rs": 1, "easy": 2, "medium": 3, "diff": 4}
+# Sampling rate of the released, epoched EEGLAB files.
+_SFREQ = 250.0
 
 
 class Hinss2021(BaseDataset):
@@ -47,6 +49,11 @@ class Hinss2021(BaseDataset):
     Subsequently, participants undertook 3 tasks of varying difficulty levels
     (i.e., easy, medium, and difficult). The task assignments
     were randomized. For more details, please check [Hinss2021]_ and [Hinss2023]_.
+
+    The released EEGLAB files hold non-overlapping 2 s epochs at 250 Hz
+    (61 EEG channels). The loader concatenates them per session into one
+    continuous recording with one event per epoch, so each trial is exactly one
+    released epoch.
 
     Notes
     -----
@@ -208,7 +215,7 @@ class Hinss2021(BaseDataset):
             filter_type=None,
             artifact_methods=None,
             re_reference=None,
-            downsampled_to_hz=None,
+            downsampled_to_hz=_SFREQ,
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=["MDM", "Riemannian"],
@@ -241,7 +248,10 @@ class Hinss2021(BaseDataset):
             sessions_per_subject=2,  # 2 sessions per subject
             events=_HINNS_EVENTS,
             code="Hinss2021",
-            interval=[0, 2],  # Epochs are 2-second long
+            # The released files hold 2 s epochs at 250 Hz (tmin 0, tmax 1.996),
+            # laid back to back here. MNE epochs include ``tmax``, so stop one
+            # sample early to keep exactly one source epoch per trial.
+            interval=[0, 2 - 1 / _SFREQ],
             paradigm="rstate",
             doi="10.1038/s41597-022-01898-y",
             selected_subjects=subjects,
@@ -252,7 +262,10 @@ class Hinss2021(BaseDataset):
         n_epochs_rs = rs_epochs.get_data().shape[0]
         n_epochs_easy = easy_epochs.get_data().shape[0]
         n_epochs_med = med_epochs.get_data().shape[0]
-        stim = np.zeros((1, n_epochs * n_samples))
+        # The signal carries one leading padding sample (see
+        # ``_get_single_subject_data``), so epoch ``i`` starts at sample
+        # ``n_samples * i + 1``.
+        stim = np.zeros((1, n_epochs * n_samples + 1))
         for i in range(n_epochs):
             stim[0, n_samples * i + 1] = (
                 _HINNS_EVENTS["rs"]
@@ -312,6 +325,11 @@ class Hinss2021(BaseDataset):
             raw_data = raw_data.transpose((1, 0, 2))
             n_channel, n_epochs, n_samples = raw_data.shape
             raw_data = raw_data.reshape((n_channel, n_epochs * n_samples))
+            # Prepend one zero sample: mne.find_events skips an event on the
+            # first sample, and without the padding each marker sat one sample
+            # after its epoch's start, so every trial took one sample of the
+            # next epoch and the last trial of each session ran past the end.
+            raw_data = np.concatenate((np.zeros((n_channel, 1)), raw_data), axis=1)
 
             # add stim channel
             stim = self._get_stim_channel(
@@ -323,8 +341,11 @@ class Hinss2021(BaseDataset):
             self._chnames = rs_epochs.ch_names + ["stim"]
             self._chtypes = ["eeg"] * (raw_data.shape[0] - 1) + ["stim"]
 
+            # The epoched files are downsampled to 250 Hz (the 500 Hz recording
+            # rate only applies to the raw resting-state file, not used here).
+            sfreq = rs_epochs.info["sfreq"]
             info = mne.create_info(
-                ch_names=self._chnames, sfreq=500, ch_types=self._chtypes, verbose=False
+                ch_names=self._chnames, sfreq=sfreq, ch_types=self._chtypes, verbose=False
             )
             raw = mne.io.RawArray(raw_data, info)
 
