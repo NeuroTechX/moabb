@@ -120,6 +120,90 @@ def _set_user_agent(downloader):
     headers.setdefault("User-Agent", get_user_agent())
 
 
+#: HTTPS mirror of PhysioNet's ``/files/`` tree on the AWS Open Data
+#: registry. Verified byte-identical for ``eegmmidb`` and ``bigp3bci``
+#: (spot-checked EDFs plus ``.event``/``SHA256SUMS.txt`` probes, Oct 2026).
+#: ``s3://physionet-open/...`` and this HTTPS endpoint serve the same
+#: objects; HTTPS is used because pooch only speaks http(s)/ftp/sftp/doi.
+PHYSIONET_S3_MIRROR_BASE = "https://physionet-open.s3.amazonaws.com"
+_PHYSIONET_UPSTREAM_PREFIX = "https://physionet.org/files/"
+
+
+def _s3_mirror_enabled() -> bool:
+    """Whether the PhysioNet S3 HTTPS mirror may be tried first.
+
+    Enabled by default; set ``MOABB_S3_MIRROR=0`` (or ``false``/``off``/
+    ``disabled``) to force direct upstream downloads.
+    """
+    return os.environ.get("MOABB_S3_MIRROR", "1").lower() not in (
+        "0",
+        "false",
+        "off",
+        "no",
+        "disabled",
+    )
+
+
+def physionet_s3_mirror(url: str) -> str | None:
+    """Return the AWS Open Data HTTPS mirror for a PhysioNet ``/files/`` URL.
+
+    Only rewrites the ``https://physionet.org/files/<dataset>/...`` tree,
+    which the ``physionet-open`` bucket mirrors 1:1. Returns ``None`` for
+    any other URL (including ``archive.physionet.org``), so callers can
+    fall back to the upstream host untouched.
+    """
+    if not isinstance(url, str):
+        return None
+    if not url.startswith(_PHYSIONET_UPSTREAM_PREFIX):
+        return None
+    rest = url[len(_PHYSIONET_UPSTREAM_PREFIX) :]
+    if not rest or ".." in rest.split("/"):
+        return None
+    return PHYSIONET_S3_MIRROR_BASE + "/" + rest
+
+
+def _retrieve_with_physionet_fallback(
+    url, *, fname, path, known_hash=None, progressbar=True, downloader=None
+):
+    """Retrieve ``url`` preferring the PhysioNet S3 mirror on failure-prone hosts.
+
+    The destination is always ``path/fname`` (derived from the upstream URL
+    by the caller), so a mirror hit lands exactly where the loader expects
+    and pooch skips re-download afterwards. On any mirror transport failure
+    this warns once and retries the upstream URL; the upstream error (if it
+    also fails) is the one raised.
+    """
+    mirror = physionet_s3_mirror(url) if _s3_mirror_enabled() else None
+    if mirror is not None:
+        # TLS verification stays on: the ``verify=False`` workaround the
+        # callers apply is for upstream hosts with broken chains, not AWS.
+        mirror_downloader = choose_downloader(mirror, progressbar=progressbar)
+        _set_user_agent(mirror_downloader)
+        try:
+            return retrieve(
+                mirror,
+                known_hash,
+                fname=fname,
+                path=path,
+                progressbar=progressbar,
+                downloader=mirror_downloader,
+            )
+        except Exception as exc:
+            warn(
+                f"S3 mirror download failed for {mirror} ({exc!r}); "
+                f"falling back to upstream {url}. Set MOABB_S3_MIRROR=0 to "
+                "skip the mirror."
+            )
+    return retrieve(
+        url,
+        known_hash,
+        fname=fname,
+        path=path,
+        progressbar=progressbar,
+        downloader=downloader,
+    )
+
+
 def _sanitize_path(path: Path) -> Path:
     path = Path(path)
     table = {ord(c): "-" for c in '~:*?"<>|'}
@@ -323,11 +407,11 @@ def data_dl(url, sign, path=None, force_update=False, verbose=None, fname=None):
         known_hash = None
     else:
         known_hash = file_hash(str(destination))
-    dlpath = retrieve(
+    dlpath = _retrieve_with_physionet_fallback(
         url,
-        known_hash,
         fname=destination.name,
         path=str(destination.parent),
+        known_hash=known_hash,
         progressbar=True,
         downloader=downloader,
     )
@@ -844,9 +928,8 @@ def download_if_missing(
             downloader.kwargs.setdefault("verify", False)
         _set_user_agent(downloader)
 
-        path = retrieve(
+        path = _retrieve_with_physionet_fallback(
             url,
-            None,
             fname=osp.basename(file_path),
             path=osp.dirname(file_path),
             downloader=downloader,

@@ -64,6 +64,17 @@ class PhysionetMI(BaseDataset):
         this, exclude subject 88 when loading the full dataset, e.g.
         ``PhysionetMI(subjects=[s for s in range(1, 110) if s != 88])``.
 
+    .. note::
+        Files are fetched from the byte-identical AWS Open Data mirror
+        (``https://physionet-open.s3.amazonaws.com``) first, because
+        ``physionet.org`` often serves this dataset at tens of kB/s and times
+        out. On any mirror error the loader falls back to ``physionet.org``.
+        Set ``MOABB_S3_MIRROR=0`` to always use ``physionet.org``. For a full
+        bulk copy, ``s5cmd --no-sign-request sync
+        "s3://physionet-open/eegmmidb/1.0.0/*"
+        $MNE_DATA/MNE-eegbci-data/files/eegmmidb/1.0.0/`` fills the same
+        layout the loader expects.
+
     Parameters
     ----------
 
