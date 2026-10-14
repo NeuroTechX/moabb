@@ -28,6 +28,16 @@ jobs:
             python-version: "3.12"
           - os: windows-latest
             python-version: "3.12"
+          # Free-threaded CPython 3.14 (no GIL, #829). Allowed to fail while
+          # the free-threaded stack matures; installs only the [tests] extra
+          # (torch/braindecode and optuna are not exercised here).
+          - os: ubuntu-latest
+            python-version: "3.14t"
+            experimental: true
+            extras: tests
+    # Failures of experimental entries are reported but do not fail the run
+    # (and do not trigger fail-fast for the other entries).
+    continue-on-error: ${{ matrix.experimental == true }}
     defaults:
       run:
         shell: bash
@@ -52,7 +62,29 @@ jobs:
 
       - name: Install moabb
         run: |
-          uv pip install -e .[tests,deeplearning,optuna]
+          uv pip install -e ".[${{ matrix.extras || 'tests,deeplearning,optuna' }}]"
+
+      - name: Check free-threaded interpreter keeps the GIL disabled
+        if: endsWith(matrix.python-version, 't')
+        run: |
+          python - << 'EOF'
+          import sys
+          import sysconfig
+
+          assert sysconfig.get_config_var("Py_GIL_DISABLED"), "not a free-threaded build"
+          import h5py
+          import moabb
+          import moabb.analysis
+          import moabb.datasets
+          import moabb.evaluations
+          import moabb.paradigms
+          import moabb.pipelines
+
+          print(sys.version, "| moabb", moabb.__version__, "| h5py", h5py.__version__)
+          # An extension module without free-threading support re-enables the
+          # GIL at import time (with a RuntimeWarning); fail loudly instead.
+          assert not sys._is_gil_enabled(), "an imported extension re-enabled the GIL"
+          EOF
 
       - name: Pre-download BNCI datasets (cold cache only)
         if: steps.cache-mne_data.outputs.cache-matched-key == ''
@@ -120,7 +152,7 @@ jobs:
 
       - name: Upload Coverage to Codecov
         uses: codecov/codecov-action@v5
-        if: success()
+        if: success() && !matrix.experimental
         with:
           verbose: true
           directory: /home/runner/work/moabb/moabb
