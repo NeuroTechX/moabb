@@ -93,6 +93,34 @@ class HeldOutSubjectSplitter(BaseCrossValidator):
         return self._metadata
 
 
+class TargetSubjectSessionSplitter(BaseCrossValidator):
+    """Metadata-aware splitter: train on other subjects, test one target session.
+
+    The target's remaining sessions are excluded from both train and test
+    (the 3-way case from issue #1104).
+    """
+
+    metadata_columns = ("target_subject",)
+
+    def __init__(self, target, test_session):
+        self.target = target
+        self.test_session = test_session
+
+    def split(self, y, metadata):
+        del y
+        subject = metadata["subject"].to_numpy()
+        session = metadata["session"].to_numpy()
+        positions = np.arange(len(metadata))
+        test = (subject == self.target) & (session == self.test_session)
+        yield positions[subject != self.target], positions[test]
+
+    def get_n_splits(self, *args, **kwargs):
+        return 1
+
+    def get_metadata(self):
+        return {"target_subject": self.target}
+
+
 class ThreeWayHeldOutSubjectSplitter(BaseCrossValidator):
     """Hold out one subject and split its labels into calibration/test slices."""
 
@@ -1038,6 +1066,63 @@ def test_cross_subject_top_level_three_way_splitter_routes_calibration(tmp_path)
     assert _TRANSFER_CAPTURE, "transfer step was never fitted"
     assert all(capture["n_subjects"] > 0 for capture in _TRANSFER_CAPTURE)
     assert all(capture["n_target"] > 0 for capture in _TRANSFER_CAPTURE)
+
+
+def test_cross_subject_metadata_aware_cv_class_is_used_directly(tmp_path):
+    evaluation = ev.CrossSubjectEvaluation(
+        paradigm=FakeImageryParadigm(),
+        datasets=[dataset],
+        hdf5_path=tmp_path,
+        cv_class=TargetSubjectSessionSplitter,
+        cv_kwargs={"target": 2, "test_session": "1"},
+    )
+
+    splitter = evaluation._create_splitter()
+    assert isinstance(splitter, TargetSubjectSessionSplitter)
+    assert "target_subject" in evaluation.additional_columns
+
+
+def test_cross_subject_metadata_aware_cv_class_excludes_rows_end_to_end(tmp_path):
+    ds = FakeDataset(["left_hand", "right_hand"], n_subjects=3, n_sessions=2, seed=18)
+    evaluation = ev.CrossSubjectEvaluation(
+        paradigm=FakeImageryParadigm(),
+        datasets=[ds],
+        hdf5_path=tmp_path,
+        overwrite=True,
+        n_jobs=1,
+        cv_class=TargetSubjectSessionSplitter,
+        cv_kwargs={"target": 2, "test_session": "1"},
+    )
+    _, y, metadata = FakeImageryParadigm().get_data(ds)
+    ((_, train, _, test, _),) = evaluation._preview_splits(
+        evaluation._create_splitter(), y, metadata
+    )
+    assert set(metadata.iloc[train]["subject"]) == {1, 3}
+    assert set(metadata.iloc[test]["subject"]) == {2}
+    assert set(metadata.iloc[test]["session"]) == {"1"}
+    excluded = np.setdiff1d(np.arange(len(metadata)), np.concatenate([train, test]))
+    assert excluded.size
+    assert set(metadata.iloc[excluded]["subject"]) == {2}
+    assert set(metadata.iloc[excluded]["session"]) == {"0"}
+
+    pipe = make_pipeline(Covariances("oas"), CSP(8), LDA())
+    results = evaluation.process(OrderedDict([("P", pipe)]))
+
+    assert set(results["subject"]) == {"2"}
+    assert set(results["session"]) == {"1"}
+    assert set(results["target_subject"]) == {2}
+
+
+def test_cross_subject_metadata_aware_cv_class_rejects_protocol_conflicts(tmp_path):
+    with pytest.raises(ValueError, match="splitter cannot be combined"):
+        ev.CrossSubjectEvaluation(
+            paradigm=FakeImageryParadigm(),
+            datasets=[dataset],
+            hdf5_path=tmp_path,
+            cv_class=TargetSubjectSessionSplitter,
+            cv_kwargs={"target": 2, "test_session": "1"},
+            n_splits=2,
+        )
 
 
 @pytest.fixture(scope="module")
@@ -2888,3 +2973,32 @@ def test_streamed_results_same_with_two_jobs(tmp_path):
 
     cols = ["subject", "session", "score", "samples", "samples_test", "n_classes"]
     pd.testing.assert_frame_equal(parallel[cols], reference[cols])
+class SubjectSessionMetadataSplitter(TargetSubjectSessionSplitter):
+    """The splitter from issue #1104: metadata_columns names reserved columns."""
+
+    metadata_columns = ("subject", "session")
+
+    def get_metadata(self):
+        return {"subject": self.target, "session": self.test_session}
+
+
+def test_cross_subject_cv_class_with_reserved_metadata_columns_saves(tmp_path):
+    ds = FakeDataset(["left_hand", "right_hand"], n_subjects=3, n_sessions=2, seed=18)
+    evaluation = ev.CrossSubjectEvaluation(
+        paradigm=FakeImageryParadigm(),
+        datasets=[ds],
+        hdf5_path=tmp_path,
+        overwrite=True,
+        n_jobs=1,
+        cv_class=SubjectSessionMetadataSplitter,
+        cv_kwargs={"target": 2, "test_session": "1"},
+    )
+    # subject/session are already result columns; they must not be added twice
+    assert "subject" not in evaluation.additional_columns
+    assert "session" not in evaluation.additional_columns
+
+    pipe = make_pipeline(Covariances("oas"), CSP(8), LDA())
+    results = evaluation.process(OrderedDict([("P", pipe)]))
+
+    assert set(results["subject"]) == {"2"}
+    assert set(results["session"]) == {"1"}

@@ -49,6 +49,25 @@ search_methods, optuna_available = check_search_available()
 
 log = logging.getLogger(__name__)
 
+# Columns every result row already carries; a splitter's metadata_columns that
+# name one of them (e.g. "subject", "session") must not be stored a second time
+# as an extra column, which Results cannot write for string values.
+RESULT_COLUMNS = frozenset(
+    {
+        "dataset",
+        "pipeline",
+        "subject",
+        "session",
+        "score",
+        "time",
+        "samples",
+        "samples_test",
+        "n_classes",
+        "channels",
+        "n_sessions",
+    }
+)
+
 
 def _score_trialwise(estimator, X, y, scoring):
     """Score a fitted estimator from isolated, one-trial predictions.
@@ -524,7 +543,7 @@ class BaseEvaluation(ABC):
 
         if self.cv_class is not None and hasattr(self.cv_class, "metadata_columns"):
             for col in self.cv_class.metadata_columns:
-                if col not in self.additional_columns:
+                if col not in self.additional_columns and col not in RESULT_COLUMNS:
                     self.additional_columns.append(col)
 
         if self.optuna and not optuna_available:
