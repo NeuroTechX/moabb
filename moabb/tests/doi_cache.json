@@ -1,6 +1,6 @@
 {
     "_metadata": {
-        "total": 231
+        "total": 232
     },
     "10.1002/hbm.23730": {
         "title": "Deep learning with convolutional neural networks for EEG decoding and visualization",
@@ -2748,5 +2748,13 @@
         ],
         "year": 2025,
         "doi": "10.6084/m9.figshare.29987758.v4"
+    },
+    "10.21227/f1c7-7x89": {
+        "title": "EEG dataset of 7-day Motor Imagery BCI",
+        "authors": [
+            "Qing Zhou"
+        ],
+        "year": 2020,
+        "doi": "10.21227/f1c7-7x89"
     }
 }
