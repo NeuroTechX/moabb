@@ -1037,6 +1037,22 @@ class CrossDatasetSplitter(BaseCrossValidator):
         return self._last_split_metadata
 
 
+def _stratified_order(y):
+    """Order positions of ``y`` so that every prefix is class-stratified.
+
+    Each sample gets the key ``rank_within_its_class / class_size``; a stable
+    sort on this key places one sample of every class first (all keys 0), then
+    interleaves classes in proportion to their size. Within a class the input
+    order is kept, so the randomness of a shuffled pool is preserved.
+    """
+    y = np.asarray(y)
+    keys = np.empty(len(y), dtype=float)
+    for label in np.unique(y):
+        positions = np.flatnonzero(y == label)
+        keys[positions] = np.arange(len(positions)) / len(positions)
+    return np.argsort(keys, kind="stable")
+
+
 class LearningCurveSplitter(GroupsConsumerMixin, BaseCrossValidator):
     """Learning curve splitter following sklearn CV interface.
 
@@ -1204,7 +1220,11 @@ class LearningCurveSplitter(GroupsConsumerMixin, BaseCrossValidator):
             if np.any(vals < 0) or np.any(vals > 1):
                 raise ValueError("Data subset ratios must be in range [0, 1]")
             upto = np.ceil(vals * len(y)).astype(int)
-            indices = [np.array(range(i)) for i in upto]
+            # Prefixes of a class-interleaved ordering of the (already shuffled)
+            # pool: sizes and nesting are unchanged, but small subsets keep
+            # every class instead of whatever an unstratified prefix holds.
+            order = _stratified_order(y)
+            indices = [order[:i] for i in upto]
         elif self.data_size["policy"] == "per_class":
             classwise_indices = {}
             n_smallest_class = np.inf
