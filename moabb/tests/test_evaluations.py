@@ -490,6 +490,39 @@ class TestWithinSess:
         # We should have 9 columns in the results data frame
         assert len(results[0].keys()) == _expected_result_key_count()
 
+    @pytest.mark.parametrize("optuna", [False, True])
+    @pytest.mark.parametrize(
+        "scorer",
+        [
+            ["accuracy", "balanced_accuracy"],
+            {"accuracy": "accuracy", "balanced_accuracy": "balanced_accuracy"},
+        ],
+        ids=["list", "dict"],
+    )
+    def test_eval_grid_search_multimetric_scorer(self, scorer, optuna, tmp_path):
+        if optuna and not optuna_available:
+            pytest.skip("Optuna is not available")
+        evaluation = ev.WithinSessionEvaluation(
+            paradigm=FakeImageryParadigm(scorer=scorer),
+            datasets=[dataset],
+            hdf5_path=str(tmp_path),
+            optuna=optuna,
+        )
+        param_grid = {"C": {"csp__metric": ["euclid", "riemann"]}}
+        process_pipeline = evaluation.paradigm.make_process_pipelines(dataset)[0]
+        results = list(
+            evaluation.evaluate(
+                dataset,
+                pipelines,
+                param_grid=param_grid,
+                process_pipeline=process_pipeline,
+            )
+        )
+        assert len(results) == 4
+        for res in results:
+            assert np.isfinite(res["score_accuracy"])
+            assert np.isfinite(res["score_balanced_accuracy"])
+
     def test_within_session_evaluation_save_model(self):
         res_test_path = "./res_test"
         self.eval.suffix = "run_a"

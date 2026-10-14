@@ -71,6 +71,7 @@ Requirements
 Bugs
 ~~~~
 - With ``optuna=True``, ROC-AUC scoring failed with ``AttributeError: ... has no attribute 'decision_function'`` for classifiers that only provide ``predict_proba`` (skorch/braindecode nets, ``GaussianNB``, ...): optuna-integration's ``OptunaSearchCV`` defines ``decision_function`` unconditionally, so scikit-learn's scorer picked it. ``OptunaSearchCVClassifier`` now exposes it only when the underlying estimator has it, as scikit-learn's ``BaseSearchCV`` does (:gh:`1251` by `Bruno Aristimunha`_).
+- Hyper-parameter search failed with multi-metric paradigm scorers: a list of metric names (``scorer=["accuracy", "balanced_accuracy"]``) reached ``GridSearchCV`` with ``refit=True`` (scikit-learn requires a metric name), and with ``optuna=True`` every trial failed with ``KeyError: 'test_score'`` because ``OptunaSearchCV`` takes a single scorer. Grid search now refits on the primary (first) metric and Optuna optimises it; all metrics are still reported on the outer folds (:gh:`1252` by `Bruno Aristimunha`_).
 - Fix :class:`moabb.datasets.Beetl2021_A` and :class:`moabb.datasets.Beetl2021_B`
   annotating the final phase's test run with the training runs' four-class map.
   ``final_MI_label.txt`` holds the competition's three-class labels, whose class 2
