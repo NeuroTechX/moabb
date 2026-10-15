@@ -29,6 +29,35 @@ Castillos2023_URL = "https://zenodo.org/records/8255618"
 
 TRIAL_PRESENTATION_TIME = 2.2
 
+# The released .set files use two 32-channel layouts with different labels and
+# channel order: the files of subjects 1, 5, 6, 7, 11 and 12 carry the
+# LiveAmp-32 labels (with F9, P9, P10 and F10), those of subjects 2, 3, 4, 8, 9
+# and 10 the actiCAP-32 labels (with FT9, TP9, TP10 and FT10). Every subject is
+# returned with the 28 electrodes both layouts share, in this order, so that
+# the same channel index is the same electrode for all subjects.
+_SHARED_EEG = [
+    "Fp1", "Fz", "F3", "F7", "FC5", "FC1", "C3", "T7", "CP5", "CP1", "Pz", "P3",
+    "P7", "O1", "Oz", "O2", "P8", "P4", "CP2", "CP6", "T8", "C4", "Cz", "FC2",
+    "FC6", "F8", "F4", "Fp2",
+]  # fmt: skip
+_LAYOUT_ONLY = {
+    "LiveAmp-32": ["F9", "P9", "P10", "F10"],
+    "actiCAP-32": ["FT9", "TP9", "TP10", "FT10"],
+}
+
+
+def _pick_shared_channels(raw, fpath):
+    """Keep the 28 electrodes of both released layouts, in ``_SHARED_EEG`` order."""
+    names = set(raw.ch_names)
+    extra = sorted(names - set(_SHARED_EEG))
+    known = any(sorted(e) == extra for e in _LAYOUT_ONLY.values())
+    if not set(_SHARED_EEG) <= names or not known:
+        raise ValueError(
+            f"Castillos2023 file {fpath} has channels {raw.ch_names}; expected the "
+            f"{len(_SHARED_EEG)} shared electrodes plus one of {_LAYOUT_ONLY}."
+        )
+    return raw.pick(_SHARED_EEG).reorder_channels(_SHARED_EEG)
+
 
 class BaseCastillos2023(BaseDataset):
     def __init__(
@@ -63,13 +92,14 @@ class BaseCastillos2023(BaseDataset):
         self.paradigm_type = paradigm_type
         self.sfreq = 500
         self.fps = 60
-        self.n_channels = 32
+        self.n_channels = len(_SHARED_EEG)
         self.window_size = window_size
 
     def _get_single_subject_data(self, subject):
         """Return the data of a single subject."""
         file_path_list = self.data_path(subject, self.paradigm_type)
         raw = mne.io.read_raw_eeglab(file_path_list[0], preload=True, verbose=False)
+        raw = _pick_shared_channels(raw, file_path_list[0])
         montage = mne.channels.make_standard_montage("colin27_1020")
         raw = raw.set_montage(montage)
         # Strip the annotations that were script to make them easier to process
@@ -354,6 +384,16 @@ class CastillosBurstVEP100(BaseCastillos2023):
     intrusiveness using a mouse. In total, participants completed 12 ratings (3 repetitions x 4 types of stimuli) for
     each of the three scales.
 
+    **Channels**
+
+    The released files use two 32-channel layouts. The files of subjects 1, 5,
+    6, 7, 11 and 12 carry the labels of the LiveAmp-32 layout (F9, P9, P10,
+    F10), those of subjects 2, 3, 4, 8, 9 and 10 the labels of the actiCAP-32
+    layout (FT9, TP9, TP10, FT10), and the two layouts also store the channels
+    in a different order. The loader returns the 28 electrodes both layouts
+    share, in one fixed order, for every subject: Fp1, Fz, F3, F7, FC5, FC1, C3, T7, CP5, CP1, Pz, P3, P7, O1, Oz,
+    O2, P8, P4, CP2, CP6, T8, C4, Cz, FC2, FC6, F8, F4, Fp2.
+
     References
     ----------
 
@@ -376,7 +416,7 @@ class CastillosBurstVEP100(BaseCastillos2023):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
-            channel_types={"eeg": 32},
+            channel_types={"eeg": 28},
             sensors=[
                 "C3",
                 "C4",
@@ -385,12 +425,10 @@ class CastillosBurstVEP100(BaseCastillos2023):
                 "CP5",
                 "CP6",
                 "Cz",
-                "F10",
                 "F3",
                 "F4",
                 "F7",
                 "F8",
-                "F9",
                 "FC1",
                 "FC2",
                 "FC5",
@@ -401,12 +439,10 @@ class CastillosBurstVEP100(BaseCastillos2023):
                 "O1",
                 "O2",
                 "Oz",
-                "P10",
                 "P3",
                 "P4",
                 "P7",
                 "P8",
-                "P9",
                 "Pz",
                 "T7",
                 "T8",
@@ -648,6 +684,16 @@ class CastillosBurstVEP40(BaseCastillos2023):
     intrusiveness using a mouse. In total, participants completed 12 ratings (3 repetitions x 4 types of stimuli) for
     each of the three scales.
 
+    **Channels**
+
+    The released files use two 32-channel layouts. The files of subjects 1, 5,
+    6, 7, 11 and 12 carry the labels of the LiveAmp-32 layout (F9, P9, P10,
+    F10), those of subjects 2, 3, 4, 8, 9 and 10 the labels of the actiCAP-32
+    layout (FT9, TP9, TP10, FT10), and the two layouts also store the channels
+    in a different order. The loader returns the 28 electrodes both layouts
+    share, in one fixed order, for every subject: Fp1, Fz, F3, F7, FC5, FC1, C3, T7, CP5, CP1, Pz, P3, P7, O1, Oz,
+    O2, P8, P4, CP2, CP6, T8, C4, Cz, FC2, FC6, F8, F4, Fp2.
+
     References
     ----------
 
@@ -670,7 +716,7 @@ class CastillosBurstVEP40(BaseCastillos2023):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
-            channel_types={"eeg": 32},
+            channel_types={"eeg": 28},
             sensors=[
                 "C3",
                 "C4",
@@ -679,12 +725,10 @@ class CastillosBurstVEP40(BaseCastillos2023):
                 "CP5",
                 "CP6",
                 "Cz",
-                "F10",
                 "F3",
                 "F4",
                 "F7",
                 "F8",
-                "F9",
                 "FC1",
                 "FC2",
                 "FC5",
@@ -695,12 +739,10 @@ class CastillosBurstVEP40(BaseCastillos2023):
                 "O1",
                 "O2",
                 "Oz",
-                "P10",
                 "P3",
                 "P4",
                 "P7",
                 "P8",
-                "P9",
                 "Pz",
                 "T7",
                 "T8",
@@ -915,6 +957,16 @@ class CastillosCVEP100(BaseCastillos2023):
     intrusiveness using a mouse. In total, participants completed 12 ratings (3 repetitions x 4 types of stimuli) for
     each of the three scales.
 
+    **Channels**
+
+    The released files use two 32-channel layouts. The files of subjects 1, 5,
+    6, 7, 11 and 12 carry the labels of the LiveAmp-32 layout (F9, P9, P10,
+    F10), those of subjects 2, 3, 4, 8, 9 and 10 the labels of the actiCAP-32
+    layout (FT9, TP9, TP10, FT10), and the two layouts also store the channels
+    in a different order. The loader returns the 28 electrodes both layouts
+    share, in one fixed order, for every subject: Fp1, Fz, F3, F7, FC5, FC1, C3, T7, CP5, CP1, Pz, P3, P7, O1, Oz,
+    O2, P8, P4, CP2, CP6, T8, C4, Cz, FC2, FC6, F8, F4, Fp2.
+
     References
     ----------
 
@@ -937,7 +989,7 @@ class CastillosCVEP100(BaseCastillos2023):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
-            channel_types={"eeg": 32},
+            channel_types={"eeg": 28},
             sensors=[
                 "C3",
                 "C4",
@@ -946,12 +998,10 @@ class CastillosCVEP100(BaseCastillos2023):
                 "CP5",
                 "CP6",
                 "Cz",
-                "F10",
                 "F3",
                 "F4",
                 "F7",
                 "F8",
-                "F9",
                 "FC1",
                 "FC2",
                 "FC5",
@@ -962,12 +1012,10 @@ class CastillosCVEP100(BaseCastillos2023):
                 "O1",
                 "O2",
                 "Oz",
-                "P10",
                 "P3",
                 "P4",
                 "P7",
                 "P8",
-                "P9",
                 "Pz",
                 "T7",
                 "T8",
@@ -1173,6 +1221,16 @@ class CastillosCVEP40(BaseCastillos2023):
     intrusiveness using a mouse. In total, participants completed 12 ratings (3 repetitions x 4 types of stimuli) for
     each of the three scales.
 
+    **Channels**
+
+    The released files use two 32-channel layouts. The files of subjects 1, 5,
+    6, 7, 11 and 12 carry the labels of the LiveAmp-32 layout (F9, P9, P10,
+    F10), those of subjects 2, 3, 4, 8, 9 and 10 the labels of the actiCAP-32
+    layout (FT9, TP9, TP10, FT10), and the two layouts also store the channels
+    in a different order. The loader returns the 28 electrodes both layouts
+    share, in one fixed order, for every subject: Fp1, Fz, F3, F7, FC5, FC1, C3, T7, CP5, CP1, Pz, P3, P7, O1, Oz,
+    O2, P8, P4, CP2, CP6, T8, C4, Cz, FC2, FC6, F8, F4, Fp2.
+
     References
     ----------
 
@@ -1195,7 +1253,7 @@ class CastillosCVEP40(BaseCastillos2023):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
-            channel_types={"eeg": 32},
+            channel_types={"eeg": 28},
             sensors=[
                 "C3",
                 "C4",
@@ -1204,12 +1262,10 @@ class CastillosCVEP40(BaseCastillos2023):
                 "CP5",
                 "CP6",
                 "Cz",
-                "F10",
                 "F3",
                 "F4",
                 "F7",
                 "F8",
-                "F9",
                 "FC1",
                 "FC2",
                 "FC5",
@@ -1220,12 +1276,10 @@ class CastillosCVEP40(BaseCastillos2023):
                 "O1",
                 "O2",
                 "Oz",
-                "P10",
                 "P3",
                 "P4",
                 "P7",
                 "P8",
-                "P9",
                 "Pz",
                 "T7",
                 "T8",
