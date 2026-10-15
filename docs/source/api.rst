@@ -260,9 +260,9 @@ ERP/P300 Datasets
     Mainsah2025_R
     Mainsah2025_S1
     Mainsah2025_S2
+    Peters2026
     Simoes2020
     Speier2017
-    BCIFIT
     Yagan2023
     Zhang2025
     Zheng2020

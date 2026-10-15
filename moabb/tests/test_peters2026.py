@@ -1,4 +1,4 @@
-"""Offline tests for the BCI-FIT (OpenNeuro ds007720) loader.
+"""Offline tests for the Peters2026 (BCI-FIT, OpenNeuro ds007720) loader.
 
 A synthetic BIDS tree with the release's layout (BrainVision files, per-file
 ``value`` codes, every flash listed twice, inquiry-preview and key-press rows)
@@ -14,8 +14,9 @@ import pandas as pd
 import pytest
 from mne_bids import BIDSPath, write_raw_bids
 
-import moabb.datasets.bcifit as bcifit
-from moabb.datasets import BCIFIT
+import moabb.datasets.peters2026 as peters2026
+from moabb.datasets import Peters2026
+from moabb.datasets.base import is_abbrev, is_camel_kebab_case
 from moabb.paradigms import P300
 
 
@@ -33,7 +34,9 @@ INVENTORY = {
     },
     3: {1: (("MatrixCalibration", 1),)},
 }
-DSI24 = bcifit._DSI24_EEG[:7] + ["A2"] + bcifit._DSI24_EEG[7:]  # file order varies
+DSI24 = (
+    peters2026._DSI24_EEG[:7] + ["A2"] + peters2026._DSI24_EEG[7:]
+)  # file order varies
 FLEX = ["Cz", "Oz", "P4", "P3", "PO8", "Pz", "PO7"]
 
 
@@ -86,7 +89,7 @@ def _write_run(root, visit, task, run, ch_names, targets, subject=1):
 
 @pytest.fixture
 def bids_root(tmp_path, monkeypatch):
-    monkeypatch.setattr(bcifit, "_CALIBRATION_RUNS", INVENTORY)
+    monkeypatch.setattr(peters2026, "_CALIBRATION_RUNS", INVENTORY)
     root = tmp_path / "ds007720"
     truth = {
         (1, 1): _write_run(root, 1, "MatrixCalibration", 1, FLEX, {3}),
@@ -96,7 +99,7 @@ def bids_root(tmp_path, monkeypatch):
     }
     _write_run(root, 1, "MatrixCalibration", 1, DSI24, {2, 9}, subject=3)
     monkeypatch.setattr(
-        BCIFIT, "_download_subject", lambda self, *args, **kwargs: str(root)
+        Peters2026, "_download_subject", lambda self, *args, **kwargs: str(root)
     )
     return root, truth
 
@@ -107,7 +110,7 @@ def _labels(raw):
 
 def test_sessions_runs_events_and_common_channels(bids_root):
     _, truth = bids_root
-    data = BCIFIT().get_data([1])[1]
+    data = Peters2026().get_data([1])[1]
     assert data.keys() == {"0", "1"}
     # Runs keep a unique index (BIDS run order) and the layout.
     assert list(data["0"]) == ["0matrix", "1rsvp"]
@@ -132,17 +135,17 @@ def test_sessions_runs_events_and_common_channels(bids_root):
 
 
 def test_cap_variants_select_visits_and_full_montages(bids_root):
-    dsi24 = BCIFIT(cap="DSI-24")
-    assert dsi24.code == "BCI-FIT-dsi24"
+    dsi24 = Peters2026(cap="DSI-24")
+    assert dsi24.code == "Peters-dsi24-2026"
     data = dsi24.get_data([1])[1]
     assert data.keys() == {"1"}
     raw = data["1"]["0matrix"]
-    assert raw.ch_names == bcifit._DSI24_EEG + ["A2"]
+    assert raw.ch_names == peters2026._DSI24_EEG + ["A2"]
     assert raw.get_channel_types(picks=["A2"]) == ["misc"]
-    assert raw.get_channel_types(picks=bcifit._DSI24_EEG) == ["eeg"] * 19
+    assert raw.get_channel_types(picks=peters2026._DSI24_EEG) == ["eeg"] * 19
 
-    flex = BCIFIT(cap="DSI-Flex")
-    assert flex.code == "BCI-FIT-dsiflex"
+    flex = Peters2026(cap="DSI-Flex")
+    assert flex.code == "Peters-dsiflex-2026"
     data = flex.get_data([1])[1]
     assert data.keys() == {"0"}
     assert data["0"]["1rsvp"].ch_names == ["Cz", "P3", "Pz", "P4", "PO7", "PO8", "Oz"]
@@ -152,7 +155,7 @@ def test_p300_epochs_keep_first_and_last_flash(bids_root):
     _, truth = bids_root
     # Evaluations load every subject into one array: a DSI-24-only subject
     # must come back with the same four channels as a subject that switched.
-    X, y, meta = P300().get_data(BCIFIT(), [1, 3])
+    X, y, meta = P300().get_data(Peters2026(), [1, 3])
     n_flashes = sum(len(t["samples"]) for t in truth.values()) + 16
     n_targets = sum(len(t["targets"]) for t in truth.values()) + 2
     assert X.shape == (n_flashes, 4, int(0.8 * SFREQ) + 1)
@@ -161,7 +164,7 @@ def test_p300_epochs_keep_first_and_last_flash(bids_root):
     sizes = meta.groupby(["subject", "session"]).size().to_dict()
     assert sizes == {(1, "0"): 32, (1, "1"): 32, (3, "0"): 16}
 
-    X24, _, meta24 = P300().get_data(BCIFIT(cap="DSI-24"), [1, 3])
+    X24, _, meta24 = P300().get_data(Peters2026(cap="DSI-24"), [1, 3])
     assert X24.shape[1] == 19
     assert meta24.groupby("subject")["session"].unique().apply(list).to_dict() == {
         1: ["1"],
@@ -170,7 +173,7 @@ def test_p300_epochs_keep_first_and_last_flash(bids_root):
 
 
 def test_additional_metadata_lists_character_and_layout(bids_root):
-    ds = BCIFIT()
+    ds = Peters2026()
     meta = ds.get_additional_metadata(subject=1, session="1", run="0matrix")
     assert len(meta) == 16
     assert meta["trial_type"].iloc[15] == "Target"
@@ -188,21 +191,36 @@ def test_missing_calibration_run_is_an_error(bids_root):
     for f in root.glob("sub-P1/ses-2/eeg/*run-4_eeg.*"):
         f.unlink()
     with pytest.raises(FileNotFoundError, match=r"\(2, 'RSVPCalibration', 4\)"):
-        BCIFIT().get_data([1])
+        Peters2026().get_data([1])
 
 
 def test_release_inventory():
-    runs = bcifit._CALIBRATION_RUNS
+    runs = peters2026._CALIBRATION_RUNS
     assert sorted(runs) == [1, 2, 3, 4, 5]
     assert [len(runs[s]) for s in sorted(runs)] == [9, 10, 9, 6, 6]
     tasks = [task for visits in runs.values() for r in visits.values() for task, _ in r]
     assert len(tasks) == 88
     assert tasks.count("MatrixCalibration") == 70
-    assert BCIFIT().subject_list == [1, 2, 3, 4, 5]
-    assert BCIFIT(cap="DSI-24").subject_list == [1, 2, 3, 4, 5]
-    assert BCIFIT(cap="DSI-Flex").subject_list == [1, 2]
+    assert Peters2026().subject_list == [1, 2, 3, 4, 5]
+    assert Peters2026(cap="DSI-24").subject_list == [1, 2, 3, 4, 5]
+    assert Peters2026(cap="DSI-Flex").subject_list == [1, 2]
     with pytest.raises(ValueError, match="cap must be"):
-        BCIFIT(cap="DSI-7")
+        Peters2026(cap="DSI-7")
+
+
+@pytest.mark.parametrize(
+    "cap, code",
+    [
+        (None, "Peters2026"),
+        ("DSI-24", "Peters-dsi24-2026"),
+        ("DSI-Flex", "Peters-dsiflex-2026"),
+    ],
+)
+def test_variant_codes_follow_moabb_naming(cap, code):
+    # One code per cap variant, so cached epochs and results never mix.
+    assert Peters2026(cap=cap).code == code
+    assert is_camel_kebab_case(code)
+    assert is_abbrev("Peters2026", code)
 
 
 @pytest.mark.parametrize("cap", [None, "DSI-Flex"])
@@ -211,19 +229,19 @@ def test_upstream_download_fetches_only_calibration_files(cap, tmp_path, monkeyp
     monkeypatch.setenv("MNE_DATA", str(tmp_path))
     calls = []
     monkeypatch.setattr(
-        bcifit,
+        peters2026,
         "data_dl",
         lambda url, sign, fname=None, **kw: calls.append((url, sign, fname)),
     )
-    BCIFIT(cap=cap).download([1], path=str(tmp_path))
-    root = BCIFIT(cap=cap)._download_subject(1, str(tmp_path), False, None, None)
-    assert root == str(tmp_path / "MNE-bci-fit-data")
+    Peters2026(cap=cap).download([1], path=str(tmp_path))
+    root = Peters2026(cap=cap)._download_subject(1, str(tmp_path), False, None, None)
+    assert root == str(tmp_path / "MNE-peters2026-data")
     calls = calls[: len(calls) // 2]
     fnames = [fname for _, _, fname in calls]
-    assert {sign for _, sign, _ in calls} == {"BCI-FIT"}
+    assert {sign for _, sign, _ in calls} == {"Peters2026"}
     assert all(url.endswith(fname) for url, _, fname in calls)
-    assert all(url.startswith(bcifit._S3_BASE + "/") for url, _, _ in calls)
-    assert fnames[:3] == list(bcifit._ROOT_FILES)
+    assert all(url.startswith(peters2026._S3_BASE + "/") for url, _, _ in calls)
+    assert fnames[:3] == list(peters2026._ROOT_FILES)
     assert len(fnames) == 3 + 19 * 7  # all 19 calibration runs of sub-P1
     assert not [f for f in fnames if "CopyPhrase" in f]
     assert "sub-P1/ses-8/eeg/sub-P1_ses-8_task-MatrixCalibration_run-2_eeg.eeg" in fnames
@@ -234,12 +252,12 @@ def test_nemar_download_filters_calibration_tasks(cap, tmp_path, monkeypatch):
     monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", "nemar")
     transport = Mock()
     monkeypatch.setattr("moabb.datasets.download.nemar.download", transport)
-    ds = BCIFIT(cap=cap)
+    ds = Peters2026(cap=cap)
     ds.download([3], tmp_path, True, False, verbose="ERROR")
     transport.assert_called_once_with(
         dataset="on007720",
         # One folder for every cap variant.
-        target_dir=tmp_path / "MNE-bci-fit-data" / "on007720",
+        target_dir=tmp_path / "MNE-peters2026-data" / "on007720",
         subject="P3",
         trust_existing=False,
         scope="raw",

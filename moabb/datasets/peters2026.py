@@ -1,4 +1,4 @@
-"""BCI-FIT longitudinal P300 calibration dataset (OpenNeuro ds007720).
+"""Peters2026: BCI-FIT longitudinal P300 calibration dataset (OpenNeuro ds007720).
 
 Peters et al. (2026), OpenNeuro ds007720 (CC0).
 Data DOI: 10.18112/openneuro.ds007720.v1.0.0
@@ -36,7 +36,7 @@ from .metadata.schema import (
 log = logging.getLogger(__name__)
 
 # Download folder shared by every ``cap`` variant (their codes differ).
-_SIGN = "BCI-FIT"
+_SIGN = "Peters2026"
 _S3_BASE = "https://s3.amazonaws.com/openneuro.org/ds007720"
 _SFREQ = 300.0
 
@@ -89,6 +89,8 @@ _DSI24_EEG = [
     "T5", "P3", "Pz", "P4", "T6", "O1", "O2",
 ]
 # fmt: on
+# The README lists FCz among the DSI-Flex channels, but FCz is that cap's
+# ground; the files and BciPy's DSI-Flex device definition call the channel Cz.
 _DSI_FLEX_EEG = ["Cz", "P3", "Pz", "P4", "PO7", "PO8", "Oz"]
 _EAR_CHANNELS = ["A2"]
 _CHANNEL_ORDER = (
@@ -123,8 +125,8 @@ def _run_names(subject, visit):
     return {run: f"{k}{_LAYOUTS[task]}" for k, (task, run) in enumerate(runs)}
 
 
-class BCIFIT(OpenNeuroMirrorMixin, BaseBIDSDataset):
-    """BCI-FIT longitudinal P300 calibration dataset (OpenNeuro ds007720).
+class Peters2026(OpenNeuroMirrorMixin, BaseBIDSDataset):
+    """BCI-FIT longitudinal P300 calibration dataset from Peters et al. (2026).
 
     BCI-FIT (BCI Functional Implementation Toolkit) is a customization
     protocol for non-implantable communication BCIs [1]_. Five participants
@@ -143,9 +145,10 @@ class BCIFIT(OpenNeuroMirrorMixin, BaseBIDSDataset):
     ``nontarget`` rows of the BIDS ``events.tsv`` (each flash is also listed
     with its character, which :meth:`get_additional_metadata` returns as
     ``character``). Inquiry-preview and key-press rows are not epoched (the
-    files have no prompt or cue rows). The README describes the default settings (55 inquiries of 14
-    flashes at 5 Hz, 10% of inquiries without a target, 4 s blank); the
-    released runs follow the per-visit customization:
+    files have no prompt or cue rows). The README describes the default
+    settings (55 inquiries of 14 flashes at 5 Hz, 10% of inquiries without
+    a target, 4 s blank); the released runs follow the per-visit
+    customization:
 
     - stimulus onset asynchrony of 83 to 337 ms (about 12 Hz to 3 Hz), most
       runs at 237 ms (Matrix) or 203 ms (RSVP);
@@ -177,9 +180,16 @@ class BCIFIT(OpenNeuroMirrorMixin, BaseBIDSDataset):
     DSI-24 throughout; ``sub-P1`` used the DSI-Flex at visit 1 and the
     DSI-24 afterwards; ``sub-P2`` used the DSI-Flex at visits 1 to 7 and
     the DSI-24 at visits 8 to 10. The two caps share only **Cz, P3, Pz and
-    P4**. The released files name the DSI-Flex channels Cz, Oz, P3, P4,
-    PO7, PO8 and Pz; the README lists FCz instead of Cz but also gives FCz
-    as the DSI-Flex ground, and this loader keeps the file names.
+    P4**. The DSI-Flex channels are Cz, Oz, P3, P4, PO7, PO8 and Pz, as
+    named in the released files. The README lists FCz instead of Cz, but
+    FCz is the DSI-Flex ground electrode (README and every DSI-Flex
+    ``*_eeg.json``), which cannot also be a recording site; BciPy's own
+    DSI-Flex device definition labels the cap's first sensor Cz, and the
+    BciPy BIDS conversion only keeps channels named in its 10-20 list,
+    which has no FCz. This loader therefore keeps Cz and the standard Cz
+    position. The ERPs and spectra of P1 and P2 could not tell Cz from FCz
+    (ratios to Pz varied more between visits than between the two
+    positions), so the evidence for Cz is documentary.
 
     MOABB evaluations load all subjects and visits into one array, so each
     variant of this loader returns a single channel set. By default
@@ -198,10 +208,23 @@ class BCIFIT(OpenNeuroMirrorMixin, BaseBIDSDataset):
     common-mode follower; ground at FCz (DSI-Flex) or Fpz (DSI-24);
     hardware band 0.003-150 Hz. The released files are sampled at 300 Hz
     and are not filtered: the sidecars declare no software filter, and the
-    recordings carry power above 20 Hz and, in most runs, 60 Hz line noise. The README's
-    downsampling to 150 Hz, 1-20 Hz band-pass and 60 Hz notch were therefore
-    not applied to the distributed files; MOABB paradigms apply their own
-    band-pass.
+    recordings carry power above 20 Hz and, in most runs, 60 Hz line
+    noise. The README's downsampling to 150 Hz, 1-20 Hz band-pass and
+    60 Hz notch were therefore not applied to the distributed files; MOABB
+    paradigms apply their own band-pass.
+
+    **Timing and the late RSVP P300.** Flash onsets are BciPy's
+    display-flip timestamps, shifted during the BIDS conversion by the
+    static offset of the device (0.1 s), the same for both layouts; the
+    release has no trigger or photodiode channel. In the 16 visits with
+    both layouts, the Pz Target minus NonTarget wave peaks later in RSVP
+    than in Matrix runs (cross-correlation delay 50 to 327 ms, median
+    92 ms; per participant the peak is at 380-450 ms in Matrix and
+    456-713 ms in RSVP runs), while the flash-locked steady-state visual
+    response has the same latency in both layouts (median difference 7 ms,
+    95% CI -19 to 16 ms, in the 13 visits at 203 vs 237 ms SOA). A trigger offset would delay both, so the late
+    RSVP P300 is a genuine latency difference and the events are not
+    shifted. The [0, 0.8] s window still contains it.
 
     **Not included.** The CopyPhrase runs (copy-spelling) are excluded:
     they are closed loop, with the classifier choosing the next inquiries
@@ -224,8 +247,8 @@ class BCIFIT(OpenNeuroMirrorMixin, BaseBIDSDataset):
         ``None`` returns all visits with the channels both caps share
         (Cz, P3, Pz, P4); a cap name returns only that cap's visits with
         its full channel set. Each variant has its own ``code``
-        (``BCI-FIT``, ``BCI-FIT-dsi24``, ``BCI-FIT-dsiflex``), so caches and
-        results stay apart; downloads are shared.
+        (``Peters2026``, ``Peters-dsi24-2026``, ``Peters-dsiflex-2026``), so
+        caches and results stay apart; downloads are shared.
     return_all_modalities : bool | dict
         Also return non-EEG channels (A2 with ``cap="DSI-24"``).
 
@@ -429,7 +452,11 @@ class BCIFIT(OpenNeuroMirrorMixin, BaseBIDSDataset):
         ]
         # Variants return different visits and channels: separate codes keep
         # their epoch caches and results apart (downloads stay shared).
-        code = {None: "BCI-FIT", "DSI-24": "BCI-FIT-dsi24", "DSI-Flex": "BCI-FIT-dsiflex"}
+        code = {
+            None: "Peters2026",
+            "DSI-24": "Peters-dsi24-2026",
+            "DSI-Flex": "Peters-dsiflex-2026",
+        }
         super().__init__(
             subjects=all_subjects,
             sessions_per_subject=1 if cap == "DSI-Flex" else 3 if cap else 6,
@@ -538,7 +565,7 @@ class BCIFIT(OpenNeuroMirrorMixin, BaseBIDSDataset):
         missing = [key for key in expected if key not in found]
         if missing:
             raise FileNotFoundError(
-                f"BCI-FIT subject P{subject} is missing calibration runs "
+                f"Peters2026 subject P{subject} is missing calibration runs "
                 f"(visit, task, run): {missing}"
             )
         return [found[key] for key in expected]
