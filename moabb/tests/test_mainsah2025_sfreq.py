@@ -6,6 +6,8 @@ file (35208 samples over "137.5312" s = 256.00009 Hz). No downloads: EDF reads
 are synthetic.
 """
 
+from pathlib import Path
+
 import mne
 import numpy as np
 import pytest
@@ -23,7 +25,7 @@ _ONSETS = np.arange(512, 8192, 128)  # sample indices of flashes
 
 
 def _edf_like(path, *args, **kwargs):
-    name = path.rsplit("/", 1)[-1]
+    name = Path(path).name  # also splits Windows paths in CI
     sfreq, n = _RATES[name], _N[name]
     eeg = [f"EEG_{c}" for c in ("FP1", "Fz", "Cz", "Pz")]
     names = eeg + ["StimulusBegin", "StimulusType", "StimulusCode"]
