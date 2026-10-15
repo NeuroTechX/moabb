@@ -43,8 +43,8 @@ def _same_layout_for_every_run(raw, eog):
     (every other run: eog-l, eog-m, eog-r), so they are put back in that
     order. Subject 1's imagination runs store 13 placeholder channels instead
     of the Armeo channels: they are renamed to the Armeo names and set to 0,
-    as the Armeo channels of every other run are empty (NaN, set to 0 by the
-    loader).
+    the value the loader returns for runs without Armeo recording (NaN in
+    the files).
     """
     dummy = [f"armeodummy-{i}" for i in range(len(_ARMEO))]
     if set(dummy) <= set(raw.ch_names):
@@ -103,8 +103,8 @@ class Ofner2017(BaseDataset):
     (reordered to eog-l, eog-m, eog-r by name), and its imagination runs hold
     13 placeholder channels ``armeodummy-0``..``armeodummy-12`` with random
     values instead of the Armeo channels (renamed to the Armeo names and set
-    to 0). The Armeo channels of the other runs are empty (NaN in the files)
-    and are returned as 0.
+    to 0). In 270 of the 300 released runs the Armeo channels are empty (NaN
+    in the files) and are returned as 0; 20 runs hold arm kinematics.
 
     References
     ----------
