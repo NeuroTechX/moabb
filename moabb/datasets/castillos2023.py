@@ -111,7 +111,9 @@ class BaseCastillos2023(BaseDataset):
             preload=False,
             verbose=False,
         )
-        labels = epochs.events[..., -1]
+        # Copy: labels are made 0-based below, while epochs.events must keep
+        # the codes of event_id (MNE checks them when the data are read).
+        labels = epochs.events[..., -1].copy()
         onset_code = epochs.events[..., 0]
         labels -= np.min(labels)
         data = epochs.get_data()
