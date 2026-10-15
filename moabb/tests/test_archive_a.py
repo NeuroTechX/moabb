@@ -155,11 +155,15 @@ def test_han_transport_flags(tmp_path, monkeypatch):
 
 def test_kodera_shared_channels_preserve_units_and_bads(monkeypatch):
     channels = list(kodera2023._COMMON_EEG_CHANNELS)
-    monkeypatch.setattr(
-        mne.io,
-        "read_raw_brainvision",
-        Mock(return_value=raw(channels + ["Fp1"], ["Stimulus/S  1", "Stimulus/S  1"])),
+    # The loader only accepts the archive's rates; 500 Hz is kept as is.
+    run = mne.io.RawArray(
+        np.full((len(channels) + 1, 5001), 2e-6),
+        mne.create_info(channels + ["Fp1"], 500, "eeg"),
+        verbose=False,
     )
+    run.info["bads"] = [channels[0]]
+    run.set_annotations(mne.Annotations([0, 6], 0, ["Stimulus/S  1"] * 2))
+    monkeypatch.setattr(mne.io, "read_raw_brainvision", Mock(return_value=run))
     result = Kodera2023()._read_run("synthetic_lh1.vhdr")
     assert result.ch_names == channels
     assert result.info["bads"] == [channels[0]]
