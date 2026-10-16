@@ -766,28 +766,6 @@ select electrodes based on the covariance information</p>
 </span><span class="w">
 </span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">results</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-moabb-evaluations-base sphx-glr-backref-type-py-method reference internal" href="../../generated/moabb.evaluations.base.BaseEvaluation.html#moabb.evaluations.base.BaseEvaluation.process" title="moabb.evaluations.base.BaseEvaluation.process"><span class="n">evaluation</span><span class="o">.</span><span class="n">process</span></a><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">pipelines</span></a><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>This is nemar-py 0.3.3.
-Preparing to download nm000343 from https://data.nemar.org/
-Retrieving 21 of 492 manifest files (16 concurrent downloads).
-
-S3:   0%|          | 0.00/193M [00:00&lt;?, ?B/s]
-S3:   1%|          | 1.00M/193M [00:00&lt;01:33, 2.15MB/s]
-S3:   4%|▎         | 7.00M/193M [00:00&lt;00:12, 15.6MB/s]
-S3:  11%|█         | 21.6M/193M [00:00&lt;00:03, 48.6MB/s]
-S3:  19%|█▊        | 36.1M/193M [00:00&lt;00:02, 74.5MB/s]
-S3:  33%|███▎      | 62.9M/193M [00:00&lt;00:01, 129MB/s]
-S3:  54%|█████▍    | 105M/193M [00:01&lt;00:00, 214MB/s]
-S3:  75%|███████▍  | 144M/193M [00:01&lt;00:00, 267MB/s]
-S3:  90%|████████▉ | 173M/193M [00:01&lt;00:00, 189MB/s]
-S3: 100%|██████████| 193M/193M [00:01&lt;00:00, 119MB/s]
-
-Overall:   0%|          | 0.00/7.26k [00:00&lt;?, ?B/s]
-Overall:  14%|█▍        | 1.03k/7.26k [00:00&lt;00:00, 7.34kB/s]
-Overall:  45%|████▌     | 3.29k/7.26k [00:00&lt;00:00, 6.75kB/s]
-Overall:  47%|████▋     | 3.40k/7.26k [00:00&lt;00:00, 7.01kB/s]
-Finished downloading nm000343 v1.1.0.
-</pre></div>
-</div>
 <p>Here, with the ElSel+Cov+TS+LDA pipeline, we reduce the computation time
 in approximately 8 times to the Cov+ElSel+TS+LDA pipeline.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">Averaging the session performance:</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
@@ -834,8 +812,7 @@ Xdawn+Cov+TS+LDA  0.666693  0.249908
 <li><p>Electrode selection strategy based on covariance matrices demonstrates less variability and typically yields better performance.</p></li>
 <li><p>However, this strategy is more time-consuming compared to the simpler electrode selection based on time epoch data.</p></li>
 </ul>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 22.406 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  1053 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.128 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-hinss2021-classification-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/5abf5216139378fc86b18e340a1f77b5/plot_hinss2021_classification.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_hinss2021_classification.ipynb</span></code></a></p>
