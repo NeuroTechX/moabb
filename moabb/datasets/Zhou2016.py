@@ -26,6 +26,7 @@ from moabb.datasets.metadata.schema import (
     SignalProcessingMetadata,
     Tags,
 )
+from moabb.utils import get_download_provider
 
 from ._openneuro_mirror import OpenNeuroMirrorMixin
 from .base import BaseBIDSDataset
@@ -246,6 +247,14 @@ class Zhou2016(OpenNeuroMirrorMixin, BaseBIDSDataset):
         has_events = any(folder_path.rglob("*_events.tsv"))
         return has_eeg and has_events
 
+    @staticmethod
+    def _subject_is_complete(folder_path: Path) -> bool:
+        """Whether all six runs (3 sessions x 2 runs) have an EDF and events."""
+        edfs = list(folder_path.glob("ses-*/eeg/*_eeg.edf"))
+        return len(edfs) == 6 and all(
+            Path(str(edf)[: -len("eeg.edf")] + "events.tsv").is_file() for edf in edfs
+        )
+
     def _download_subject(self, subject, path, force_update, update_path, verbose) -> str:
         """Download the subject data and return the BIDS root.
 
@@ -253,6 +262,17 @@ class Zhou2016(OpenNeuroMirrorMixin, BaseBIDSDataset):
         provider is ``"upstream"``; with ``"auto"`` a NEMAR failure falls
         back to the Zenodo record with a warning.
         """
+        if subject not in self.subject_list:
+            raise ValueError("Invalid subject number")
+        if get_download_provider() != "upstream" and not force_update:
+            # A subject already fetched from NEMAR loads without a request.
+            nemar_root = (
+                Path(get_dataset_path(self.code, path))
+                / f"MNE-{self.code.lower()}-data"
+                / self.nemar_id
+            )
+            if self._subject_is_complete(nemar_root / f"sub-{subject}"):
+                return str(nemar_root)
         mirror_root = self._mirror_root(subject, path, force_update, update_path, verbose)
         if mirror_root is not None:
             return mirror_root

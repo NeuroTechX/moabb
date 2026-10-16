@@ -62,6 +62,24 @@ def test_auto_provider_reads_the_nemar_deposit(tmp_path, env):
     ]
 
 
+def test_a_fetched_subject_loads_without_a_request(tmp_path, env):
+    first = Zhou2016().bids_paths(2, path=tmp_path)
+    again = Zhou2016().bids_paths(2, path=tmp_path)
+
+    assert [p.fpath for p in first] == [p.fpath for p in again]
+    assert len(env) == 1
+
+
+def test_an_incomplete_subject_is_fetched_again(tmp_path, env):
+    Zhou2016().bids_paths(2, path=tmp_path)
+    root = tmp_path / "MNE-zhou2016-data" / "nm000115"
+    next(root.glob("sub-2/ses-1/eeg/*_run-1_eeg.edf")).unlink()
+
+    Zhou2016().bids_paths(2, path=tmp_path)
+
+    assert len(env) == 2
+
+
 def test_upstream_provider_never_contacts_nemar(tmp_path, env, monkeypatch):
     monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", "upstream")
 
