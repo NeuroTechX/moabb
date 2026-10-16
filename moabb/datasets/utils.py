@@ -637,6 +637,7 @@ def download_and_extract_subject_zip(
     *,
     fname=None,
     redownload_corrupted=False,
+    skip_existing=False,
 ):
     """Download a per-subject ZIP and safely extract it.
 
@@ -662,6 +663,9 @@ def download_and_extract_subject_zip(
     redownload_corrupted : bool
         If True, an archive that is not a valid ZIP is downloaded again once,
         with a warning; a second failure raises :class:`zipfile.BadZipFile`.
+    skip_existing : bool
+        If True, members already present in ``extract_dir`` are not extracted
+        again, so files linked from the NEMAR store are never written through.
     """
     dl_path = Path(dl.data_dl(url, sign, path, force_update, verbose, fname=fname))
 
@@ -674,14 +678,28 @@ def download_and_extract_subject_zip(
     extract_dir.mkdir(parents=True, exist_ok=True)
     try:
         with zipfile.ZipFile(zip_path) as zf:
-            safe_extract_zip(zf, extract_dir)
+            members = None
+            if skip_existing:
+                members = [
+                    info
+                    for info in zf.infolist()
+                    if not (extract_dir / info.filename).exists()
+                ]
+            safe_extract_zip(zf, extract_dir, members=members)
     except zipfile.BadZipFile:
         if not redownload_corrupted:
             raise
         warnings.warn("Corrupted zip file detected, re-downloading...", stacklevel=2)
         zip_path.unlink()
         download_and_extract_subject_zip(
-            url, sign, extract_dir, path, True, verbose, fname=fname
+            url,
+            sign,
+            extract_dir,
+            path,
+            True,
+            verbose,
+            fname=fname,
+            skip_existing=skip_existing,
         )
 
 
