@@ -7,6 +7,8 @@ concurrency:
 on:
   push:
     branches: [ master, develop ]
+    # Release tags build the "stable" docs (see MOABB_DOCS_VERSION below).
+    tags: [ 'v*' ]
   pull_request:
     branches: [ master, develop ]
 permissions:
@@ -18,6 +20,11 @@ env:
   # Install CPU-only PyTorch wheels (torch arrives transitively via the
   # deeplearning extra -> braindecode). Avoids pulling CUDA builds on CI.
   UV_TORCH_BACKEND: cpu
+  # Versioned docs (#445, #983): release builds (v* tags, master) are the
+  # "stable" docs, deployed to docs/ and stable/; everything else (develop,
+  # pull requests) is "dev", deployed to dev/ from develop only.
+  # docs/source/conf.py reads it for the version switcher.
+  MOABB_DOCS_VERSION: ${{ (startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/master') && 'stable' || 'dev' }}
 
 jobs:
   build_docs:
@@ -221,9 +228,14 @@ jobs:
           path: docs/build/html/
 
   deploy_neurotechx:
-    if: ${{ github.ref == 'refs/heads/develop' }}
+    if: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')) }}
     needs: build_docs
     runs-on: ${{ matrix.os }}
+    # A release tag and a master push can deploy at the same time: serialise
+    # pushes to the same Pages repository instead of racing them.
+    concurrency:
+      group: docs-deploy-neurotechx
+      cancel-in-progress: false
     strategy:
       fail-fast: false
       matrix:
@@ -243,7 +255,23 @@ jobs:
         if: steps.cache-docs.outputs.cache-hit != 'true'
         run: exit 1
 
-      - name: Deploy Neurotechx Subpage
+      # Only the destination directory is replaced on each deploy
+      # (keep_files: false cleans destination_dir, not the whole branch), so
+      # dev/, docs/ and stable/ coexist on the Pages branch.
+      - name: Deploy Neurotechx Subpage (dev docs -> /dev/)
+        if: ${{ env.MOABB_DOCS_VERSION == 'dev' }}
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+          external_repository: NeuroTechX/moabb.github.io
+          destination_dir: dev/
+          publish_branch: master
+          publish_dir: ./docs/build/html
+          cname: moabb.neurotechx.com/
+
+      - name: Deploy Neurotechx Subpage (stable docs -> /docs/)
+        if: ${{ env.MOABB_DOCS_VERSION == 'stable' }}
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -254,10 +282,25 @@ jobs:
           publish_dir: ./docs/build/html
           cname: moabb.neurotechx.com/
 
+      - name: Deploy Neurotechx Subpage (stable docs -> /stable/)
+        if: ${{ env.MOABB_DOCS_VERSION == 'stable' }}
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+          external_repository: NeuroTechX/moabb.github.io
+          destination_dir: stable/
+          publish_branch: master
+          publish_dir: ./docs/build/html
+          cname: moabb.neurotechx.com/
+
   deploy_gh_pages:
-    if: ${{ github.ref == 'refs/heads/develop' }}
+    if: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')) }}
     needs: build_docs
     runs-on: ${{ matrix.os }}
+    concurrency:
+      group: docs-deploy-gh-pages
+      cancel-in-progress: false
     strategy:
       fail-fast: false
       matrix:
@@ -277,12 +320,35 @@ jobs:
         if: steps.cache-docs.outputs.cache-hit != 'true'
         run: exit 1
 
-      - name: Deploy gh-pages
+      - name: Deploy gh-pages (dev docs -> /dev/)
+        if: ${{ env.MOABB_DOCS_VERSION == 'dev' }}
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          deploy_key: ${{ secrets.MOABB_DEPLOY_KEY_NEW }}
+          destination_dir: dev/
+          publish_branch: gh-pages
+          publish_dir: ./docs/build/html
+          cname: neurotechx.github.io/moabb/
+
+      - name: Deploy gh-pages (stable docs -> /docs/)
+        if: ${{ env.MOABB_DOCS_VERSION == 'stable' }}
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           deploy_key: ${{ secrets.MOABB_DEPLOY_KEY_NEW }}
           destination_dir: docs/
+          publish_branch: gh-pages
+          publish_dir: ./docs/build/html
+          cname: neurotechx.github.io/moabb/
+
+      - name: Deploy gh-pages (stable docs -> /stable/)
+        if: ${{ env.MOABB_DOCS_VERSION == 'stable' }}
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          deploy_key: ${{ secrets.MOABB_DEPLOY_KEY_NEW }}
+          destination_dir: stable/
           publish_branch: gh-pages
           publish_dir: ./docs/build/html
           cname: neurotechx.github.io/moabb/
