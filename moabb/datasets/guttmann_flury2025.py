@@ -730,6 +730,7 @@ class GuttmannFlury2025_SSVEP(BaseDataset):
     """
 
     nemar_id = "nm000310"
+    nemar_seed_cache = True
     METADATA = DatasetMetadata(
         acquisition=_ACQUISITION,
         participants=_PARTICIPANTS,
