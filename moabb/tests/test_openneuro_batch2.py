@@ -104,8 +104,16 @@ def _assert_loaded(raw, expected, event_id=None, tmax=None):
         assert len(epochs) == len(expected)
 
 
-def test_peterson_units_native_stim_and_boundary_trials(monkeypatch):
-    raw = _raw(["OVTK_GDF_Right", "OVTK_GDF_Tongue"])
+@pytest.mark.parametrize(
+    "labels",
+    [
+        pytest.param(["OVTK_GDF_Right", "OVTK_GDF_Tongue"], id="edf-annotations"),
+        # NEMAR mirror: read_raw_bids takes the events.tsv values instead.
+        pytest.param(["7", "9"], id="bids-events-tsv"),
+    ],
+)
+def test_peterson_units_native_stim_and_boundary_trials(monkeypatch, labels):
+    raw = _raw(labels)
     monkeypatch.setattr(
         BaseBIDSDataset, "_get_single_subject_data", Mock(return_value={"0": {"1": raw}})
     )

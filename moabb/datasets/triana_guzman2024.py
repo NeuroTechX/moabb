@@ -13,6 +13,7 @@ from pathlib import Path
 import numpy as np
 import requests
 
+from ._openneuro_mirror import OpenNeuroMirrorMixin
 from .base import BaseBIDSDataset
 from .download import get_dataset_path
 from .metadata.schema import (
@@ -78,7 +79,7 @@ _DATASET_DESCRIPTION = {
 }
 
 
-class TrianaGuzman2024(BaseBIDSDataset):
+class TrianaGuzman2024(OpenNeuroMirrorMixin, BaseBIDSDataset):
     """Sit-stand motor imagery dataset from Triana-Guzman et al 2022.
 
     Dataset from the article *Decoding EEG Rhythms Offline and Online
@@ -126,6 +127,7 @@ class TrianaGuzman2024(BaseBIDSDataset):
     """
 
     nemar_id = "on005342"
+    nemar_subject_template = "{subject:03d}"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,
@@ -380,6 +382,15 @@ class TrianaGuzman2024(BaseBIDSDataset):
         """Download BIDS data from OpenNeuro S3 and return the BIDS root path."""
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
+
+        subj_str = f"sub-{subject:03d}"
+        # The NEMAR raw mirror holds the same OpenNeuro files.
+        mirror_root = self._mirror_root(subject, path, force_update, update_path, verbose)
+        if mirror_root is not None:
+            Path(mirror_root).mkdir(parents=True, exist_ok=True)
+            self._ensure_dataset_description(Path(mirror_root))
+            self._fix_events_tsv_decimals(Path(mirror_root) / subj_str / "eeg")
+            return mirror_root
 
         bids_root = Path(get_dataset_path("TrianaGuzman2024", path))
         bids_root = bids_root / "MNE-trianaguzman2024-data"

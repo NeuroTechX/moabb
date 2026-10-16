@@ -103,6 +103,7 @@ class MILimbEEG(BaseDataset):
     """
 
     nemar_id = "nm000328"
+    nemar_seed_cache = True
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(

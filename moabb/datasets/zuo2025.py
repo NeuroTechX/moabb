@@ -281,6 +281,7 @@ class Zuo2025(BaseDataset):
     """
 
     nemar_id = "nm000230"
+    nemar_seed_cache = True
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,

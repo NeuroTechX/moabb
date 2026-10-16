@@ -509,6 +509,7 @@ class GuttmannFlury2025_MI(BaseDataset):
     """
 
     nemar_id = "nm000265"
+    nemar_seed_cache = True
     METADATA = DatasetMetadata(
         acquisition=_ACQUISITION,
         participants=_PARTICIPANTS,
@@ -659,6 +660,7 @@ class GuttmannFlury2025_ME(BaseDataset):
 
     METADATA = GuttmannFlury2025_MI.METADATA
     nemar_id = "nm000227"
+    nemar_seed_cache = True
 
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
@@ -893,6 +895,7 @@ class GuttmannFlury2025_P300(BaseDataset):
     """
 
     nemar_id = "nm000136"
+    nemar_seed_cache = True
     METADATA = DatasetMetadata(
         acquisition=_ACQUISITION,
         participants=_PARTICIPANTS,

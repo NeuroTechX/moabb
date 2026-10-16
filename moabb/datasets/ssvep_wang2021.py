@@ -164,6 +164,7 @@ class Wang2021Combined(BaseDataset):
         "41": "7.73",  # Direction 4 (left) -> 85/11 Hz
     }
     nemar_id = "nm000131"
+    nemar_seed_cache = True
 
     def __init__(self, subjects=None, sessions=None):
         super().__init__(

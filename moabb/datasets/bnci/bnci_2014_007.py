@@ -45,7 +45,8 @@ _FILE_BY_SUBJECT = {
 }
 
 # The recordings were acquired at 512 Hz with a BioSemi ActiveTwo and are
-# distributed downsampled to 128 Hz (see the dataset description PDF).
+# distributed at 128 Hz: the description PDF gives the 512 Hz recording rate,
+# but the per-sample time row of I advances by 1/128 s.
 SFREQ = 128.0
 
 # Rows of the X matrix, in recording order: 32 EEG (Fp1...Cz), EXG1-8

@@ -1,6 +1,6 @@
 {
     "_metadata": {
-        "total": 234
+        "total": 236
     },
     "10.1109/TNSRE.2011.2166562": {
         "title": "The impact of loss of control on movement BCIs",
@@ -2776,5 +2776,37 @@
         ],
         "year": 2020,
         "doi": "10.21227/f1c7-7x89"
+    },
+    "10.18112/openneuro.ds007720.v1.0.0": {
+        "title": "BCI-FIT: A customization protocol for communication brain-computer interface systems.",
+        "authors": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+        ],
+        "year": 2026,
+        "doi": "10.18112/openneuro.ds007720.v1.0.0"
+    },
+    "10.1080/2326263X.2021.1878727": {
+        "title": "BciPy: brain\u2013computer interface software in Python",
+        "authors": [
+            "Tab Memmott",
+            "Aziz Ko\u00e7anao\u011fullar\u0131",
+            "Matthew Lawhead",
+            "Daniel Klee",
+            "Shiran Dudy",
+            "Melanie Fried-Oken",
+            "Barry Oken"
+        ],
+        "year": 2021,
+        "doi": "10.1080/2326263X.2021.1878727"
     }
 }

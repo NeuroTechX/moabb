@@ -43,6 +43,37 @@ _MANIFEST_URL = _BASE_URL + "SHA256SUMS.txt"
 _DOI = "10.13026/0byy-ry86"
 _SIGN = "Mainsah2025"
 
+# Sampling rate of every BigP3BCI recording (g.USBamp, BCI2000).
+_SFREQ = 256.0
+
+
+def _restore_nominal_rate(raw, edf_path):
+    """Return ``raw`` at exactly 256 Hz when its header rate is a rounding artefact.
+
+    Each EDF stores the whole run as one data record whose duration field has
+    eight characters, so the duration is truncated (35208 samples / 256 Hz =
+    137.53125 s is written ``137.5312``) and MNE derives rates such as
+    256.00009 Hz that differ from file to file. Epochs of runs with different
+    rates cannot be concatenated, so the samples are relabelled at 256 Hz
+    (no resampling). A header rate that is not explained by this truncation
+    (more than one sample of drift over the run) raises.
+    """
+    sfreq = raw.info["sfreq"]
+    if sfreq == _SFREQ:
+        return raw
+    drift = raw.n_times * abs(1.0 / _SFREQ - 1.0 / sfreq) * _SFREQ
+    if drift >= 1.0:
+        raise ValueError(
+            f"Mainsah2025 recording sampled at {sfreq} Hz, expected {_SFREQ:g} Hz "
+            f"(drift of {drift:.1f} samples over the run): {edf_path}"
+        )
+    info = mne.create_info(raw.ch_names, _SFREQ, raw.get_channel_types())
+    fixed = mne.io.RawArray(raw.get_data(), info, verbose=False)
+    fixed.set_meas_date(raw.info["meas_date"])
+    fixed.set_annotations(raw.annotations)
+    return fixed
+
+
 # Module-level manifest cache (parsed once, shared across instances)
 _manifest_cache = None
 
@@ -290,6 +321,13 @@ class Mainsah2025(BaseDataset):
     Events are extracted from the ``StimulusBegin`` and ``StimulusType``
     signal channels.
 
+    Every recording is at 256 Hz, but each EDF stores the run as one data
+    record whose 8-character duration field is truncated, so the rate read
+    from the header is off by less than 1 ppm and differs from file to
+    file (e.g. 256.00008 and 256.00009 Hz). The loader relabels such runs at
+    exactly 256 Hz (no resampling), so epochs of all runs and subjects can be
+    concatenated.
+
     This base class is not intended to be instantiated directly.
     Use the study-specific subclasses (e.g., ``Mainsah2025_A``).
 
@@ -299,6 +337,10 @@ class Mainsah2025(BaseDataset):
        BigP3BCI: A large P300-based brain-computer interface dataset.
        PhysioNet, 2025. DOI: https://doi.org/10.13026/0byy-ry86
     """
+
+    # The file list comes from PhysioNet's SHA256SUMS.txt, so a deposit that
+    # lacks some EDFs only means those few are still fetched from PhysioNet.
+    nemar_seed_cache = True
 
     def __init__(self, study, subjects=None, sessions=None):
         config = _STUDY_CONFIGS[study]
@@ -425,6 +467,7 @@ class Mainsah2025(BaseDataset):
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", RuntimeWarning)
             raw = mne.io.read_raw_edf(edf_path, preload=True, verbose=False)
+        raw = _restore_nominal_rate(raw, edf_path)
 
         # Extract stimulus signals before dropping non-EEG channels
         required = {"StimulusBegin", "StimulusType"}
@@ -467,7 +510,7 @@ def _make_study_metadata(study):
     config = _STUDY_CONFIGS[study]
     return DatasetMetadata(
         acquisition=AcquisitionMetadata(
-            sampling_rate=256.0,
+            sampling_rate=_SFREQ,
             channel_types={"eeg": config["n_eeg"]},
             hardware="g.USBamp (g.tec)",
             montage="standard_1020",
