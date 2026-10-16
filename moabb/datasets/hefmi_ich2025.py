@@ -33,7 +33,9 @@ log = logging.getLogger(__name__)
 
 # Figshare article ID and API endpoint.
 _FIGSHARE_ARTICLE = 28955456
-_FIGSHARE_API = f"https://api.figshare.com/v2/articles/{_FIGSHARE_ARTICLE}"
+# Cache name of the article's file list (as MAMEM's loaders name theirs); the
+# NEMAR deposit nm000347 keeps it at the root of its sourcedata/.
+_FILELIST_NAME = f"figshare_filelist_{_FIGSHARE_ARTICLE}.json"
 
 # Event codes (from the paper and MakeDatasetFromRaw.m).
 _EVENTS = {"left_hand": 1, "right_hand": 2}
@@ -318,28 +320,8 @@ class HefmiIch2025(BaseDataset):
                 _MANIFEST = {int(k): v for k, v in json.load(f).items()}
             return _MANIFEST
 
-        # Fetch file list from Figshare API.
-        log.info("Fetching HEFMI-ICH file manifest from Figshare...")
-        try:
-            import requests
-
-            files = []
-            page = 1
-            while True:
-                resp = requests.get(
-                    f"{_FIGSHARE_API}/files",
-                    params={"page": page, "page_size": 100},
-                    timeout=30,
-                )
-                resp.raise_for_status()
-                batch = resp.json()
-                if not batch:
-                    break
-                files.extend(batch)
-                page += 1
-
-        except Exception as e:
-            log.warning("Could not fetch Figshare manifest: %s", e)
+        files = self._figshare_filelist(basepath)
+        if files is None:
             _MANIFEST = {}
             return _MANIFEST
 
@@ -377,6 +359,38 @@ class HefmiIch2025(BaseDataset):
         _MANIFEST = manifest
         return _MANIFEST
 
+    @staticmethod
+    def _figshare_filelist(basepath):
+        """Return the article's figshare file list, or None if unavailable.
+
+        Read from the cache, else from the active NEMAR store, else from the
+        figshare API (then cached under the same name).
+        """
+        import json
+
+        cache_path = basepath / _FILELIST_NAME
+        if dl.fill_from_store(basepath, [cache_path]):
+            try:
+                with open(cache_path) as f:
+                    return json.load(f)
+            except (OSError, ValueError) as e:
+                log.warning("Refetching unreadable %s: %s", cache_path, e)
+                cache_path.unlink(missing_ok=True)
+
+        log.info("Fetching HEFMI-ICH file manifest from Figshare...")
+        try:
+            files = dl.fs_get_file_list(_FIGSHARE_ARTICLE)
+        except Exception as e:
+            log.warning("Could not fetch Figshare manifest: %s", e)
+            return None
+        try:
+            basepath.mkdir(parents=True, exist_ok=True)
+            with open(cache_path, "w") as f:
+                json.dump(files, f)
+        except OSError:
+            pass
+        return files
+
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
@@ -396,7 +410,12 @@ class HefmiIch2025(BaseDataset):
             local_path = basepath / file_name
             if not local_path.exists() or force_update:
                 url = f"https://ndownloader.figshare.com/files/{file_id}"
-                downloaded = Path(dl.data_dl(url, self.code, root, force_update, verbose))
+                # fname: the store keeps the file under its local name.
+                downloaded = Path(
+                    dl.data_dl(
+                        url, self.code, root, force_update, verbose, fname=file_name
+                    )
+                )
                 if downloaded != local_path:
                     downloaded.replace(local_path)
             paths.append(str(local_path))
