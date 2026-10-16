@@ -22,6 +22,7 @@ from moabb.datasets import (
     Huebner2017,
     Huebner2018,
     Liu2024,
+    Sosulski2019,
 )
 from moabb.datasets.bnci.bnci_2025 import _load_data_001_2025
 
@@ -278,6 +279,26 @@ def test_liu2024_extracts_only_absent_members(mne_data, tmp_path, monkeypatch):
 
     assert Path(second).read_text() == "from figshare 02"
     assert (store / member).read_text() == "from NEMAR"
+
+
+def test_sosulski2019_reads_the_extracted_subject_from_the_store(
+    mne_data, tmp_path, monkeypatch
+):
+    """nm000266 keeps extracted/subjectN/ of the freidok archive's subjectN.zip."""
+    store = tmp_path / "store"
+    stems = [f"Oddball_Run_2_Trial_00{t}_SOA_0.235" for t in (1, 2)]
+    for stem in stems:
+        _brainvision_run(store / "subject1", stem)
+    monkeypatch.setattr(socket.socket, "connect", _forbid_connect)
+    monkeypatch.setattr(dl, "data_dl", _no_download)
+
+    with dl.active_sourcedata_store(store):
+        returned = Sosulski2019().data_path(1)
+
+    assert [Path(p).name for p in returned] == [f"{stem}.vhdr" for stem in stems]
+    for path in map(Path, returned):
+        stored = store / "subject1" / path.name
+        assert path.stat().st_ino == stored.stat().st_ino
 
 
 def test_fill_tree_from_store_needs_an_active_store(tmp_path):
