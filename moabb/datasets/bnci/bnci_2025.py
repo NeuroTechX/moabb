@@ -146,12 +146,23 @@ def _load_data_001_2025(
     zip_filename = f"p{subject:03d}.zip"
     url = f"{base_url}{zip_filename}"
 
-    # Download the ZIP file
-    zip_path = dl.data_dl(url, "BNCI", path, force_update, verbose)
-
-    # Determine the extraction directory (same as ZIP location)
-    zip_dir = Path(zip_path).parent
+    # NEMAR deposits keep the extracted members, not the ZIP: take the trial
+    # file from the local store first.
+    zip_dir = dl.data_dl_destination(url, "BNCI", path).parent
     extract_dir = zip_dir / f"p{subject:03d}"
+    if force_update or not any(
+        dl.fill_from_store(zip_dir, [extract_dir / name])
+        for name in (
+            f"p{subject:03d}v2-trialblocks.set",
+            f"p{subject:03d}-trialblocks.set",
+        )
+    ):
+        # Download the ZIP file
+        zip_path = dl.data_dl(url, "BNCI", path, force_update, verbose)
+
+        # Determine the extraction directory (same as ZIP location)
+        zip_dir = Path(zip_path).parent
+        extract_dir = zip_dir / f"p{subject:03d}"
 
     # Extract if not already extracted or if force_update
     # Try v2 naming first (subject 1 style: p001v2-trialblocks.set)
