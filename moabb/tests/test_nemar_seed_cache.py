@@ -287,3 +287,96 @@ def test_every_seeding_dataset_declares_a_deposit():
     assert seeding
     for cls in seeding:
         assert cls.nemar_id or cls.__subclasses__(), cls
+
+
+# upstream_cache_root of each deposit's latest release (from the MNE-<sign>-data
+# component on, which is all that is rebased) and one subject-1 file, as their
+# sourcedata_provenance.json records them, and the directory the loader itself
+# reads (relative to MNE_DATA).
+_STAGING = "/staging/mne_data"
+COMPLETED_DEPOSITS = [
+    (
+        "NETBCI2026",
+        f"{_STAGING}/NETBCI2026/MNE-netbci2026-data",
+        "sub-01/ses-01/eeg/sub-01_ses-01_task-MotorImageryRest_run-01_eeg.json",
+        "MNE-netbci2026-data",
+    ),
+    (
+        "NeBULA2025",
+        f"{_STAGING}/NeBULA2025/MNE-nebula2025-data",
+        "sub-01/eeg/sub-01_task-free_eeg.json",
+        "MNE-nebula2025-data",
+    ),
+    (
+        "Kodera2023",
+        f"{_STAGING}/Kodera2023/MNE-kodera2023-data/data",
+        "01_12_2020/1z01122020lh1.vmrk",
+        "MNE-kodera2023-data/data",
+    ),
+    (
+        "IMUMIA2026",
+        f"{_STAGING}/IMUMIA2026/MNE-imumia2026-data/MI_A_Dataset/MI_A_Dataset/Raw_data",
+        "task1/0101001.cdt.dpa",
+        "MNE-imumia2026-data/MI_A_Dataset/MI_A_Dataset/Raw_data",
+    ),
+    ("MAMEM1", f"{_STAGING}/MNE-mamem1-data", "27901941", "MNE-mamem1-data"),
+    (
+        "MAMEM2",
+        f"{_STAGING}/MNE-mamem2-data",
+        "figshare_filelist_3153409.json",
+        "MNE-mamem2-data",
+    ),
+    (
+        "MAMEM3",
+        f"{_STAGING}/MNE-mamem3-data",
+        "figshare_filelist_3413851.json",
+        "MNE-mamem3-data",
+    ),
+    (
+        "Kojima2024A",
+        f"{_STAGING}/MNE-Kojima2024A-data",
+        "kojima2024_manifest.json",
+        "MNE-Kojima2024A-data",
+    ),
+    (
+        "Kojima2024B",
+        f"{_STAGING}/MNE-Kojima2024B-data",
+        "kojima2024_manifest.json",
+        "MNE-Kojima2024B-data",
+    ),
+    (
+        "Thapa2025",
+        f"{_STAGING}/Thapa2025/MNE-Thapa2025-data",
+        "sub-01/ses-01/eeg/sub-01_ses-01_task-reachingandgrasping_run-0001_events.tsv",
+        "MNE-Thapa2025-data",
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    "name,cache_root,member,loader_dir",
+    COMPLETED_DEPOSITS,
+    ids=[case[0] for case in COMPLETED_DEPOSITS],
+)
+def test_completed_deposits_seed_where_the_loader_reads(
+    mne_data, monkeypatch, name, cache_root, member, loader_dir
+):
+    """Deposits completed for every subject (W42 patch) are served from NEMAR."""
+    import moabb.datasets as datasets
+
+    cls = getattr(datasets, name)
+    assert cls.nemar_seed_cache
+    monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", "auto")
+    dataset = cls()
+    store = dl.nemar_store(dataset.code, dataset.nemar_id)
+    (store / "sourcedata" / member).parent.mkdir(parents=True)
+    (store / "sourcedata" / member).write_text("stored")
+    record = {
+        "upstream_cache_root": cache_root,
+        "files": [{"file": member, "subject": "1"}],
+    }
+    (store / dl.SOURCEDATA_PROVENANCE).write_text(json.dumps(record))
+
+    assert dataset._seed_loader_cache(1) == 1
+    placed = mne_data / loader_dir / member
+    assert placed.stat().st_ino == (store / "sourcedata" / member).stat().st_ino
