@@ -481,6 +481,7 @@ class Nguyen2017_L(_Nguyen2017Base):
     """Nguyen 2017 Imagined Speech - Long Words condition."""
 
     nemar_id = "nm000252"
+    nemar_seed_cache = True
     METADATA = DatasetMetadata(
         acquisition=_NGUYEN_ACQUISITION,
         participants=_nguyen_participants(6),
