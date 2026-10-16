@@ -665,13 +665,28 @@ class BaseEvaluation(ABC):
             _pipeline_requires_epochs(clf) for clf in run_pipes.values()
         )
         return_epochs = True if requires_epochs else self.return_epochs
+        if requires_epochs:
+            process_pipelines = None
+        else:
+            # A filter-bank paradigm builds one processing pipeline per band and
+            # ``get_data`` stacks their outputs on a last axis. ``process_pipeline``
+            # is only the first of them (it keys the results), so passing it alone
+            # trained and scored filter-bank pipelines on the first band only.
+            process_pipelines = self.paradigm.make_process_pipelines(
+                dataset,
+                return_epochs=return_epochs,
+                return_raws=self.return_raws,
+                postprocess_pipeline=postprocess_pipeline,
+            )
+            if len(process_pipelines) <= 1:
+                process_pipelines = [process_pipeline]
         kwargs = {
             "dataset": dataset,
             "return_epochs": return_epochs,
             "return_raws": self.return_raws,
             "cache_config": self.cache_config,
             "postprocess_pipeline": postprocess_pipeline,
-            "process_pipelines": None if requires_epochs else [process_pipeline],
+            "process_pipelines": process_pipelines,
         }
         if subjects is not None:
             kwargs["subjects"] = subjects
