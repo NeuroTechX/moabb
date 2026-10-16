@@ -5,10 +5,15 @@ from unittest.mock import Mock
 
 import pytest
 
-from moabb.datasets import Nieto2022, TrianaGuzman2024
+from moabb.datasets import Chailloux2020, Nieto2022, TrianaGuzman2024
 
 
-CASES = [(Nieto2022, "on003626", 1, "01"), (TrianaGuzman2024, "on005342", 1, "001")]
+CASES = [
+    (Nieto2022, "on003626", 1, "01"),
+    (TrianaGuzman2024, "on005342", 1, "001"),
+    (Chailloux2020, "on003190", 1, "01"),
+    (Chailloux2020, "on003190", 12, "012"),
+]
 
 
 @pytest.mark.parametrize("cls,nemar_id,subject,label", CASES)
@@ -79,3 +84,11 @@ def test_triana_mirror_root_gets_description_and_decimal_fix(monkeypatch, tmp_pa
     assert Path(returned) == root
     assert (root / "dataset_description.json").is_file()
     assert "5.004" in (eeg / "sub-001_task-sitstand_events.tsv").read_text()
+
+
+def test_chailloux_reads_the_subject_from_the_mirror(monkeypatch, tmp_path):
+    monkeypatch.delenv("MOABB_DOWNLOAD_PROVIDER", raising=False)
+    monkeypatch.setattr("moabb.datasets.download.nemar.download", Mock())
+    monkeypatch.setattr("requests.get", Mock(side_effect=AssertionError))
+    path = Chailloux2020().data_path(12, path=tmp_path)
+    assert Path(path) == tmp_path / "MNE-chailloux2020-data" / "on003190" / "sub-012"
