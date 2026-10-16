@@ -1243,7 +1243,10 @@ def download_if_missing(
     """Download file from url to a specified path if it is not already there.
 
     If ``force_update`` is True, an existing local copy is deleted and
-    downloaded again.
+    downloaded again. Like :func:`data_dl`, a missing file is first taken
+    from the active NEMAR store when it holds it under the URL's trailing
+    path segments (e.g. a ``SHA256SUMS.txt`` index at the root of the
+    deposit's ``sourcedata/``).
     """
 
     folder_path = osp.dirname(file_path)
@@ -1256,6 +1259,15 @@ def download_if_missing(
 
     if force_update and osp.exists(file_path):
         os.remove(file_path)
+
+    if not force_update and not osp.exists(file_path):
+        mirror = _store_lookup(url)
+        if mirror is not None:
+            try:
+                os.link(mirror, file_path)
+            except OSError:
+                shutil.copy2(mirror, file_path)
+            return str(file_path)
 
     # Check if file exists, if not download it
     if not osp.exists(file_path):
