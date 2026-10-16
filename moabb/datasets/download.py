@@ -430,6 +430,75 @@ def data_dl(url, sign, path=None, force_update=False, verbose=None, fname=None):
     return dlpath
 
 
+def data_dl_destination(url, sign, path=None, fname=None):
+    """Where :func:`data_dl` stores ``url``, computed without any network.
+
+    Lets a loader locate the directory an archive extracts into before deciding
+    whether the archive has to be downloaded at all.
+    """
+    root = Path(get_dataset_path(sign, path)) / "MNE-{:s}-data".format(sign.lower())
+    if fname is not None:
+        return _sanitize_path(root / fname)
+    return _sanitize_path(_normalize_destination(url, root))
+
+
+def fill_from_store(base_dir, files):
+    """Place archive members from the active NEMAR store; True if all are there.
+
+    NEMAR deposits mirror an archive's *extracted* members, not the archive, so
+    a URL lookup for the archive (see :func:`data_dl`) never matches. A loader
+    about to download an archive only to extract ``files`` below ``base_dir``
+    asks here first: each file is looked up in the store under its path
+    relative to ``base_dir`` -- the layout the deposit was taken from.
+
+    All or nothing: files are linked only when the store (or the cache) holds
+    every one of them, so a partial deposit never leaves a half-extracted tree
+    that the loader would mistake for a complete one, and an archive extracted
+    later never writes through a link into the store.
+
+    Parameters
+    ----------
+    base_dir : str | pathlib.Path
+        Directory the archive extracts into.
+    files : list of str | pathlib.Path
+        Absolute paths, below ``base_dir``, of the members the loader reads.
+
+    Returns
+    -------
+    bool
+        True when every file exists afterwards.
+    """
+    base_dir = Path(base_dir)
+    store = _ACTIVE_STORE.get()
+    pending = []
+    for target in map(Path, files):
+        if target.is_file():
+            continue
+        if store is None:
+            return False
+        try:
+            member = target.relative_to(base_dir)
+        except ValueError:
+            return False
+        source = Path(store, *PurePosixPath(member.as_posix()).parts)
+        if not source.is_file():
+            return False
+        pending.append((source, target))
+    for source, target in pending:
+        target.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            os.link(source, target)
+        except OSError:
+            shutil.copy2(source, target)
+    if pending:
+        logger.info(
+            "Filled %d archive member(s) in %s from the local NEMAR store.",
+            len(pending),
+            base_dir,
+        )
+    return True
+
+
 @verbose
 def nemar_dl(
     nemar_id,
