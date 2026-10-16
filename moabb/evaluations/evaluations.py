@@ -2,6 +2,7 @@ import logging
 from typing import TYPE_CHECKING, Optional
 
 import numpy as np
+import pandas as pd
 from sklearn.base import clone
 from sklearn.model_selection import (
     BaseCrossValidator,
@@ -748,6 +749,106 @@ class CrossSubjectEvaluation(BaseEvaluation):
             )
 
         return "requirements not met"
+
+
+class CrossSystemEvaluation(CrossSubjectEvaluation):
+    """Cross-system evaluation performance.
+
+    A *system* is an acquisition setup: an EEG device with its own montage and
+    sampling rate, which strongly influences EEG data [1]_. Each dataset is one
+    system, and systems do not need to share their channels or sampling rate.
+    For each target system, the pipeline is trained on all other (source)
+    systems and scored on each subject/session of the target system, a
+    cross-device transfer learning setting [2]_.
+
+    Each trial is kept as recorded by its system, with its own channels and
+    sampling rate: handling heterogeneous systems is left to the pipelines.
+    When all systems share the same channels and number of time samples, ``X``
+    is an array of shape ``(n_trials, n_channels, n_times)``; otherwise, it is
+    an object array of shape ``(n_trials,)`` whose elements are arrays of shape
+    ``(n_channels_s, n_times_s)`` of their system :math:`s`.
+
+    In addition to the fit metadata of
+    :class:`~moabb.evaluations.CrossSubjectEvaluation`, pipelines can request,
+    through scikit-learn's metadata routing (``set_fit_request``), ``systems``:
+    the system (dataset code) of each training trial.
+
+    Parameters
+    ----------
+    target_datasets : list of :class:`~moabb.datasets.base.BaseDataset` or None
+        Systems used as targets, each one in turn, among ``datasets``. If None,
+        every system is used as target (leave-one-system-out).
+        Defaults to ``None``.
+    **kwargs
+        Parameters of :class:`~moabb.evaluations.CrossSubjectEvaluation`.
+
+    Notes
+    -----
+    .. versionadded:: 1.8.0
+
+    References
+    ----------
+    .. [1] Melnik, A., Legkov, P., Izdebski, K., Kärcher, S. M., Hairston,
+           W. D., Ferris, D. P., & König, P. (2017). Systems, Subjects,
+           Sessions: To What Extent Do These Factors Influence EEG Data?
+           *Frontiers in Human Neuroscience*, 11, 150.
+           https://doi.org/10.3389/fnhum.2017.00150
+    .. [2] Wu, D., Xu, Y., & Lu, B.-L. (2020). Transfer Learning for EEG-Based
+           Brain-Computer Interfaces: A Review of Progress Made Since 2016.
+           *IEEE Transactions on Cognitive and Developmental Systems*, 14(1),
+           4-19. https://doi.org/10.1109/TCDS.2020.3007453
+    """
+
+    _eval_type = "CrossSystem"
+
+    def __init__(self, *args, target_datasets=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.groups = "system"
+        # All systems are loaded as sources, only targets are evaluated.
+        self.systems = self.datasets
+        if target_datasets is not None:
+            self.datasets = list(target_datasets)
+
+    def is_valid(self, dataset):
+        return True
+
+    def _load_data(
+        self, dataset, run_pipes, process_pipeline, postprocess_pipeline, subjects=None
+    ):
+        """Concatenate the trials of all systems, as recorded."""
+        if postprocess_pipeline is not None:
+            raise ValueError(
+                "CrossSystemEvaluation does not support postprocess_pipeline."
+            )
+        systems = []
+        for system in self.systems:
+            epochs, y, metadata = self.paradigm.get_data(
+                system, return_epochs=True, cache_config=self.cache_config
+            )
+            X = epochs.get_data() * system.unit_factor
+            systems.append((epochs.ch_names, X, y, metadata.assign(system=system.code)))
+
+        if len({(tuple(ch_names), X.shape[-1]) for ch_names, X, _, _ in systems}) == 1:
+            X_all = np.concatenate([X for _, X, _, _ in systems])
+        else:
+            trials = [trial for _, X, _, _ in systems for trial in X]
+            X_all = np.empty(len(trials), dtype=object)
+            for i, trial in enumerate(trials):
+                X_all[i] = trial
+        y_all = np.concatenate([y for _, _, y, _ in systems])
+        metadata = pd.concat([metadata for *_, metadata in systems], ignore_index=True)
+        return X_all, y_all, metadata
+
+    def _build_task_list(self, dataset, X, y, metadata, *args):
+        """Keep the fold holding out ``dataset`` and route the systems."""
+        tasks = super()._build_task_list(dataset, X, y, metadata, *args)
+        systems = metadata["system"].to_numpy()
+        tasks = [
+            task for task in tasks if np.all(systems[task["test_idx"]] == dataset.code)
+        ]
+        for task in tasks:
+            task["extra_fit_params"] = {"systems": systems[task["train_idx"]]}
+        return tasks
 
 
 class WithinSubjectEvaluation(BaseEvaluation):
