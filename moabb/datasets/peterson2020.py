@@ -40,7 +40,17 @@ _CH_NAMES = "Pz Cz T6 T4 F8 P4 C4 F4 Fz T5 T3 F7 P3 C3 F3".split()
 _EVENTS = {"motor_imagery": 1, "rest": 2}
 
 # OpenViBE GDF stimulation labels: OVTK_GDF_Right = MI cue, OVTK_GDF_Tongue = rest.
-_ANNOT_TO_NAME = {"OVTK_GDF_Right": "motor_imagery", "OVTK_GDF_Tongue": "rest"}
+# The BIDS ``*_events.tsv`` sidecars code the same cues as values 7 and 9 (in
+# on003810 each of the 845 value-7 and 845 value-9 events sits on an
+# OVTK_GDF_Right resp. OVTK_GDF_Tongue annotation). ``read_raw_bids`` replaces
+# the EDF annotations with them whenever the sidecar is present -- as it is in
+# the NEMAR mirror that the default download provider reads.
+_ANNOT_TO_NAME = {
+    "OVTK_GDF_Right": "motor_imagery",
+    "OVTK_GDF_Tongue": "rest",
+    "7": "motor_imagery",
+    "9": "rest",
+}
 
 # The EDF physical-dimension fields are blank even though channels.tsv records
 # all 15 EEG signals as microvolts. Tell MNE the missing source unit so its EDF
