@@ -1,6 +1,26 @@
 {
     "_metadata": {
-        "total": 232
+        "total": 234
+    },
+    "10.1109/TNSRE.2011.2166562": {
+        "title": "The impact of loss of control on movement BCIs",
+        "authors": [
+            "Boris Reuderink",
+            "Mannes Poel",
+            "Anton Nijholt"
+        ],
+        "year": 2011,
+        "doi": "10.1109/TNSRE.2011.2166562"
+    },
+    "10.1007/978-3-642-02315-6_23": {
+        "title": "Affective Pacman: A frustrating game for brain-computer interface experiments",
+        "authors": [
+            "Boris Reuderink",
+            "Anton Nijholt",
+            "Mannes Poel"
+        ],
+        "year": 2009,
+        "doi": "10.1007/978-3-642-02315-6_23"
     },
     "10.1002/hbm.23730": {
         "title": "Deep learning with convolutional neural networks for EEG decoding and visualization",
