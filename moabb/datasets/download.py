@@ -75,9 +75,10 @@ def _store_lookup(url, fname=None):
         return None
     tails = [PurePosixPath(fname).parts] if fname is not None else []
     parts = PurePosixPath(urlparse(url).path).parts
-    # ponytail: three trailing segments cover every current dataset layout;
-    # deepen if a deposit ever nests further.
-    tails += [parts[i:] for i in range(max(len(parts) - 3, 0), len(parts))]
+    # ponytail: four trailing segments cover every current dataset layout
+    # (Thielen2021: offline/sub-01/block_1/trainlabels.mat); deepen if a
+    # deposit ever nests further.
+    tails += [parts[i:] for i in range(max(len(parts) - 4, 0), len(parts))]
     for tail in tails:
         if not tail:
             continue
