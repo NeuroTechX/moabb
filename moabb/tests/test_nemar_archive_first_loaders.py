@@ -8,6 +8,7 @@ matched the store and every load fetched the archive from Zenodo/figshare.
 
 import os
 import socket
+from pathlib import Path
 
 import pytest
 
@@ -112,7 +113,7 @@ def test_reads_the_extracted_subject_from_the_store(
             os.path.basename(name) for name in returned
         ]
     else:
-        assert len(got) == 1 and got[0].endswith(returned)
+        assert len(got) == 1 and Path(got[0]).as_posix().endswith(returned)
     for path in got:
         local = (
             [path]
@@ -121,7 +122,8 @@ def test_reads_the_extracted_subject_from_the_store(
         )
         assert local
         for name in local:
-            member = name[name.index(os.sep + files[0].split("/")[0]) + 1 :]
+            posix = Path(name).as_posix()
+            member = posix[posix.index("/" + files[0].split("/")[0] + "/") + 1 :]
             assert os.stat(name).st_ino == (store / member).stat().st_ino
     # A second load finds the same files without a download; Shin2022 can
     # only tell a complete LIVE directory from the archive or the store.
