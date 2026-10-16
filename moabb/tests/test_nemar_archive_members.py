@@ -19,6 +19,10 @@ from moabb.datasets import (
     BI2015a,
     BI2015b,
     Hinss2021,
+    Huebner2017,
+    Huebner2018,
+    Liu2024,
+    Sosulski2019,
 )
 from moabb.datasets.bnci.bnci_2025 import _load_data_001_2025
 
@@ -85,6 +89,11 @@ CASES = [
             for t in ("RS", "MATBeasy", "MATBmed", "MATBdiff")
         ],
         id="Hinss2021",
+    ),
+    pytest.param(
+        Liu2024().data_path,
+        ["sub-01/eeg/sub-01_task-motor-imagery_eeg.edf"],
+        id="Liu2024",
     ),
 ]
 
@@ -180,3 +189,119 @@ def test_data_dl_destination_matches_data_dl(mne_data, monkeypatch, url, fname):
     monkeypatch.setattr(dl, "retrieve", fake_retrieve)
     returned = dl.data_dl(url, "SIGN", fname=fname)
     assert Path(returned) == dl.data_dl_destination(url, "SIGN", fname=fname)
+
+
+def _brainvision_run(directory, stem, *, companions=True):
+    directory.mkdir(parents=True, exist_ok=True)
+    (directory / f"{stem}.vhdr").write_text(
+        f"DataFile={stem}.eeg\nMarkerFile={stem}.vmrk\n", encoding="latin-1"
+    )
+    if companions:
+        (directory / f"{stem}.eeg").write_bytes(b"\0" * 8)
+        (directory / f"{stem}.vmrk").write_text("markers")
+
+
+@pytest.mark.parametrize("dataset", [Huebner2017, Huebner2018], ids=lambda d: d.__name__)
+def test_huebner_reads_the_extracted_subject_from_the_store(
+    mne_data, tmp_path, monkeypatch, dataset
+):
+    """nm000199/nm000195 keep subjectXX/ as extracted from subjectXX.zip."""
+    store = tmp_path / "store"
+    stems = [f"matrixSpeller_Block{b}_Run{r}" for b in (1, 2) for r in (1, 2)]
+    for stem in stems:
+        _brainvision_run(store / "subject01", stem)
+    monkeypatch.setattr(socket.socket, "connect", _forbid_connect)
+    monkeypatch.setattr(dl, "data_dl", _no_download)
+
+    with dl.active_sourcedata_store(store):
+        returned = dataset().data_path(1)
+
+    assert [Path(p).name for p in returned] == [f"{stem}.vhdr" for stem in stems]
+    for path in map(Path, returned):
+        for suffix in (".vhdr", ".eeg", ".vmrk"):
+            linked = path.with_suffix(suffix)
+            stored = store / "subject01" / linked.name
+            assert linked.stat().st_ino == stored.stat().st_ino
+
+
+def test_huebner_downloads_when_the_store_has_headers_only(
+    mne_data, tmp_path, monkeypatch
+):
+    """The deposits before v1.0.4 held the .vhdr without .eeg/.vmrk."""
+    store = tmp_path / "store"
+    _brainvision_run(store / "subject01", "matrixSpeller_Block1_Run1", companions=False)
+    calls = []
+
+    def fake_data_dl(url, sign, *args, **kwargs):
+        calls.append(url)
+        raise RuntimeError("stop after the download decision")
+
+    monkeypatch.setattr(dl, "data_dl", fake_data_dl)
+    with dl.active_sourcedata_store(store), pytest.raises(RuntimeError, match="stop"):
+        Huebner2017().data_path(1)
+
+    assert calls == ["https://zenodo.org/record/5831826/files/subject01.zip"]
+    cache = dl.data_dl_destination(calls[0], "llp").parent
+    assert not (cache / "subject01").exists()
+
+
+def test_huebner_reuses_an_extracted_subject_without_the_zip(mne_data, monkeypatch):
+    url = "https://zenodo.org/record/5831826/files/subject01.zip"
+    subject_dir = dl.data_dl_destination(url, "llp").parent / "subject01"
+    _brainvision_run(subject_dir, "matrixSpeller_Block1_Run1")
+    monkeypatch.setattr(dl, "data_dl", _no_download)
+
+    returned = Huebner2017().data_path(1)
+
+    assert returned == [str(subject_dir / "matrixSpeller_Block1_Run1.vhdr")]
+
+
+def test_liu2024_extracts_only_absent_members(mne_data, tmp_path, monkeypatch):
+    """A subject linked from the store is not overwritten through its link."""
+    import zipfile
+
+    store = tmp_path / "store"
+    member = "sub-01/eeg/sub-01_task-motor-imagery_eeg.edf"
+    (store / member).parent.mkdir(parents=True)
+    (store / member).write_text("from NEMAR")
+    archive = tmp_path / "edffile.zip"
+    with zipfile.ZipFile(archive, "w") as zf:
+        for sub in ("01", "02"):
+            zf.writestr(
+                f"edffile/sub-{sub}/eeg/sub-{sub}_task-motor-imagery_eeg.edf",
+                f"from figshare {sub}",
+            )
+    monkeypatch.setattr(dl, "data_dl", lambda *args, **kwargs: str(archive))
+
+    with dl.active_sourcedata_store(store):
+        Liu2024().data_path(1)
+        (second,) = Liu2024().data_path(2)
+
+    assert Path(second).read_text() == "from figshare 02"
+    assert (store / member).read_text() == "from NEMAR"
+
+
+def test_sosulski2019_reads_the_extracted_subject_from_the_store(
+    mne_data, tmp_path, monkeypatch
+):
+    """nm000266 keeps extracted/subjectN/ of the freidok archive's subjectN.zip."""
+    store = tmp_path / "store"
+    stems = [f"Oddball_Run_2_Trial_00{t}_SOA_0.235" for t in (1, 2)]
+    for stem in stems:
+        _brainvision_run(store / "subject1", stem)
+    monkeypatch.setattr(socket.socket, "connect", _forbid_connect)
+    monkeypatch.setattr(dl, "data_dl", _no_download)
+
+    with dl.active_sourcedata_store(store):
+        returned = Sosulski2019().data_path(1)
+
+    assert [Path(p).name for p in returned] == [f"{stem}.vhdr" for stem in stems]
+    for path in map(Path, returned):
+        stored = store / "subject1" / path.name
+        assert path.stat().st_ino == stored.stat().st_ino
+
+
+def test_fill_tree_from_store_needs_an_active_store(tmp_path):
+    (tmp_path / "subject01").mkdir()
+    (tmp_path / "subject01" / "a.vhdr").write_text("x")
+    assert not dl.fill_tree_from_store(tmp_path, "subject01")

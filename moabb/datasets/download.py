@@ -500,6 +500,47 @@ def fill_from_store(base_dir, files):
     return True
 
 
+def fill_tree_from_store(base_dir, member_dir):
+    """Place a whole extracted directory from the active NEMAR store.
+
+    :func:`fill_from_store` for loaders that read every file an archive
+    extracts below one directory (e.g. one per subject) instead of a fixed
+    list: the members are the files the store holds below ``member_dir``.
+    Recordings whose headers name files the store lacks (a BrainVision
+    ``.vhdr`` without its ``.eeg``/``.vmrk``, an EEGLAB ``.set`` without its
+    ``.fdt``) mean the directory is incomplete, and nothing is placed.
+
+    Parameters
+    ----------
+    base_dir : str | pathlib.Path
+        Directory the archive extracts into.
+    member_dir : str
+        The directory, relative to ``base_dir``, the loader reads.
+
+    Returns
+    -------
+    bool
+        True when ``base_dir / member_dir`` holds every file the store has
+        there afterwards; False without an active store or when the store
+        does not hold a complete copy of the directory.
+    """
+    store = _ACTIVE_STORE.get()
+    if store is None:
+        return False
+    store = Path(store)
+    source_dir = store.joinpath(*PurePosixPath(Path(member_dir).as_posix()).parts)
+    if not source_dir.is_dir():
+        return False
+    names = sorted(
+        path.relative_to(store).as_posix()
+        for path in source_dir.rglob("*")
+        if path.is_file()
+    )
+    if not names or _missing_companions(store, names):
+        return False
+    return fill_from_store(base_dir, [Path(base_dir, name) for name in names])
+
+
 @verbose
 def nemar_dl(
     nemar_id,
