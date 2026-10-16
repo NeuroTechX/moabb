@@ -76,6 +76,7 @@ class PoloHortiguela2025(BaseDataset):
     """
 
     nemar_id = "nm000302"
+    nemar_seed_cache = True
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
