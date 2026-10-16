@@ -70,6 +70,7 @@ NEMAR_ID_EXEMPT = {
     "MIBMPI2024",  # no public NEMAR mirror yet; tracked in #1190
     "Yagan2023",  # hosted on Mendeley Data; no NEMAR deposit
     "Wang2026Handwriting",  # hosted on figshare; no NEMAR deposit
+    "BNCI2014_007",  # legacy BNCI Horizon 2020 download; no NEMAR deposit
 }
 # Datasets whose NEMAR deposit is assigned but not yet public (private,
 # pending publication). Their ids are valid and still checked; tracked here
