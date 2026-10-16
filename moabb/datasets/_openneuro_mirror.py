@@ -14,6 +14,8 @@ class OpenNeuroMirrorMixin:
     """Fetch a verified NEMAR raw mirror, with explicit upstream fallback."""
 
     nemar_bids_filters = {"scope": "raw", "datatype": "eeg"}
+    #: Name of the upstream host, used in the fallback warning.
+    upstream_source = "OpenNeuro"
 
     def _prefetch_nemar_sourcedata(self, subjects, verbose=None):
         # data_path/_download_subject fetch the actual raw BIDS input instead.
@@ -43,7 +45,8 @@ class OpenNeuroMirrorMixin:
             if provider == "nemar":
                 raise
             warnings.warn(
-                f"Could not fetch {self.nemar_id}; using its OpenNeuro source: {exc}",
+                f"Could not fetch {self.nemar_id}; using its {self.upstream_source} "
+                f"source: {exc}",
                 RuntimeWarning,
                 stacklevel=2,
             )
