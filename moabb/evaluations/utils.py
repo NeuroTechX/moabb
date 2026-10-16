@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import functools
+import json
 import logging
 import warnings
 from pathlib import Path
@@ -14,6 +15,7 @@ from sklearn.base import ClassifierMixin
 from sklearn.metrics import check_scoring
 from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import Pipeline
+from sklearn.utils.metaestimators import available_if
 
 
 log = logging.getLogger(__name__)
@@ -149,6 +151,15 @@ def _save_model_cv(model: object, save_path: str | Path, cv_index: str | int):
         raise IOError("No path to save the model")
     else:
         Path(save_path).mkdir(parents=True, exist_ok=True)
+
+    best = getattr(model, "best_estimator_", None)
+    if best is not None and _check_if_is_pytorch_steps(best):
+        # Search over a torch pipeline: save the refitted best pipeline like an
+        # unwrapped one (not a pickle of the search holding the live net) and
+        # keep the chosen hyper-parameters that the search pickle used to hold.
+        with open(Path(save_path) / f"best_params_{cv_index}.json", "w") as file:
+            json.dump(model.best_params_, file, default=str)
+        model = best
 
     if _check_if_is_pytorch_steps(model):
         for step_name in model.named_steps:
@@ -320,6 +331,17 @@ try:
 
     class OptunaSearchCVClassifier(_BaseOptunaSearchCV, ClassifierMixin):
         _estimator_type = "classifier"
+
+        # optuna-integration defines decision_function unconditionally, so
+        # ROC-AUC scorers call it on predict_proba-only estimators (skorch nets,
+        # GaussianNB) and crash. Guard it like scikit-learn's BaseSearchCV.
+        @available_if(
+            lambda self: hasattr(
+                getattr(self, "best_estimator_", self.estimator), "decision_function"
+            )
+        )
+        def decision_function(self, X, **kwargs):
+            return super().decision_function(X, **kwargs)
 
         def __sklearn_tags__(self):  # scikit-learn >=1.7 tag override
             tags = super().__sklearn_tags__()
@@ -494,13 +516,25 @@ def _pipeline_requires_epochs(pipeline):
     """Check if any step in the pipeline requires MNE Epochs objects."""
     from moabb.pipelines.classification import (
         SSVEP_CCA,
+        SSVEP_SSCOR,
+        SSVEP_TDCA,
         SSVEP_TRCA,
+        SSVEP_TRCA_R,
         SSVEP_eCCA,
         SSVEP_itCCA,
         SSVEP_MsetCCA,
     )
 
-    epochs_classifiers = (SSVEP_CCA, SSVEP_TRCA, SSVEP_MsetCCA, SSVEP_itCCA, SSVEP_eCCA)
+    epochs_classifiers = (
+        SSVEP_CCA,
+        SSVEP_TRCA,
+        SSVEP_MsetCCA,
+        SSVEP_itCCA,
+        SSVEP_eCCA,
+        SSVEP_TRCA_R,
+        SSVEP_SSCOR,
+        SSVEP_TDCA,
+    )
 
     # Handle non-pipeline classifiers (like DummyClassifier)
     if not hasattr(pipeline, "steps"):

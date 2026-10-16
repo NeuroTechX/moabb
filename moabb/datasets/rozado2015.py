@@ -34,6 +34,9 @@ from .utils import extract_rar
 
 log = logging.getLogger(__name__)
 
+# Spellings of microvolts seen in XDF/LSL stream metadata.
+_MICROVOLT_UNITS = frozenset({"microvolts", "microvolt", "uv", "\u00b5v", "\u03bcv"})
+
 # Harvard Dataverse access API URLs for the two RAR archives.
 # File IDs obtained from the Dataverse API for DOI:10.7910/DVN/28932.
 _DATAVERSE_BASE = "https://dataverse.harvard.edu/api/access/datafile/"
@@ -50,6 +53,26 @@ for _s in range(16, 31):
     _SUBJECT_TO_RAR[_s] = "userdata2.rar"
 
 
+def _stream_channels(stream):
+    """Return the channel labels and units declared in an XDF stream header.
+
+    Missing entries are ``None``; a stream without a ``<channels>``
+    description yields an all-``None`` list of ``channel_count`` items.
+    """
+    info = stream["info"]
+    n_channels = int(info["channel_count"][0])
+    try:
+        channels = info["desc"][0]["channels"][0]["channel"]
+    except (KeyError, IndexError, TypeError):
+        return [None] * n_channels, [None] * n_channels
+
+    def _get(ch, key):
+        value = ch.get(key) if isinstance(ch, dict) else None
+        return value[0] if value else None
+
+    return [_get(ch, "label") for ch in channels], [_get(ch, "unit") for ch in channels]
+
+
 class Rozado2015(BaseDataset):
     """Motor imagery BCI dataset with pupillometry augmentation.
 
@@ -63,7 +86,18 @@ class Rozado2015(BaseDataset):
 
     Each subject performed 1 session with 2 experiments of 25 trials each
     (50 trials total, ~25 per class). Each experiment is loaded as a
-    separate run.
+    separate run. The released files of subjects 16 and 18 hold one
+    50-trial experiment, so these two subjects have 75 trials.
+
+    The BioSemi stream in each XDF file has 57 channels (``Trig1``, the 32
+    scalp electrodes, ``EX1``-``EX8`` and ``AUX1``-``AUX16``, in microvolts);
+    the loader returns the 32 scalp electrodes, selected by label.
+
+    Subjects 10 and 15 are far noisier than the rest as released: their
+    1-40 Hz channel standard deviations are in the millivolt range (subject
+    10) or near-identical across all channels (subject 15, a common-mode
+    artifact), against ~5-30 uV for the other subjects. Consider excluding
+    them.
 
     Trial structure (12 s total):
 
@@ -221,7 +255,10 @@ class Rozado2015(BaseDataset):
         """Load one XDF file and return a Raw object.
 
         XDF files contain multiple streams. We extract:
-        - The EEG stream (type='EEG', 32 channels, ~512 Hz)
+        - The EEG stream (type='EEG', ~512 Hz). The BioSemi LSL stream holds
+          57 channels -- ``Trig1``, the 32 scalp electrodes, ``EX1``-``EX8``
+          and ``AUX1``-``AUX16`` -- with values already in microvolts. The 32
+          scalp channels are picked by their stream label.
         - The marker stream (type='Markers') with "left", "nothing", etc.
 
         Events are placed on a stim channel aligned to EEG timestamps.
@@ -244,18 +281,34 @@ class Rozado2015(BaseDataset):
             raise ValueError(f"No Marker stream found in {xdf_path}")
 
         # EEG data: shape (n_samples, n_channels) -> transpose to (n_channels, n_samples)
-        eeg_data = eeg_stream["time_series"].T
+        eeg_data = np.asarray(eeg_stream["time_series"], dtype=np.float64).T
         eeg_ts = eeg_stream["time_stamps"]
         sfreq = float(eeg_stream["info"]["nominal_srate"][0])
-        n_channels = eeg_data.shape[0]
 
-        # Use only the first 32 channels if more are present
-        if n_channels > 32:
-            eeg_data = eeg_data[:32, :]
-            n_channels = 32
+        # Select the scalp electrodes by label: channel 0 of the stream is the
+        # BioSemi trigger (``Trig1``), so taking the first 32 channels by
+        # position shifted every label by one and served the trigger as Fp1.
+        labels, units = _stream_channels(eeg_stream)
+        missing = [ch for ch in self._ch_names if ch not in labels]
+        if missing:
+            raise ValueError(
+                f"EEG stream in {xdf_path} lacks channels {missing}; "
+                f"stream labels: {labels}"
+            )
+        picks = [labels.index(ch) for ch in self._ch_names]
+        eeg_data = eeg_data[picks, :]
+        n_channels = len(picks)
+        ch_names_used = list(self._ch_names)
 
-        # If fewer than 32 channels, use what's available
-        ch_names_used = self._ch_names[:n_channels]
+        # The stream declares every channel in microvolts. Treating the values
+        # as raw BioSemi ADC counts (31.25 nV per step) made the EEG 32 times
+        # too small.
+        pick_units = {units[i].strip().lower() for i in picks if units[i]}
+        if pick_units - _MICROVOLT_UNITS:
+            raise ValueError(
+                f"Unexpected EEG units {sorted(pick_units)} in {xdf_path}; "
+                "expected 'microvolts'."
+            )
 
         # Build stim channel from marker timestamps
         stim = np.zeros((1, eeg_data.shape[1]))
@@ -266,8 +319,8 @@ class Rozado2015(BaseDataset):
                 if 0 <= sample_idx < eeg_data.shape[1]:
                     stim[0, sample_idx] = self._MARKER_MAP[label]
 
-        # Scale to Volts: BioSemi raw 24-bit ADC counts, LSB = 31.25 nV
-        data = np.concatenate([31.25e-9 * eeg_data, stim], axis=0)
+        # Scale microvolts to volts
+        data = np.concatenate([1e-6 * eeg_data, stim], axis=0)
 
         ch_types = ["eeg"] * n_channels + ["stim"]
         ch_names_full = list(ch_names_used) + ["stim"]

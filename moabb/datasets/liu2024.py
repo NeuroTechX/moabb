@@ -41,6 +41,24 @@ LIU2024_URL = "https://ndownloader.figshare.com/files/38516654"
 LIU2024_ELECTRODES = "https://ndownloader.figshare.com/files/38516078"
 LIU2024_EVENTS = "https://ndownloader.figshare.com/files/38516084"
 
+# Released subject -> subject whose recording it was derived from (gh-1248).
+# In edffile.zip (Figshare 21679035 v3-v5, mirrored by NEMAR nm000158) the EEG
+# of sub-05 is bit-identical to sub-04, and sub-15 / sub-49 are reprocessed
+# copies of sub-11 / sub-47. In sourcedata.zip, raw sub-05 = raw sub-04 minus
+# i.i.d. uniform noise in [0, 1000) uV on every row (same for 15/11, 49/47).
+# participants.tsv lists them as different patients. Excluded by default.
+LIU2024_DERIVED_SUBJECTS = {5: 4, 15: 11, 49: 47}
+
+
+def _derived_warning(subjects):
+    pairs = ", ".join(f"{s} (from {LIU2024_DERIVED_SUBJECTS[s]})" for s in subjects)
+    return (
+        f"Liu2024 subjects {pairs} do not hold an independent recording: their "
+        "released files are derived from another subject's recording (MOABB "
+        "gh-1248). Do not use them together with their source subject in "
+        "cross-subject evaluation."
+    )
+
 
 class Liu2024(BaseDataset):
     """Dataset [1]_ from the study on motor imagery [2]_.
@@ -85,6 +103,22 @@ class Liu2024(BaseDataset):
     -----
     To add the break and instruction events, set the `break_events` and
     `instr_events` parameters to True while instantiating the class.
+
+    .. warning::
+
+       Subjects 5, 15 and 49 are not loaded by default (:gh:`1248`). Their
+       released files do not hold an independent recording: the EDF of
+       ``sub-05`` is bit-identical to ``sub-04``, and ``sub-15`` and ``sub-49``
+       are reprocessed copies of ``sub-11`` and ``sub-47``. In the raw
+       ``sourcedata.zip``, each of the three equals its partner's recording
+       minus uniform noise between 0 and 1000 uV, added to every channel.
+       ``participants.tsv`` describes them as different patients, so keeping
+       them would put copies of one subject's EEG under two subject IDs,
+       which leaks data across folds in cross-subject evaluation. The dataset
+       authors have been contacted; until they clarify, the dataset exposes
+       47 subjects. Pass ``include_derived_subjects=True`` to load all 50
+       released IDs (a warning is emitted). The mapping is in
+       ``moabb.datasets.liu2024.LIU2024_DERIVED_SUBJECTS``.
 
     .. versionadded:: 1.1.1
 
@@ -145,7 +179,7 @@ class Liu2024(BaseDataset):
             electrode_material="Ag/AgCl semi-dry electrodes based on highly absorbable porous sponges dampened with 3% NaCl solution",
         ),
         participants=ParticipantMetadata(
-            n_subjects=50,
+            n_subjects=47,  # 50 released; 5, 15, 49 excluded by default (gh-1248)
             health_status="acute stroke patients",
             clinical_population="acute stroke patients (1-30 days post-stroke)",
             gender={"male": 39, "female": 11},
@@ -235,7 +269,7 @@ class Liu2024(BaseDataset):
             artifact_methods=None,
             re_reference=None,
             epoch_window=[0.0, 8.0],
-            notes="Preprocessed with EEGLAB toolbox in MATLAB R2019b. Filtered data split into trials x channels x time-samples format by marker '1'. Some motion artifacts present in subjects 4, 5, 13, 14, 18, 24, 28, 33, 42, 43, 47, 48, 49.",
+            notes="Preprocessed with EEGLAB toolbox in MATLAB R2019b. Filtered data split into trials x channels x time-samples format by marker '1'. Some motion artifacts present in subjects 4, 5, 13, 14, 18, 24, 28, 33, 42, 43, 47, 48, 49. Subjects 5, 15 and 49 are derived from the recordings of subjects 4, 11 and 47 and are excluded by default (MOABB gh-1248).",
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=["CSP+LDA", "FBCSP+SVM", "TSLDA+DGFMDRM", "TWFB+DGFMDM"],
@@ -299,6 +333,7 @@ class Liu2024(BaseDataset):
         sessions=None,
         *,
         return_all_modalities=False,
+        include_derived_subjects=False,
         **kwargs,
     ):
         deprecated_renames = {
@@ -320,8 +355,26 @@ class Liu2024(BaseDataset):
             self.events["instr"] = 3
         if break_events:
             self.events["break"] = 4
+        self.include_derived_subjects = include_derived_subjects
+        pool = list(range(1, 50 + 1))
+        if include_derived_subjects:
+            warnings.warn(
+                _derived_warning(sorted(LIU2024_DERIVED_SUBJECTS)),
+                UserWarning,
+                stacklevel=2,
+            )
+        else:
+            pool = [s for s in pool if s not in LIU2024_DERIVED_SUBJECTS]
+            asked = sorted(set(subjects or ()) & set(LIU2024_DERIVED_SUBJECTS))
+            if asked:
+                raise ValueError(
+                    f"Liu2024 subjects {asked} are excluded by default because "
+                    "their released files are derived from another subject's "
+                    "recording (MOABB gh-1248). Pass include_derived_subjects=True "
+                    "to load them anyway."
+                )
         super().__init__(
-            subjects=list(range(1, 50 + 1)),
+            subjects=pool,
             sessions_per_subject=1,
             events=self.events,
             code="Liu2024",

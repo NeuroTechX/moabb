@@ -253,6 +253,12 @@ but we are open to any suggestion.
 If you want to actively contribute to inclusion of one new dataset, you can follow also this tutorial
 `tutorial <https://moabb.neurotechx.com/docs/auto_examples/tutorials/tutorial_4_adding_a_dataset.html>`__.
 
+If the data are already in BIDS format, subclass
+:class:`~moabb.datasets.base.BaseBIDSDataset` and use
+:class:`~moabb.datasets.Zhou2016` as the template: of the base-class hooks it
+only implements ``__init__`` and ``_download_subject``. The ``BaseBIDSDataset`` docstring lists
+the steps.
+
 .. raw:: html
 
    <script type="text/javascript">

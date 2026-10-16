@@ -7,7 +7,7 @@ import logging
 import re
 import traceback
 import warnings
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from functools import cached_property
 from inspect import signature
@@ -602,9 +602,14 @@ class BaseDataset(metaclass=MetaclassDataset):
         DOI for the dataset.
     nemar_id : str | None
         NEMAR dataset identifier used by :meth:`download` when available.
-    nemar_subject_template : str | None
-        Template for formatting subject IDs for NEMAR downloads. For example,
-        ``"{subject:03d}"`` formats subject ``1`` as ``"001"``.
+    nemar_subject_template : str | Mapping | None
+        How a MOABB subject id maps to the deposit's BIDS subject label (the
+        part after ``sub-``). Either a format template, e.g.
+        ``"{subject:03d}"`` formats subject ``1`` as ``"001"``; or, for labels
+        no template can produce (BIDS labels are any alphanumeric string),
+        an explicit ``{moabb_subject: label}`` mapping, e.g.
+        ``dict(enumerate(["zdvm", "A01"], start=1))``. ``None`` disables
+        subject filtering.
 
     return_all_modalities : bool | dict, optional
         Controls which channel types are retained when data is picked:
@@ -618,7 +623,7 @@ class BaseDataset(metaclass=MetaclassDataset):
 
     _summary_table: dict[str, Any]
     nemar_id: str | None = None
-    nemar_subject_template: str | None = "{subject}"
+    nemar_subject_template: str | Mapping[Any, str] | None = "{subject}"
     nemar_bids_filters: dict[str, Any] | None = None
 
     def __init__(
@@ -1083,10 +1088,23 @@ class BaseDataset(metaclass=MetaclassDataset):
         Raises
         ------
         RuntimeError
-            If ``nemar_subject_template`` cannot format the subject value.
+            If ``nemar_subject_template`` cannot format the subject value, or
+            is a mapping without an entry for it.
         """
         if self.nemar_subject_template is None:
             return None
+        if isinstance(self.nemar_subject_template, Mapping):
+            try:
+                return str(self.nemar_subject_template[subject])
+            except KeyError:
+                key_types = sorted(
+                    {type(k).__name__ for k in self.nemar_subject_template}
+                )
+                raise RuntimeError(
+                    f"{self.code} subject {subject!r} ({type(subject).__name__}) "
+                    "has no NEMAR label in its nemar_subject_template mapping "
+                    f"(keys are {', '.join(key_types)})."
+                ) from None
         try:
             return self.nemar_subject_template.format(subject=subject)
         except (IndexError, KeyError, ValueError) as exc:
@@ -1644,6 +1662,39 @@ class BaseBIDSDataset(BaseDataset):
 
     If necessary, the methods ``_get_path_search_params`` and
     ``_get_read_extra_params`` can be implemented in the subclass.
+
+    See Also
+    --------
+    moabb.datasets.Zhou2016 : Reference implementation to copy when adding a
+        new BIDS dataset.
+    LocalBIDSDataset : Load a BIDS dataset that is already on disk, without
+        writing a subclass.
+
+    Notes
+    -----
+    **How to add a BIDS dataset.** Use :class:`moabb.datasets.Zhou2016` as the
+    template. It is the simplest ``BaseBIDSDataset`` subclass in MOABB: of
+    the base-class hooks it only implements ``__init__`` and
+    ``_download_subject`` (a Zenodo download), and it keeps the default BIDS
+    reading, so sessions and runs come from the BIDS entities. To add your
+    own dataset:
+
+    1. Create ``moabb/datasets/<yourdataset>.py`` with a class that inherits
+       from ``BaseBIDSDataset``.
+    2. In ``__init__``, call ``super().__init__`` with the subject list,
+       ``sessions_per_subject``, ``events`` (mapping from the event names in
+       ``events.tsv`` to integer codes), ``code``, ``interval``, ``paradigm``
+       and ``doi``, and forward ``selected_subjects`` / ``selected_sessions``.
+    3. Implement ``_download_subject`` so that it downloads (or reuses) the
+       data of one subject and returns the path to the **root** of the BIDS
+       dataset (the folder that contains ``dataset_description.json``).
+    4. Override ``_get_path_search_params`` only if the default search (all
+       raw EEG files of the subject) picks up files that should be skipped,
+       for example another task or modality.
+
+    The ``ExampleBIDSDataset`` skeleton in
+    :ref:`sphx_glr_auto_examples_tutorials_tutorial_4_adding_a_dataset.py`
+    walks through the same steps.
     """
 
     def _get_path_search_params(self, subject: int | None) -> dict[str, Any]:

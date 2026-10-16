@@ -27,10 +27,14 @@ jobs:
       - name: Check links in Markdown and RST files
         uses: lycheeverse/lychee-action@v2
         with:
+          # On PRs and pushes 5xx are treated as transient server outages
+          # (dataia.eu 500, GitHub 503); the weekly scheduled run stays strict so
+          # a host that keeps answering 5xx is still reported. A dead link fails
+          # on 404/410/DNS errors everywhere.
           args: >-
             --verbose
             --no-progress
-            --accept 200,204,206,301,302,303,307,308,429
+            --accept ${{ github.event_name == 'schedule' && '200,204,206,301,302,303,307,308,429' || '200,204,206,301,302,303,307,308,429,500,502,503,504' }}
             --timeout 30
             --max-retries 3
             --exclude "^mailto:"

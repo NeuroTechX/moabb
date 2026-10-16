@@ -308,6 +308,8 @@ class ExampleBIDSDataset(BaseBIDSDataset):
 #         nemar_id = "nm000123"
 #         # Only if NEMAR subject labels are zero-padded (sub-001, sub-002, ...)
 #         nemar_subject_template = "{subject:03d}"
+#         # ...or, for arbitrary labels (sub-zdvm, sub-A01, ...), map them:
+#         # nemar_subject_template = {1: "zdvm", 2: "A01"}
 #         ...
 #
 # Fallback behaviour:
