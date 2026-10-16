@@ -558,6 +558,10 @@ def _sourcedata_files_for_subject(target_dir, nemar_id, subject, force_update):
             f"NEMAR dataset {nemar_id} lists no sourcedata for subject "
             f"{subject!r}. Known subjects: {known}."
         )
+    # Files the manifest attributes to no subject (montages, band/interval
+    # definitions, a performance table) are read by every subject's load, so
+    # they belong to every subject's selection.
+    files = files + _manifest_shared_files(record)
     # Manifest names are literal file paths, but they are consumed as glob
     # patterns (nemar's include and the local verification below) -- escape
     # them so names containing [, ], * or ? still match.
@@ -598,6 +602,24 @@ def _manifest_subject_files(record, subject):
         entry["file"]
         for entry in entries
         if entry.get("file") and str(entry.get("subject")) in wanted
+    ]
+
+
+def _manifest_shared_files(record):
+    """The files a per-subject provenance record attributes to no subject.
+
+    Only meaningful once the manifest records subjects at all: then an entry
+    whose ``subject`` is missing or empty is shared by every subject's load
+    (Brandl2020's ``mnt.mat`` montage, Dreyer2023's ``performance.csv``).
+    Names are returned raw.
+    """
+    entries = [entry for entry in (record.get("files") or []) if isinstance(entry, dict)]
+    if not any("subject" in entry for entry in entries):
+        return []
+    return [
+        entry["file"]
+        for entry in entries
+        if entry.get("file") and entry.get("subject") in (None, "")
     ]
 
 
@@ -644,8 +666,13 @@ def nemar_sourcedata_is_local(target_dir, subject):
         files = None
     if files is None:
         return _sourcedata_store_holds_data(target_dir)
+    if not files:
+        return False
     sourcedata_dir = target_dir / "sourcedata"
-    return bool(files) and all(_is_stored_file(sourcedata_dir, name) for name in files)
+    return all(
+        _is_stored_file(sourcedata_dir, name)
+        for name in files + _manifest_shared_files(record)
+    )
 
 
 @verbose
