@@ -180,6 +180,7 @@ class Liu2020BETA(BaseDataset):
 
     _events = _EVENTS
     nemar_id = "nm000129"
+    nemar_seed_cache = True
 
     def __init__(self, subjects=None, sessions=None):
         super().__init__(

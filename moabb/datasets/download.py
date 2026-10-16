@@ -11,6 +11,7 @@ import json
 import logging
 import os
 import os.path as osp
+import re
 import shutil
 import warnings
 from pathlib import Path, PurePosixPath
@@ -742,6 +743,195 @@ def nemar_sourcedata_is_local(target_dir, subject):
         _is_stored_file(sourcedata_dir, name)
         for name in files + _manifest_shared_files(record)
     )
+
+
+_LOADER_CACHE_DIR = re.compile(r"MNE-(.+)-data")
+
+
+def _loader_cache_root(record, path=None):
+    """Where, on this machine, the loader keeps the files a deposit mirrors.
+
+    A deposit's ``sourcedata/`` is a snapshot of the loader's own cache after
+    ``data_path()`` ran -- archives already extracted, opaque download URLs
+    already resolved to file names -- and its provenance records that cache
+    directory as ``upstream_cache_root``, e.g.
+    ``/scratch/.../mne_data/MNE-Simoes2020-data/BCIAUT_P300``. The manifest
+    names files relative to it. Rebase everything from the ``MNE-<sign>-data``
+    component on this machine's dataset path for that sign.
+
+    Returns None when the manifest records no such root, or one that would
+    leave the dataset directory.
+    """
+    root = record.get("upstream_cache_root")
+    if not isinstance(root, str) or not root:
+        return None
+    parts = PurePosixPath(root.replace("\\", "/")).parts
+    for index in range(len(parts) - 1, -1, -1):
+        match = _LOADER_CACHE_DIR.fullmatch(parts[index])
+        if match is None:
+            continue
+        tail = parts[index:]
+        if any(part in ("..", ".") for part in tail):
+            return None
+        return Path(get_dataset_path(match.group(1), path)).joinpath(*tail)
+    return None
+
+
+_BRAINVISION_COMPANION = re.compile(r"^\s*(?:DataFile|MarkerFile)\s*=\s*(.+?)\s*$", re.M)
+
+
+def _eeglab_data_file(header):
+    """The ``.fdt`` an EEGLAB ``.set`` stores its samples in, or None if embedded.
+
+    Raises when the file cannot be read as a MATLAB v5 ``.set``.
+    """
+    from scipy.io import loadmat, whosmat
+
+    names = {name for name, _shape, _cls in whosmat(header)}
+    if "data" in names:  # EEGLAB >= 2019 saves the EEG fields at top level
+        data = loadmat(header, variable_names=["data"], squeeze_me=True)["data"]
+    else:
+        eeg = loadmat(
+            header, variable_names=["EEG"], squeeze_me=True, struct_as_record=False
+        )["EEG"]
+        data = eeg.data
+    return data if isinstance(data, str) else None
+
+
+def _missing_companions(sourcedata_dir, files):
+    """Files that the store's recording headers name but the store lacks.
+
+    Some deposits mirror only part of a recording: the ``.vhdr`` of a
+    BrainVision set without the ``.eeg``/``.vmrk`` it points to, an EEGLAB
+    ``.set`` without its ``.fdt``, or Curry ``.cdt`` samples without their
+    ``.cdt.dpa``/``.cdt.dpo`` header. An EEGLAB header that cannot be read
+    counts as incomplete.
+    """
+    missing = set()
+    for name in files:
+        if name.lower().endswith(".cdt"):
+            # Curry 8 keeps the header next to the samples (.cdt.dpa/.cdt.dpo).
+            data = sourcedata_dir / name
+            if data.is_file() and not any(
+                Path(f"{data}{suffix}").is_file() for suffix in (".dpa", ".dpo")
+            ):
+                missing.add(f"{name}.dpa")
+            continue
+        if name.lower().endswith(".set"):
+            header = sourcedata_dir / name
+            if header.with_suffix(".fdt").is_file() or not header.is_file():
+                continue
+            try:
+                data_file = _eeglab_data_file(header)
+            except Exception:  # noqa: BLE001 - unreadable header: do not place it
+                missing.add(str(PurePosixPath(name).with_suffix(".fdt")))
+                continue
+            if data_file and not (header.parent / data_file).is_file():
+                missing.add(str(PurePosixPath(name).parent / data_file))
+            continue
+        if not name.lower().endswith(".vhdr"):
+            continue
+        header = sourcedata_dir / name
+        try:
+            text = header.read_text(encoding="latin-1")
+        except OSError:
+            continue
+        for companion in _BRAINVISION_COMPANION.findall(text):
+            if not (header.parent / companion).is_file():
+                missing.add(str(PurePosixPath(name).parent / companion))
+    return missing
+
+
+def seed_loader_cache(target_dir, subject, path=None):
+    """Link a subject's NEMAR sourcedata into the loader's own cache tree.
+
+    :func:`_store_lookup` serves a download only when the store holds the file
+    under the URL's trailing segments. Loaders that download an archive and
+    extract it, or that fetch opaque URLs (OSF file ids, DSpace bitstream
+    uuids, figshare ``ndownloader`` ids), never match: the store holds the
+    extracted or resolved files instead. Those loaders do check their cache
+    before downloading, so placing the store's files where the loader itself
+    would have left them -- the layout the deposit was snapshotted from -- lets
+    them load without contacting the upstream host.
+
+    Files are hard-linked (copied across filesystems), never overwrite an
+    existing cache file, and are confined to the rebased cache root.
+
+    Parameters
+    ----------
+    target_dir : pathlib.Path
+        The deposit's local root, as returned by :func:`nemar_store`.
+    subject : int | str | list
+        Subject identifier, or the identifiers a deposit may file it under.
+    path : None | str
+        Base path where MOABB stores datasets.
+
+    Returns
+    -------
+    int
+        Number of files placed in the cache.
+    """
+    target_dir = Path(target_dir)
+    try:
+        record = json.loads(
+            (target_dir / SOURCEDATA_PROVENANCE).read_text(encoding="utf-8")
+        )
+        entries = [e for e in record.get("files") or [] if isinstance(e, dict)]
+        files = _manifest_subject_files(record, subject)
+        if files is None:
+            files = [entry["file"] for entry in entries if entry.get("file")]
+        else:
+            # Files no subject owns (montages, shared tables) serve every
+            # subject's load; placed whenever the store holds them.
+            files = files + [
+                entry["file"]
+                for entry in entries
+                if entry.get("file") and entry.get("subject") in (None, "")
+            ]
+        cache_root = _loader_cache_root(record, path)
+    except (OSError, ValueError, AttributeError, TypeError):
+        return 0
+    if cache_root is None:
+        return 0
+    sourcedata_dir = target_dir / "sourcedata"
+    resolved_store = sourcedata_dir.resolve()
+    resolved_root = cache_root.resolve()
+    pending = []
+    for name in files:
+        if not _is_stored_file(sourcedata_dir, name):
+            continue
+        destination = cache_root / name
+        # Manifest names are data: keep both ends inside their trees.
+        if not (sourcedata_dir / name).resolve().is_relative_to(resolved_store):
+            continue
+        if not destination.resolve().is_relative_to(resolved_root):
+            continue
+        if not destination.exists():
+            pending.append((sourcedata_dir / name, destination))
+    if not pending:
+        return 0
+    # A partial recording in the cache is worse than none: a loader that only
+    # tests "is the extracted tree there?" would skip its own download and then
+    # load a fraction of the subject, or fail on an absent file.
+    missing = _missing_companions(sourcedata_dir, files)
+    if missing:
+        logger.warning(
+            "Not placing NEMAR store files in %s: the deposit lacks %s, which "
+            "its headers reference; the dataset's own downloader is used.",
+            cache_root,
+            ", ".join(sorted(missing)[:3]) + (" ..." if len(missing) > 3 else ""),
+        )
+        return 0
+    for source, destination in pending:
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            os.link(source, destination)
+        except OSError:
+            shutil.copy2(source, destination)
+    logger.info(
+        "Placed %d file(s) from the local NEMAR store in %s.", len(pending), cache_root
+    )
+    return len(pending)
 
 
 @verbose

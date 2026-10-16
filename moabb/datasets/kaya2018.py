@@ -148,6 +148,7 @@ class Kaya2018(BaseDataset):
     """
 
     nemar_id = "nm000137"
+    nemar_seed_cache = True
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=200.0,

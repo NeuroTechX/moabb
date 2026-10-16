@@ -222,6 +222,7 @@ class Han2024Fatigue(BaseDataset):
 
     _events = _EVENTS
     nemar_id = "nm000124"
+    nemar_seed_cache = True
 
     def __init__(self, subjects=None, sessions=None):
         super().__init__(

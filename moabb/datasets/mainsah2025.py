@@ -338,6 +338,10 @@ class Mainsah2025(BaseDataset):
        PhysioNet, 2025. DOI: https://doi.org/10.13026/0byy-ry86
     """
 
+    # The file list comes from PhysioNet's SHA256SUMS.txt, so a deposit that
+    # lacks some EDFs only means those few are still fetched from PhysioNet.
+    nemar_seed_cache = True
+
     def __init__(self, study, subjects=None, sessions=None):
         config = _STUDY_CONFIGS[study]
         self._study = study

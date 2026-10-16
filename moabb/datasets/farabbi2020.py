@@ -67,6 +67,7 @@ class Farabbi2020(BaseDataset):
     """
 
     nemar_id = "nm000294"
+    nemar_seed_cache = True
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
