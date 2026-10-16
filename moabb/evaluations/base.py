@@ -163,6 +163,7 @@ def _evaluate_fold(
     split_metadata=None,
     calib_idx=None,
     score_subjects=None,
+    extra_fit_params=None,
 ):
     """Evaluate a single CV fold. Pure function, no shared mutable state.
 
@@ -194,6 +195,10 @@ def _evaluate_fold(
         Held-out subjects whose results are still missing for this pipeline.
         When provided, the fold is fitted once and scored separately for these
         subjects.
+    extra_fit_params : dict | None
+        Evaluation-specific fit metadata (e.g. the systems of the training
+        trials of a cross-system fold). It is merged into the transfer fit
+        metadata and routed only to the pipeline steps that request it.
 
     Returns
     -------
@@ -262,6 +267,9 @@ def _evaluate_fold(
             else:
                 fit_params["X_target_labeled"] = X_calib
                 fit_params["y_target_labeled"] = y_calib
+    if extra_fit_params:
+        fit_params.update(extra_fit_params)
+    if fit_params:
         with config_context(enable_metadata_routing=True):
             requested = get_routing_for_object(cvclf).consumes("fit", set(fit_params))
         fit_params = {
@@ -1397,11 +1405,11 @@ class BaseEvaluation(ABC):
                     self._log_result(res)
                 self._push_results_batch(batch, pipelines, process_pipeline)
 
-            res_per_db.append(
-                self.results.to_dataframe(
-                    pipelines=pipelines, process_pipeline=process_pipeline
-                )
+            # Datasets sharing a pipeline digest share their results group.
+            df = self.results.to_dataframe(
+                pipelines=pipelines, process_pipeline=process_pipeline
             )
+            res_per_db.append(df[df["dataset"] == dataset.code])
 
         return pd.concat(res_per_db, ignore_index=True)
 

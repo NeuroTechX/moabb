@@ -547,10 +547,13 @@ def _pipeline_requires_epochs(pipeline):
 
 
 def _get_nchan(X):
-    """Extract number of channels from data (Epochs or ndarray)."""
+    """Extract number of channels from data (Epochs, ndarray or object ndarray)."""
     from mne.epochs import BaseEpochs
 
-    return X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
+    if isinstance(X, BaseEpochs):
+        return X.info["nchan"]
+    # An object array holds one (n_channels, n_times) array per trial.
+    return X[0].shape[0] if X.dtype == object else X.shape[1]
 
 
 class Emissions:
