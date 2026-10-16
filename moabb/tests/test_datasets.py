@@ -75,6 +75,7 @@ NEMAR_ID_EXEMPT = {
     # No NEMAR deposit yet; BIDS deposits prepared, not uploaded.
     "Yagan2023",  # Mendeley Data vyczny2r4w
     "Wang2026Handwriting",  # figshare 29987758
+    "BNCI2014_007",  # legacy BNCI Horizon 2020 download; no NEMAR deposit
 }
 # Datasets whose NEMAR deposit is assigned but not yet public (private,
 # pending publication). Their ids are valid and still checked; tracked here
