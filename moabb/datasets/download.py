@@ -64,8 +64,11 @@ def _store_lookup(url, fname=None):
     ``fname`` is probed first, but the URL tails remain fallbacks: a caller's
     ``fname`` names the *destination* (e.g. Lee2024 prefixes the experiment
     directory and zero-pads subject 8), while the store keeps the upstream
-    names, so the two can legitimately differ. A miss returns None and the
-    caller downloads.
+    names, so the two can legitimately differ. A tail of two or more segments
+    whose file name has no extension also matches a single stored file that
+    adds one: deposits keep some extension-less downloads under their content
+    type (Mendeley's ``<uuid>/file_downloaded`` as ``file_downloaded.xdf``).
+    A miss returns None and the caller downloads.
     """
     store = _ACTIVE_STORE.get()
     if store is None:
@@ -79,6 +82,20 @@ def _store_lookup(url, fname=None):
         if not tail:
             continue
         candidate = Path(store).joinpath(*tail)
+        if not candidate.is_file() and len(tail) > 1 and not candidate.suffix:
+            variants = (
+                [
+                    path
+                    for path in candidate.parent.glob(
+                        glob_module.escape(candidate.name) + ".*"
+                    )
+                    if path.is_file()
+                ]
+                if candidate.parent.is_dir()
+                else []
+            )
+            if len(variants) == 1:
+                candidate = variants[0]
         if candidate.is_file():
             logger.info(
                 "Filling %s from the local NEMAR store instead of downloading %s.",
