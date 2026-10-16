@@ -282,12 +282,15 @@ class Thapa2025(BaseDataset):
 
         # Let mne-bids enumerate the per-subject runs/sessions actually on
         # disk instead of iterating the dataset-wide product and probing each
-        # combination with ``fpath.exists()``.
+        # combination with ``fpath.exists()``. Only the headers: without an
+        # extension filter the run's ``_eeg.eeg``/``_eeg.vmrk`` match too, and
+        # read_raw_brainvision refuses them.
         return find_matching_paths(
             root=root,
             subjects=subj,
             tasks=_TASK,
             suffixes="eeg",
+            extensions=".vhdr",
             datatypes="eeg",
             ignore_json=True,
         )
