@@ -72,7 +72,11 @@ CASES = [
         [f"P01 Run {r}.gdf" for r in BNCI2019_001._MOVEMENT_RUNS],
         id="BNCI2019_001",
     ),
-    pytest.param(_bnci2025, ["p001/p001v2-trialblocks.set"], id="BNCI2025_001"),
+    pytest.param(
+        _bnci2025,
+        ["p001/p001v2-trialblocks.set", "p001/p001v2-trialblocks.fdt"],
+        id="BNCI2025_001",
+    ),
     pytest.param(
         Hinss2021().data_path,
         [
@@ -108,6 +112,19 @@ def test_archive_loader_reads_members_from_the_store(
             assert any(p.stat().st_ino in stored for p in path.rglob("*.set"))
         else:
             assert path.stat().st_ino in stored
+
+
+def test_bnci2025_needs_the_fdt_too(mne_data, tmp_path, monkeypatch):
+    """nm000162 mirrors the .set without its .fdt: fetch the ZIP as before."""
+    store = tmp_path / "store"
+    (store / "p001").mkdir(parents=True)
+    (store / "p001" / "p001v2-trialblocks.set").write_text("header")
+    monkeypatch.setattr(dl, "data_dl", _no_download)
+    with (
+        dl.active_sourcedata_store(store),
+        pytest.raises(AssertionError, match="data_dl"),
+    ):
+        _bnci2025(1)
 
 
 def test_archive_loader_downloads_when_the_store_lacks_a_member(

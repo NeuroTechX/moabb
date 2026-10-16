@@ -150,12 +150,12 @@ def _load_data_001_2025(
     # file from the local store first.
     zip_dir = dl.data_dl_destination(url, "BNCI", path).parent
     extract_dir = zip_dir / f"p{subject:03d}"
+    # The .set keeps its samples in the .fdt next to it.
     if force_update or not any(
-        dl.fill_from_store(zip_dir, [extract_dir / name])
-        for name in (
-            f"p{subject:03d}v2-trialblocks.set",
-            f"p{subject:03d}-trialblocks.set",
+        dl.fill_from_store(
+            zip_dir, [extract_dir / f"{stem}.set", extract_dir / f"{stem}.fdt"]
         )
+        for stem in (f"p{subject:03d}v2-trialblocks", f"p{subject:03d}-trialblocks")
     ):
         # Download the ZIP file
         zip_path = dl.data_dl(url, "BNCI", path, force_update, verbose)
