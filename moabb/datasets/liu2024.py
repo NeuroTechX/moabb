@@ -50,6 +50,26 @@ LIU2024_EVENTS = "https://ndownloader.figshare.com/files/38516084"
 LIU2024_DERIVED_SUBJECTS = {5: 4, 15: 11, 49: 47}
 
 
+def _extract_missing(path_zip, folder, force_update=False):
+    """Extract the members of ``path_zip`` that are not in ``folder`` yet.
+
+    Files placed from the NEMAR store are hard links into it: extracting over
+    them would write through into the store, so they are kept (or, with
+    ``force_update``, unlinked before being replaced).
+    """
+    folder = Path(folder)
+    with z.ZipFile(path_zip, "r") as zip_ref:
+        members = []
+        for member in zip_ref.namelist():
+            target = folder / member
+            if member.endswith("/") or not target.exists():
+                members.append(member)
+            elif force_update:
+                target.unlink()
+                members.append(member)
+        zip_ref.extractall(folder, members)
+
+
 def _derived_warning(subjects):
     pairs = ", ".join(f"{s} (from {LIU2024_DERIVED_SUBJECTS[s]})" for s in subjects)
     return (
@@ -418,37 +438,39 @@ class Liu2024(BaseDataset):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
-        # Download the zip file containing the data
-        path_zip = dl.data_dl(
-            LIU2024_URL, self.code, path=path, force_update=force_update, verbose=verbose
+        sub = f"sub-{subject:02d}"
+        path_folder = dl.data_dl_destination(LIU2024_URL, self.code, path=path).parent
+        subject_path = (
+            path_folder / "edffile" / sub / "eeg" / f"{sub}_task-motor-imagery_eeg.edf"
         )
-        path_zip = Path(path_zip)
-        path_folder = path_zip.parent
-
-        # Extract the zip file if it hasn't been extracted yet
-        if force_update or not (path_folder / "edffile").is_dir():
+        # NEMAR deposits keep the extracted EDFs, not edffile.zip: take the
+        # subject's file from the local store (or a previous extraction) first.
+        if force_update or not dl.fill_from_store(
+            path_folder / "edffile", [subject_path]
+        ):
+            # Download the zip file containing the data
+            path_zip = Path(
+                dl.data_dl(
+                    LIU2024_URL,
+                    self.code,
+                    path=path,
+                    force_update=force_update,
+                    verbose=verbose,
+                )
+            )
             try:
-                with z.ZipFile(path_zip, "r") as zip_ref:
-                    zip_ref.extractall(path_folder)
+                _extract_missing(path_zip, path_folder, force_update)
             except BadZipFile:
                 warnings.warn(
                     "Corrupted zip file detected, re-downloading...", stacklevel=2
                 )
                 path_zip.unlink(missing_ok=True)
-                path_zip = Path(dl.data_dl(LIU2024_URL, self.code, force_update=True))
-                with z.ZipFile(path_zip, "r") as zip_ref:
-                    zip_ref.extractall(path_folder)
+                path_zip = Path(
+                    dl.data_dl(LIU2024_URL, self.code, path=path, force_update=True)
+                )
+                _extract_missing(path_zip, path_folder, force_update)
 
-        subject_paths = []
-        sub = f"sub-{subject:02d}"
-
-        # Construct the path to the subject's data file
-        subject_path = (
-            path_folder / "edffile" / sub / "eeg" / f"{sub}_task-motor-imagery_eeg.edf"
-        )
-        subject_paths.append(str(subject_path))
-
-        return subject_paths
+        return [str(subject_path)]
 
     def encoding(self, events_df):
         """Encode the columns 'value' and 'trial_type' into a single event type.
