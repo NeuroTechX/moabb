@@ -90,5 +90,5 @@ def test_paradigm_returns_one_epoch_per_flash(monkeypatch):
     raw = ds._get_single_subject_data(1)["0"]["0"]
     n_flashes = len(mne.find_events(raw, stim_channel="stim_epoch", verbose=False))
     X, y, meta = CVEP().get_data(ds, subjects=[1, 2])
-    assert X.shape == (2 * n_flashes, len(_NAMES), int(0.25 * _SFREQ) + 1)
+    assert X.shape == (2 * n_flashes, 28, int(0.25 * _SFREQ) + 1)
     assert set(y) == {"0", "1"}
