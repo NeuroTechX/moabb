@@ -289,10 +289,11 @@ def test_every_seeding_dataset_declares_a_deposit():
         assert cls.nemar_id or cls.__subclasses__(), cls
 
 
-# upstream_cache_root of each deposit's latest release and one subject-1 file,
-# as their sourcedata_provenance.json records them, and the directory the
-# loader itself reads (relative to MNE_DATA).
-_STAGING = "/voyager/ceph/groups/sdp190/bpinto/moabb-nemar/mne_data"
+# upstream_cache_root of each deposit's latest release (from the MNE-<sign>-data
+# component on, which is all that is rebased) and one subject-1 file, as their
+# sourcedata_provenance.json records them, and the directory the loader itself
+# reads (relative to MNE_DATA).
+_STAGING = "/staging/mne_data"
 COMPLETED_DEPOSITS = [
     (
         "NETBCI2026",
@@ -318,33 +319,28 @@ COMPLETED_DEPOSITS = [
         "task1/0101001.cdt.dpa",
         "MNE-imumia2026-data/MI_A_Dataset/MI_A_Dataset/Raw_data",
     ),
-    (
-        "MAMEM1",
-        "/expanse/lustre/scratch/x/sourcedata_staging/mne_data/MNE-mamem1-data",
-        "27901941",
-        "MNE-mamem1-data",
-    ),
+    ("MAMEM1", f"{_STAGING}/MNE-mamem1-data", "27901941", "MNE-mamem1-data"),
     (
         "MAMEM2",
-        "/expanse/lustre/scratch/x/sourcedata_staging/mne_data/MNE-mamem2-data",
+        f"{_STAGING}/MNE-mamem2-data",
         "figshare_filelist_3153409.json",
         "MNE-mamem2-data",
     ),
     (
         "MAMEM3",
-        "/expanse/lustre/scratch/x/sourcedata_staging/mne_data/MNE-mamem3-data",
+        f"{_STAGING}/MNE-mamem3-data",
         "figshare_filelist_3413851.json",
         "MNE-mamem3-data",
     ),
     (
         "Kojima2024A",
-        "/home/bpinto/mne_data/MNE-Kojima2024A-data",
+        f"{_STAGING}/MNE-Kojima2024A-data",
         "kojima2024_manifest.json",
         "MNE-Kojima2024A-data",
     ),
     (
         "Kojima2024B",
-        "/home/bpinto/mne_data/MNE-Kojima2024B-data",
+        f"{_STAGING}/MNE-Kojima2024B-data",
         "kojima2024_manifest.json",
         "MNE-Kojima2024B-data",
     ),
