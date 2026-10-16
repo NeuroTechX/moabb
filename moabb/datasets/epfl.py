@@ -359,7 +359,7 @@ class EPFLP300(BaseDataset):
         if force_update or not (
             os.path.isdir(path_folder + "subject{:d}".format(subject))
         ):
-            logger.info("unzip", path_zip)
+            logger.info("Unzipping %s", path_zip)
             zip_ref = zipfile.ZipFile(path_zip, "r")
             zip_ref.extractall(path_folder)
 
