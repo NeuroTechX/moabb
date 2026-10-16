@@ -203,12 +203,23 @@ class Leelakittisin2025(BaseDataset):
             raise ValueError("Invalid subject number")
 
         url = f"{LEELAKITTISIN2025_BASE_URL}v1_raw_S{subject:02d}.zip?download=1"
+        subject_dir = f"S{subject:02d}"
+        # The NEMAR deposit (nm000330) keeps the extracted subject directory,
+        # not the ZIP: take it from the local store (or an earlier extraction)
+        # before downloading the archive.
+        extract_base = dl.data_dl_destination(url, self.code, path=path).parent
+        if not force_update:
+            dl.fill_tree_from_store(extract_base, subject_dir)
+            mat_paths = _resolve_mat_paths(extract_base / subject_dir, subject)
+            if len(mat_paths) == 2:
+                return [str(mat_path) for mat_path in mat_paths]
+
         path_zip = Path(
             dl.data_dl(
                 url, self.code, path=path, force_update=force_update, verbose=verbose
             )
         )
-        extract_dir = path_zip.parent / f"S{subject:02d}"
+        extract_dir = path_zip.parent / subject_dir
 
         # Zenodo's archives contain an extra ``v1_raw_s<ID>`` directory. Check
         # that nested layout before opening the archive: otherwise every

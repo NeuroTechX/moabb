@@ -559,6 +559,21 @@ def fill_tree_from_store(base_dir, member_dir):
     return fill_from_store(base_dir, [Path(base_dir, name) for name in names])
 
 
+def store_glob(pattern):
+    """Names in the active NEMAR store matching ``pattern``, relative to its root.
+
+    For loaders that locate a member by pattern rather than by a fixed name
+    (e.g. a subject directory named after its unknown recording date), before
+    handing the match to :func:`fill_tree_from_store`. Empty without an active
+    store.
+    """
+    store = _ACTIVE_STORE.get()
+    if store is None:
+        return []
+    store = Path(store)
+    return sorted(path.relative_to(store).as_posix() for path in store.glob(pattern))
+
+
 @verbose
 def nemar_dl(
     nemar_id,
