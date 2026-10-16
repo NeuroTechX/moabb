@@ -12,6 +12,7 @@ import importlib
 import os
 import socket
 import zipfile
+from pathlib import Path
 
 import pytest
 
@@ -110,8 +111,9 @@ def test_reads_the_subject_from_the_store(
         assert path.endswith(name.replace("/", os.sep))
         assert os.stat(path).st_ino == (store / name).stat().st_ino
     # Only this subject's files were placed.
+    root = Path(got[0]).as_posix()[: -len(files[0])]
     for name in others:
-        assert not any(os.path.exists(p.replace(n, name)) for p, n in zip(got, files))
+        assert not Path(root + name).exists()
 
 
 @pytest.mark.parametrize("make,subject,files,others", CASES, ids=IDS)
