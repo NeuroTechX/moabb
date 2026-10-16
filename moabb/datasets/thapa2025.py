@@ -116,6 +116,7 @@ class Thapa2025(BaseDataset):
     """
 
     nemar_id = "nm000324"
+    nemar_seed_cache = True
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(

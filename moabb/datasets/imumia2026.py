@@ -146,6 +146,7 @@ class IMUMIA2026(BaseDataset):
     """
 
     nemar_id = "nm000316"
+    nemar_seed_cache = True
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
