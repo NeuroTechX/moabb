@@ -1,11 +1,13 @@
 """Basketball motor-observation / motor-imagery EEG dataset (Han et al., 2026)."""
 
 import warnings
+from pathlib import Path
 
 import mne
 from mne.channels import make_standard_montage
 
 from moabb.datasets import download as dl
+from moabb.datasets._openneuro_mirror import OpenNeuroMirrorMixin
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
@@ -60,7 +62,7 @@ _MARKER_TO_CLASS = {"A11": "motor_observation", "A22": "motor_imagery"}
 _EVENTS = {"motor_observation": 1, "motor_imagery": 2}
 
 
-class Han2026(BaseDataset):
+class Han2026(OpenNeuroMirrorMixin, BaseDataset):
     """Basketball motor-observation / motor-imagery EEG dataset [1]_.
 
     Thirty-five healthy participants performed basketball-related motor
@@ -90,8 +92,9 @@ class Han2026(BaseDataset):
 
     """
 
-    # OpenNeuro ds007327 is the upstream source, not a verified NEMAR mirror.
-    # Leave nemar_id unset until a genuine NEMAR ID is independently verified.
+    # NEMAR's import of OpenNeuro ds007327 (raw BIDS, ``sub-001`` labels).
+    nemar_id = "on007327"
+    nemar_subject_template = "{subject:03d}"
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
@@ -205,9 +208,13 @@ class Han2026(BaseDataset):
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
         """Download the subject's dribble ``.set`` file and return ``[path]``."""
-        if subject not in self.subject_list:
-            raise ValueError("Invalid subject number")
+        mirror_root = self._mirror_root(subject, path, force_update, update_path, verbose)
         subj_str = f"sub-{subject:03d}"
+        if mirror_root is not None:
+            # The NEMAR import files the recording under the BIDS ``eeg/``
+            # datatype directory; OpenNeuro serves it at the subject root.
+            fname = f"{subj_str}_task-{_TASK}_eeg.set"
+            return [str(Path(mirror_root) / subj_str / "eeg" / fname)]
         url = f"{_S3_BASE}/{subj_str}/{subj_str}_task-{_TASK}_eeg.set"
         return [str(dl.data_dl(url, self.code, path, force_update, verbose))]
 

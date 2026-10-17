@@ -116,6 +116,10 @@ class PerezBlanco2026(BaseDataset):
     .. versionadded:: 1.8
     """
 
+    nemar_id = "nm000304"
+    # The deposit's sourcedata/ holds every subject's extracted run EDFs under
+    # sub-NN/eeg/, where data_path looks before it queries figshare.
+    nemar_seed_cache = True
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=_SFREQ,

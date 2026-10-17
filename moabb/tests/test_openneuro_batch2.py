@@ -13,13 +13,14 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from moabb.datasets import Daly2020, Damm2026, Peterson2020
+from moabb.datasets import Daly2020, Damm2026, Han2026, Peterson2020
 from moabb.datasets.base import BaseBIDSDataset
 
 
 CASES = [
     (Daly2020, "on002720", 1, "01"),
     (Damm2026, "on008446", 1, "01"),
+    (Han2026, "on007327", 1, "001"),
     (Peterson2020, "on003810", 2, "02"),
 ]
 
