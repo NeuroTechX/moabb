@@ -981,9 +981,9 @@ def plot_datasets_grid(
             n_subjects: int
                 Number of subjects in the dataset.
             n_sessions: int
-                Number of sessions in the dataset.
+                Number of sessions per subject.
             n_trials: int
-                Number of trials in the dataset.
+                Number of trials per subject, all sessions and runs together.
             trial_len: float
                 Length of each trial in seconds.
 
@@ -1029,9 +1029,9 @@ def plot_datasets_cluster(
             n_subjects: int
                 Number of subjects in the dataset.
             n_sessions: int
-                Number of sessions in the dataset.
+                Number of sessions per subject.
             n_trials: int
-                Number of trials in the dataset.
+                Number of trials per subject, all sessions and runs together.
             trial_len: float
                 Length of each trial in seconds.
 
