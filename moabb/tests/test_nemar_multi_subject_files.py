@@ -42,13 +42,18 @@ def test_pair_file_belongs_to_both_members(tmp_path, subject):
 
     patterns = dl._sourcedata_files_for_subject(target, "nm000205", subject, False)
 
-    assert patterns == ["sourcedata/" + glob.escape(n) for n in ("G7/G7D1.mat", "G7/G7D2.mat")]
+    assert patterns == [
+        "sourcedata/" + glob.escape(n) for n in ("G7/G7D1.mat", "G7/G7D2.mat")
+    ]
 
 
 def test_list_in_subject_field_matches_too(tmp_path):
     entries = [{"file": e["file"], "subject": e["subjects"]} for e in _ZHENG]
 
-    assert dl._manifest_subject_files({"files": entries}, 1) == ["G1/G1D1.mat", "G1/G1D2.mat"]
+    assert dl._manifest_subject_files({"files": entries}, 1) == [
+        "G1/G1D1.mat",
+        "G1/G1D2.mat",
+    ]
     assert dl._manifest_shared_files({"files": entries}) == []
 
 
