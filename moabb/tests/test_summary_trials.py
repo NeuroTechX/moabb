@@ -50,6 +50,8 @@ VERIFIED_TRIALS_PER_SUBJECT = {
     "BI2012": (766, 1),
     # subjects 1-7: 3,840 epochs over 8 sessions; subjects 8-24: 480 in 1
     "BI2013a": (480, 1),
+    # 420 to 1,788 epochs per subject (subject 1: 1,188)
+    "BI2014a": (892, 1),
     "BI2014b": (228, 1),
     # 972 to 4,956 epochs per subject (subject 1)
     "BI2015a": (1512, 3),
