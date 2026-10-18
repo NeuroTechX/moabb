@@ -193,7 +193,11 @@ def test_python_pipeline_config_reaches_joblib_workers(tmp_path):
         np.testing.assert_array_equal(predicted, expected)
 
 
-def test_python_pipeline_config_model_is_saved(tmp_path):
+@pytest.mark.parametrize("n_jobs", [1, 2])
+def test_python_pipeline_config_model_is_saved(tmp_path, n_jobs):
+    # Regression: save_model raised PicklingError for a function defined in a
+    # .py config, in the main process (module "custom" not importable) and in
+    # joblib workers (no worker can import a config module).
     (config,) = parse_pipelines_from_directory(
         _write_config(tmp_path / "configs" / "pipeline.py", "saved")
     )
@@ -204,6 +208,7 @@ def test_python_pipeline_config_model_is_saved(tmp_path):
         hdf5_path=str(tmp_path / "results"),
         save_model=True,
         overwrite=True,
+        n_jobs=n_jobs,
     )
 
     results = evaluation.process({config["name"]: config["pipeline"]})
@@ -211,6 +216,10 @@ def test_python_pipeline_config_model_is_saved(tmp_path):
     assert len(results) == 1
     saved = sorted((tmp_path / "results").rglob("fitted_model_*.pkl"))
     assert saved
-    with open(saved[0], "rb") as file:
-        model = pickle.load(file)
-    assert model[0].func is config["pipeline"][0].func
+    X, _ = _toy_data()
+    for path in saved:
+        with open(path, "rb") as file:
+            model = pickle.load(file)
+        np.testing.assert_allclose(model[0].func(X), config["pipeline"][0].func(X))
+        if n_jobs == 1:
+            assert model[0].func is config["pipeline"][0].func

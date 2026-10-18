@@ -5,7 +5,7 @@ import json
 import logging
 import warnings
 from pathlib import Path
-from pickle import HIGHEST_PROTOCOL, dump
+from pickle import HIGHEST_PROTOCOL, PicklingError, dump
 from typing import Sequence
 
 import numpy as np
@@ -130,6 +130,28 @@ def _check_if_is_pytorch_steps(model):
         return skorch_valid
 
 
+def _dump_model(model, file):
+    """Pickle ``model`` into the open binary ``file``.
+
+    pickle stores a function or class by reference to its module. In a joblib
+    worker (``n_jobs > 1``) the module of an object defined in a ``.py``
+    pipeline config cannot be imported, and neither can ``__main__`` objects
+    such as lambdas, so pickle fails there; cloudpickle stores those objects
+    by value instead. The file is read back with :func:`pickle.load` either way.
+    """
+    try:
+        dump(model, file, protocol=HIGHEST_PROTOCOL)
+    except (PicklingError, AttributeError):
+        try:
+            import cloudpickle  # a joblib dependency since joblib 1.6
+        except ImportError:
+            from joblib.externals import cloudpickle  # vendored before 1.6
+
+        file.seek(0)
+        file.truncate()
+        cloudpickle.dump(model, file, protocol=HIGHEST_PROTOCOL)
+
+
 def _save_model_cv(model: object, save_path: str | Path, cv_index: str | int):
     """Save a model fitted to a given fold from cross-validation.
 
@@ -175,10 +197,10 @@ def _save_model_cv(model: object, save_path: str | Path, cv_index: str | int):
                 )
             else:
                 with _open_lock((Path(save_path) / f"{file_step}.pkl"), "wb") as file:
-                    dump(step, file, protocol=HIGHEST_PROTOCOL)
+                    _dump_model(step, file)
     else:
         with _open_lock((Path(save_path) / f"fitted_model_{cv_index}.pkl"), "wb") as file:
-            dump(model, file, protocol=HIGHEST_PROTOCOL)
+            _dump_model(model, file)
 
 
 def _save_model_list(model_list: list | Pipeline, score_list: Sequence, save_path: str):
