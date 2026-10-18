@@ -37,6 +37,16 @@ except ImportError:
     _carbonfootprint = False
 
 
+def _sklearn_is_fitted_true():
+    """``__sklearn_is_fitted__`` that :func:`_ensure_fitted` sets on an estimator.
+
+    pickle stores it by reference to this module. A method bound to a local
+    function was stored as ``getattr(estimator, "_sklearn_is_fitted_true")``,
+    which does not exist on the class, so the saved model failed to load.
+    """
+    return True
+
+
 def _ensure_fitted(estimator):
     """Ensure an estimator is properly marked as fitted for sklearn 1.8+.
 
@@ -66,26 +76,16 @@ def _ensure_fitted(estimator):
     We add a __sklearn_is_fitted__ method that returns True.
     """
 
-    # Define a method that returns True to indicate fitted state
-    def _sklearn_is_fitted_true(self):
-        return True
-
-    # Add __sklearn_is_fitted__ method if not present or if it returns False
+    # Add __sklearn_is_fitted__ if not present or if it returns False. It is a
+    # module-level function stored on the instance (not a method bound to a
+    # local function), so that saved models can be unpickled.
     if not hasattr(estimator, "__sklearn_is_fitted__"):
-        import types
-
-        estimator.__sklearn_is_fitted__ = types.MethodType(
-            _sklearn_is_fitted_true, estimator
-        )
+        estimator.__sklearn_is_fitted__ = _sklearn_is_fitted_true
     else:
         # Check if existing method returns False (unfitted)
         try:
             if not estimator.__sklearn_is_fitted__():
-                import types
-
-                estimator.__sklearn_is_fitted__ = types.MethodType(
-                    _sklearn_is_fitted_true, estimator
-                )
+                estimator.__sklearn_is_fitted__ = _sklearn_is_fitted_true
         except Exception:
             pass
 
