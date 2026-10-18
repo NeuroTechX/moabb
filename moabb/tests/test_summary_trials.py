@@ -22,6 +22,7 @@ from moabb.datasets.base import get_summary_table
 # every subject with MOABB's own paradigms in the October 2026 benchmark rerun:
 # within-session result rows (trials of each session, summed per subject) for
 # motor imagery and SSVEP, epoch counts of ``P300().get_data`` for P300.
+# ``#Sessions`` starts with the sessions of that median subject.
 VERIFIED_TRIALS_PER_SUBJECT = {
     # motor imagery
     "AlexMI": (60, 1),
@@ -41,37 +42,39 @@ VERIFIED_TRIALS_PER_SUBJECT = {
     "Kalunga2016": (64, 1),
     "Lee2019_SSVEP": (200, 2),
     "MAMEM1": (115, 1),
+    "MAMEM2": (125, 1),
+    "MAMEM3": (125, 1),
     "Nakanishi2015": (180, 1),
     "Wang2016": (240, 1),
     # P300 (non-target + target epochs)
     "BI2012": (766, 1),
+    # subjects 1-7: 3,840 epochs over 8 sessions; subjects 8-24: 480 in 1
+    "BI2013a": (480, 1),
+    "BI2014b": (228, 1),
+    # 972 to 4,956 epochs per subject (subject 1)
+    "BI2015a": (1512, 3),
+    "BI2015b": (2640, 1),
     "BNCI2014_008": (4200, 1),
     "BNCI2014_009": (1728, 3),
     "BNCI2015_003": (1800, 1),
+    "Cattan2019_VR": (1440, 2),
     "EPFLP300": (3290, 4),
+    "Huebner2017": (12850, 3),
+    "Huebner2018": (14280, 3),
+    "Lee2019_ERP": (8280, 2),
+    # one pseudo-session per trial of 90 tones: 60 trials (80 for subject 1)
+    "Sosulski2019": (5400, 60),
 }
 
-# Rows whose Total_trials is still not about #Subj x #Classes x #Trials / class
-# (most of them multiply it again by #Sessions or #Runs). Their counts have not
-# been checked against the data yet; remove a row from this set once fixed.
+# Rows whose Total_trials is still not about #Subj x #Classes x #Trials / class.
+# Neither the data nor the dataset's documentation gives their counts per
+# subject yet; remove a row from this set once fixed.
 UNVERIFIED_TOTAL_TRIALS = {
-    "BNCI2003_004",
-    "BNCI2020_001",
-    "Beetl2021_A",
-    "Dreyer2023",
-    "Dreyer2023A",
-    "Dreyer2023B",
-    "Dreyer2023C",
-    "Gao2026",
-    "GuttmannFlury2025_ME",
-    "GuttmannFlury2025_MI",
-    "Kaya2018",
-    "Liu2025",
-    "Ofner2017",
-    "Stieger2021",
-    "Wang2026Handwriting",
-    "Yang2025",
-    "Zhou2020",
+    "BNCI2003_004",  # the loader keeps only the labelled cues
+    "BNCI2020_001",  # rest events per subject are not documented
+    "Beetl2021_A",  # training trials per subject are not documented
+    "Kaya2018",  # variable number of trials per session
+    "Stieger2021",  # 450 trials per session for all classes together
 }
 
 
@@ -102,6 +105,19 @@ def test_bubble_size_counts_each_trial_once(name):
         f"over {sessions} session(s)"
     )
     assert duration == pytest.approx(n_trials * trial_len)
+
+
+@pytest.mark.parametrize("name", sorted(VERIFIED_TRIALS_PER_SUBJECT))
+def test_sessions_is_that_of_a_typical_subject(name):
+    # The plots read the first integer of ``#Sessions``: when the number of
+    # sessions varies, the cell must start with that of the median subject,
+    # e.g. "1 (8 for subjects 1-7)".
+    _, sessions = VERIFIED_TRIALS_PER_SUBJECT[name]
+    _, _, _, n_sessions, _, _ = _dataset_parameters(name)
+    assert n_sessions == sessions, (
+        f"{name}: #Sessions gives {n_sessions} sessions, the median subject "
+        f"has {sessions}"
+    )
 
 
 def test_bubble_size_does_not_depend_on_sessions():

@@ -55,7 +55,7 @@ Column definitions:
 - **Trials length** is the duration of trial in seconds.
 - **Total_trials** is the total number of trials in the dataset (all subjects, sessions, runs and classes together). It is about **#Subj** × **#Classes** × **#Trials / class**, exactly that when every subject has the same number of trials; it is not multiplied again by **#Sessions** or **#Runs**.
 - **Freq** is the sampling frequency of the raw data.
-- **#Sessions** is the number of sessions per subject. Different sessions are often recorded on different days.
+- **#Sessions** is the number of sessions per subject, as the dataset class returns them by default. Different sessions are often recorded on different days. When subjects differ, the cell starts with the number of sessions of a typical (median) subject and gives the others in parentheses, e.g. ``1 (8 for subjects 1-7)`` or ``2 (1-3)``: :func:`~moabb.datasets.utils.plot_datasets_grid` and :func:`~moabb.analysis.plotting.dataset_bubble_plot` read the first integer of the cell.
 - **#Runs** is the number of runs per session. A run is a continuous recording of the EEG data. Often, the different runs of a given session are recorded without removing the EEG cap in between.
 
 
