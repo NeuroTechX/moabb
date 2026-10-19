@@ -70,6 +70,17 @@ class EPFLP300(BaseDataset):
     810 trials, and the whole data for one subject consisted on average of 3240
     trials.
 
+    Notes
+    -----
+    In the files of subject 3, the rows of T7 and T8 in sessions ``"0"`` and
+    ``"1"`` (the first recording day) are identical to those of the mastoid
+    channels MA1 and MA2. After the mastoid re-reference applied by this class,
+    T7 is the opposite of T8 in these two sessions, so their 32 EEG channels
+    have rank 31. Covariance estimators without shrinkage, such as the
+    ``"scm"`` ``xdawn_estimator`` of ``pyriemann.estimation.XdawnCovariances``,
+    then fail with a ``LinAlgError`` or fit a spatial filter to rounding noise;
+    shrinkage estimators (``"lwf"``, ``"oas"``) are not affected.
+
     References
     ----------
 
