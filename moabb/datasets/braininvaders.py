@@ -299,9 +299,7 @@ def _bi_data_path(  # noqa: C901
         # fill_tree_from_store is all-or-nothing over the files it holds, so
         # a partial deposit falls through to the ZIPs below.
         dest0 = str(
-            dl.data_dl_destination(
-                BI2013a_URL + zipname_list[0], "BRAININVADERS2013"
-            )
+            dl.data_dl_destination(BI2013a_URL + zipname_list[0], "BRAININVADERS2013")
         )
         folder0 = dest0.strip(zipname_list[0])
         dl.fill_tree_from_store(folder0, f"subject_{subject:02}")
