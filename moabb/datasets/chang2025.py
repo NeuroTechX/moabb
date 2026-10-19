@@ -361,12 +361,15 @@ class Chang2025(BaseDataset):
         url = f"{_FIGSHARE_BASE}{file_id}"
 
         log.info("Downloading Chang2025 %s for subject %d ...", zip_name, subject)
+        # The NEMAR deposit nests the file under MNE-chang2025-data/; probe
+        # that store path so the lookup matches instead of downloading.
         local_zip = dl.data_dl(
             url,
             "Chang2025",
-            path=str(basepath),
+            path=str(basepath.parent),
             force_update=force_update,
             verbose=verbose,
+            fname=f"MNE-chang2025-data/files/{file_id}",
         )
 
         # Extract the ZIP.
