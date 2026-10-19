@@ -372,8 +372,14 @@ class Chang2025(BaseDataset):
             fname=f"MNE-chang2025-data/files/{file_id}",
         )
 
-        # Extract the ZIP.
+        # Extract the ZIP. data_dl returns the destination it filled (from
+        # the store or the network); fall back to it if the returned path
+        # does not name the file (pooch may return the containing folder).
         local_zip_path = Path(local_zip)
+        if not local_zip_path.is_file():
+            candidate = local_zip_path / f"MNE-chang2025-data/files/{file_id}"
+            if candidate.is_file():
+                local_zip_path = candidate
         if local_zip_path.exists() and not subj_dir.exists():
             log.info("Extracting %s ...", local_zip_path.name)
             with zipfile.ZipFile(str(local_zip_path), "r") as zf:

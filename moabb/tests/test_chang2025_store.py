@@ -53,7 +53,7 @@ def test_chang2025_data_path_serves_zip_from_store(mne_data, tmp_path, monkeypat
     monkeypatch.setattr(
         dl,
         "_retrieve_with_physionet_fallback",
-        lambda *a, **k: called.append(a) or str(Path(k["path"]) / k["fname"]),
+        lambda *a, **k: called.append(a) or k["path"],  # pooch may return the folder
     )
     monkeypatch.setattr(
         socket.socket, "connect", lambda s, a: (_ for _ in ()).throw(AssertionError(a))
