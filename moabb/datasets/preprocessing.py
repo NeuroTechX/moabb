@@ -1104,8 +1104,82 @@ def get_crop_pipeline(tmin, tmax):
     )
 
 
-def get_resample_pipeline(sfreq):
-    """Return a pipeline step that applies MNE resampling: :meth:`mne.io.BaseRaw.resample`."""
+def _n_times_in_window(tmin, tmax, sfreq):
+    """Number of samples :class:`mne.Epochs` gives for ``[tmin, tmax]`` at ``sfreq``.
+
+    MNE rounds both ends of the window to the nearest sample.
+    """
+    return int(round(tmax * sfreq)) - int(round(tmin * sfreq)) + 1
+
+
+def _keep_first_samples(epochs, n_times):
+    """Keep the first ``n_times`` samples of preloaded epochs (in place).
+
+    :meth:`mne.Epochs.crop` selects samples by time, rounded on the grid of
+    multiples of ``1 / sfreq``. When the first sample lies half a sample off
+    that grid (e.g. ``tmin=0.0625`` s at 128 Hz resampled to 200 Hz) the
+    rounding can keep or drop a sample at either end, so the first sample is
+    moved to 0 s for the crop and the original times are restored after it.
+    """
+    if len(epochs.times) <= n_times:
+        return epochs
+    t0 = epochs.times[0]
+    epochs.shift_time(0.0, relative=False)
+    epochs.crop(
+        tmax=(n_times - 1) / epochs.info["sfreq"], include_tmax=True, verbose=False
+    )
+    epochs.shift_time(t0, relative=False)
+    return epochs
+
+
+class _ResampleInWindow:
+    """Resample, then keep at most ``n_times`` samples per epoch.
+
+    A module-level class (not a closure) so that the pipeline can be pickled
+    for parallel loading.
+    """
+
+    def __init__(self, sfreq, n_times):
+        self.sfreq = sfreq
+        self.n_times = n_times
+
+    def __call__(self, inst):
+        inst = inst.resample(sfreq=self.sfreq, verbose=False)
+        if isinstance(inst, mne.BaseEpochs):
+            inst = _keep_first_samples(inst, self.n_times)
+        return inst
+
+    def __repr__(self):
+        return f"resample(sfreq={self.sfreq}, max_n_times={self.n_times})"
+
+
+def get_resample_pipeline(sfreq, tmin=None, tmax=None):
+    """Return a pipeline step that applies MNE resampling: ``inst.resample(sfreq)``.
+
+    MNE gives ``round(n * sfreq / native_sfreq)`` samples for ``n`` samples
+    at the native rate, so epochs of one window recorded at different native
+    rates can differ in length, and upsampled epochs can end after the window:
+    a 0-3 s epoch has 481 samples at 160 Hz and 601 at 200 Hz, but 385 samples
+    at 128 Hz give 602 at 200 Hz, the last one at 3.005 s.
+
+    Parameters
+    ----------
+    sfreq : float
+        New sampling frequency (Hz).
+    tmin, tmax : float | None
+        Time window of the epochs (s). If both are given, resampled epochs keep
+        at most ``round(tmax * sfreq) - round(tmin * sfreq) + 1`` samples, the
+        number :class:`mne.Epochs` gives for this window at ``sfreq``: samples
+        that resampling placed after the window are dropped. Downsampling by
+        more than a factor of two can give one sample less (MNE rounds the
+        resampled length down); nothing is padded. A ``Raw`` is only resampled.
+    """
+    if tmin is not None and tmax is not None:
+        n_times = _n_times_in_window(tmin, tmax, sfreq)
+        return NamedFunctionTransformer(
+            func=_ResampleInWindow(sfreq, n_times),
+            display_name=f"Resample ({sfreq} Hz, at most {n_times} samples)",
+        )
     return NamedFunctionTransformer(
         func=methodcaller("resample", sfreq=sfreq, verbose=False),
         display_name=f"Resample ({sfreq} Hz)",
