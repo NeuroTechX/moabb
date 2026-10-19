@@ -136,9 +136,7 @@ class ErpCore2021(BaseDataset):
     """
 
     METADATA = DatasetMetadata(
-        acquisition=AcquisitionMetadata(
-            sampling_rate=1024.0, channel_types={"eeg": 30}
-        ),
+        acquisition=AcquisitionMetadata(sampling_rate=1024.0, channel_types={"eeg": 30}),
         participants=ParticipantMetadata(n_subjects=40),
         experiment=ExperimentMetadata(paradigm="p300"),
         documentation=DocumentationMetadata(

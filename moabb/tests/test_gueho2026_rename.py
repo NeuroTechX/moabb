@@ -2,10 +2,7 @@
 
 import logging
 
-import pytest
-
 from moabb.datasets import Gueho2026, Lenaig2026
-from moabb.datasets.base import BaseDataset
 
 
 def test_gueho_is_real_class_with_unchanged_code():

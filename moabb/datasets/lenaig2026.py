@@ -11,6 +11,8 @@ from pathlib import Path
 import mne
 import numpy as np
 
+from moabb.utils import depreciated_alias
+
 from . import download as dl
 from .base import BaseDataset
 from .metadata.schema import (
@@ -21,8 +23,6 @@ from .metadata.schema import (
     ExperimentMetadata,
     ParticipantMetadata,
 )
-from moabb.utils import depreciated_alias
-
 from .utils import extract_rar
 
 
