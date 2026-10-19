@@ -377,9 +377,14 @@ class Chang2025(BaseDataset):
         # does not name the file (pooch may return the containing folder).
         local_zip_path = Path(local_zip)
         if not local_zip_path.is_file():
-            candidate = local_zip_path / f"MNE-chang2025-data/files/{file_id}"
-            if candidate.is_file():
-                local_zip_path = candidate
+            for cand in (
+                local_zip_path / f"MNE-chang2025-data/files/{file_id}",
+                local_zip_path / "files" / str(file_id),
+                local_zip_path / str(file_id),
+            ):
+                if cand.is_file():
+                    local_zip_path = cand
+                    break
         if local_zip_path.exists() and not subj_dir.exists():
             log.info("Extracting %s ...", local_zip_path.name)
             with zipfile.ZipFile(str(local_zip_path), "r") as zf:
