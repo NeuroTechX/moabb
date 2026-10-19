@@ -14,7 +14,6 @@ GuttmannFlury2025's deposit nests subjects 5 and 9 one level deeper
 import json
 import os
 import socket
-from pathlib import Path
 
 import pytest
 
@@ -76,13 +75,7 @@ CASES = [
         ["Control/SUB17/SUB17_MI.vhdr"],
         "SUB17",
     ),
-    (
-        "Jeong2020",
-        1,
-        f"{_STAGING}/MNE-jeong2020-data",
-        ["sub1/session1.vhdr"],
-        "sub1",
-    ),
+    ("Jeong2020", 1, f"{_STAGING}/MNE-jeong2020-data", ["sub1/session1.vhdr"], "sub1"),
     (
         "Stieger2021",
         1,
@@ -139,12 +132,14 @@ def test_seeded_subject_loads_without_download(
     monkeypatch.setattr(dl, "data_dl", _no_download)
     monkeypatch.setattr(socket.socket, "connect", _forbid_connect)
     if name == "Stieger2021":
-        monkeypatch.setattr(
-            dl, "fs_get_file_list", _no_download, raising=False
-        )
+        monkeypatch.setattr(dl, "fs_get_file_list", _no_download, raising=False)
 
     returned = dataset.data_path(subject)
-    flat = [str(p) for p in returned] if isinstance(returned, (list, tuple)) else [str(returned)]
+    flat = (
+        [str(p) for p in returned]
+        if isinstance(returned, (list, tuple))
+        else [str(returned)]
+    )
     assert any(hit in p for p in flat), (name, returned)
 
 
