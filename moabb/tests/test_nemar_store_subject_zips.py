@@ -43,11 +43,7 @@ CASES = [
         [f"P01/P01_Se{s:02d}.DAT" for s in (1, 2, 3, 4)],
         id="Tavakolan2017",
     ),
-    pytest.param(
-        Liu2025,
-        ["sub-01/sub-01_task-test_eeg.vhdr"],
-        id="Liu2025",
-    ),
+    pytest.param(Liu2025, ["sub-01/sub-01_task-test_eeg.vhdr"], id="Liu2025"),
     pytest.param(Zhou2020, ["S01/session/file.npz"], id="Zhou2020"),
     pytest.param(Wu2020, ["subject1/subject1.dat"], id="Wu2020"),
 ]
