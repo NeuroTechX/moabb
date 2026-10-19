@@ -357,6 +357,11 @@ class Chang2025(BaseDataset):
         if target_zip is None:
             raise ValueError(f"No download ZIP found for subject {subject}")
 
+        # The NEMAR deposit keeps the extracted subjects; take the subject
+        # tree from the store before downloading the ZIP that contains it.
+        if not force_update and dl.fill_tree_from_store(basepath, orig_id):
+            return str(basepath)
+
         zip_name, file_id = target_zip
         url = f"{_FIGSHARE_BASE}{file_id}"
 

@@ -40,6 +40,25 @@ def test_chang2025_store_lookup_uses_deposit_prefix(tmp_path, monkeypatch):
     assert hit == str(stored)
 
 
+def test_chang2025_data_path_serves_extracted_tree_from_store(
+    mne_data, tmp_path, monkeypatch
+):
+    # Real deposit layout: extracted S201/... tree (the ZIP itself is only
+    # kept as a .part by the deposit fetch).
+    store = tmp_path / "store2"
+    member = store / "S201" / "session" / "run.set"
+    member.parent.mkdir(parents=True)
+    from scipy.io import savemat
+
+    savemat(member, {"data": ""})
+    monkeypatch.setattr(
+        dl, "data_dl", lambda *a, **k: (_ for _ in ()).throw(AssertionError("data_dl"))
+    )
+    with dl.active_sourcedata_store(store):
+        returned = Chang2025().data_path(1)
+    assert list(Path(returned, "S201").rglob("*.set"))
+
+
 def test_chang2025_data_path_serves_zip_from_store(mne_data, tmp_path, monkeypatch):
     import zipfile
 
