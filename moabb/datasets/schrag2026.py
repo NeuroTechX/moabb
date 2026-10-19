@@ -154,6 +154,7 @@ class Schrag2026Pediatric(BaseDataset):
     """
 
     nemar_id = "nm000334"
+    nemar_seed_cache = True
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
@@ -348,6 +349,16 @@ class Schrag2026Pediatric(BaseDataset):
     ):
         if subject not in self.subject_list:
             raise ValueError(f"Invalid subject number: {subject}")
+
+        # A seeded NEMAR store (or an earlier extraction) already holds the
+        # subject tree; only download the ZIP when it is not there.
+        seeded_dir = (
+            Path(dl.get_dataset_path(_SIGN, path))
+            / f"MNE-{_SIGN.lower()}-data"
+            / f"P{subject:03d}"
+        )
+        if not force_update and (seeded_dir / "EEG").is_dir():
+            return str(seeded_dir)
 
         # The Zenodo download URL ends in "/content", so name the file
         # explicitly rather than letting it be derived from the URL.
