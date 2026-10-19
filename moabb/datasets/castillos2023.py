@@ -212,8 +212,17 @@ class BaseCastillos2023(BaseDataset):
         subject_paths = []
 
         url = "https://zenodo.org/records/8255618/files/4Class-CVEP.zip"
-        path_zip = dl.data_dl(url, "4Class-VEP", path, force_update, verbose)
+        # All four classes share this one 0.6 GB ZIP and its extracted tree;
+        # each NEMAR deposit keeps its paradigm's members under the same
+        # 4Class-CVEP/ tree. Take the tree from the store before downloading
+        # (the cache folder is shared, so it is fetched at most once).
+        path_zip = str(dl.data_dl_destination(url, "4Class-VEP", path=path))
         path_folder = osp.join(osp.dirname(path_zip), "")
+        if not osp.isdir(path_folder + "4Class-CVEP"):
+            dl.fill_tree_from_store(path_folder, "4Class-CVEP")
+        if not osp.isdir(path_folder + "4Class-CVEP"):
+            path_zip = dl.data_dl(url, "4Class-VEP", path, force_update, verbose)
+            path_folder = osp.join(osp.dirname(path_zip), "")
 
         # check if has to unzip
         if not (osp.isdir(path_folder + "4Class-CVEP")):
