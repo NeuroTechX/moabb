@@ -665,7 +665,15 @@ class BaseDataset(metaclass=MetaclassDataset):
                 "See moabb.datasets.base.is_camel_kebab_case for more information."
             )
         class_name = self.__class__.__name__.replace("_", "-")
-        if not is_abbrev(class_name, code):
+        # Renamed classes keep their original ``code`` (cache key); the old
+        # name in ``aliases_list`` marks the pair, so do not warn about it.
+        from moabb.utils import aliases_list
+
+        renamed = any(
+            new.replace("_", "-") == class_name and old == code
+            for old, new, _expire in aliases_list
+        )
+        if not renamed and not is_abbrev(class_name, code):
             log.warning(
                 f"The dataset class name {class_name!r} must be an abbreviation "
                 f"of its code {code!r}. "
@@ -775,10 +783,20 @@ class BaseDataset(metaclass=MetaclassDataset):
         250.0
         """
         from moabb.datasets.metadata import get_dataset_metadata
+        from moabb.utils import aliases_list
 
+        name = self.__class__.__name__
         try:
-            return get_dataset_metadata(self.__class__.__name__)
+            return get_dataset_metadata(name)
         except KeyError:
+            # Deprecated aliases are excluded from the catalog; resolve them
+            # to the renamed class's metadata.
+            for old, new, _expire in aliases_list:
+                if old == name:
+                    try:
+                        return get_dataset_metadata(new)
+                    except KeyError:
+                        break
             return None
 
     def _create_process_pipeline(self):

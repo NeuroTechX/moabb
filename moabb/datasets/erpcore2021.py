@@ -20,6 +20,13 @@ from mne_bids import BIDSPath, read_raw_bids
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
+from moabb.datasets.metadata.schema import (
+    AcquisitionMetadata,
+    DatasetMetadata,
+    DocumentationMetadata,
+    ExperimentMetadata,
+    ParticipantMetadata,
+)
 from moabb.utils import _handle_deprecated_kwargs, get_download_provider
 
 
@@ -98,7 +105,7 @@ _docstring_tail = """
 
 
 class ErpCore2021(BaseDataset):
-    __doc__ = f"""Abstract base dataset class the ERP CORE dataset by Kappenman et al. 2020.
+    __doc__ = f"""Abstract base dataset class the ERP CORE dataset by Kappenman et al. 2021.
     {_docstring_head}
     **Experimental procedures**:
     - **N170**: Subjects viewed faces and objects to elicit the N170 component. In this task,
@@ -127,6 +134,25 @@ class ErpCore2021(BaseDataset):
     arrowhead on each trial with a left- or right-hand buttonpress.
     {_docstring_tail}
     """
+
+    METADATA = DatasetMetadata(
+        acquisition=AcquisitionMetadata(sampling_rate=1024.0, channel_types={"eeg": 30}),
+        participants=ParticipantMetadata(n_subjects=40),
+        experiment=ExperimentMetadata(paradigm="p300"),
+        documentation=DocumentationMetadata(
+            doi="10.1016/j.neuroimage.2020.117465",
+            data_url="https://doi.org/10.18115/D5JW4R",
+            investigators=[
+                "Emily S. Kappenman",
+                "Jaclyn L. Farrens",
+                "Wendy Zhang",
+                "Andrew X. Stewart",
+                "Steven J. Luck",
+            ],
+            publication_year=2021,
+            repository="ERP CORE",
+        ),
+    )
 
     def __init__(
         self, task, subjects=None, sessions=None, *, return_all_modalities=False, **kwargs

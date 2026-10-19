@@ -1195,6 +1195,7 @@ class BNCI2025_002(BNCIBaseDataset):
             doi="10.1088/1741-2552/ac689f",
             description="Continuous 2D trajectory decoding from attempted movement: across-session performance in able-bodied and feasibility in a spinal cord injured participant",
             investigators=[
+                "Robert J Kobler",
                 "Hannah S Pulferer",
                 "Brynja Ásgeirsdóttir",
                 "Valeria Mondini",

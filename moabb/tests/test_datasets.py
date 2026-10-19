@@ -68,7 +68,7 @@ NEMAR_ID_EXEMPT = {
     # class attribute would only make every load try NEMAR and fall back.
     # Set ``nemar_id`` once each deposit is published.
     "Brodu2012",  # nm000366 (licence "free for research use": author consent)
-    "Lenaig2026",  # nm000333 (CC BY-NC-ND 4.0: a conversion is an adaptation)
+    "Gueho2026",  # nm000333 (Lenaig2026 alias) (CC BY-NC-ND 4.0: a conversion is an adaptation)
     "MartinezPeon2025",  # nm000332 (CC BY-NC-SA 4.0: authors' permission)
     "MIBMPI2024",  # nm000331 (licence/consent evidence requested by NEMAR)
     "MIND2026",  # nm000337 (acquisition timestamps to coarsen)
@@ -378,6 +378,8 @@ class Test_Datasets:
 
     @pytest.mark.parametrize("dataset", dataset_list)
     def test_all_datasets_have_valid_nemar_id(self, dataset):
+        if dataset.__name__ in {old for old, _n, _e in aliases_list}:
+            pytest.skip("deprecated alias")
         if dataset.__name__ in NEMAR_ID_EXEMPT:
             pytest.skip(f"{dataset.__name__} has no NEMAR deposit")
         if dataset.__name__ in NEMAR_ID_PENDING:
@@ -943,7 +945,10 @@ class TestSubjectSessionFiltering:
 
     def test_all_datasets_accept_subjects_param(self):
         """Every dataset class in dataset_list accepts subjects or sessions."""
+        deprecated = {old for old, _new, _exp in aliases_list}
         for cls in dataset_list:
+            if cls.__name__ in deprecated:
+                continue  # deprecated alias: delegates to the renamed class
             sig = inspect.signature(cls.__init__)
             params = set(sig.parameters.keys())
             # Check own params or inherited from parent
