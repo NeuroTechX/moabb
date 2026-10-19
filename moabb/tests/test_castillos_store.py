@@ -26,7 +26,8 @@ def mne_data(tmp_path, monkeypatch):
 
 def test_castillos_reads_shared_tree_from_store(mne_data, tmp_path, monkeypatch):
     store = tmp_path / "store"
-    member = store / "4Class-CVEP" / "P1" / "P1_mseq40.set"
+    # Real deposit layout (nm000342): P1/... directly, no 4Class-CVEP/ level.
+    member = store / "P1" / "P1_mseq40.set"
     member.parent.mkdir(parents=True)
     # A real (tiny) EEGLAB-style .set whose data is stored inline, so
     # _missing_companions finds no external .fdt reference.

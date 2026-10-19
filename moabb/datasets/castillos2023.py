@@ -219,7 +219,16 @@ class BaseCastillos2023(BaseDataset):
         path_zip = str(dl.data_dl_destination(url, "4Class-VEP", path=path))
         path_folder = osp.join(osp.dirname(path_zip), "")
         if not osp.isdir(path_folder + "4Class-CVEP"):
+            # Deposit layout is <subj>/... directly (no 4Class-CVEP/ level);
+            # the loader reads 4Class-CVEP/P<n>/..., so fill that level too.
             dl.fill_tree_from_store(path_folder, "4Class-CVEP")
+        if not osp.isdir(path_folder + "4Class-CVEP"):
+            store_files = dl.store_glob(f"P{subject}/*_{paradigm_type}.set")
+            if store_files:
+                dl.fill_from_store(
+                    osp.join(path_folder, "4Class-CVEP"),
+                    [osp.join(path_folder, "4Class-CVEP", f) for f in store_files],
+                )
         if not osp.isdir(path_folder + "4Class-CVEP"):
             path_zip = dl.data_dl(url, "4Class-VEP", path, force_update, verbose)
             path_folder = osp.join(osp.dirname(path_zip), "")
