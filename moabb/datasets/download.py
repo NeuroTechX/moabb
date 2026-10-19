@@ -559,6 +559,12 @@ def fill_tree_from_store(base_dir, member_dir):
     return fill_from_store(base_dir, [Path(base_dir, name) for name in names])
 
 
+def active_store():
+    """The active local sourcedata store root, or None."""
+    store = _ACTIVE_STORE.get()
+    return Path(store) if store is not None else None
+
+
 def store_glob(pattern):
     """Names in the active NEMAR store matching ``pattern``, relative to its root.
 
