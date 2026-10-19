@@ -29,6 +29,7 @@ from .bnci import (
     BNCI2014_001,
     BNCI2014_002,
     BNCI2014_004,
+    BNCI2014_007,
     BNCI2014_008,
     BNCI2014_009,
     BNCI2015_001,

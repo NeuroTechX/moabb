@@ -19,6 +19,7 @@ from .bnci_2014 import (
     BNCI2014008,
     BNCI2014009,
 )
+from .bnci_2014_007 import BNCI2014_007
 from .bnci_2015 import (
     BNCI2015_001,
     BNCI2015_003,
@@ -53,6 +54,7 @@ __all__ = [
     "BNCI2014_001",
     "BNCI2014_002",
     "BNCI2014_004",
+    "BNCI2014_007",
     "BNCI2014_008",
     "BNCI2014_009",
     "BNCI2015_001",
