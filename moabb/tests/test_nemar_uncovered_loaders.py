@@ -163,3 +163,39 @@ def test_guttmann_p300_accepts_double_nested_seed(mne_data, monkeypatch):
     monkeypatch.setattr(socket.socket, "connect", _forbid_connect)
     returned = dataset.data_path(5)
     assert returned.endswith(os.path.join("S05", "S05"))
+
+
+def test_seed_tolerates_prerename_brainvision_companion(mne_data, tmp_path):
+    """A header naming the pre-rename marker file must not block seeding.
+
+    Thapa2025's deposit renamed subject 9's recordings to BIDS names; one
+    header still references the original ``EEGReaching_...`` marker file.
+    The loader overrides the marker name with the header's own stem, so the
+    same-stem ``.vmrk`` in the deposit satisfies the reference.
+    """
+    import moabb.datasets as datasets
+
+    dataset = datasets.Thapa2025()
+    store = dl.nemar_store(dataset.code, dataset.nemar_id)
+    header = "sub-09/ses-02/eeg/sub-09_run-0009_eeg.vhdr"
+    for member in (header, header.replace(".vhdr", ".eeg"), header.replace(".vhdr", ".vmrk")):
+        path = store / "sourcedata" / member
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(
+            "DataFile=sub-09_run-0009_eeg.eeg\n"
+            "MarkerFile=EEGReaching_Hsub-09_run-0009_eegIQ863_0009.vmrk\n"
+            if member.endswith(".vhdr")
+            else member
+        )
+    record = {
+        "upstream_cache_root": f"{_STAGING}/MNE-Thapa2025-data",
+        "files": [
+            {"file": "dataset_description.json"},
+            *(
+                {"file": m, "subject": 9}
+                for m in (header, header.replace(".vhdr", ".eeg"), header.replace(".vhdr", ".vmrk"))
+            ),
+        ],
+    }
+    (store / dl.SOURCEDATA_PROVENANCE).write_text(json.dumps(record))
+    assert dataset._seed_loader_cache(9) == 3

@@ -917,8 +917,22 @@ def _missing_companions(sourcedata_dir, files):
         except OSError:
             continue
         for companion in _BRAINVISION_COMPANION.findall(text):
-            if not (header.parent / companion).is_file():
-                missing.add(str(PurePosixPath(name).parent / companion))
+            if (header.parent / companion).is_file():
+                continue
+            # Some deposits rename the recordings to BIDS names but leave the
+            # header naming the pre-rename file (Thapa2025 subject 9). The
+            # loaders that read such deposits override the data/marker file
+            # names with the header's own stem, so a same-suffix companion
+            # under that stem satisfies the reference.
+            stem = PurePosixPath(name).stem
+            if any(
+                PurePosixPath(f).parent == PurePosixPath(name).parent
+                and PurePosixPath(f).stem == stem
+                and PurePosixPath(f).suffix == PurePosixPath(companion).suffix
+                for f in files
+            ):
+                continue
+            missing.add(str(PurePosixPath(name).parent / companion))
     return missing
 
 
