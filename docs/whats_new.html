@@ -12,17 +12,17 @@
     <link rel="icon" href="_static/favicon.svg" type="image/svg+xml">
     <link rel="icon" sizes="144x144" href="_static/favicon-144.png" type="image/png">
     <link rel="mask-icon" href="_static/favicon_mask-icon.svg" color="#222832" type="image/svg+xml">
-    <link rel="apple-touch-icon" sizes="500x500" href="_static/favicon-500.png" type="image/png"><meta property="og:title" content="What’s new" />
+    <link rel="apple-touch-icon" sizes="500x500" href="_static/favicon-500.png" type="image/png"><meta property="og:title" content="Version 1.8.0 (2026-10-06)" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://moabb.neurotechx.com/docs/whats_new.html" />
 <meta property="og:site_name" content="MOABB - Mother of all BCI Benchmarks" />
-<meta property="og:description" content="“Enhancements” for new features, “Bugs” for bug fixes, “API changes” for backward-incompatible changes. Version 1.8.0 (2026-10-06): Enhancements: Add n_jobs_data to all evaluations (default 1, unch..." />
+<meta property="og:description" content="What’s new === “Enhancements” for new features, “Bugs” for bug fixes, “API changes” for backward-incompatible changes. Enhancements: moabb.datasets.PerezBlanco2026, moabb.datasets.Wang2026 and moab..." />
 <meta property="og:image" content="https://moabb.neurotechx.com/docs/_static/moabb_og_card.png" />
 <meta property="og:image:alt" content="MOABB - Mother of all BCI Benchmarks: 158 open EEG datasets for reproducible BCI research" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:site" content="@NeuroTechX" />
 
-    <title>What’s new &#8212; MOABB Documentation</title>
+    <title>Version 1.8.0 (2026-10-06) &#8212; MOABB Documentation</title>
   
   
   
@@ -133,7 +133,7 @@
         {
           "@type": "ListItem",
           "position": 2,
-          "name": "What’s new",
+          "name": "Version 1.8.0 (2026-10-06)",
           "item": "https://moabb.neurotechx.com/docs/whats_new.html"
         }
       ]
@@ -537,7 +537,7 @@
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">What’s new</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Version 1.8.0 (2026-10-06)</span></li>
   </ul>
 </nav>
 </div>
@@ -552,18 +552,19 @@
 <div>
   
   
-  <section id="what-s-new">
-<span id="whats-new"></span><h1>What’s new<a class="headerlink" href="#what-s-new" title="Link to this heading">#</a></h1>
+  <p id="whats-new">What’s new
+===</p>
 <ul class="simple">
 <li><p>“Enhancements” for new features</p></li>
 <li><p>“Bugs” for bug fixes</p></li>
 <li><p>“API changes” for backward-incompatible changes</p></li>
 </ul>
 <section id="version-1-8-0-2026-10-06">
-<span id="current"></span><h2>Version 1.8.0 (2026-10-06)<a class="headerlink" href="#version-1-8-0-2026-10-06" title="Link to this heading">#</a></h2>
+<span id="current"></span><h1>Version 1.8.0 (2026-10-06)<a class="headerlink" href="#version-1-8-0-2026-10-06" title="Link to this heading">#</a></h1>
 <section id="enhancements">
-<h3>Enhancements<a class="headerlink" href="#enhancements" title="Link to this heading">#</a></h3>
+<h2>Enhancements<a class="headerlink" href="#enhancements" title="Link to this heading">#</a></h2>
 <ul class="simple">
+<li><p><a class="reference internal" href="generated/moabb.datasets.PerezBlanco2026.html#moabb.datasets.PerezBlanco2026" title="moabb.datasets.PerezBlanco2026"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.PerezBlanco2026</span></code></a>, <a class="reference internal" href="generated/moabb.datasets.Wang2026.html#moabb.datasets.Wang2026" title="moabb.datasets.Wang2026"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.Wang2026</span></code></a> and <a class="reference internal" href="generated/moabb.datasets.Han2026.html#moabb.datasets.Han2026" title="moabb.datasets.Han2026"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.Han2026</span></code></a> read from NEMAR: PerezBlanco2026 and Wang2026 take the subject’s original files from the published deposits <code class="docutils literal notranslate"><span class="pre">nm000304</span></code> and <code class="docutils literal notranslate"><span class="pre">nm000335</span></code> (<code class="docutils literal notranslate"><span class="pre">nemar_seed_cache</span></code>; Wang2026 declares the deposit’s <code class="docutils literal notranslate"><span class="pre">sub-&lt;id&gt;</span></code> subject labels), and Han2026 reads NEMAR’s raw import of OpenNeuro ds007327 (<code class="docutils literal notranslate"><span class="pre">on007327</span></code>) before OpenNeuro. The private deposits of Brodu2012 (<code class="docutils literal notranslate"><span class="pre">nm000366</span></code>), Lenaig2026 (<code class="docutils literal notranslate"><span class="pre">nm000333</span></code>), MartinezPeon2025 (<code class="docutils literal notranslate"><span class="pre">nm000332</span></code>), MIBMPI2024 (<code class="docutils literal notranslate"><span class="pre">nm000331</span></code>) and MIND2026 (<code class="docutils literal notranslate"><span class="pre">nm000337</span></code>) get their <code class="docutils literal notranslate"><span class="pre">nemar_id</span></code> once published (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/1318">#1318</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 <li><p>Add <code class="docutils literal notranslate"><span class="pre">n_jobs_data</span></code> to all evaluations (default <code class="docutils literal notranslate"><span class="pre">1</span></code>, unchanged behavior): it is forwarded as <code class="docutils literal notranslate"><span class="pre">n_jobs</span></code> to <code class="xref py py-meth docutils literal notranslate"><span class="pre">get_data()</span></code>, so subjects are loaded in parallel. <a class="reference internal" href="generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset.get_data" title="moabb.datasets.base.BaseDataset.get_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">moabb.datasets.base.BaseDataset.get_data()</span></code></a> already supported <code class="docutils literal notranslate"><span class="pre">n_jobs</span></code> but evaluations never passed it, so loading was always sequential; this matters when reads are latency-bound, e.g. raw EDF files on a network filesystem (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/1250">#1250</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 <li><p>Install a <code class="docutils literal notranslate"><span class="pre">moabb</span></code> console script (<code class="docutils literal notranslate"><span class="pre">[project.scripts]</span> <span class="pre">moabb</span> <span class="pre">=</span> <span class="pre">&quot;moabb.run:main&quot;</span></code>), so benchmarks run with <code class="docutils literal notranslate"><span class="pre">moabb</span> <span class="pre">--pipelines=./pipelines/</span> <span class="pre">--evaluations</span> <span class="pre">WithinSession</span></code> instead of <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">moabb.run</span> <span class="pre">...</span></code>; the command-line logic of <code class="xref py py-mod docutils literal notranslate"><span class="pre">moabb.run</span></code> moved into a reusable <code class="docutils literal notranslate"><span class="pre">main(argv=None)</span></code> (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/175">#175</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 <li><p>Test MOABB on free-threaded CPython 3.14 (<code class="docutils literal notranslate"><span class="pre">3.14t</span></code>) with an allowed-to-fail CI job that also checks importing MOABB keeps the GIL disabled, and require <code class="docutils literal notranslate"><span class="pre">h5py&gt;=3.16.0</span></code> on Python 3.14+, the first h5py release with free-threaded (<code class="docutils literal notranslate"><span class="pre">cp314t</span></code>) wheels (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/829">#829</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
@@ -604,7 +605,7 @@
 </ul>
 </section>
 <section id="api-changes">
-<h3>API changes<a class="headerlink" href="#api-changes" title="Link to this heading">#</a></h3>
+<h2>API changes<a class="headerlink" href="#api-changes" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="generated/moabb.evaluations.CrossSubjectEvaluation.html#moabb.evaluations.CrossSubjectEvaluation" title="moabb.evaluations.CrossSubjectEvaluation"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.evaluations.CrossSubjectEvaluation</span></code></a> now rejects custom splitter outputs with more than three items instead of silently treating all middle items as calibration data; custom splitters must yield <code class="docutils literal notranslate"><span class="pre">(train,</span> <span class="pre">test)</span></code> or <code class="docutils literal notranslate"><span class="pre">(train,</span> <span class="pre">cal,</span> <span class="pre">test)</span></code> (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/1207">#1207</a> by <a class="reference external" href="https://github.com/lindicaphxag-tech">lindicaphxag-tech</a>).</p></li>
 <li><p><a class="reference internal" href="generated/moabb.evaluations.CrossSessionEvaluation.html#moabb.evaluations.CrossSessionEvaluation" title="moabb.evaluations.CrossSessionEvaluation"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.evaluations.CrossSessionEvaluation</span></code></a> custom cross-validation
@@ -622,14 +623,14 @@ artifacts therefore remain manually readable in place.</p></li>
 </ul>
 </section>
 <section id="requirements">
-<h3>Requirements<a class="headerlink" href="#requirements" title="Link to this heading">#</a></h3>
+<h2>Requirements<a class="headerlink" href="#requirements" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Require <code class="docutils literal notranslate"><span class="pre">mne&gt;=1.13</span></code> for the <code class="docutils literal notranslate"><span class="pre">colin27_*</span></code> montage names and <a class="reference external" href="https://mne.tools/stable/generated/mne.io.read_raw_brainvision.html#mne.io.read_raw_brainvision" title="(in MNE v1.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.io.read_raw_brainvision()</span></code></a>’s <code class="docutils literal notranslate"><span class="pre">overrides</span></code> (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/1200">#1200</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 <li><p>Require <code class="docutils literal notranslate"><span class="pre">mne-bids&gt;=0.20</span></code> (no change to the <code class="docutils literal notranslate"><span class="pre">mne</span></code> floor) (by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 </ul>
 </section>
 <section id="bugs">
-<h3>Bugs<a class="headerlink" href="#bugs" title="Link to this heading">#</a></h3>
+<h2>Bugs<a class="headerlink" href="#bugs" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Fix the trial and session counts of the dataset summary tables and of <a class="reference internal" href="generated/moabb.analysis.plotting.dataset_bubble_plot.html#moabb.analysis.plotting.dataset_bubble_plot" title="moabb.analysis.plotting.dataset_bubble_plot"><code class="xref py py-func docutils literal notranslate"><span class="pre">moabb.analysis.plotting.dataset_bubble_plot()</span></code></a>. <code class="docutils literal notranslate"><span class="pre">#Trials</span> <span class="pre">/</span> <span class="pre">class</span></code> counts every session and run of one subject, but the bubble size multiplied it again by <code class="docutils literal notranslate"><span class="pre">#Sessions</span></code> (BNCI2014_004 was drawn with 3,600 trials per subject instead of 720, EPFLP300 with 13,216 instead of 3,304), and <code class="docutils literal notranslate"><span class="pre">scripts/generating_metainfo.py</span></code> computed <code class="docutils literal notranslate"><span class="pre">Total_trials</span></code> as <code class="docutils literal notranslate"><span class="pre">#Sessions</span></code> x <code class="docutils literal notranslate"><span class="pre">#Runs</span></code> x the first subject’s trials of all sessions x <code class="docutils literal notranslate"><span class="pre">#Subj</span></code> (62,208 instead of 5,184 for BNCI2014_001). The rows of BNCI2014_001, BNCI2014_002, BNCI2014_004, BNCI2015_001, Cho2017, Lee2019_MI, PhysionetMI, Schirrmeister2017, Shin2017A, Weibo2014, Zhou2016, MAMEM1, MAMEM2, MAMEM3, BI2013a, BI2014a, BI2015a, Cattan2019_VR, Huebner2017, Huebner2018 and Sosulski2019 now give the counts the loaders return, checked on every subject (Huebner2017 and Huebner2018 gave the trials of one run, 364 NT / 112 T, instead of 9,826 NT / 3,024 T and 10,920 NT / 3,360 T over three sessions). The rows of BCIComp2020UpperLimb, Brandl2020, Dreyer2023 (and A, B, C), Gao2026, GuttmannFlury2025_MI, GuttmannFlury2025_ME, GuttmannFlury2025_SSVEP, HefmiIch2025, Jeong2020, Ofner2017, Tavakolan2017, Wang2026Handwriting, Yang2025, Zhou2020 and Zuo2025 (a per-session or per-run <code class="docutils literal notranslate"><span class="pre">#Trials</span> <span class="pre">/</span> <span class="pre">class</span></code>; Yang2025 and Wang2026Handwriting also list the 2 and 11 classes their loaders return by default) and of BNCI2015_004, Kaneshiro2015, Liu2025 and Shin2017B (a <code class="docutils literal notranslate"><span class="pre">Total_trials</span></code> multiplied by the sessions or runs, or missing the subjects) now follow the counts their documentation states. When subjects have different numbers of sessions, <code class="docutils literal notranslate"><span class="pre">#Sessions</span></code> now starts with that of a typical subject, the number the plots read: BI2013a <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">(8</span> <span class="pre">for</span> <span class="pre">subjects</span> <span class="pre">1-7)</span></code> instead of <code class="docutils literal notranslate"><span class="pre">8</span> <span class="pre">for</span> <span class="pre">subjects</span> <span class="pre">1-7</span> <span class="pre">else</span> <span class="pre">1</span></code>, Sosulski2019 60 instead of 80, and BNCI2015_001, Gao2026, GuttmannFlury2025_*, Kaya2018, Liu2025, Ortiz2023, Peters2026, RomaniBF2025ERP and Thapa2025. The column definitions of <a class="reference internal" href="dataset_summary.html"><span class="doc">Data Summary</span></a> state these conventions (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/1310">#1310</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 <li><p>Fix <a class="reference internal" href="generated/moabb.datasets.Kodera2023.html#moabb.datasets.Kodera2023" title="moabb.datasets.Kodera2023"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.Kodera2023</span></code></a> returning two sampling rates: the 14 subjects of the 2020-2021 recordings are at 500 Hz and the 15 of the 2021-2023 recordings at 1000 Hz (checked on every header of the archive), while <code class="docutils literal notranslate"><span class="pre">METADATA</span></code> said 500 Hz. Without a paradigm <code class="docutils literal notranslate"><span class="pre">resample</span></code>, a call mixing both setups built epochs of 2001 and 4001 samples and stopped in <code class="docutils literal notranslate"><span class="pre">np.concatenate</span></code>. By default all 29 subjects now return the nine shared channels at 500 Hz (the 1000 Hz recordings are resampled when loaded). The new <code class="docutils literal notranslate"><span class="pre">cohort</span></code> option returns one setup with its full montage: <code class="docutils literal notranslate"><span class="pre">cohort=&quot;16ch&quot;</span></code> (code <code class="docutils literal notranslate"><span class="pre">Kodera-16ch2023</span></code>) the 14 2020-2021 subjects with all 16 scalp channels at 500 Hz, <code class="docutils literal notranslate"><span class="pre">cohort=&quot;9ch&quot;</span></code> (code <code class="docutils literal notranslate"><span class="pre">Kodera-9ch2023</span></code>) the 15 2021-2023 subjects at the native 1000 Hz; a subject of the other setup raises a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> and downloads are shared. Cached <code class="docutils literal notranslate"><span class="pre">Kodera2023</span></code> epochs and results of subjects 3-10, 16, 17, 22, 23 and 27-29 computed at 1000 Hz must be deleted and recomputed (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/1276">#1276</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
@@ -813,10 +814,11 @@ session-level result contract in both the flattened and legacy execution paths
 <li><p>Document in <a class="reference internal" href="generated/moabb.datasets.EPFLP300.html#moabb.datasets.EPFLP300" title="moabb.datasets.EPFLP300"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.EPFLP300</span></code></a> that subject 3’s sessions <code class="docutils literal notranslate"><span class="pre">&quot;0&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;1&quot;</span></code> store T7 and T8 as copies of the mastoid channels MA1 and MA2, so that after the mastoid reference T7 is the opposite of T8 and the 32 EEG channels have rank 31: covariance estimators without shrinkage (e.g. <code class="docutils literal notranslate"><span class="pre">xdawn_estimator=&quot;scm&quot;</span></code> of <code class="docutils literal notranslate"><span class="pre">XdawnCovariances</span></code>, as in <code class="docutils literal notranslate"><span class="pre">pipelines/XdawnCov_MDM.yml</span></code>) fail there with a <code class="docutils literal notranslate"><span class="pre">LinAlgError</span></code> (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/1311">#1311</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 <li><p><a class="reference internal" href="generated/moabb.datasets.Zhou2016.html#moabb.datasets.Zhou2016" title="moabb.datasets.Zhou2016"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.Zhou2016</span></code></a> now reads its BIDS release from NEMAR (<code class="docutils literal notranslate"><span class="pre">nm000115</span></code>) under the default <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> download provider instead of always downloading the Zenodo <code class="docutils literal notranslate"><span class="pre">sub-N.zip</span></code> archives: the deposit has no <code class="docutils literal notranslate"><span class="pre">sourcedata/</span></code>, so the base class asked NEMAR for it, failed, and fell back to Zenodo on every load. The deposit holds the same EDF, <code class="docutils literal notranslate"><span class="pre">events.tsv</span></code>, <code class="docutils literal notranslate"><span class="pre">channels.tsv</span></code> and <code class="docutils literal notranslate"><span class="pre">electrodes.tsv</span></code> files as the archives (without their <code class="docutils literal notranslate"><span class="pre">desc-&lt;hash&gt;</span></code> entity); loading subjects 1 and 2 from each source gives identical raw data, annotations, channels, epochs, labels and metadata. A subject already fetched loads without a request; <code class="docutils literal notranslate"><span class="pre">&quot;upstream&quot;</span></code> keeps the Zenodo path, and under <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> a NEMAR failure falls back to Zenodo with a warning (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/1303">#1303</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 <li><p>Fix epochs of one dataset coming out with different numbers of samples when its subjects were recorded at different sampling rates and the paradigm resamples. MOABB resamples the epochs, and MNE gives <code class="docutils literal notranslate"><span class="pre">round(n_times</span> <span class="pre">*</span> <span class="pre">new_sfreq</span> <span class="pre">/</span> <span class="pre">native_sfreq)</span></code> samples, so a 0-3 s epoch has 601 samples at 200 Hz when it was recorded at 160 Hz (481 samples) but 602 when it was recorded at 128 Hz (385 samples), the last one at 3.005 s, after <code class="docutils literal notranslate"><span class="pre">tmax</span></code>; any call that stacked such subjects (<code class="docutils literal notranslate"><span class="pre">get_data</span></code> over several subjects, <a class="reference internal" href="generated/moabb.evaluations.CrossSubjectEvaluation.html#moabb.evaluations.CrossSubjectEvaluation" title="moabb.evaluations.CrossSubjectEvaluation"><code class="xref py py-class docutils literal notranslate"><span class="pre">CrossSubjectEvaluation</span></code></a>) stopped in <code class="docutils literal notranslate"><span class="pre">np.concatenate</span></code>. Resampled epochs now keep at most the number of samples <a class="reference external" href="https://mne.tools/stable/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a> gives for the window at the new rate (601 here), and a call whose recordings still differ by a sample (downsampling by more than a factor of two rounds the length down, e.g. 769 samples at 256 Hz give 384 at 128 Hz against 385 from 250 Hz) cuts every epoch to the shortest length; nothing is padded. Data at a single native rate are unchanged unless resampling placed samples after <code class="docutils literal notranslate"><span class="pre">tmax</span></code> (e.g. 128 Hz resampled to 200 Hz), which are now dropped. The resample step is part of the cache key, so cached epochs and arrays of resampled data are recomputed once (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/1308">#1308</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.ErpCore2021</span></code> (all seven components) now reads its recordings from NEMAR (<code class="docutils literal notranslate"><span class="pre">nm000132</span></code>) under the default <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> download provider instead of always downloading them from OSF: the deposit has no <code class="docutils literal notranslate"><span class="pre">sourcedata/</span></code>, so the base class asked NEMAR for it, failed, and fell back to OSF on every load. <code class="docutils literal notranslate"><span class="pre">nm000132</span></code> is the ERP CORE BIDS dataset itself, one dataset whose components are the <code class="docutils literal notranslate"><span class="pre">task-</span></code> entity; each class now downloads its subject’s files of its task (ERN and LRP share <code class="docutils literal notranslate"><span class="pre">task-flankers</span></code>) plus the subject’s <code class="docutils literal notranslate"><span class="pre">electrodes.tsv</span></code> and <code class="docutils literal notranslate"><span class="pre">coordsystem.json</span></code> into one store shared by the seven classes, <code class="docutils literal notranslate"><span class="pre">MNE-erpcore2021-data/nm000132</span></code>. A recording already on disk, from NEMAR or from an earlier OSF download, loads without a request; <code class="docutils literal notranslate"><span class="pre">&quot;upstream&quot;</span></code> keeps the OSF path, and under <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> a NEMAR failure falls back to OSF with a warning (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/1304">#1304</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 </ul>
 </section>
 <section id="code-health">
-<h3>Code health<a class="headerlink" href="#code-health" title="Link to this heading">#</a></h3>
+<h2>Code health<a class="headerlink" href="#code-health" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Share loader code across the new dataset PRs instead of private copies: <code class="xref py py-func docutils literal notranslate"><span class="pre">download_and_extract_subject_zip()</span></code> gains <code class="docutils literal notranslate"><span class="pre">fname</span></code> and <code class="docutils literal notranslate"><span class="pre">redownload_corrupted</span></code> (one warned re-download of a corrupted archive), <a class="reference internal" href="generated/moabb.datasets.utils.rename_stimulus_codes.html#moabb.datasets.utils.rename_stimulus_codes" title="moabb.datasets.utils.rename_stimulus_codes"><code class="xref py py-func docutils literal notranslate"><span class="pre">rename_stimulus_codes()</span></code></a> maps BrainVision <code class="docutils literal notranslate"><span class="pre">Stimulus/S</span> <span class="pre">&lt;n&gt;</span></code> markers to class labels, <code class="docutils literal notranslate"><span class="pre">SetRawAnnotations</span></code> keeps <code class="docutils literal notranslate"><span class="pre">EDGE</span> <span class="pre">boundary</span></code> markers, and the OpenNeuro raw-mirror mixin (<code class="docutils literal notranslate"><span class="pre">moabb.datasets._openneuro_mirror</span></code>) lives here once (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/1200">#1200</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 <li><p>Modernise the BIDS layer on <code class="docutils literal notranslate"><span class="pre">mne-bids&gt;=0.20</span></code> and drop MOABB workarounds it made obsolete: use <code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.find_matching_paths()</span></code> with <code class="docutils literal notranslate"><span class="pre">ignore_json=True</span></code> and the public <code class="xref py py-meth docutils literal notranslate"><span class="pre">mne_bids.BIDSPath.find_matching_sidecar()</span></code> instead of a private helper, let <code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code> serialise annotation extras into <code class="docutils literal notranslate"><span class="pre">events.tsv</span></code> and skip its README (<code class="docutils literal notranslate"><span class="pre">readme=False</span></code>) instead of patching both after writing, rely on mne-bids for the standard <code class="docutils literal notranslate"><span class="pre">participants.json</span></code> column descriptions, remove an obsolete EDF-conversion warning filter, and locate Thapa2025 files with <code class="docutils literal notranslate"><span class="pre">find_matching_paths</span></code> instead of probing every session/run pair (by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
@@ -824,93 +826,93 @@ session-level result contract in both the flattened and legacy execution paths
 </section>
 </section>
 <section id="version-1-7-1-stable-pypi">
-<h2>Version 1.7.1  (Stable - PyPi)<a class="headerlink" href="#version-1-7-1-stable-pypi" title="Link to this heading">#</a></h2>
+<h1>Version 1.7.1  (Stable - PyPi)<a class="headerlink" href="#version-1-7-1-stable-pypi" title="Link to this heading">#</a></h1>
 <section id="id5">
-<h3>Enhancements<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
+<h2>Enhancements<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>None.</p></li>
 </ul>
 </section>
 <section id="id6">
-<h3>API changes<a class="headerlink" href="#id6" title="Link to this heading">#</a></h3>
+<h2>API changes<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>None.</p></li>
 </ul>
 </section>
 <section id="id7">
-<h3>Requirements<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
+<h2>Requirements<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>None.</p></li>
 </ul>
 </section>
 <section id="id8">
-<h3>Bugs<a class="headerlink" href="#id8" title="Link to this heading">#</a></h3>
+<h2>Bugs<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Let the <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> download provider fall back when <code class="docutils literal notranslate"><span class="pre">nemar-py</span></code> leaks an <code class="docutils literal notranslate"><span class="pre">httpx.TransportError</span></code>, such as a proxy failure, so locally cached upstream data remains usable when NEMAR is unreachable (by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 </ul>
 </section>
 <section id="id9">
-<h3>Code health<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
+<h2>Code health<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>None.</p></li>
 </ul>
 </section>
 </section>
 <section id="version-1-7-stable-pypi">
-<h2>Version 1.7  (Stable - PyPi)<a class="headerlink" href="#version-1-7-stable-pypi" title="Link to this heading">#</a></h2>
+<h1>Version 1.7  (Stable - PyPi)<a class="headerlink" href="#version-1-7-stable-pypi" title="Link to this heading">#</a></h1>
 <section id="id10">
-<h3>Enhancements<a class="headerlink" href="#id10" title="Link to this heading">#</a></h3>
+<h2>Enhancements<a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Make <a class="reference internal" href="generated/moabb.analysis.plotting.dataset_bubble_plot.html#moabb.analysis.plotting.dataset_bubble_plot" title="moabb.analysis.plotting.dataset_bubble_plot"><code class="xref py py-func docutils literal notranslate"><span class="pre">moabb.analysis.plotting.dataset_bubble_plot()</span></code></a> layouts reproducible by default and add a <code class="docutils literal notranslate"><span class="pre">random_state</span></code> parameter for controlled alternative layouts (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/1168">#1168</a> by <a class="reference external" href="https://github.com/ZyntZ">Anna Sokolova</a>).</p></li>
 </ul>
 </section>
 <section id="id11">
-<h3>API changes<a class="headerlink" href="#id11" title="Link to this heading">#</a></h3>
+<h2>API changes<a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>None.</p></li>
 </ul>
 </section>
 <section id="id12">
-<h3>Requirements<a class="headerlink" href="#id12" title="Link to this heading">#</a></h3>
+<h2>Requirements<a class="headerlink" href="#id12" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>None.</p></li>
 </ul>
 </section>
 <section id="id13">
-<h3>Bugs<a class="headerlink" href="#id13" title="Link to this heading">#</a></h3>
+<h2>Bugs<a class="headerlink" href="#id13" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Let <a class="reference internal" href="generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset.get_data" title="moabb.datasets.base.BaseDataset.get_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">moabb.datasets.base.BaseDataset.get_data()</span></code></a> use a complete processing cache before prefetching NEMAR, so cached data remains available when NEMAR or the network is unavailable (by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 </ul>
 </section>
 <section id="id14">
-<h3>Code health<a class="headerlink" href="#id14" title="Link to this heading">#</a></h3>
+<h2>Code health<a class="headerlink" href="#id14" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>None.</p></li>
 </ul>
 </section>
 </section>
 <section id="version-1-6-1-stable-pypi">
-<h2>Version 1.6.1  (Stable - PyPi)<a class="headerlink" href="#version-1-6-1-stable-pypi" title="Link to this heading">#</a></h2>
+<h1>Version 1.6.1  (Stable - PyPi)<a class="headerlink" href="#version-1-6-1-stable-pypi" title="Link to this heading">#</a></h1>
 <section id="id15">
-<h3>Enhancements<a class="headerlink" href="#id15" title="Link to this heading">#</a></h3>
+<h2>Enhancements<a class="headerlink" href="#id15" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>None.</p></li>
 </ul>
 </section>
 <section id="id16">
-<h3>API changes<a class="headerlink" href="#id16" title="Link to this heading">#</a></h3>
+<h2>API changes<a class="headerlink" href="#id16" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">moabb.datasets.metadata.AcquisitionMetadata.n_channels</span></code> is derived from <code class="docutils literal notranslate"><span class="pre">channel_types</span></code> instead of stored beside it. The two could disagree, and for 34 of the 147 catalogued datasets they did – the field was being used with two meanings, some counting EEG electrodes only and others every recorded channel. It now consistently means the total, which is what each dataset’s own <code class="docutils literal notranslate"><span class="pre">sensors</span></code> list and <code class="docutils literal notranslate"><span class="pre">test_n_channels_matches_raw_data</span></code> (which counts every non-<code class="docutils literal notranslate"><span class="pre">stim</span></code> channel) already assumed: <a class="reference internal" href="generated/moabb.datasets.Dreyer2023A.html#moabb.datasets.Dreyer2023A" title="moabb.datasets.Dreyer2023A"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.Dreyer2023A</span></code></a>, for instance, reported 27 against its own 32 sensors and now reports 32. Passing <code class="docutils literal notranslate"><span class="pre">n_channels=</span></code> to the constructor is no longer accepted (by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 </ul>
 </section>
 <section id="id17">
-<h3>Requirements<a class="headerlink" href="#id17" title="Link to this heading">#</a></h3>
+<h2>Requirements<a class="headerlink" href="#id17" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>None.</p></li>
 </ul>
 </section>
 <section id="id18">
-<h3>Bugs<a class="headerlink" href="#id18" title="Link to this heading">#</a></h3>
+<h2>Bugs<a class="headerlink" href="#id18" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Point the monthly download job at <code class="docutils literal notranslate"><span class="pre">moabb/tests/test_download.py</span></code>; it ran <code class="docutils literal notranslate"><span class="pre">download.py</span></code>, a file that does not exist, so it collected nothing and has been failing every month while no <code class="docutils literal notranslate"><span class="pre">&#64;pytest.mark.download</span></code> test executed anywhere in CI (by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 <li><p>Stop importing moabb from restyling the caller’s matplotlib. <code class="docutils literal notranslate"><span class="pre">moabb.analysis.plotting</span></code> applies a seaborn theme to the global <code class="docutils literal notranslate"><span class="pre">rcParams</span></code> when it is imported, and <code class="docutils literal notranslate"><span class="pre">moabb/analysis/__init__.py</span></code> imported it eagerly – so <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">moabb.datasets</span></code> alone changed <code class="docutils literal notranslate"><span class="pre">font.family</span></code>, <code class="docutils literal notranslate"><span class="pre">axes.grid</span></code> and <code class="docutils literal notranslate"><span class="pre">axes.spines.*</span></code> for every figure the caller drew afterwards, values matplotlib reads at axes creation and a caller therefore cannot undo. The path was indirect: <code class="xref py py-mod docutils literal notranslate"><span class="pre">moabb.datasets.bids_interface</span></code> imports <code class="docutils literal notranslate"><span class="pre">moabb.analysis.results</span></code> for <code class="docutils literal notranslate"><span class="pre">get_digest</span></code>, which runs that <code class="docutils literal notranslate"><span class="pre">__init__</span></code>. The plotting imports are now deferred to the functions that use them and to a module-level <code class="docutils literal notranslate"><span class="pre">__getattr__</span></code> for the three re-exported plotting helpers, so every public name still resolves and an explicit <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">moabb.analysis.plotting</span></code> still applies the theme, leaving MOABB’s own figures unchanged (by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
@@ -922,16 +924,16 @@ session-level result contract in both the flattened and legacy execution paths
 </ul>
 </section>
 <section id="id19">
-<h3>Code health<a class="headerlink" href="#id19" title="Link to this heading">#</a></h3>
+<h2>Code health<a class="headerlink" href="#id19" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>None.</p></li>
 </ul>
 </section>
 </section>
 <section id="version-1-6-0-stable-pypi">
-<h2>Version 1.6.0  (Stable - PyPi)<a class="headerlink" href="#version-1-6-0-stable-pypi" title="Link to this heading">#</a></h2>
+<h1>Version 1.6.0  (Stable - PyPi)<a class="headerlink" href="#version-1-6-0-stable-pypi" title="Link to this heading">#</a></h1>
 <section id="id20">
-<h3>Enhancements<a class="headerlink" href="#id20" title="Link to this heading">#</a></h3>
+<h2>Enhancements<a class="headerlink" href="#id20" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Declare <code class="xref py py-attr docutils literal notranslate"><span class="pre">nemar_id</span></code> for 15 datasets whose NEMAR deposits are now public, so <a class="reference internal" href="generated/moabb.set_download_provider.html#moabb.set_download_provider" title="moabb.set_download_provider"><code class="xref py py-func docutils literal notranslate"><span class="pre">moabb.set_download_provider()</span></code></a> can serve them from NEMAR’s <code class="docutils literal notranslate"><span class="pre">sourcedata/</span></code> instead of falling back to the upstream host (by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 <li><p>Add <a class="reference internal" href="generated/moabb.analysis.meta_analysis.compute_pvals_corrected_ttest.html#moabb.analysis.meta_analysis.compute_pvals_corrected_ttest" title="moabb.analysis.meta_analysis.compute_pvals_corrected_ttest"><code class="xref py py-func docutils literal notranslate"><span class="pre">moabb.analysis.meta_analysis.compute_pvals_corrected_ttest()</span></code></a>, the Nadeau &amp; Bengio corrected resampled t-test, for comparing pipelines evaluated with overlapping cross-validation resamples (e.g. within-session k-fold): the variance of the per-fold score differences is inflated by the test/train ratio <span class="math notranslate nohighlight">\(n_2/n_1\)</span>, so the test does not inherit the optimistic variance of the naive resampled t-test (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/1075">#1075</a> by <a class="reference external" href="https://github.com/azrabano23">Azra Bano</a>)</p></li>
@@ -964,13 +966,13 @@ session-level result contract in both the flattened and legacy execution paths
 </ul>
 </section>
 <section id="id21">
-<h3>API changes<a class="headerlink" href="#id21" title="Link to this heading">#</a></h3>
+<h2>API changes<a class="headerlink" href="#id21" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>None.</p></li>
 </ul>
 </section>
 <section id="id22">
-<h3>Requirements<a class="headerlink" href="#id22" title="Link to this heading">#</a></h3>
+<h2>Requirements<a class="headerlink" href="#id22" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Use <code class="xref py py-class docutils literal notranslate"><span class="pre">pyriemann.clustering.PotatoField</span></code> per-potato metrics and the <code class="docutils literal notranslate"><span class="pre">method_combination</span></code> parameter (pyRiemann <a class="reference external" href="https://github.com/pyRiemann/pyRiemann/pull/423">PR #423</a>) used by the Riemannian Artifact Rejection tutorial (by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
 <li><p>Bump minimum supported Python to <code class="docutils literal notranslate"><span class="pre">3.11</span></code> (required by <code class="docutils literal notranslate"><span class="pre">mne-bids</span> <span class="pre">&gt;=</span> <span class="pre">0.18</span></code>) (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/1124">#1124</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
@@ -978,7 +980,7 @@ session-level result contract in both the flattened and legacy execution paths
 </ul>
 </section>
 <section id="id23">
-<h3>Bugs<a class="headerlink" href="#id23" title="Link to this heading">#</a></h3>
+<h2>Bugs<a class="headerlink" href="#id23" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Restore the final <code class="docutils literal notranslate"><span class="pre">AttributeError</span></code> of the <code class="xref py py-mod docutils literal notranslate"><span class="pre">moabb.pipelines</span></code> module-level <code class="docutils literal notranslate"><span class="pre">__getattr__</span></code>, dropped in <a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/692">#692</a>. Unknown names evaluated to <code class="docutils literal notranslate"><span class="pre">None</span></code> instead of raising, so <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">moabb.pipelines</span> <span class="pre">import</span> <span class="pre">*</span></code> failed with <code class="docutils literal notranslate"><span class="pre">TypeError:</span> <span class="pre">'NoneType'</span> <span class="pre">object</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">iterable</span></code> and a mistyped class name in a pipeline YAML surfaced as <code class="docutils literal notranslate"><span class="pre">TypeError:</span> <span class="pre">'NoneType'</span> <span class="pre">object</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">callable</span></code> (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/1159">#1159</a> by <a class="reference external" href="https://github.com/NotAFlightRisk">Iain</a>)</p></li>
 <li><p>Fix <code class="xref py py-mod docutils literal notranslate"><span class="pre">moabb.analysis.meta_analysis</span></code> rejecting non-finite score inputs instead of letting <code class="docutils literal notranslate"><span class="pre">NaN</span></code> or infinite values leak into low-level statistics. <code class="xref py py-func docutils literal notranslate"><span class="pre">moabb.analysis.meta_analysis.compute_pvals_wilcoxon()</span></code>, <code class="xref py py-func docutils literal notranslate"><span class="pre">moabb.analysis.meta_analysis.compute_pvals_perm()</span></code>, and <code class="xref py py-func docutils literal notranslate"><span class="pre">moabb.analysis.meta_analysis.compute_effect()</span></code> now require finite score tables; the all-zero Wilcoxon case still reports a one-tailed <code class="docutils literal notranslate"><span class="pre">p=0.5</span></code> in both directions and keeps off-diagonal p-values strictly inside <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">1)</span></code> for Stouffer’s method; <code class="xref py py-func docutils literal notranslate"><span class="pre">moabb.analysis.meta_analysis.compute_effect()</span></code> reports <code class="docutils literal notranslate"><span class="pre">0</span></code> for identical zero-spread pairs and signed infinity for constant nonzero offsets; and <a class="reference internal" href="generated/moabb.analysis.meta_analysis.compute_pvals_corrected_ttest.html#moabb.analysis.meta_analysis.compute_pvals_corrected_ttest" title="moabb.analysis.meta_analysis.compute_pvals_corrected_ttest"><code class="xref py py-func docutils literal notranslate"><span class="pre">moabb.analysis.meta_analysis.compute_pvals_corrected_ttest()</span></code></a> now rejects non-finite score differences and non-finite <code class="docutils literal notranslate"><span class="pre">n_train</span></code>/<code class="docutils literal notranslate"><span class="pre">n_test</span></code> instead of collapsing a non-finite statistic to <code class="docutils literal notranslate"><span class="pre">p=0.5</span></code> (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/678">#678</a> by <a class="reference external" href="https://github.com/adityasingh2400">Aditya Singh</a>)</p></li>
@@ -1029,7 +1031,7 @@ session-level result contract in both the flattened and legacy execution paths
 </ul>
 </section>
 <section id="id24">
-<h3>Code health<a class="headerlink" href="#id24" title="Link to this heading">#</a></h3>
+<h2>Code health<a class="headerlink" href="#id24" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Point <code class="docutils literal notranslate"><span class="pre">MANIFEST.in</span></code> at the files the repository actually ships. Three of its six directives named <code class="docutils literal notranslate"><span class="pre">README.rst</span></code>, <code class="docutils literal notranslate"><span class="pre">LICENSE.txt</span></code> and <code class="docutils literal notranslate"><span class="pre">NOTICE.txt</span></code>; the repository has <code class="docutils literal notranslate"><span class="pre">README.md</span></code> and <code class="docutils literal notranslate"><span class="pre">LICENSE</span></code>, and no notice file at all, so every <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">build</span> <span class="pre">--sdist</span></code> printed three <code class="docutils literal notranslate"><span class="pre">warning:</span> <span class="pre">no</span> <span class="pre">files</span> <span class="pre">found</span> <span class="pre">matching</span> <span class="pre">...</span></code> lines. The sdist contents are unchanged – setuptools already picked up the readme and the license through <code class="docutils literal notranslate"><span class="pre">project.readme</span></code> and its default <code class="docutils literal notranslate"><span class="pre">license-files</span></code> – only the warnings go away (by <a class="reference external" href="https://github.com/bkowshik">Bhargav Kowshik</a>).</p></li>
 <li><p>Bump the <code class="docutils literal notranslate"><span class="pre">ruff-pre-commit</span></code> hook from <code class="docutils literal notranslate"><span class="pre">v0.15.9</span></code> to <code class="docutils literal notranslate"><span class="pre">v0.15.20</span></code> (quarterly <code class="docutils literal notranslate"><span class="pre">pre-commit.ci</span></code> autoupdate). The bump is lint-neutral on the current tree: <code class="docutils literal notranslate"><span class="pre">ruff</span> <span class="pre">check</span></code> and <code class="docutils literal notranslate"><span class="pre">ruff</span> <span class="pre">format</span> <span class="pre">--check</span></code> return identical results at both pins across all 229 tracked <code class="docutils literal notranslate"><span class="pre">*.py</span></code> / <code class="docutils literal notranslate"><span class="pre">*.pyi</span></code> files, and <code class="docutils literal notranslate"><span class="pre">pre-commit</span> <span class="pre">run</span> <span class="pre">--all-files</span></code> rewrites no file (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/1119">#1119</a> by <a class="reference external" href="https://github.com/apps/pre-commit-ci">pre-commit-ci</a>).</p></li>
@@ -1040,9 +1042,9 @@ session-level result contract in both the flattened and legacy execution paths
 </section>
 </section>
 <section id="version-1-5-0-stable-pypi">
-<h2>Version 1.5.0  (Stable - PyPi)<a class="headerlink" href="#version-1-5-0-stable-pypi" title="Link to this heading">#</a></h2>
+<h1>Version 1.5.0  (Stable - PyPi)<a class="headerlink" href="#version-1-5-0-stable-pypi" title="Link to this heading">#</a></h1>
 <section id="id25">
-<h3>Enhancements<a class="headerlink" href="#id25" title="Link to this heading">#</a></h3>
+<h2>Enhancements<a class="headerlink" href="#id25" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Add 9 new dataset adapters (8 SSVEP and 1 ERP) covering 357+ subjects: <a class="reference internal" href="generated/moabb.datasets.Liu2020BETA.html#moabb.datasets.Liu2020BETA" title="moabb.datasets.Liu2020BETA"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.Liu2020BETA</span></code></a> (70 subjects, 40-class JFPM), <a class="reference internal" href="generated/moabb.datasets.Liu2022EldBETA.html#moabb.datasets.Liu2022EldBETA" title="moabb.datasets.Liu2022EldBETA"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.Liu2022EldBETA</span></code></a> (100 elderly subjects, 9-class, BIDS/GDF format), <a class="reference internal" href="generated/moabb.datasets.Kim2025BetaRange.html#moabb.datasets.Kim2025BetaRange" title="moabb.datasets.Kim2025BetaRange"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.Kim2025BetaRange</span></code></a> (40 subjects, 40-class beta-range), <a class="reference internal" href="generated/moabb.datasets.Dong2023.html#moabb.datasets.Dong2023" title="moabb.datasets.Dong2023"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.Dong2023</span></code></a> (59 subjects, 40-class), <a class="reference internal" href="generated/moabb.datasets.Lee2021Mobile_SSVEP.html#moabb.datasets.Lee2021Mobile_SSVEP" title="moabb.datasets.Lee2021Mobile_SSVEP"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.Lee2021Mobile_SSVEP</span></code></a> and <a class="reference internal" href="generated/moabb.datasets.Lee2021Mobile_ERP.html#moabb.datasets.Lee2021Mobile_ERP" title="moabb.datasets.Lee2021Mobile_ERP"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.Lee2021Mobile_ERP</span></code></a> (24 subjects, mobile BCI), <a class="reference internal" href="generated/moabb.datasets.Chen2017SingleFlicker.html#moabb.datasets.Chen2017SingleFlicker" title="moabb.datasets.Chen2017SingleFlicker"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.Chen2017SingleFlicker</span></code></a> (12 subjects, spatial SSVEP), <a class="reference internal" href="generated/moabb.datasets.Wang2021Combined.html#moabb.datasets.Wang2021Combined" title="moabb.datasets.Wang2021Combined"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.Wang2021Combined</span></code></a> (8 subjects, combined SSVEP), and <a class="reference internal" href="generated/moabb.datasets.Han2024Fatigue.html#moabb.datasets.Han2024Fatigue" title="moabb.datasets.Han2024Fatigue"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.Han2024Fatigue</span></code></a> (24 subjects, fatigue study with low/high frequency paradigms). Add shared utilities <code class="docutils literal notranslate"><span class="pre">build_raw_from_epochs</span></code>, <code class="docutils literal notranslate"><span class="pre">TSINGHUA_64CH_NAMES</span></code>, and <code class="docutils literal notranslate"><span class="pre">FIGSHARE_DL_URL</span></code> to <code class="docutils literal notranslate"><span class="pre">moabb.datasets.utils</span></code> (by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
 <li><p>Add 17 new motor imagery dataset adapters covering 345+ subjects: <a class="reference internal" href="generated/moabb.datasets.Tavakolan2017.html#moabb.datasets.Tavakolan2017" title="moabb.datasets.Tavakolan2017"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.Tavakolan2017</span></code></a>, <a class="reference internal" href="generated/moabb.datasets.Zhang2017.html#moabb.datasets.Zhang2017" title="moabb.datasets.Zhang2017"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.Zhang2017</span></code></a>, <a class="reference internal" href="generated/moabb.datasets.Forenzo2023.html#moabb.datasets.Forenzo2023" title="moabb.datasets.Forenzo2023"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.Forenzo2023</span></code></a>, <a class="reference internal" href="generated/moabb.datasets.Zhou2020.html#moabb.datasets.Zhou2020" title="moabb.datasets.Zhou2020"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.Zhou2020</span></code></a>, <a class="reference internal" href="generated/moabb.datasets.Jeong2020.html#moabb.datasets.Jeong2020" title="moabb.datasets.Jeong2020"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.Jeong2020</span></code></a>, <a class="reference internal" href="generated/moabb.datasets.Kaya2018.html#moabb.datasets.Kaya2018" title="moabb.datasets.Kaya2018"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.Kaya2018</span></code></a>, <a class="reference internal" href="generated/moabb.datasets.Kumar2024.html#moabb.datasets.Kumar2024" title="moabb.datasets.Kumar2024"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.Kumar2024</span></code></a>, <a class="reference internal" href="generated/moabb.datasets.Rozado2015.html#moabb.datasets.Rozado2015" title="moabb.datasets.Rozado2015"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.Rozado2015</span></code></a>, <a class="reference internal" href="generated/moabb.datasets.Brandl2020.html#moabb.datasets.Brandl2020" title="moabb.datasets.Brandl2020"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.Brandl2020</span></code></a>, <a class="reference internal" href="generated/moabb.datasets.Ma2020.html#moabb.datasets.Ma2020" title="moabb.datasets.Ma2020"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.Ma2020</span></code></a>, <a class="reference internal" href="generated/moabb.datasets.Wairagkar2018.html#moabb.datasets.Wairagkar2018" title="moabb.datasets.Wairagkar2018"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.Wairagkar2018</span></code></a>, <a class="reference internal" href="generated/moabb.datasets.Wu2020.html#moabb.datasets.Wu2020" title="moabb.datasets.Wu2020"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.Wu2020</span></code></a>, <a class="reference internal" href="generated/moabb.datasets.Yang2025.html#moabb.datasets.Yang2025" title="moabb.datasets.Yang2025"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.Yang2025</span></code></a>, <a class="reference internal" href="generated/moabb.datasets.Chang2025.html#moabb.datasets.Chang2025" title="moabb.datasets.Chang2025"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.Chang2025</span></code></a>, <a class="reference internal" href="generated/moabb.datasets.HefmiIch2025.html#moabb.datasets.HefmiIch2025" title="moabb.datasets.HefmiIch2025"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.HefmiIch2025</span></code></a>, <a class="reference internal" href="generated/moabb.datasets.TrianaGuzman2024.html#moabb.datasets.TrianaGuzman2024" title="moabb.datasets.TrianaGuzman2024"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.TrianaGuzman2024</span></code></a>, <a class="reference internal" href="generated/moabb.datasets.Yi2025.html#moabb.datasets.Yi2025" title="moabb.datasets.Yi2025"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.Yi2025</span></code></a>, and <a class="reference internal" href="generated/moabb.datasets.Zuo2025.html#moabb.datasets.Zuo2025" title="moabb.datasets.Zuo2025"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.Zuo2025</span></code></a> (by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
@@ -1100,7 +1102,7 @@ session-level result contract in both the flattened and legacy execution paths
 </ul>
 </section>
 <section id="id26">
-<h3>API changes<a class="headerlink" href="#id26" title="Link to this heading">#</a></h3>
+<h2>API changes<a class="headerlink" href="#id26" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Removed <code class="docutils literal notranslate"><span class="pre">SinglePass</span></code> and <code class="docutils literal notranslate"><span class="pre">FilterBank</span></code> intermediate classes from motor imagery and P300 paradigms. <code class="docutils literal notranslate"><span class="pre">FilterBankLeftRightImagery</span></code> now inherits from <code class="docutils literal notranslate"><span class="pre">LeftRightImagery</span></code>, <code class="docutils literal notranslate"><span class="pre">FilterBankMotorImagery</span></code> inherits from <code class="docutils literal notranslate"><span class="pre">MotorImagery</span></code>, and <code class="docutils literal notranslate"><span class="pre">P300</span></code> inherits directly from <code class="docutils literal notranslate"><span class="pre">BaseP300</span></code>. <code class="docutils literal notranslate"><span class="pre">RestingStateToP300Adapter</span></code> now inherits from <code class="docutils literal notranslate"><span class="pre">BaseP300</span></code>. Docstring inheritance is handled via <code class="docutils literal notranslate"><span class="pre">NumpyDocstringInheritanceInitMeta</span></code> (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/467">#467</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>).</p></li>
 <li><p>Allow CodeCarbon script level configurations when instantiating a <a class="reference internal" href="generated/moabb.evaluations.base.BaseEvaluation.html#moabb.evaluations.base.BaseEvaluation" title="moabb.evaluations.base.BaseEvaluation"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.evaluations.base.BaseEvaluation</span></code></a> child class (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/866">#866</a> by <a class="reference external" href="https://github.com/davisethan">Ethan Davis</a>).</p></li>
@@ -1116,7 +1118,7 @@ session-level result contract in both the flattened and legacy execution paths
 </ul>
 </section>
 <section id="id27">
-<h3>Requirements<a class="headerlink" href="#id27" title="Link to this heading">#</a></h3>
+<h2>Requirements<a class="headerlink" href="#id27" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Allows CodeCarbon environment variables or a configuration file to be defined in the home directory or the current working directory (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/866">#866</a> by <a class="reference external" href="https://github.com/davisethan">Ethan Davis</a>).</p></li>
 <li><p>Added <code class="docutils literal notranslate"><span class="pre">filelock</span></code> as a core dependency to fix missing import errors in utils (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/959">#959</a> by <a class="reference external" href="https://github.com/luluu9">Mateusz Naklicki</a>).</p></li>
@@ -1126,7 +1128,7 @@ session-level result contract in both the flattened and legacy execution paths
 </ul>
 </section>
 <section id="id28">
-<h3>Bugs<a class="headerlink" href="#id28" title="Link to this heading">#</a></h3>
+<h2>Bugs<a class="headerlink" href="#id28" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Fix trial acceptance condition in <a class="reference internal" href="generated/moabb.datasets.Stieger2021.html#moabb.datasets.Stieger2021" title="moabb.datasets.Stieger2021"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.Stieger2021</span></code></a> that allowed epochs
 to extend beyond actual motor imagery duration into adjacent trials’ resting periods (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/816">#816</a>)</p></li>
@@ -1190,7 +1192,7 @@ to extend beyond actual motor imagery duration into adjacent trials’ resting p
 </ul>
 </section>
 <section id="id29">
-<h3>Code health<a class="headerlink" href="#id29" title="Link to this heading">#</a></h3>
+<h2>Code health<a class="headerlink" href="#id29" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Generate dataset timeline SVGs at Sphinx build time instead of tracking pre-rendered files in git (by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
 <li><p>Fix Sphinx documentation warnings and move sliding-estimator tutorial to advanced examples (by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
@@ -1223,9 +1225,9 @@ to extend beyond actual motor imagery duration into adjacent trials’ resting p
 </section>
 </section>
 <section id="version-1-4-3-stable-pypi">
-<h2>Version 1.4.3 (Stable - PyPi)<a class="headerlink" href="#version-1-4-3-stable-pypi" title="Link to this heading">#</a></h2>
+<h1>Version 1.4.3 (Stable - PyPi)<a class="headerlink" href="#version-1-4-3-stable-pypi" title="Link to this heading">#</a></h1>
 <section id="id30">
-<h3>Enhancements<a class="headerlink" href="#id30" title="Link to this heading">#</a></h3>
+<h2>Enhancements<a class="headerlink" href="#id30" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Add “Open in Colab” buttons for gallery examples (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/853">#853</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
 <li><p>Refresh docs homepage design and citation visibility (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/853">#853</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
@@ -1233,42 +1235,42 @@ to extend beyond actual motor imagery duration into adjacent trials’ resting p
 </ul>
 </section>
 <section id="id31">
-<h3>API changes<a class="headerlink" href="#id31" title="Link to this heading">#</a></h3>
+<h2>API changes<a class="headerlink" href="#id31" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>None.</p></li>
 </ul>
 </section>
 <section id="id32">
-<h3>Requirements<a class="headerlink" href="#id32" title="Link to this heading">#</a></h3>
+<h2>Requirements<a class="headerlink" href="#id32" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Improve compatibility with Python 3.14 (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/848">#848</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
 </ul>
 </section>
 <section id="id33">
-<h3>Bugs<a class="headerlink" href="#id33" title="Link to this heading">#</a></h3>
+<h2>Bugs<a class="headerlink" href="#id33" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Fixing warnings from the latest scikit-learn version within the Preprocessing logic (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/850">#850</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
 <li><p>Fixing compatibility with Scikit-learn 1.8 (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/852">#852</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
 </ul>
 </section>
 <section id="id34">
-<h3>Code health<a class="headerlink" href="#id34" title="Link to this heading">#</a></h3>
+<h2>Code health<a class="headerlink" href="#id34" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Generate notebooks in docs CI for Colab integration (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/853">#853</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
 </ul>
 </section>
 </section>
 <section id="version-1-4-2">
-<h2>Version 1.4.2<a class="headerlink" href="#version-1-4-2" title="Link to this heading">#</a></h2>
+<h1>Version 1.4.2<a class="headerlink" href="#version-1-4-2" title="Link to this heading">#</a></h1>
 <section id="id35">
-<h3>Enhancements<a class="headerlink" href="#id35" title="Link to this heading">#</a></h3>
+<h2>Enhancements<a class="headerlink" href="#id35" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Adding dataset <a class="reference internal" href="generated/moabb.datasets.RomaniBF2025ERP.html#moabb.datasets.RomaniBF2025ERP" title="moabb.datasets.RomaniBF2025ERP"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.RomaniBF2025ERP</span></code></a> converted to BIDS (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/825">#825</a> by <a class="reference external" href="https://github.com/BRomans">Romani Michele</a>)</p></li>
 <li><p>Improve compute_pvals_perm function (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/818">#818</a> by <a class="reference external" href="https://github.com/qbarthelemy">Quentin Barthelemy</a>)</p></li>
 </ul>
 </section>
 <section id="id36">
-<h3>Bugs<a class="headerlink" href="#id36" title="Link to this heading">#</a></h3>
+<h2>Bugs<a class="headerlink" href="#id36" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Fixes the management of include/exclude datasets in <a class="reference internal" href="generated/moabb.benchmark.html#moabb.benchmark" title="moabb.benchmark"><code class="xref py py-func docutils literal notranslate"><span class="pre">moabb.benchmark()</span></code></a>, adds additional verifications (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/834">#834</a> by <a class="reference external" href="https://github.com/toncho11">Anton Andreev</a>)</p></li>
 <li><p>Fixing pagination issue with figshare (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/839">#839</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
@@ -1276,16 +1278,16 @@ to extend beyond actual motor imagery duration into adjacent trials’ resting p
 </ul>
 </section>
 <section id="id37">
-<h3>API changes<a class="headerlink" href="#id37" title="Link to this heading">#</a></h3>
+<h2>API changes<a class="headerlink" href="#id37" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>None.</p></li>
 </ul>
 </section>
 </section>
 <section id="version-1-4">
-<h2>Version  - 1.4<a class="headerlink" href="#version-1-4" title="Link to this heading">#</a></h2>
+<h1>Version  - 1.4<a class="headerlink" href="#version-1-4" title="Link to this heading">#</a></h1>
 <section id="id38">
-<h3>Enhancements<a class="headerlink" href="#id38" title="Link to this heading">#</a></h3>
+<h2>Enhancements<a class="headerlink" href="#id38" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Update to pyRiemann 0.9 and numpy 2.0 for improved compatibility (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/789">#789</a> by <a class="reference external" href="https://github.com/gcattan">Gregoire Cattan</a> and <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
 <li><p>Adding <a class="reference internal" href="generated/moabb.datasets.Kojima2024A.html#moabb.datasets.Kojima2024A" title="moabb.datasets.Kojima2024A"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.Kojima2024A</span></code></a> (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/807">#807</a> by <a class="reference external" href="https://github.com/simonkojima">Simon Kojima</a>)</p></li>
@@ -1295,23 +1297,23 @@ to extend beyond actual motor imagery duration into adjacent trials’ resting p
 </ul>
 </section>
 <section id="id39">
-<h3>Bugs<a class="headerlink" href="#id39" title="Link to this heading">#</a></h3>
+<h2>Bugs<a class="headerlink" href="#id39" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Fixing label swapped issue with  <a class="reference internal" href="generated/moabb.datasets.Kalunga2016.html#moabb.datasets.Kalunga2016" title="moabb.datasets.Kalunga2016"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.Kalunga2016</span></code></a> dataset (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/814">#814</a> by <a class="reference external" href="https://github.com/ponpopon">Kosei Nakada</a>)</p></li>
 <li><p>Fix the <a class="reference internal" href="generated/moabb.datasets.Dreyer2023.html#moabb.datasets.Dreyer2023" title="moabb.datasets.Dreyer2023"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.Dreyer2023</span></code></a> (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/828">#828</a> by <a class="reference external" href="https://github.com/simonkojima">Simon Kojima</a>)</p></li>
 </ul>
 </section>
 <section id="id40">
-<h3>API changes<a class="headerlink" href="#id40" title="Link to this heading">#</a></h3>
+<h2>API changes<a class="headerlink" href="#id40" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>None.</p></li>
 </ul>
 </section>
 </section>
 <section id="version-1-3">
-<h2>Version  - 1.3<a class="headerlink" href="#version-1-3" title="Link to this heading">#</a></h2>
+<h1>Version  - 1.3<a class="headerlink" href="#version-1-3" title="Link to this heading">#</a></h1>
 <section id="id41">
-<h3>Enhancements<a class="headerlink" href="#id41" title="Link to this heading">#</a></h3>
+<h2>Enhancements<a class="headerlink" href="#id41" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Adding a tutorial for <a class="reference internal" href="generated/moabb.evaluations.WithinSessionSplitter.html#moabb.evaluations.WithinSessionSplitter" title="moabb.evaluations.splitters.WithinSessionSplitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.evaluations.splitters.WithinSessionSplitter</span></code></a> (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/776">#776</a> by <a class="reference external" href="https://github.com/jellymace">Thomas Kooiman</a>, <a class="reference external" href="https://github.com/PaulusBoskabouter">Paul Verhoeven</a>, <a class="reference external" href="https://github.com/jorgesanmar">Jorge Sanmartin Martinez</a>, and <a class="reference external" href="https://github.com/rvodila">Radovan Vodila</a> )</p></li>
 <li><p>Adding new motor imagery dataset, Dreyer2023 (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/404">#404</a> by <a class="reference external" href="https://github.com/Sara04">Sara Sedlar</a>, <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a> and <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
@@ -1334,7 +1336,7 @@ to extend beyond actual motor imagery duration into adjacent trials’ resting p
 </ul>
 </section>
 <section id="id42">
-<h3>Bugs<a class="headerlink" href="#id42" title="Link to this heading">#</a></h3>
+<h2>Bugs<a class="headerlink" href="#id42" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Fix regression in evaluations ignoring <code class="docutils literal notranslate"><span class="pre">process_pipeline</span></code> flag (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/774">#774</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
 <li><p>Fix caching issue with incomplete results (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/715">#715</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
@@ -1353,16 +1355,16 @@ to extend beyond actual motor imagery duration into adjacent trials’ resting p
 </ul>
 </section>
 <section id="id43">
-<h3>API changes<a class="headerlink" href="#id43" title="Link to this heading">#</a></h3>
+<h2>API changes<a class="headerlink" href="#id43" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Removing the deep learning module from inside moabb in favour of braindecode integration (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/692">#692</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> )</p></li>
 </ul>
 </section>
 </section>
 <section id="version-1-2-0">
-<h2>Version - 1.2.0<a class="headerlink" href="#version-1-2-0" title="Link to this heading">#</a></h2>
+<h1>Version - 1.2.0<a class="headerlink" href="#version-1-2-0" title="Link to this heading">#</a></h1>
 <section id="id44">
-<h3>Enhancements<a class="headerlink" href="#id44" title="Link to this heading">#</a></h3>
+<h2>Enhancements<a class="headerlink" href="#id44" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Adding <a class="reference internal" href="generated/moabb.evaluations.WithinSessionSplitter.html#moabb.evaluations.WithinSessionSplitter" title="moabb.evaluations.splitters.WithinSessionSplitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.evaluations.splitters.WithinSessionSplitter</span></code></a> (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/664">#664</a> by <cite>Bruna Lopes_</cite>)</p></li>
 <li><p>Update version of pyRiemann to 0.7 (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/671">#671</a> by <a class="reference external" href="https://github.com/gcattan">Gregoire Cattan</a>)</p></li>
@@ -1372,7 +1374,7 @@ to extend beyond actual motor imagery duration into adjacent trials’ resting p
 </ul>
 </section>
 <section id="id45">
-<h3>Bugs<a class="headerlink" href="#id45" title="Link to this heading">#</a></h3>
+<h2>Bugs<a class="headerlink" href="#id45" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Fix Stieger2021 dataset bugs (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/651">#651</a> by <a class="reference external" href="https://github.com/martinwimpff">Martin Wimpff</a>)</p></li>
 <li><p>Unpinning major version Scikit-learn and numpy (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/652">#652</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
@@ -1391,16 +1393,16 @@ to extend beyond actual motor imagery duration into adjacent trials’ resting p
 </ul>
 </section>
 <section id="id46">
-<h3>API changes<a class="headerlink" href="#id46" title="Link to this heading">#</a></h3>
+<h2>API changes<a class="headerlink" href="#id46" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Removing the braindecode module from inside moabb (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/666">#666</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> )</p></li>
 </ul>
 </section>
 </section>
 <section id="version-1-1-1">
-<h2>Version - 1.1.1<a class="headerlink" href="#version-1-1-1" title="Link to this heading">#</a></h2>
+<h1>Version - 1.1.1<a class="headerlink" href="#version-1-1-1" title="Link to this heading">#</a></h1>
 <section id="id47">
-<h3>Enhancements<a class="headerlink" href="#id47" title="Link to this heading">#</a></h3>
+<h2>Enhancements<a class="headerlink" href="#id47" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Add possibility to use OptunaGridSearch (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/630">#630</a> by <a class="reference external" href="https://github.com/carraraig">Igor Carrara</a>)</p></li>
 <li><p>Add scripts to upload results on PapersWithCode (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/561">#561</a> by <a class="reference external" href="https://github.com/PierreGtch">Pierre Guetschel</a>)</p></li>
@@ -1410,22 +1412,22 @@ to extend beyond actual motor imagery duration into adjacent trials’ resting p
 </ul>
 </section>
 <section id="id48">
-<h3>Bugs<a class="headerlink" href="#id48" title="Link to this heading">#</a></h3>
+<h2>Bugs<a class="headerlink" href="#id48" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Fix caching in the workflows (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/632">#632</a> by <a class="reference external" href="https://github.com/PierreGtch">Pierre Guetschel</a>)</p></li>
 </ul>
 </section>
 <section id="id49">
-<h3>API changes<a class="headerlink" href="#id49" title="Link to this heading">#</a></h3>
+<h2>API changes<a class="headerlink" href="#id49" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Include optuna as soft-dependency in the benchmark function and in the base of evaluation (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/630">#630</a> by <a class="reference external" href="https://github.com/carraraig">Igor Carrara</a>)</p></li>
 </ul>
 </section>
 </section>
 <section id="version-1-1-0">
-<h2>Version - 1.1.0<a class="headerlink" href="#version-1-1-0" title="Link to this heading">#</a></h2>
+<h1>Version - 1.1.0<a class="headerlink" href="#version-1-1-0" title="Link to this heading">#</a></h1>
 <section id="id50">
-<h3>Enhancements<a class="headerlink" href="#id50" title="Link to this heading">#</a></h3>
+<h2>Enhancements<a class="headerlink" href="#id50" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Add cache option to the evaluation (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/518">#518</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
 <li><p>Option to interpolate channel in paradigms’ <cite>match_all</cite> method (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/480">#480</a> by <a class="reference external" href="https://github.com/gcattan">Gregoire Cattan</a>)</p></li>
@@ -1450,7 +1452,7 @@ to extend beyond actual motor imagery duration into adjacent trials’ resting p
 </ul>
 </section>
 <section id="id51">
-<h3>Bugs<a class="headerlink" href="#id51" title="Link to this heading">#</a></h3>
+<h2>Bugs<a class="headerlink" href="#id51" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Fix TRCA implementation for different stimulation freqs and for signal filtering (:gh:522 by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
 <li><p>Fix saving to BIDS runs with a description string in their name (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/530">#530</a> by <a class="reference external" href="https://github.com/PierreGtch">Pierre Guetschel</a>)</p></li>
@@ -1470,16 +1472,16 @@ to extend beyond actual motor imagery duration into adjacent trials’ resting p
 </ul>
 </section>
 <section id="id52">
-<h3>API changes<a class="headerlink" href="#id52" title="Link to this heading">#</a></h3>
+<h2>API changes<a class="headerlink" href="#id52" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>None</p></li>
 </ul>
 </section>
 </section>
 <section id="version-1-0-0">
-<h2>Version - 1.0.0<a class="headerlink" href="#version-1-0-0" title="Link to this heading">#</a></h2>
+<h1>Version - 1.0.0<a class="headerlink" href="#version-1-0-0" title="Link to this heading">#</a></h1>
 <section id="id53">
-<h3>Enhancements<a class="headerlink" href="#id53" title="Link to this heading">#</a></h3>
+<h2>Enhancements<a class="headerlink" href="#id53" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Adding extra thank you section in the documentation (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/390">#390</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
 <li><p>Adding new script to get the meta information of the datasets (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/389">#389</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
@@ -1520,7 +1522,7 @@ to extend beyond actual motor imagery duration into adjacent trials’ resting p
 </ul>
 </section>
 <section id="id54">
-<h3>Bugs<a class="headerlink" href="#id54" title="Link to this heading">#</a></h3>
+<h2>Bugs<a class="headerlink" href="#id54" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Restore 3 subject from Cho2017 (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/392">#392</a> by <a class="reference external" href="https://github.com/carraraig">Igor Carrara</a> and <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
 <li><p>Correct downloading with VirtualReality BrainInvaders dataset (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/393">#393</a> by <a class="reference external" href="https://github.com/gcattan">Gregoire Cattan</a>)</p></li>
@@ -1552,16 +1554,16 @@ to extend beyond actual motor imagery duration into adjacent trials’ resting p
 </ul>
 </section>
 <section id="id55">
-<h3>API changes<a class="headerlink" href="#id55" title="Link to this heading">#</a></h3>
+<h2>API changes<a class="headerlink" href="#id55" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>None</p></li>
 </ul>
 </section>
 </section>
 <section id="version-0-5-0">
-<h2>Version - 0.5.0<a class="headerlink" href="#version-0-5-0" title="Link to this heading">#</a></h2>
+<h1>Version - 0.5.0<a class="headerlink" href="#version-0-5-0" title="Link to this heading">#</a></h1>
 <section id="id56">
-<h3>Enhancements<a class="headerlink" href="#id56" title="Link to this heading">#</a></h3>
+<h2>Enhancements<a class="headerlink" href="#id56" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Speeding the augmentation model (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/365">#365</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
 <li><p>Add VirtualReality BrainInvaders dataset (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/358">#358</a> by <a class="reference external" href="https://github.com/gcattan">Gregoire Cattan</a>)</p></li>
@@ -1584,7 +1586,7 @@ to extend beyond actual motor imagery duration into adjacent trials’ resting p
 </ul>
 </section>
 <section id="id57">
-<h3>Bugs<a class="headerlink" href="#id57" title="Link to this heading">#</a></h3>
+<h2>Bugs<a class="headerlink" href="#id57" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Fix circular import with braindecode (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/363">#363</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
 <li><p>Fix bug for MotorImagery when we handle all events (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/327">#327</a> by <a class="reference external" href="https://github.com/carraraig">Igor Carrara</a>)</p></li>
@@ -1605,23 +1607,23 @@ to extend beyond actual motor imagery duration into adjacent trials’ resting p
 </ul>
 </section>
 <section id="id58">
-<h3>API changes<a class="headerlink" href="#id58" title="Link to this heading">#</a></h3>
+<h2>API changes<a class="headerlink" href="#id58" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>None</p></li>
 </ul>
 </section>
 </section>
 <section id="version-0-4-6">
-<h2>Version - 0.4.6<a class="headerlink" href="#version-0-4-6" title="Link to this heading">#</a></h2>
+<h1>Version - 0.4.6<a class="headerlink" href="#version-0-4-6" title="Link to this heading">#</a></h1>
 <section id="id59">
-<h3>Enhancements<a class="headerlink" href="#id59" title="Link to this heading">#</a></h3>
+<h2>Enhancements<a class="headerlink" href="#id59" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Add P300 BrainInvaders datasets (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/283">#283</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
 <li><p>Add explicit warning when lambda function are used to parametrize pipelines (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/278">#278</a> by <a class="reference external" href="https://github.com/jsosulski">Jan Sosulski</a>)</p></li>
 </ul>
 </section>
 <section id="id60">
-<h3>Bugs<a class="headerlink" href="#id60" title="Link to this heading">#</a></h3>
+<h2>Bugs<a class="headerlink" href="#id60" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Correct default path for ERP visualization (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/279">#279</a> by <a class="reference external" href="https://github.com/jsosulski">Jan Sosulski</a>)</p></li>
 <li><p>Correct documentation (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/282">#282</a> and <a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/284">#284</a> by <a class="reference external" href="https://github.com/jsosulski">Jan Sosulski</a>)</p></li>
@@ -1629,9 +1631,9 @@ to extend beyond actual motor imagery duration into adjacent trials’ resting p
 </section>
 </section>
 <section id="version-0-4-5">
-<h2>Version - 0.4.5<a class="headerlink" href="#version-0-4-5" title="Link to this heading">#</a></h2>
+<h1>Version - 0.4.5<a class="headerlink" href="#version-0-4-5" title="Link to this heading">#</a></h1>
 <section id="id61">
-<h3>Enhancements<a class="headerlink" href="#id61" title="Link to this heading">#</a></h3>
+<h2>Enhancements<a class="headerlink" href="#id61" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Progress bars, pooch, tqdm (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/258">#258</a> by <a class="reference external" href="https://github.com/Div12345">Divyesh Narayanan</a> and <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
 <li><p>Adding test and example for set_download_dir (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/249">#249</a> by <a class="reference external" href="https://github.com/Div12345">Divyesh Narayanan</a>)</p></li>
@@ -1642,7 +1644,7 @@ to extend beyond actual motor imagery duration into adjacent trials’ resting p
 </ul>
 </section>
 <section id="id62">
-<h3>Bugs<a class="headerlink" href="#id62" title="Link to this heading">#</a></h3>
+<h2>Bugs<a class="headerlink" href="#id62" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Removing dependency on mne method for PhysionetMI data downloading, renaming runs (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/257">#257</a> by <a class="reference external" href="https://github.com/Div12345">Divyesh Narayanan</a>)</p></li>
 <li><p>Correcting events management in Schirrmeister2017, renaming session and run (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/255">#255</a> by <a class="reference external" href="https://github.com/PierreGtch">Pierre Guetschel</a> and <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
@@ -1652,15 +1654,15 @@ to extend beyond actual motor imagery duration into adjacent trials’ resting p
 </section>
 </section>
 <section id="version-0-4-4">
-<h2>Version - 0.4.4<a class="headerlink" href="#version-0-4-4" title="Link to this heading">#</a></h2>
+<h1>Version - 0.4.4<a class="headerlink" href="#version-0-4-4" title="Link to this heading">#</a></h1>
 <section id="id63">
-<h3>Enhancements<a class="headerlink" href="#id63" title="Link to this heading">#</a></h3>
+<h2>Enhancements<a class="headerlink" href="#id63" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Add TRCA algorithm for SSVEP (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/238">#238</a> by <a class="reference external" href="https://github.com/ludovicdmt">Ludovic Darmet</a>)</p></li>
 </ul>
 </section>
 <section id="id64">
-<h3>Bugs<a class="headerlink" href="#id64" title="Link to this heading">#</a></h3>
+<h2>Bugs<a class="headerlink" href="#id64" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Remove unused argument from dataset_search (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/243">#243</a> by <a class="reference external" href="https://github.com/Div12345">Divyesh Narayanan</a>)</p></li>
 <li><p>Remove MNE call to <cite>_fetch_dataset</cite> and use MOABB <cite>_fetch_file</cite> (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/235">#235</a> by <a class="reference external" href="https://github.com/jsosulski">Jan Sosulski</a>)</p></li>
@@ -1668,7 +1670,7 @@ to extend beyond actual motor imagery duration into adjacent trials’ resting p
 </ul>
 </section>
 <section id="id65">
-<h3>API changes<a class="headerlink" href="#id65" title="Link to this heading">#</a></h3>
+<h2>API changes<a class="headerlink" href="#id65" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Minimum supported Python version is now 3.7</p></li>
 <li><p>MOABB now depends on scikit-learn &gt;= 1.0</p></li>
@@ -1676,15 +1678,15 @@ to extend beyond actual motor imagery duration into adjacent trials’ resting p
 </section>
 </section>
 <section id="version-0-4-3">
-<h2>Version - 0.4.3<a class="headerlink" href="#version-0-4-3" title="Link to this heading">#</a></h2>
+<h1>Version - 0.4.3<a class="headerlink" href="#version-0-4-3" title="Link to this heading">#</a></h1>
 <section id="id66">
-<h3>Enhancements<a class="headerlink" href="#id66" title="Link to this heading">#</a></h3>
+<h2>Enhancements<a class="headerlink" href="#id66" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Rewrite Lee2019 to add P300 and SSVEP datasets (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/217">#217</a> by <a class="reference external" href="https://github.com/PierreGtch">Pierre Guetschel</a>)</p></li>
 </ul>
 </section>
 <section id="id67">
-<h3>Bugs<a class="headerlink" href="#id67" title="Link to this heading">#</a></h3>
+<h2>Bugs<a class="headerlink" href="#id67" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Avoid information leakage for MNE Epochs pipelines in evaluation (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/222">#222</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
 <li><p>Correct error in set_download_dir (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/225">#225</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
@@ -1692,59 +1694,59 @@ to extend beyond actual motor imagery duration into adjacent trials’ resting p
 </ul>
 </section>
 <section id="id68">
-<h3>API changes<a class="headerlink" href="#id68" title="Link to this heading">#</a></h3>
+<h2>API changes<a class="headerlink" href="#id68" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>ch_names argument added to init of moabb.datasets.fake.FakeDataset (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/229">#229</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
 </ul>
 </section>
 </section>
 <section id="version-0-4-2">
-<h2>Version - 0.4.2<a class="headerlink" href="#version-0-4-2" title="Link to this heading">#</a></h2>
+<h1>Version - 0.4.2<a class="headerlink" href="#version-0-4-2" title="Link to this heading">#</a></h1>
 <section id="id69">
-<h3>Enhancements<a class="headerlink" href="#id69" title="Link to this heading">#</a></h3>
+<h2>Enhancements<a class="headerlink" href="#id69" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>None</p></li>
 </ul>
 </section>
 <section id="id70">
-<h3>Bugs<a class="headerlink" href="#id70" title="Link to this heading">#</a></h3>
+<h2>Bugs<a class="headerlink" href="#id70" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Correct error when downloading Weibo dataset  (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/212">#212</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
 </ul>
 </section>
 <section id="id71">
-<h3>API changes<a class="headerlink" href="#id71" title="Link to this heading">#</a></h3>
+<h2>API changes<a class="headerlink" href="#id71" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>None</p></li>
 </ul>
 </section>
 </section>
 <section id="version-0-4-1">
-<h2>Version - 0.4.1<a class="headerlink" href="#version-0-4-1" title="Link to this heading">#</a></h2>
+<h1>Version - 0.4.1<a class="headerlink" href="#version-0-4-1" title="Link to this heading">#</a></h1>
 <section id="id72">
-<h3>Enhancements<a class="headerlink" href="#id72" title="Link to this heading">#</a></h3>
+<h2>Enhancements<a class="headerlink" href="#id72" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>None</p></li>
 </ul>
 </section>
 <section id="id73">
-<h3>Bugs<a class="headerlink" href="#id73" title="Link to this heading">#</a></h3>
+<h2>Bugs<a class="headerlink" href="#id73" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Correct path error for first time launch (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/204">#204</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
 <li><p>Fix optional dependencies issues for PyPi (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/205">#205</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
 </ul>
 </section>
 <section id="id74">
-<h3>API changes<a class="headerlink" href="#id74" title="Link to this heading">#</a></h3>
+<h2>API changes<a class="headerlink" href="#id74" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Remove update_path on all datasets, <cite>update_path</cite> parameter in <cite>dataset.data_path()</cite> is deprecated (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/207">#207</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
 </ul>
 </section>
 </section>
 <section id="version-0-4-0">
-<h2>Version - 0.4.0<a class="headerlink" href="#version-0-4-0" title="Link to this heading">#</a></h2>
+<h1>Version - 0.4.0<a class="headerlink" href="#version-0-4-0" title="Link to this heading">#</a></h1>
 <section id="id75">
-<h3>Enhancements<a class="headerlink" href="#id75" title="Link to this heading">#</a></h3>
+<h2>Enhancements<a class="headerlink" href="#id75" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Implementation for learning curves (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/155">#155</a> by <a class="reference external" href="https://github.com/jsosulski">Jan Sosulski</a>)</p></li>
 <li><p>Adding Neiry Demons P300 dataset (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/156">#156</a> by <a class="reference external" href="https://github.com/v-goncharenko">Vladislav Goncharenko</a>)</p></li>
@@ -1770,7 +1772,7 @@ to extend beyond actual motor imagery duration into adjacent trials’ resting p
 </ul>
 </section>
 <section id="id76">
-<h3>Bugs<a class="headerlink" href="#id76" title="Link to this heading">#</a></h3>
+<h2>Bugs<a class="headerlink" href="#id76" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Restore basic logging (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/177">#177</a> by <a class="reference external" href="https://github.com/jsosulski">Jan Sosulski</a>)</p></li>
 <li><p>Correct wrong type of results dataframe columns (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/188">#188</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
@@ -1778,16 +1780,16 @@ to extend beyond actual motor imagery duration into adjacent trials’ resting p
 </ul>
 </section>
 <section id="id77">
-<h3>API changes<a class="headerlink" href="#id77" title="Link to this heading">#</a></h3>
+<h2>API changes<a class="headerlink" href="#id77" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Drop <cite>update_path</cite> from moabb.download.data_path and moabb.download.data_dl</p></li>
 </ul>
 </section>
 </section>
 <section id="version-0-3-0">
-<h2>Version 0.3.0<a class="headerlink" href="#version-0-3-0" title="Link to this heading">#</a></h2>
+<h1>Version 0.3.0<a class="headerlink" href="#version-0-3-0" title="Link to this heading">#</a></h1>
 <section id="id78">
-<h3>Enhancements<a class="headerlink" href="#id78" title="Link to this heading">#</a></h3>
+<h2>Enhancements<a class="headerlink" href="#id78" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Expose sklearn error_score parameter (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/70">#70</a> by <a class="reference external" href="https://github.com/jsosulski">Jan Sosulski</a>)</p></li>
 <li><p>Adds a <code class="docutils literal notranslate"><span class="pre">unit_factor</span></code> attribute to base_paradigms (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/72">#72</a> by <a class="reference external" href="https://github.com/jsosulski">Jan Sosulski</a>)</p></li>
@@ -1808,7 +1810,7 @@ to extend beyond actual motor imagery duration into adjacent trials’ resting p
 </ul>
 </section>
 <section id="id79">
-<h3>Bugs<a class="headerlink" href="#id79" title="Link to this heading">#</a></h3>
+<h2>Bugs<a class="headerlink" href="#id79" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Use stim_channels or check annotation when loading files in Paradigm  (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/72">#72</a> by <a class="reference external" href="https://github.com/jsosulski">Jan Sosulski</a>)</p></li>
 <li><p>Correct MNE issues (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/76">#76</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
@@ -1826,16 +1828,16 @@ to extend beyond actual motor imagery duration into adjacent trials’ resting p
 </ul>
 </section>
 <section id="id80">
-<h3>API changes<a class="headerlink" href="#id80" title="Link to this heading">#</a></h3>
+<h2>API changes<a class="headerlink" href="#id80" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>None</p></li>
 </ul>
 </section>
 </section>
 <section id="version-0-2-1">
-<h2>Version 0.2.1<a class="headerlink" href="#version-0-2-1" title="Link to this heading">#</a></h2>
+<h1>Version 0.2.1<a class="headerlink" href="#version-0-2-1" title="Link to this heading">#</a></h1>
 <section id="id81">
-<h3>Enhancements<a class="headerlink" href="#id81" title="Link to this heading">#</a></h3>
+<h2>Enhancements<a class="headerlink" href="#id81" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Add Tikhonov regularized CSP in <code class="docutils literal notranslate"><span class="pre">moabb.pipelines.csp</span></code> from the paper (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/60">#60</a> by <a class="reference external" href="https://github.com/vinay-jayaram">Vinay Jayaram</a>)</p></li>
 <li><p>update to MNE version 0.19 (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/73">#73</a> by <a class="reference external" href="https://github.com/jsosulski">Jan Sosulski</a>)</p></li>
@@ -1843,7 +1845,7 @@ to extend beyond actual motor imagery duration into adjacent trials’ resting p
 </ul>
 </section>
 <section id="id82">
-<h3>Bugs<a class="headerlink" href="#id82" title="Link to this heading">#</a></h3>
+<h2>Bugs<a class="headerlink" href="#id82" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Update GigaDB Cho2017 URL (<a class="reference external" href="https://github.com/plcrodrigues">Pedro L. C. Rodrigues</a> and <a class="reference external" href="https://github.com/vinay-jayaram">Vinay Jayaram</a>)</p></li>
 <li><p>Fix braininvaders ERP data (<a class="reference external" href="https://github.com/plcrodrigues">Pedro L. C. Rodrigues</a>)</p></li>
@@ -1852,16 +1854,16 @@ to extend beyond actual motor imagery duration into adjacent trials’ resting p
 </ul>
 </section>
 <section id="id83">
-<h3>API changes<a class="headerlink" href="#id83" title="Link to this heading">#</a></h3>
+<h2>API changes<a class="headerlink" href="#id83" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>None</p></li>
 </ul>
 </section>
 </section>
 <section id="version-0-2-0">
-<h2>Version 0.2.0<a class="headerlink" href="#version-0-2-0" title="Link to this heading">#</a></h2>
+<h1>Version 0.2.0<a class="headerlink" href="#version-0-2-0" title="Link to this heading">#</a></h1>
 <section id="id84">
-<h3>Enhancements<a class="headerlink" href="#id84" title="Link to this heading">#</a></h3>
+<h2>Enhancements<a class="headerlink" href="#id84" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>MOABB corresponding to the paper version by <a class="reference external" href="https://github.com/vinay-jayaram">Vinay Jayaram</a> and <a class="reference external" href="https://github.com/alexandrebarachant">Alexandre Barachant</a></p></li>
 <li><p>Creating P300 paradigm and BNCI datasets (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/53">#53</a> by <a class="reference external" href="https://github.com/plcrodrigues">Pedro L. C. Rodrigues</a>)</p></li>
@@ -1871,17 +1873,16 @@ to extend beyond actual motor imagery duration into adjacent trials’ resting p
 </ul>
 </section>
 <section id="id85">
-<h3>Bugs<a class="headerlink" href="#id85" title="Link to this heading">#</a></h3>
+<h2>Bugs<a class="headerlink" href="#id85" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>None</p></li>
 </ul>
 </section>
 <section id="id86">
-<h3>API changes<a class="headerlink" href="#id86" title="Link to this heading">#</a></h3>
+<h2>API changes<a class="headerlink" href="#id86" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>None</p></li>
 </ul>
-</section>
 </section>
 </section>
 
@@ -1923,169 +1924,170 @@ to extend beyond actual motor imagery duration into adjacent trials’ resting p
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-1-8-0-2026-10-06">Version 1.8.0 (2026-10-06)</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#enhancements">Enhancements</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#api-changes">API changes</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#requirements">Requirements</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bugs">Bugs</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#code-health">Code health</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Version 1.8.0 (2026-10-06)</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#enhancements">Enhancements</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#api-changes">API changes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#requirements">Requirements</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bugs">Bugs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#code-health">Code health</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-1-7-1-stable-pypi">Version 1.7.1  (Stable - PyPi)</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Enhancements</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">API changes</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">Requirements</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">Bugs</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">Code health</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#version-1-7-1-stable-pypi">Version 1.7.1  (Stable - PyPi)</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Enhancements</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">API changes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">Requirements</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">Bugs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">Code health</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-1-7-stable-pypi">Version 1.7  (Stable - PyPi)</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">Enhancements</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">API changes</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">Requirements</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">Bugs</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">Code health</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#version-1-7-stable-pypi">Version 1.7  (Stable - PyPi)</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">Enhancements</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">API changes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">Requirements</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">Bugs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">Code health</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-1-6-1-stable-pypi">Version 1.6.1  (Stable - PyPi)</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">Enhancements</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id16">API changes</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id17">Requirements</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id18">Bugs</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id19">Code health</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#version-1-6-1-stable-pypi">Version 1.6.1  (Stable - PyPi)</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">Enhancements</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id16">API changes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id17">Requirements</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id18">Bugs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id19">Code health</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-1-6-0-stable-pypi">Version 1.6.0  (Stable - PyPi)</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id20">Enhancements</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id21">API changes</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id22">Requirements</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id23">Bugs</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id24">Code health</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#version-1-6-0-stable-pypi">Version 1.6.0  (Stable - PyPi)</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id20">Enhancements</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id21">API changes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id22">Requirements</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id23">Bugs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id24">Code health</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-1-5-0-stable-pypi">Version 1.5.0  (Stable - PyPi)</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id25">Enhancements</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id26">API changes</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id27">Requirements</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id28">Bugs</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id29">Code health</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#version-1-5-0-stable-pypi">Version 1.5.0  (Stable - PyPi)</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id25">Enhancements</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id26">API changes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id27">Requirements</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id28">Bugs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id29">Code health</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-1-4-3-stable-pypi">Version 1.4.3 (Stable - PyPi)</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id30">Enhancements</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id31">API changes</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id32">Requirements</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id33">Bugs</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id34">Code health</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#version-1-4-3-stable-pypi">Version 1.4.3 (Stable - PyPi)</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id30">Enhancements</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id31">API changes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id32">Requirements</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id33">Bugs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id34">Code health</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-1-4-2">Version 1.4.2</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id35">Enhancements</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id36">Bugs</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id37">API changes</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#version-1-4-2">Version 1.4.2</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id35">Enhancements</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id36">Bugs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id37">API changes</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-1-4">Version  - 1.4</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id38">Enhancements</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id39">Bugs</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id40">API changes</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#version-1-4">Version  - 1.4</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id38">Enhancements</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id39">Bugs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id40">API changes</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-1-3">Version  - 1.3</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id41">Enhancements</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id42">Bugs</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id43">API changes</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#version-1-3">Version  - 1.3</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id41">Enhancements</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id42">Bugs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id43">API changes</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-1-2-0">Version - 1.2.0</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id44">Enhancements</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id45">Bugs</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id46">API changes</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#version-1-2-0">Version - 1.2.0</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id44">Enhancements</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id45">Bugs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id46">API changes</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-1-1-1">Version - 1.1.1</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id47">Enhancements</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id48">Bugs</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id49">API changes</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#version-1-1-1">Version - 1.1.1</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id47">Enhancements</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id48">Bugs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id49">API changes</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-1-1-0">Version - 1.1.0</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id50">Enhancements</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id51">Bugs</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id52">API changes</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#version-1-1-0">Version - 1.1.0</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id50">Enhancements</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id51">Bugs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id52">API changes</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-1-0-0">Version - 1.0.0</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id53">Enhancements</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id54">Bugs</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id55">API changes</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#version-1-0-0">Version - 1.0.0</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id53">Enhancements</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id54">Bugs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id55">API changes</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-5-0">Version - 0.5.0</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id56">Enhancements</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id57">Bugs</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id58">API changes</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-5-0">Version - 0.5.0</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id56">Enhancements</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id57">Bugs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id58">API changes</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-4-6">Version - 0.4.6</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id59">Enhancements</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id60">Bugs</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-4-6">Version - 0.4.6</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id59">Enhancements</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id60">Bugs</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-4-5">Version - 0.4.5</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id61">Enhancements</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id62">Bugs</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-4-5">Version - 0.4.5</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id61">Enhancements</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id62">Bugs</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-4-4">Version - 0.4.4</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id63">Enhancements</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id64">Bugs</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id65">API changes</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-4-4">Version - 0.4.4</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id63">Enhancements</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id64">Bugs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id65">API changes</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-4-3">Version - 0.4.3</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id66">Enhancements</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id67">Bugs</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id68">API changes</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-4-3">Version - 0.4.3</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id66">Enhancements</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id67">Bugs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id68">API changes</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-4-2">Version - 0.4.2</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id69">Enhancements</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id70">Bugs</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id71">API changes</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-4-2">Version - 0.4.2</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id69">Enhancements</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id70">Bugs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id71">API changes</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-4-1">Version - 0.4.1</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id72">Enhancements</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id73">Bugs</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id74">API changes</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-4-1">Version - 0.4.1</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id72">Enhancements</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id73">Bugs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id74">API changes</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-4-0">Version - 0.4.0</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id75">Enhancements</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id76">Bugs</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id77">API changes</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-4-0">Version - 0.4.0</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id75">Enhancements</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id76">Bugs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id77">API changes</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-3-0">Version 0.3.0</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id78">Enhancements</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id79">Bugs</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id80">API changes</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-3-0">Version 0.3.0</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id78">Enhancements</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id79">Bugs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id80">API changes</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-2-1">Version 0.2.1</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id81">Enhancements</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id82">Bugs</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id83">API changes</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-2-1">Version 0.2.1</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id81">Enhancements</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id82">Bugs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id83">API changes</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-2-0">Version 0.2.0</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id84">Enhancements</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id85">Bugs</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id86">API changes</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-2-0">Version 0.2.0</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id84">Enhancements</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id85">Bugs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id86">API changes</a></li>
 </ul>
 </li>
 </ul>
+
   </nav></div>
 
 </div></div>
