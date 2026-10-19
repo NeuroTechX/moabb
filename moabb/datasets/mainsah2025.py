@@ -384,10 +384,22 @@ class Mainsah2025(BaseDataset):
         for entry in record.get("files") or []:
             if not isinstance(entry, dict):
                 continue
-            name = entry.get("name") or ""
+            # Provenance entries name the file ``file`` (relative to
+            # sourcedata/, e.g. ``B_01/SE001/Test/CB/B_01_....edf``), not the
+            # full upstream ``bigP3BCI-data/Study...`` path.
+            raw_name = entry.get("name") or entry.get("file") or ""
+            name = raw_name
+            if name and not name.startswith("bigP3BCI-data/"):
+                # Rebuild the upstream relative path the manifest parser keys
+                # on: Study<study>/<subj>/SE<nnn>/<Test|Train>/.../<file>.edf
+                parts = name.split("/")
+                if len(parts) >= 4:
+                    subj = parts[0]
+                    study = subj.split("_")[0]
+                    name = f"bigP3BCI-data/Study{study}/" + name
             if not name.endswith(".edf"):
                 continue
-            stored = store / name
+            stored = store / raw_name
             if not stored.is_file():
                 continue
             expected = entry.get("sha256")
@@ -397,7 +409,7 @@ class Mainsah2025(BaseDataset):
                     continue
             m = re.match(
                 r"bigP3BCI-data/Study([\w-]+)/([\w-]+)/SE(\d+)/"
-                r"(Test|Train)/([\w-]+)/(.+\.edf)",
+                r"(Test|Train)/(?:[\w-]+/)?(.+\.edf)",
                 name,
             )
             if not m:

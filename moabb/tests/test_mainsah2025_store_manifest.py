@@ -28,7 +28,7 @@ def mne_data(tmp_path, monkeypatch):
     mainsah._manifest_cache = None
 
 
-REL = "bigP3BCI-data/StudyB/B_05/SE001/Test/B_05/a.edf"
+REL = "bigP3BCI-data/StudyB/B_05/SE001/Test/a.edf"
 
 
 def test_manifest_from_store_provenance(mne_data, tmp_path, monkeypatch):
@@ -36,12 +36,16 @@ def test_manifest_from_store_provenance(mne_data, tmp_path, monkeypatch):
     data = b"edf-bytes"
     (store / REL).parent.mkdir(parents=True)
     (store / REL).write_bytes(data)
+    # Real deposit layout (nm000157): entries use ``file`` relative to
+    # sourcedata/ and a ``subject`` field.
+    (store / "B_05/SE001/Test/a.edf").parent.mkdir(parents=True, exist_ok=True)
+    (store / "B_05/SE001/Test/a.edf").write_bytes(data)
     prov = {
         "files": [
             {
-                "name": REL,
-                "url": "https://physionet.org/files/bigp3bci/1.0.0/" + REL,
+                "file": "B_05/SE001/Test/a.edf",
                 "sha256": hashlib.sha256(data).hexdigest(),
+                "subject": "5",
             }
         ]
     }
