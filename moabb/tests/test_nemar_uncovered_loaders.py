@@ -178,7 +178,11 @@ def test_seed_tolerates_prerename_brainvision_companion(mne_data, tmp_path):
     dataset = datasets.Thapa2025()
     store = dl.nemar_store(dataset.code, dataset.nemar_id)
     header = "sub-09/ses-02/eeg/sub-09_run-0009_eeg.vhdr"
-    for member in (header, header.replace(".vhdr", ".eeg"), header.replace(".vhdr", ".vmrk")):
+    for member in (
+        header,
+        header.replace(".vhdr", ".eeg"),
+        header.replace(".vhdr", ".vmrk"),
+    ):
         path = store / "sourcedata" / member
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(
@@ -193,7 +197,11 @@ def test_seed_tolerates_prerename_brainvision_companion(mne_data, tmp_path):
             {"file": "dataset_description.json"},
             *(
                 {"file": m, "subject": 9}
-                for m in (header, header.replace(".vhdr", ".eeg"), header.replace(".vhdr", ".vmrk"))
+                for m in (
+                    header,
+                    header.replace(".vhdr", ".eeg"),
+                    header.replace(".vhdr", ".vmrk"),
+                )
             ),
         ],
     }
