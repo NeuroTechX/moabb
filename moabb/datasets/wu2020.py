@@ -228,6 +228,10 @@ class Wu2020(BaseDataset):
             if dat_files:
                 return str(data_dir)
 
+        # The NEMAR deposit keeps the extracted subject; take it first.
+        if not force_update and dl.fill_tree_from_store(data_dir, subj_dir.name):
+            return str(data_dir)
+
         # Download per-subject ZIP from Zenodo and extract.
         url = f"{_ZENODO_BASE}/subject{subject}.zip"
         download_and_extract_subject_zip(url, sign, data_dir, path, force_update, verbose)
