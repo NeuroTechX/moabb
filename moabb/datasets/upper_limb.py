@@ -56,7 +56,7 @@ def _same_layout_for_every_run(raw, eog):
 
 
 class Ofner2017(BaseDataset):
-    """Motor Imagery ataset from Ofner et al 2017.
+    """Motor Imagery Dataset from Ofner et al 2017.
 
     Upper limb Motor imagery dataset from the paper [1]_.
 

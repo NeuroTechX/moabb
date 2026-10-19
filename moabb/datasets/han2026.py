@@ -81,8 +81,7 @@ class Han2026(OpenNeuroMirrorMixin, BaseDataset):
     References
     ----------
 
-    .. [1] Han, J., Wang, J., Jia, L., and Tang, M. (2026). Basketball Motor
-       Observation and Motor Imagery EEG Dataset. OpenNeuro.
+    .. [1] Han, J., Wang, J., Jia, L., and Tang, M. (2026). Basketball Motor Imagery EEG Dataset. OpenNeuro.
        DOI: https://doi.org/10.18112/openneuro.ds007327.v1.1.0
 
     Notes
