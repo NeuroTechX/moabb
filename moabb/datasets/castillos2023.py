@@ -223,7 +223,7 @@ class BaseCastillos2023(BaseDataset):
             # the loader reads 4Class-CVEP/P<n>/..., so fill that level too.
             dl.fill_tree_from_store(path_folder, "4Class-CVEP")
         if not osp.isdir(path_folder + "4Class-CVEP"):
-            store_files = dl.store_glob(f"P{subject}/*_{paradigm_type}.set")
+            store_files = dl.store_glob(f"P{subject}/*_{paradigm_type}.*")
             if store_files:
                 dl.fill_from_store(
                     osp.join(path_folder, "4Class-CVEP"),
