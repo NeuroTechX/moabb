@@ -766,26 +766,6 @@ select electrodes based on the covariance information</p>
 </span><span class="w">
 </span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">results</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-moabb-evaluations-base sphx-glr-backref-type-py-method reference internal" href="../../generated/moabb.evaluations.base.BaseEvaluation.html#moabb.evaluations.base.BaseEvaluation.process" title="moabb.evaluations.base.BaseEvaluation.process"><span class="n">evaluation</span><span class="o">.</span><span class="n">process</span></a><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">pipelines</span></a><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>This is nemar-py 0.3.3.
-Preparing to download nm000343 from https://data.nemar.org/
-Retrieving 21 of 492 manifest files (16 concurrent downloads).
-
-S3:   0%|          | 0.00/193M [00:00&lt;?, ?B/s]
-S3:   1%|          | 1.00M/193M [00:00&lt;01:21, 2.46MB/s]
-S3:  14%|█▍        | 27.0M/193M [00:00&lt;00:02, 70.2MB/s]
-S3:  36%|███▌      | 69.6M/193M [00:00&lt;00:00, 168MB/s]
-S3:  64%|██████▍   | 124M/193M [00:00&lt;00:00, 276MB/s]
-S3:  86%|████████▋ | 166M/193M [00:00&lt;00:00, 321MB/s]
-S3: 100%|██████████| 193M/193M [00:01&lt;00:00, 176MB/s]
-
-Overall:   0%|          | 0.00/7.26k [00:00&lt;?, ?B/s]
-Overall:  14%|█▍        | 1.05k/7.26k [00:00&lt;00:01, 4.34kB/s]
-Overall:  30%|██▉       | 2.15k/7.26k [00:00&lt;00:01, 4.25kB/s]
-Overall:  45%|████▌     | 3.28k/7.26k [00:00&lt;00:00, 4.71kB/s]
-Overall:  47%|████▋     | 3.40k/7.26k [00:00&lt;00:00, 4.74kB/s]
-Finished downloading nm000343 v1.1.0.
-</pre></div>
-</div>
 <p>Here, with the ElSel+Cov+TS+LDA pipeline, we reduce the computation time
 in approximately 8 times to the Cov+ElSel+TS+LDA pipeline.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">Averaging the session performance:</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
@@ -794,9 +774,9 @@ in approximately 8 times to the Cov+ElSel+TS+LDA pipeline.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Averaging the session performance:
                      score      time
 pipeline
-Cov+ElSel+TS+LDA  0.840030  2.190374
-ElSel+Cov+TS+LDA  0.752849  0.364598
-Xdawn+Cov+TS+LDA  0.666693  0.283823
+Cov+ElSel+TS+LDA  0.840030  1.472809
+ElSel+Cov+TS+LDA  0.752849  0.221025
+Xdawn+Cov+TS+LDA  0.666693  0.145924
 </pre></div>
 </div>
 </section>
@@ -832,8 +812,7 @@ Xdawn+Cov+TS+LDA  0.666693  0.283823
 <li><p>Electrode selection strategy based on covariance matrices demonstrates less variability and typically yields better performance.</p></li>
 <li><p>However, this strategy is more time-consuming compared to the simpler electrode selection based on time epoch data.</p></li>
 </ul>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 27.120 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  940 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 18.655 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-hinss2021-classification-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/5abf5216139378fc86b18e340a1f77b5/plot_hinss2021_classification.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_hinss2021_classification.ipynb</span></code></a></p>

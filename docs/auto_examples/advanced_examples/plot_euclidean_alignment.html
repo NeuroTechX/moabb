@@ -709,71 +709,6 @@ separate, because Euclidean Alignment is defined <strong>per recording</strong>.
 </span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">X</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">labels</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">_</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-moabb-paradigms-base sphx-glr-backref-type-py-method reference internal" href="../../generated/moabb.paradigms.base.BaseProcessing.html#moabb.paradigms.base.BaseProcessing.get_data" title="moabb.paradigms.base.BaseProcessing.get_data"><span class="n">paradigm</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><a class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/moabb.datasets.BNCI2014_001.html#moabb.datasets.BNCI2014_001" title="moabb.datasets.BNCI2014_001"><span class="n">dataset</span></a><span class="p">,</span> <span class="p">[</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">subject</span></a><span class="p">]</span><span class="p">)</span><span class="w">
 </span>    <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">data</span></a><span class="p">[</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">subject</span></a><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">X</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-sklearn-preprocessing sphx-glr-backref-type-py-class reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.LabelEncoder.html#sklearn.preprocessing.LabelEncoder" title="sklearn.preprocessing.LabelEncoder"><span class="n">LabelEncoder</span></a><span class="p">(</span><span class="p">)</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">labels</span></a><span class="p">)</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>This is nemar-py 0.3.3.
-Preparing to download nm000139 from https://data.nemar.org/
-Retrieving 6 of 769 manifest files (16 concurrent downloads).
-
-S3:   0%|          | 0.00/75.2M [00:00&lt;?, ?B/s]
-S3:   1%|▏         | 1.00M/75.2M [00:00&lt;00:33, 2.35MB/s]
-S3:  11%|█         | 8.00M/75.2M [00:00&lt;00:03, 18.7MB/s]
-S3:  33%|███▎      | 25.0M/75.2M [00:00&lt;00:00, 57.9MB/s]
-S3:  69%|██████▉   | 52.0M/75.2M [00:00&lt;00:00, 116MB/s]
-S3:  96%|█████████▋| 72.4M/75.2M [00:00&lt;00:00, 138MB/s]
-S3: 100%|██████████| 75.2M/75.2M [00:00&lt;00:00, 88.0MB/s]
-Finished downloading nm000139 v1.0.3.
-This is nemar-py 0.3.3.
-Preparing to download nm000139 from https://data.nemar.org/
-Retrieving 6 of 769 manifest files (16 concurrent downloads).
-
-S3:   0%|          | 0.00/82.8M [00:00&lt;?, ?B/s]
-S3:   1%|          | 1.00M/82.8M [00:00&lt;00:26, 3.20MB/s]
-S3:  12%|█▏        | 10.0M/82.8M [00:00&lt;00:02, 30.4MB/s]
-S3:  41%|████      | 34.0M/82.8M [00:00&lt;00:00, 96.1MB/s]
-S3:  70%|███████   | 58.0M/82.8M [00:00&lt;00:00, 141MB/s]
-S3:  92%|█████████▏| 76.3M/82.8M [00:00&lt;00:00, 152MB/s]
-S3: 100%|██████████| 82.8M/82.8M [00:00&lt;00:00, 110MB/s]
-Finished downloading nm000139 v1.0.3.
-This is nemar-py 0.3.3.
-Preparing to download nm000139 from https://data.nemar.org/
-Retrieving 6 of 769 manifest files (16 concurrent downloads).
-
-S3:   0%|          | 0.00/83.9M [00:00&lt;?, ?B/s]
-S3:   1%|          | 1.00M/83.9M [00:00&lt;00:29, 3.00MB/s]
-S3:   7%|▋         | 6.00M/83.9M [00:00&lt;00:04, 16.7MB/s]
-S3:  25%|██▌       | 21.0M/83.9M [00:00&lt;00:01, 56.8MB/s]
-S3:  49%|████▉     | 41.0M/83.9M [00:00&lt;00:00, 101MB/s]
-S3:  75%|███████▌  | 63.0M/83.9M [00:00&lt;00:00, 138MB/s]
-S3:  95%|█████████▍| 79.4M/83.9M [00:00&lt;00:00, 141MB/s]
-S3: 100%|██████████| 83.9M/83.9M [00:00&lt;00:00, 96.4MB/s]
-Finished downloading nm000139 v1.0.3.
-This is nemar-py 0.3.3.
-Preparing to download nm000139 from https://data.nemar.org/
-Retrieving 6 of 769 manifest files (16 concurrent downloads).
-
-S3:   0%|          | 0.00/81.1M [00:00&lt;?, ?B/s]
-S3:   1%|          | 1.00M/81.1M [00:00&lt;00:28, 2.96MB/s]
-S3:   7%|▋         | 6.00M/81.1M [00:00&lt;00:04, 16.6MB/s]
-S3:  26%|██▌       | 21.0M/81.1M [00:00&lt;00:01, 54.9MB/s]
-S3:  53%|█████▎    | 43.0M/81.1M [00:00&lt;00:00, 103MB/s]
-S3:  80%|████████  | 65.0M/81.1M [00:00&lt;00:00, 137MB/s]
-S3: 100%|█████████▉| 80.8M/81.1M [00:00&lt;00:00, 139MB/s]
-S3: 100%|██████████| 81.1M/81.1M [00:00&lt;00:00, 94.0MB/s]
-Finished downloading nm000139 v1.0.3.
-This is nemar-py 0.3.3.
-Preparing to download nm000139 from https://data.nemar.org/
-Retrieving 6 of 769 manifest files (16 concurrent downloads).
-
-S3:   0%|          | 0.00/87.1M [00:00&lt;?, ?B/s]
-S3:   1%|          | 1.00M/87.1M [00:00&lt;00:28, 3.15MB/s]
-S3:   6%|▌         | 5.00M/87.1M [00:00&lt;00:06, 14.3MB/s]
-S3:  25%|██▌       | 22.0M/87.1M [00:00&lt;00:01, 59.2MB/s]
-S3:  56%|█████▋    | 49.0M/87.1M [00:00&lt;00:00, 119MB/s]
-S3:  78%|███████▊  | 67.9M/87.1M [00:00&lt;00:00, 141MB/s]
-S3:  96%|█████████▋| 83.9M/87.1M [00:00&lt;00:00, 126MB/s]
-S3: 100%|██████████| 87.1M/87.1M [00:00&lt;00:00, 93.8MB/s]
-Finished downloading nm000139 v1.0.3.
-</pre></div>
-</div>
 </section>
 <section id="euclidean-alignment-reduces-the-between-subject-covariance-shift">
 <h2>Euclidean Alignment reduces the between-subject covariance shift<a class="headerlink" href="#euclidean-alignment-reduces-the-between-subject-covariance-shift" title="Link to this heading">#</a></h2>
@@ -817,7 +752,7 @@ together — each subject’s mean covariance becomes ~identity.</p>
 </span><a class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.tight_layout.html#matplotlib.figure.Figure.tight_layout" title="matplotlib.figure.Figure.tight_layout"><span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span></a><span class="p">(</span><span class="p">)</span><span class="w">
 </span><a class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">(</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../../_images/sphx_glr_plot_euclidean_alignment_001.png" srcset="../../_images/sphx_glr_plot_euclidean_alignment_001.png" alt="Euclidean Alignment shrinks the between-subject domain shift" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Between-subject covariance dispersion: {'No alignment': 404.171451512519, 'Euclidean Alignment': 0.5087545462974774}
+<img src="../../_images/sphx_glr_plot_euclidean_alignment_001.png" srcset="../../_images/sphx_glr_plot_euclidean_alignment_001.png" alt="Euclidean Alignment shrinks the between-subject domain shift" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Between-subject covariance dispersion: {'No alignment': 404.171451512519, 'Euclidean Alignment': 0.5087545462974946}
 </pre></div>
 </div>
 </section>
@@ -934,8 +869,7 @@ learning for EEG decoding. <em>Journal of Neural Engineering</em>, 21(3),
 036038. <a class="reference external" href="https://doi.org/10.1088/1741-2552/ad4f18">https://doi.org/10.1088/1741-2552/ad4f18</a></p>
 </aside>
 </aside>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 37.337 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  2333 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 9.540 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-euclidean-alignment-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/62d1427c59b6e858abb862499636d357/plot_euclidean_alignment.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_euclidean_alignment.ipynb</span></code></a></p>
