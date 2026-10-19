@@ -34,18 +34,20 @@ META = """runs:
 def test_bi2013a_reads_extracted_runs_from_store(mne_data, tmp_path, monkeypatch):
     store = tmp_path / "store"
     # Deposit layout (nm000264): subject_01/Session1/<run>.mat + meta.yml
-    run = store / "subject_01" / "Session1" / "run_1.mat"
+    run = store / "subject_08" / "Session1" / "run_1.mat"
     run.parent.mkdir(parents=True)
     run.write_text("mat")
-    (store / "subject_01" / "meta.yml").write_text(META)
+    (store / "subject_08" / "meta.yml").write_text(META)
     monkeypatch.setattr(
         socket.socket, "connect", lambda s, a: (_ for _ in ()).throw(AssertionError(a))
     )
     monkeypatch.setattr(
         dl, "data_dl", lambda *a, **k: (_ for _ in ()).throw(AssertionError("data_dl"))
     )
+    # Subject 8 uses the single-ZIP layout; the store tree exercises the
+    # extracted-before-archive path without 8 session ZIPs.
     ds = BI2013a()
     # Only the extracted run the deposit holds; default flags ask training+...
     with dl.active_sourcedata_store(store):
-        paths = ds.data_path(1)
+        paths = ds.data_path(8)
     assert paths and Path(paths[0]).stat().st_ino == run.stat().st_ino
