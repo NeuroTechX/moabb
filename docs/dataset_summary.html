@@ -615,6 +615,8 @@ format can also be used via
 <p>A visual overview of all datasets can be generated using the functions <a class="reference internal" href="generated/moabb.datasets.utils.plot_datasets_grid.html#moabb.datasets.utils.plot_datasets_grid" title="moabb.datasets.utils.plot_datasets_grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">moabb.datasets.utils.plot_datasets_grid()</span></code></a>
 or <a class="reference internal" href="generated/moabb.datasets.utils.plot_datasets_cluster.html#moabb.datasets.utils.plot_datasets_cluster" title="moabb.datasets.utils.plot_datasets_cluster"><code class="xref py py-func docutils literal notranslate"><span class="pre">moabb.datasets.utils.plot_datasets_cluster()</span></code></a>.
 This overview allows to quickly compare the number of subjects, trials, and sessions across different datasets.
+Each bubble is one subject: its size is the number of trials of that subject, all sessions and runs together
+(<strong>#Classes</strong> × <strong>#Trials / class</strong> in the tables below), and its transparency the number of sessions.
 The function will generate a figure like this:</p>
 <figure class="align-default">
 <a class="reference internal image-reference" href="_images/datasets_overview.png"><img alt="Visual overview from the datasets used on the `The largest EEG-based BCI reproducibility study for open science: the MOABB benchmark &lt;https://universite-paris-saclay.hal.science/hal-04537061v1/file/MOABB-arXiv.pdf&gt;`_" src="_images/datasets_overview.png" style="width: 100%;" />
@@ -630,11 +632,11 @@ that differ across paradigm types.</p>
 <li><p><strong>Dataset</strong> is the name of the dataset.</p></li>
 <li><p><strong>#Subj</strong> is the number of subjects.</p></li>
 <li><p><strong>#Chan</strong> is the number of EEG channels.</p></li>
-<li><p><strong>#Trials / class</strong> is the number of repetitions performed by one subject for each class. This number is computed using only the first subject of each dataset. <em>The definitions of a **class*</em> and of a <strong>trial</strong> depend on the paradigm used (see sections below)*.</p></li>
+<li><p><strong>#Trials / class</strong> is the number of repetitions performed by one subject for each class, counted over all the sessions and runs of that subject: it is not a number per session or per run. When subjects differ, the number of a typical subject is given and the dataset’s documentation describes the differences. P300 tables give it as <code class="docutils literal notranslate"><span class="pre">&lt;NT&gt;</span> <span class="pre">NT</span> <span class="pre">/</span> <span class="pre">&lt;T&gt;</span> <span class="pre">T</span></code> (non-target and target trials of one subject). <em>The definitions of a **class*</em> and of a <strong>trial</strong> depend on the paradigm used (see sections below)*.</p></li>
 <li><p><strong>Trials length</strong> is the duration of trial in seconds.</p></li>
-<li><p><strong>Total_trials</strong> is the total number of trials in the dataset (all subjects and classes together).</p></li>
+<li><p><strong>Total_trials</strong> is the total number of trials in the dataset (all subjects, sessions, runs and classes together). It is about <strong>#Subj</strong> × <strong>#Classes</strong> × <strong>#Trials / class</strong>, exactly that when every subject has the same number of trials; it is not multiplied again by <strong>#Sessions</strong> or <strong>#Runs</strong>.</p></li>
 <li><p><strong>Freq</strong> is the sampling frequency of the raw data.</p></li>
-<li><p><strong>#Session</strong> is the number of sessions per subject. Different sessions are often recorded on different days.</p></li>
+<li><p><strong>#Sessions</strong> is the number of sessions per subject, as the dataset class returns them by default. Different sessions are often recorded on different days. When subjects differ, the cell starts with the number of sessions of a typical (median) subject and gives the others in parentheses, e.g. <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">(8</span> <span class="pre">for</span> <span class="pre">subjects</span> <span class="pre">1-7)</span></code> or <code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">(1-3)</span></code>: <a class="reference internal" href="generated/moabb.datasets.utils.plot_datasets_grid.html#moabb.datasets.utils.plot_datasets_grid" title="moabb.datasets.utils.plot_datasets_grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">plot_datasets_grid()</span></code></a> and <a class="reference internal" href="generated/moabb.analysis.plotting.dataset_bubble_plot.html#moabb.analysis.plotting.dataset_bubble_plot" title="moabb.analysis.plotting.dataset_bubble_plot"><code class="xref py py-func docutils literal notranslate"><span class="pre">dataset_bubble_plot()</span></code></a> read the first integer of the cell.</p></li>
 <li><p><strong>#Runs</strong> is the number of runs per session. A run is a continuous recording of the EEG data. Often, the different runs of a given session are recorded without removing the EEG cap in between.</p></li>
 </ul>
 </section>
@@ -703,7 +705,7 @@ below for a curated listing.</p></li>
 <td><p>250.0</p></td>
 <td><p>2</p></td>
 <td><p>6</p></td>
-<td><p>62208</p></td>
+<td><p>5184</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.BNCI2014_002.html#moabb.datasets.BNCI2014_002" title="moabb.datasets.BNCI2014_002"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2014_002</span></code></a></p></td>
 <td><p>14</p></td>
@@ -714,7 +716,7 @@ below for a curated listing.</p></li>
 <td><p>512.0</p></td>
 <td><p>1</p></td>
 <td><p>8</p></td>
-<td><p>17920</p></td>
+<td><p>2240</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.BNCI2014_004.html#moabb.datasets.BNCI2014_004" title="moabb.datasets.BNCI2014_004"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2014_004</span></code></a></p></td>
 <td><p>9</p></td>
@@ -725,7 +727,7 @@ below for a curated listing.</p></li>
 <td><p>250.0</p></td>
 <td><p>5</p></td>
 <td><p>1</p></td>
-<td><p>32400</p></td>
+<td><p>6520</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.BNCI2015_001.html#moabb.datasets.BNCI2015_001" title="moabb.datasets.BNCI2015_001"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2015_001</span></code></a></p></td>
 <td><p>12</p></td>
@@ -734,9 +736,9 @@ below for a curated listing.</p></li>
 <td><p>200</p></td>
 <td><p>5.0</p></td>
 <td><p>512.0</p></td>
-<td><p>3</p></td>
+<td><p>2 (3 for subjects 8-11)</p></td>
 <td><p>1</p></td>
-<td><p>14400</p></td>
+<td><p>5600</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.BNCI2015_004.html#moabb.datasets.BNCI2015_004" title="moabb.datasets.BNCI2015_004"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2015_004</span></code></a></p></td>
 <td><p>9</p></td>
@@ -747,7 +749,7 @@ below for a curated listing.</p></li>
 <td><p>256.0</p></td>
 <td><p>2</p></td>
 <td><p>1</p></td>
-<td><p>7200</p></td>
+<td><p>3600</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.Cho2017.html#moabb.datasets.Cho2017" title="moabb.datasets.Cho2017"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cho2017</span></code></a></p></td>
 <td><p>52</p></td>
@@ -758,7 +760,7 @@ below for a curated listing.</p></li>
 <td><p>512.0</p></td>
 <td><p>1</p></td>
 <td><p>1</p></td>
-<td><p>9800</p></td>
+<td><p>10520</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.Kaneshiro2015.html#moabb.datasets.Kaneshiro2015" title="moabb.datasets.Kaneshiro2015"><code class="xref py py-class docutils literal notranslate"><span class="pre">Kaneshiro2015</span></code></a></p></td>
 <td><p>10</p></td>
@@ -769,7 +771,7 @@ below for a curated listing.</p></li>
 <td><p>62.5</p></td>
 <td><p>1</p></td>
 <td><p>1</p></td>
-<td><p>5184</p></td>
+<td><p>51840</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.Lee2019_MI.html#moabb.datasets.Lee2019_MI" title="moabb.datasets.Lee2019_MI"><code class="xref py py-class docutils literal notranslate"><span class="pre">Lee2019_MI</span></code></a></p></td>
 <td><p>54</p></td>
@@ -780,7 +782,7 @@ below for a curated listing.</p></li>
 <td><p>1000.0</p></td>
 <td><p>2</p></td>
 <td><p>1</p></td>
-<td><p>11000</p></td>
+<td><p>10800</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.GrosseWentrup2009.html#moabb.datasets.GrosseWentrup2009" title="moabb.datasets.GrosseWentrup2009"><code class="xref py py-class docutils literal notranslate"><span class="pre">GrosseWentrup2009</span></code></a></p></td>
 <td><p>10</p></td>
@@ -797,23 +799,23 @@ below for a curated listing.</p></li>
 <td><p>14</p></td>
 <td><p>128</p></td>
 <td><p>4</p></td>
-<td><p>120</p></td>
+<td><p>260</p></td>
 <td><p>4.0</p></td>
 <td><p>500.0</p></td>
 <td><p>1</p></td>
 <td><p>2</p></td>
-<td><p>13440</p></td>
+<td><p>13484</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.Ofner2017.html#moabb.datasets.Ofner2017" title="moabb.datasets.Ofner2017"><code class="xref py py-class docutils literal notranslate"><span class="pre">Ofner2017</span></code></a></p></td>
 <td><p>15</p></td>
 <td><p>61</p></td>
 <td><p>7</p></td>
-<td><p>60</p></td>
+<td><p>120</p></td>
 <td><p>3.0</p></td>
 <td><p>512.0</p></td>
 <td><p>2</p></td>
 <td><p>10</p></td>
-<td><p>63000</p></td>
+<td><p>12600</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.PhysionetMI.html#moabb.datasets.PhysionetMI" title="moabb.datasets.PhysionetMI"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhysionetMI</span></code></a></p></td>
 <td><p>109</p></td>
@@ -824,7 +826,7 @@ below for a curated listing.</p></li>
 <td><p>160.0</p></td>
 <td><p>1</p></td>
 <td><p>1</p></td>
-<td><p>69760</p></td>
+<td><p>9838</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.Shin2017A.html#moabb.datasets.Shin2017A" title="moabb.datasets.Shin2017A"><code class="xref py py-class docutils literal notranslate"><span class="pre">Shin2017A</span></code></a></p></td>
 <td><p>29</p></td>
@@ -835,7 +837,7 @@ below for a curated listing.</p></li>
 <td><p>200.0</p></td>
 <td><p>3</p></td>
 <td><p>1</p></td>
-<td><p>5220</p></td>
+<td><p>1740</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.Weibo2014.html#moabb.datasets.Weibo2014" title="moabb.datasets.Weibo2014"><code class="xref py py-class docutils literal notranslate"><span class="pre">Weibo2014</span></code></a></p></td>
 <td><p>10</p></td>
@@ -846,18 +848,18 @@ below for a curated listing.</p></li>
 <td><p>200.0</p></td>
 <td><p>1</p></td>
 <td><p>1</p></td>
-<td><p>5600</p></td>
+<td><p>5540</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.Zhou2016.html#moabb.datasets.Zhou2016" title="moabb.datasets.Zhou2016"><code class="xref py py-class docutils literal notranslate"><span class="pre">Zhou2016</span></code></a></p></td>
 <td><p>4</p></td>
 <td><p>14</p></td>
 <td><p>3</p></td>
-<td><p>160</p></td>
+<td><p>150</p></td>
 <td><p>5.0</p></td>
 <td><p>250.0</p></td>
 <td><p>3</p></td>
 <td><p>2</p></td>
-<td><p>11496</p></td>
+<td><p>1800</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.Stieger2021.html#moabb.datasets.Stieger2021" title="moabb.datasets.Stieger2021"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stieger2021</span></code></a></p></td>
 <td><p>62</p></td>
@@ -907,18 +909,18 @@ below for a curated listing.</p></li>
 <td><p>60</p></td>
 <td><p>27</p></td>
 <td><p>2</p></td>
-<td><p>20</p></td>
+<td><p>120</p></td>
 <td><p>5.0</p></td>
 <td><p>512.0</p></td>
 <td><p>1</p></td>
 <td><p>6</p></td>
-<td><p>14400</p></td>
+<td><p>14320</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.Dreyer2023B.html#moabb.datasets.Dreyer2023B" title="moabb.datasets.Dreyer2023B"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dreyer2023B</span></code></a></p></td>
 <td><p>21</p></td>
 <td><p>27</p></td>
 <td><p>2</p></td>
-<td><p>20</p></td>
+<td><p>120</p></td>
 <td><p>5.0</p></td>
 <td><p>512.0</p></td>
 <td><p>1</p></td>
@@ -929,7 +931,7 @@ below for a curated listing.</p></li>
 <td><p>6</p></td>
 <td><p>27</p></td>
 <td><p>2</p></td>
-<td><p>20</p></td>
+<td><p>120</p></td>
 <td><p>5.0</p></td>
 <td><p>512.0</p></td>
 <td><p>1</p></td>
@@ -940,12 +942,12 @@ below for a curated listing.</p></li>
 <td><p>87</p></td>
 <td><p>27</p></td>
 <td><p>2</p></td>
-<td><p>20</p></td>
+<td><p>120</p></td>
 <td><p>5.0</p></td>
 <td><p>512.0</p></td>
 <td><p>1</p></td>
 <td><p>6</p></td>
-<td><p>20880</p></td>
+<td><p>20800</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.BNCI2020_001.html#moabb.datasets.BNCI2020_001" title="moabb.datasets.BNCI2020_001"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2020_001</span></code></a></p></td>
 <td><p>45</p></td>
@@ -1006,7 +1008,7 @@ below for a curated listing.</p></li>
 <td><p>12</p></td>
 <td><p>32</p></td>
 <td><p>3</p></td>
-<td><p>20</p></td>
+<td><p>80</p></td>
 <td><p>3.0</p></td>
 <td><p>1000.0</p></td>
 <td><p>4</p></td>
@@ -1031,7 +1033,7 @@ below for a curated listing.</p></li>
 <td><p>80</p></td>
 <td><p>1.0</p></td>
 <td><p>200.0</p></td>
-<td><p>3</p></td>
+<td><p>3 (1 for subjects 1 and 4)</p></td>
 <td><p>1</p></td>
 <td><p>16126</p></td>
 </tr>
@@ -1061,7 +1063,7 @@ below for a curated listing.</p></li>
 <td><p>16</p></td>
 <td><p>63</p></td>
 <td><p>2</p></td>
-<td><p>36</p></td>
+<td><p>252</p></td>
 <td><p>4.5</p></td>
 <td><p>1000.0</p></td>
 <td><p>1</p></td>
@@ -1105,7 +1107,7 @@ below for a curated listing.</p></li>
 <td><p>20</p></td>
 <td><p>26</p></td>
 <td><p>4</p></td>
-<td><p>60</p></td>
+<td><p>420</p></td>
 <td><p>5.0</p></td>
 <td><p>500.0</p></td>
 <td><p>7</p></td>
@@ -1127,7 +1129,7 @@ below for a curated listing.</p></li>
 <td><p>25</p></td>
 <td><p>60</p></td>
 <td><p>11</p></td>
-<td><p>50</p></td>
+<td><p>150</p></td>
 <td><p>4.0</p></td>
 <td><p>2500.0</p></td>
 <td><p>3</p></td>
@@ -1137,13 +1139,13 @@ below for a curated listing.</p></li>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.Yang2025.html#moabb.datasets.Yang2025" title="moabb.datasets.Yang2025"><code class="xref py py-class docutils literal notranslate"><span class="pre">Yang2025</span></code></a></p></td>
 <td><p>51</p></td>
 <td><p>59</p></td>
-<td><p>3</p></td>
-<td><p>100</p></td>
+<td><p>2</p></td>
+<td><p>300</p></td>
 <td><p>7.5</p></td>
 <td><p>1000.0</p></td>
 <td><p>3</p></td>
 <td><p>1</p></td>
-<td><p>39600</p></td>
+<td><p>30600</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.Forenzo2023.html#moabb.datasets.Forenzo2023" title="moabb.datasets.Forenzo2023"><code class="xref py py-class docutils literal notranslate"><span class="pre">Forenzo2023</span></code></a></p></td>
 <td><p>25</p></td>
@@ -1193,10 +1195,10 @@ below for a curated listing.</p></li>
 <td><p>31</p></td>
 <td><p>62</p></td>
 <td><p>2</p></td>
-<td><p>20</p></td>
+<td><p>40</p></td>
 <td><p>7.5</p></td>
 <td><p>1000.0</p></td>
-<td><p>3</p></td>
+<td><p>2 (1-3)</p></td>
 <td><p>1</p></td>
 <td><p>2520</p></td>
 </tr>
@@ -1204,10 +1206,10 @@ below for a curated listing.</p></li>
 <td><p>31</p></td>
 <td><p>62</p></td>
 <td><p>2</p></td>
-<td><p>20</p></td>
+<td><p>40</p></td>
 <td><p>7.5</p></td>
 <td><p>1000.0</p></td>
-<td><p>3</p></td>
+<td><p>2 (1-3)</p></td>
 <td><p>1</p></td>
 <td><p>2520</p></td>
 </tr>
@@ -1215,7 +1217,7 @@ below for a curated listing.</p></li>
 <td><p>37</p></td>
 <td><p>32</p></td>
 <td><p>2</p></td>
-<td><p>15</p></td>
+<td><p>45</p></td>
 <td><p>27.0</p></td>
 <td><p>256.0</p></td>
 <td><p>3</p></td>
@@ -1237,10 +1239,10 @@ below for a curated listing.</p></li>
 <td><p>22</p></td>
 <td><p>32</p></td>
 <td><p>10</p></td>
-<td><p>40</p></td>
+<td><p>80</p></td>
 <td><p>4.0</p></td>
 <td><p>1000.0</p></td>
-<td><p>2</p></td>
+<td><p>2 (1 for subjects 9 and 10)</p></td>
 <td><p>3</p></td>
 <td><p>16800</p></td>
 </tr>
@@ -1248,7 +1250,7 @@ below for a curated listing.</p></li>
 <td><p>30</p></td>
 <td><p>30</p></td>
 <td><p>2</p></td>
-<td><p>50</p></td>
+<td><p>250</p></td>
 <td><p>4.0</p></td>
 <td><p>500.0</p></td>
 <td><p>5</p></td>
@@ -1262,9 +1264,9 @@ below for a curated listing.</p></li>
 <td><p>40</p></td>
 <td><p>5.0</p></td>
 <td><p>1000.0</p></td>
-<td><p>1-5</p></td>
+<td><p>1</p></td>
 <td><p>4</p></td>
-<td><p>8640</p></td>
+<td><p>2160</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.AguileraRodriguez2025.html#moabb.datasets.AguileraRodriguez2025" title="moabb.datasets.AguileraRodriguez2025"><code class="xref py py-class docutils literal notranslate"><span class="pre">AguileraRodriguez2025</span></code></a></p></td>
 <td><p>15</p></td>
@@ -1347,7 +1349,7 @@ below for a curated listing.</p></li>
 <td><p>15</p></td>
 <td><p>60</p></td>
 <td><p>3</p></td>
-<td><p>50</p></td>
+<td><p>150</p></td>
 <td><p>4.0</p></td>
 <td><p>250.0</p></td>
 <td><p>3</p></td>
@@ -1460,7 +1462,7 @@ below for a curated listing.</p></li>
 <td><p>25.6</p></td>
 <td><p>9.0</p></td>
 <td><p>200.0</p></td>
-<td><p>1-2</p></td>
+<td><p>1 (2 for subjects 1 and 7)</p></td>
 <td><p>16</p></td>
 <td><p>768</p></td>
 </tr>
@@ -1669,7 +1671,7 @@ below for a curated listing.</p></li>
 <td><p>74</p></td>
 <td><p>4.0</p></td>
 <td><p>250.0</p></td>
-<td><p>3</p></td>
+<td><p>2 (1-3)</p></td>
 <td><p>5</p></td>
 <td><p>6808</p></td>
 </tr>
@@ -1983,7 +1985,7 @@ word generation, music imagery.</p>
 <td><p>200</p></td>
 <td><p>3</p></td>
 <td><p>1</p></td>
-<td><p>5220</p></td>
+<td><p>1740</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.BNCI2024_001.html#moabb.datasets.BNCI2024_001" title="moabb.datasets.BNCI2024_001"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2024_001</span></code></a></p></td>
 <td><p>20</p></td>
@@ -1999,13 +2001,13 @@ word generation, music imagery.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.Wang2026Handwriting.html#moabb.datasets.Wang2026Handwriting" title="moabb.datasets.Wang2026Handwriting"><code class="xref py py-class docutils literal notranslate"><span class="pre">Wang2026Handwriting</span></code></a></p></td>
 <td><p>21</p></td>
 <td><p>32</p></td>
-<td><p>5</p></td>
-<td><p>40</p></td>
+<td><p>11</p></td>
+<td><p>80</p></td>
 <td><p>4.0</p></td>
 <td><p>1000</p></td>
 <td><p>2</p></td>
 <td><p>2</p></td>
-<td><p>18480</p></td>
+<td><p>18427</p></td>
 </tr>
 </tbody>
 </table>
@@ -2066,15 +2068,15 @@ word generation, music imagery.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.BI2013a.html#moabb.datasets.BI2013a" title="moabb.datasets.BI2013a"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2013a</span></code></a></p></td>
 <td><p>24</p></td>
 <td><p>16</p></td>
-<td><p>3200 NT / 640 T</p></td>
+<td><p>400 NT / 80 T</p></td>
 <td><p>1.0</p></td>
 <td><p>512</p></td>
-<td><p>8 for subjects 1-7 else 1</p></td>
+<td><p>1 (8 for subjects 1-7)</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.BI2014a.html#moabb.datasets.BI2014a" title="moabb.datasets.BI2014a"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2014a</span></code></a></p></td>
 <td><p>64</p></td>
 <td><p>16</p></td>
-<td><p>990 NT / 198 T</p></td>
+<td><p>740 NT / 148 T</p></td>
 <td><p>1.0</p></td>
 <td><p>512</p></td>
 <td><p>1</p></td>
@@ -2090,7 +2092,7 @@ word generation, music imagery.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.BI2015a.html#moabb.datasets.BI2015a" title="moabb.datasets.BI2015a"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2015a</span></code></a></p></td>
 <td><p>43</p></td>
 <td><p>32</p></td>
-<td><p>4131 NT / 825 T</p></td>
+<td><p>1260 NT / 252 T</p></td>
 <td><p>1.0</p></td>
 <td><p>512</p></td>
 <td><p>3</p></td>
@@ -2106,7 +2108,7 @@ word generation, music imagery.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.Cattan2019_VR.html#moabb.datasets.Cattan2019_VR" title="moabb.datasets.Cattan2019_VR"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cattan2019_VR</span></code></a></p></td>
 <td><p>21</p></td>
 <td><p>16</p></td>
-<td><p>600 NT / 120 T</p></td>
+<td><p>1200 NT / 240 T</p></td>
 <td><p>1.0</p></td>
 <td><p>512</p></td>
 <td><p>2</p></td>
@@ -2114,7 +2116,7 @@ word generation, music imagery.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.Huebner2017.html#moabb.datasets.Huebner2017" title="moabb.datasets.Huebner2017"><code class="xref py py-class docutils literal notranslate"><span class="pre">Huebner2017</span></code></a></p></td>
 <td><p>13</p></td>
 <td><p>31</p></td>
-<td><p>364 NT / 112 T</p></td>
+<td><p>9826 NT / 3024 T</p></td>
 <td><p>0.9</p></td>
 <td><p>1000</p></td>
 <td><p>3</p></td>
@@ -2122,7 +2124,7 @@ word generation, music imagery.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.Huebner2018.html#moabb.datasets.Huebner2018" title="moabb.datasets.Huebner2018"><code class="xref py py-class docutils literal notranslate"><span class="pre">Huebner2018</span></code></a></p></td>
 <td><p>12</p></td>
 <td><p>31</p></td>
-<td><p>364 NT / 112 T</p></td>
+<td><p>10920 NT / 3360 T</p></td>
 <td><p>0.9</p></td>
 <td><p>1000</p></td>
 <td><p>3</p></td>
@@ -2130,10 +2132,10 @@ word generation, music imagery.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.Sosulski2019.html#moabb.datasets.Sosulski2019" title="moabb.datasets.Sosulski2019"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sosulski2019</span></code></a></p></td>
 <td><p>13</p></td>
 <td><p>31</p></td>
-<td><p>7500 NT / 1500 T</p></td>
+<td><p>4500 NT / 900 T</p></td>
 <td><p>1.2</p></td>
 <td><p>1000</p></td>
-<td><p>80</p></td>
+<td><p>60 (80 for subject 1)</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.EPFLP300.html#moabb.datasets.EPFLP300" title="moabb.datasets.EPFLP300"><code class="xref py py-class docutils literal notranslate"><span class="pre">EPFLP300</span></code></a></p></td>
 <td><p>8</p></td>
@@ -2237,7 +2239,7 @@ word generation, music imagery.</p>
 <td><p>540 NT / 60 T</p></td>
 <td><p>1.0</p></td>
 <td><p>250</p></td>
-<td><p>up to 3</p></td>
+<td><p>2</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.BNCI2015_009.html#moabb.datasets.BNCI2015_009" title="moabb.datasets.BNCI2015_009"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2015_009</span></code></a></p></td>
 <td><p>21</p></td>
@@ -2325,7 +2327,7 @@ word generation, music imagery.</p>
 <td><p>varies NT / T</p></td>
 <td><p>1.0</p></td>
 <td><p>1000</p></td>
-<td><p>1-3</p></td>
+<td><p>2 (1-3)</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.Mainsah2025_A.html#moabb.datasets.Mainsah2025_A" title="moabb.datasets.Mainsah2025_A"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mainsah2025_A</span></code></a></p></td>
 <td><p>13</p></td>
@@ -2589,7 +2591,7 @@ word generation, music imagery.</p>
 <td><p>12408 NT / 822 T</p></td>
 <td><p>0.8</p></td>
 <td><p>300</p></td>
-<td><p>6-10</p></td>
+<td><p>9 (6-10)</p></td>
 </tr>
 </tbody>
 </table>
@@ -2638,7 +2640,7 @@ word generation, music imagery.</p>
 <td><p>11</p></td>
 <td><p>256</p></td>
 <td><p>5</p></td>
-<td><p>12-15</p></td>
+<td><p>23</p></td>
 <td><p>3.0</p></td>
 <td><p>250</p></td>
 <td><p>1</p></td>
@@ -2647,7 +2649,7 @@ word generation, music imagery.</p>
 <td><p>11</p></td>
 <td><p>256</p></td>
 <td><p>5</p></td>
-<td><p>20-30</p></td>
+<td><p>25</p></td>
 <td><p>3.0</p></td>
 <td><p>250</p></td>
 <td><p>1</p></td>
@@ -2656,7 +2658,7 @@ word generation, music imagery.</p>
 <td><p>11</p></td>
 <td><p>14</p></td>
 <td><p>5</p></td>
-<td><p>20-30</p></td>
+<td><p>25</p></td>
 <td><p>3.0</p></td>
 <td><p>128</p></td>
 <td><p>1</p></td>
@@ -2755,10 +2757,10 @@ word generation, music imagery.</p>
 <td><p>31</p></td>
 <td><p>66</p></td>
 <td><p>4</p></td>
-<td><p>12</p></td>
+<td><p>20</p></td>
 <td><p>5.0</p></td>
 <td><p>1000</p></td>
-<td><p>1-3</p></td>
+<td><p>2 (1-3)</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.Schrag2026Pediatric.html#moabb.datasets.Schrag2026Pediatric" title="moabb.datasets.Schrag2026Pediatric"><code class="xref py py-class docutils literal notranslate"><span class="pre">Schrag2026Pediatric</span></code></a></p></td>
 <td><p>47</p></td>
