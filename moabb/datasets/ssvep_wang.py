@@ -190,7 +190,7 @@ class Wang2016(BaseDataset):
             sensor_type=None,
         ),
         participants=ParticipantMetadata(
-            n_subjects=34,
+            n_subjects=35,
             health_status="healthy",
             gender={"female": 17, "male": 18},
             age_mean=22.0,
@@ -434,7 +434,7 @@ class Wang2016(BaseDataset):
 
     def __init__(self, subjects=None, sessions=None):
         super().__init__(
-            subjects=list(range(1, 35)),
+            subjects=list(range(1, 36)),
             sessions_per_subject=1,
             events=self._events,
             code="Wang2016",
