@@ -841,7 +841,7 @@ class BNCI2014_004(MNEBNCI):
         experiment=ExperimentMetadata(
             paradigm="imagery",
             task_type="motor_imagery",
-events={"left_hand": 1, "right_hand": 2},
+            events={"left_hand": 1, "right_hand": 2},
             n_classes=2,
             class_labels=["left_hand", "right_hand"],
             trials_per_class=None,

@@ -8,12 +8,12 @@ No data is downloaded: the tests read the class definitions only.
 import pytest
 
 from moabb.datasets import (
-    BI2015b,
     BNCI2014_002,
     BNCI2014_004,
     BNCI2014_008,
     BNCI2014_009,
     BNCI2015_004,
+    BI2015b,
     Wang2016,
 )
 from moabb.paradigms import MotorImagery
