@@ -34,8 +34,9 @@ def test_bnci2015_004_tasks_and_window():
     assert BNCI2015_004.METADATA.experiment.events == ds.event_id
     # the right-hand vs feet motor-imagery task of the MOABB benchmark must accept the dataset again
     assert MotorImagery(events=["right_hand", "feet"], n_classes=2).is_valid(ds)
-    assert "word association" in BNCI2015_004.__doc__
-    assert "multiplication" not in BNCI2015_004.__doc__
+    doc = " ".join(BNCI2015_004.__doc__.split())
+    assert "word association (WORD)" in doc
+    assert "multiplication" not in doc
 
 
 def test_wang2016_has_35_subjects():
