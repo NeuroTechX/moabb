@@ -751,9 +751,13 @@ class BNCI2015_004(MNEBNCI):
 
     **Dataset Description**
 
-    This dataset contains EEG data from 9 subjects performing five different
-    mental tasks: mental multiplication, mental letter composing, mental
-    rotation, mental counting, and a baseline task.
+    This dataset contains EEG data from 9 subjects (end-users with stroke or
+    spinal cord injury) performing five different mental tasks: word
+    association (WORD), mental subtraction (SUB), spatial navigation (NAV),
+    motor imagery of the right hand (HAND) and motor imagery of both feet
+    (FEET). The class labels of the .mat files code them 1 to 5 in that order.
+    Each 10-s trial starts with a fixation cross; the cue is shown from 3 s to
+    4.25 s and the imagery lasts until 10 s, so the epochs cover [3, 10] s.
 
     The experiment was conducted on two different days (two sessions). In the
     original study each screening session consisted of 8 runs resulting in
@@ -839,7 +843,13 @@ class BNCI2015_004(MNEBNCI):
             species="human",
         ),
         experiment=ExperimentMetadata(
-            events={"math": 1, "letter": 2, "rotation": 3, "count": 4, "baseline": 5},
+            events={
+                "word_ass": 1,
+                "subtraction": 2,
+                "navigation": 3,
+                "right_hand": 4,
+                "feet": 5,
+            },
             paradigm="imagery",
             n_classes=5,
             class_labels=[
@@ -968,9 +978,15 @@ class BNCI2015_004(MNEBNCI):
         super().__init__(
             subjects=list(range(1, 10)),
             sessions_per_subject=2,
-            events={"math": 1, "letter": 2, "rotation": 3, "count": 4, "baseline": 5},
+            events={
+                "word_ass": 1,
+                "subtraction": 2,
+                "navigation": 3,
+                "right_hand": 4,
+                "feet": 5,
+            },
             code="BNCI2015-004",
-            interval=[0, 4],
+            interval=[3, 10],
             paradigm="imagery",
             doi="10.1371/journal.pone.0123727",
             selected_subjects=subjects,

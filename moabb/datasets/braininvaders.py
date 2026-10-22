@@ -1675,9 +1675,9 @@ class BI2015b(BaseDataset):
         ),
         experiment=ExperimentMetadata(
             paradigm="p300",
-            events={"Target": 1, "Non-Target": 2},
+            events={"Target": 2, "NonTarget": 1},
             n_classes=2,
-            class_labels=["Target", "Non-Target"],
+            class_labels=["Target", "NonTarget"],
             study_design="Subjects played in pairs to the multi-user version of Brain Invaders during four randomised conditions (Cooperation 1-Target, Cooperation 2-Targets, Competition 1-Target, Competition 2-Targets). The interface uses the oddball paradigm on a grid of 36 symbols (1 or 2 Target, 35 or 34 Non-Target).",
             feedback_type="visual (game interface with reward screen)",
             stimulus_type="visual flash",
