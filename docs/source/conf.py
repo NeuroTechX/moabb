@@ -45,12 +45,8 @@ year = datetime.now().year
 copyright = f"2018-{year} MOABB contributors"
 author = "Alexandre Barachant, Vinay Jayaram, Sylvain Chevallier"
 
-# Which documentation flavour is being built. The Docs workflow sets
-# MOABB_DOCS_VERSION=stable for release builds (``v*`` tags and ``master``),
-# which are deployed to https://moabb.neurotechx.com/docs/ (and /stable/), and
-# leaves the default "dev" for ``develop`` and pull-request builds, which are
-# deployed to https://moabb.neurotechx.com/dev/. It drives the version switcher
-# (see ``switcher_version_match`` below) and the version label.
+# "stable" for release builds (v* tags, deployed to /docs/), "dev" otherwise
+# (develop, deployed to /dev/); set by the Docs workflow.
 docs_version = (os.environ.get("MOABB_DOCS_VERSION") or "dev").strip().lower()
 if docs_version not in ("dev", "stable"):
     raise ValueError(
@@ -260,12 +256,9 @@ pygments_style = "sphinx"
 html_theme = "pydata_sphinx_theme"
 # ``version`` key of the entry in _static/versions.json that this build is.
 switcher_version_match = docs_version
-# Every build (stable, dev, and the gh-pages mirror) reads the switcher list
-# from the dev deployment, so adding an entry only needs a develop push.
-switcher_json_url = os.environ.get(
-    "MOABB_DOCS_SWITCHER_URL",
-    "https://moabb.neurotechx.com/dev/_static/versions.json",
-)
+# Every build reads the switcher list from the dev deployment, so adding an
+# entry only needs a develop push.
+switcher_json_url = "https://moabb.neurotechx.com/dev/_static/versions.json"
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
