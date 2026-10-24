@@ -699,9 +699,10 @@ def _sourcedata_files_for_subject(target_dir, nemar_id, subject, force_update):
     if not files:
         known = sorted(
             {
-                str(entry["subject"])
+                label
                 for entry in record.get("files") or []
-                if isinstance(entry, dict) and entry.get("subject")
+                if isinstance(entry, dict)
+                for label in _entry_subjects(entry)
             }
         )
         raise NemarDownloadError(
@@ -735,23 +736,57 @@ def _sourcedata_store_holds_data(target_dir):
     return False
 
 
+def _entry_records_subjects(entry):
+    """Whether a provenance entry carries a subject field at all."""
+    return "subject" in entry or "subjects" in entry
+
+
+def _entry_subjects(entry):
+    """The subject labels a provenance entry is filed under, as strings.
+
+    A file is usually one subject's (``"subject": "3"``), but some upstream
+    files hold several subjects' recordings -- Zheng2020's ``G{g}D{1,2}.mat``
+    each carry both members of pair ``g`` (MOABB subjects ``2g-1`` and
+    ``2g``). Such an entry lists them all, either in ``"subjects"`` (the form
+    deposits use, see below) or as a list in ``"subject"``; the file then
+    belongs to the selection of every subject listed.
+
+    Deposits write the list in ``"subjects"`` and leave ``"subject"`` out of
+    those entries: MOABB releases up to 1.7.2 read only ``"subject"``, so a
+    manifest whose entries have no ``"subject"`` key at all is, for them, one
+    that predates the field and is fetched whole -- what they already did for
+    such a deposit. A list in ``"subject"`` (or ``"subject": null`` on every
+    entry) would instead match no subject there and fail the NEMAR fetch.
+
+    An empty set means the entry belongs to no subject: shared by every
+    subject's load.
+    """
+    labels = set()
+    for key in ("subject", "subjects"):
+        value = entry.get(key)
+        values = value if isinstance(value, (list, tuple)) else [value]
+        labels.update(str(v) for v in values if v not in (None, ""))
+    return labels
+
+
 def _manifest_subject_files(record, subject):
     """The files a provenance record attributes to ``subject``.
 
     ``None`` when the manifest predates the ``subject`` field and so cannot
     answer per subject; an empty list when it can answer but knows nothing
-    about this subject. Names are returned raw -- callers that feed them to a
-    glob escape them themselves.
+    about this subject. An entry filed under several subjects (see
+    :func:`_entry_subjects`) belongs to each of them. Names are returned raw --
+    callers that feed them to a glob escape them themselves.
     """
     entries = [entry for entry in (record.get("files") or []) if isinstance(entry, dict)]
-    if not any("subject" in entry for entry in entries):
+    if not any(_entry_records_subjects(entry) for entry in entries):
         return None
     candidates = subject if isinstance(subject, (list, tuple, set)) else [subject]
     wanted = {str(candidate) for candidate in candidates}
     return [
         entry["file"]
         for entry in entries
-        if entry.get("file") and str(entry.get("subject")) in wanted
+        if entry.get("file") and _entry_subjects(entry) & wanted
     ]
 
 
@@ -759,17 +794,17 @@ def _manifest_shared_files(record):
     """The files a per-subject provenance record attributes to no subject.
 
     Only meaningful once the manifest records subjects at all: then an entry
-    whose ``subject`` is missing or empty is shared by every subject's load
-    (Brandl2020's ``mnt.mat`` montage, Dreyer2023's ``performance.csv``).
-    Names are returned raw.
+    whose ``subject`` is missing or empty (and that lists no ``subjects``) is
+    shared by every subject's load (Brandl2020's ``mnt.mat`` montage,
+    Dreyer2023's ``performance.csv``). Names are returned raw.
     """
     entries = [entry for entry in (record.get("files") or []) if isinstance(entry, dict)]
-    if not any("subject" in entry for entry in entries):
+    if not any(_entry_records_subjects(entry) for entry in entries):
         return []
     return [
         entry["file"]
         for entry in entries
-        if entry.get("file") and entry.get("subject") in (None, "")
+        if entry.get("file") and not _entry_subjects(entry)
     ]
 
 
@@ -977,11 +1012,7 @@ def seed_loader_cache(target_dir, subject, path=None):
         else:
             # Files no subject owns (montages, shared tables) serve every
             # subject's load; placed whenever the store holds them.
-            files = files + [
-                entry["file"]
-                for entry in entries
-                if entry.get("file") and entry.get("subject") in (None, "")
-            ]
+            files = files + _manifest_shared_files(record)
         cache_root = _loader_cache_root(record, path)
     except (OSError, ValueError, AttributeError, TypeError):
         return 0
