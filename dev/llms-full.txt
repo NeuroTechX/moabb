@@ -1,0 +1,449 @@
+# MOABB - Mother of all BCI Benchmarks
+
+> MOABB is a Python library for reproducible benchmarking of EEG-based Brain-Computer Interface (BCI) algorithms. Install with `pip install moabb`. It provides 158 open EEG datasets (3500+ subjects), standardized evaluations, and is built on MNE-Python + scikit-learn.
+>
+> License: BSD-3-Clause | Python 3.10+ | DOI: 10.5281/zenodo.10034223
+> Repository: https://github.com/NeuroTechX/moabb
+
+## About
+
+- **Type**: PythonLibrary
+- **Category**: Scientific Software / Neuroscience / Brain-Computer Interfaces
+- **Language**: English
+- **Audience**: Researchers, neuroscientists, BCI developers, students
+- **Pricing**: Free and open source (BSD-3-Clause)
+- **Install**: `pip install moabb`
+- **Canonical URL**: https://moabb.neurotechx.com/docs/
+- **Repository**: https://github.com/NeuroTechX/moabb
+- **PyPI**: https://pypi.org/project/moabb/
+- **DOI**: 10.5281/zenodo.10034223
+- **Dependencies**: MNE-Python, scikit-learn, NumPy, SciPy, pandas, pyriemann, matplotlib
+
+## How MOABB works (mental model)
+
+MOABB has four components that chain together:
+
+```
+Dataset → Paradigm → Evaluation → Results (DataFrame)
+```
+
+1. **Dataset** loads raw EEG data. It handles downloading and caching. You pick a dataset by what BCI task it contains. Datasets do NO preprocessing — they only provide clean raw data.
+2. **Paradigm** defines *what* task to decode: which events to use, frequency filtering, epoching, and channel selection. It also validates that a dataset is compatible. Paradigms own the preprocessing pipeline.
+3. **Evaluation** defines *how* to measure performance: the train/test splitting strategy. It takes a paradigm, datasets, and scikit-learn pipelines, then runs everything and returns results.
+4. **Results** are a pandas DataFrame with columns: score, time, dataset, subject, session, pipeline, n_channels, n_classes, samples.
+
+Every user-provided pipeline must be scikit-learn compatible (implement fit/predict or fit/transform).
+
+## Choosing the right components
+
+### Step 1: Which paradigm?
+
+The paradigm determines what BCI task you're studying. Each paradigm only works with datasets that have matching `dataset.paradigm` values.
+
+| User wants to classify... | Paradigm class | Required dataset.paradigm |
+|---|---|---|
+| Left hand vs right hand motor imagery | `LeftRightImagery(fmin=8, fmax=32)` | `"imagery"` |
+| N-class motor imagery (hands, feet, tongue) | `MotorImagery(n_classes=4, fmin=8, fmax=32)` | `"imagery"` |
+| Motor imagery with multiple filter banks | `FilterBankMotorImagery(n_classes=2)` | `"imagery"` |
+| Imagined speech | `SpeechImagery(n_classes=None, fmin=1, fmax=100)` | `"imagery"` |
+| P300 target vs non-target | `P300(fmin=1, fmax=24)` | `"p300"` |
+| SSVEP frequency detection | `SSVEP(fmin=7, fmax=45, n_classes=None)` | `"ssvep"` |
+| SSVEP with filter banks | `FilterBankSSVEP(n_classes=None)` | `"ssvep"` |
+| Code-modulated VEP | `CVEP()` | `"cvep"` |
+
+### Step 2: Which evaluation?
+
+The evaluation determines how training and test data are split.
+
+| Goal | Evaluation class | Constraint |
+|---|---|---|
+| Test within each recording session (k-fold CV) | `WithinSessionEvaluation` | Works with any dataset |
+| Train on session A, test on session B | `CrossSessionEvaluation` | **Requires dataset.n_sessions >= 2** |
+| Train on all subjects except one, test on held-out | `CrossSubjectEvaluation` | Works with any dataset |
+
+### Step 3: Which dataset?
+
+Find compatible datasets programmatically:
+
+```python
+from moabb.datasets.utils import dataset_search
+
+# All motor imagery datasets
+datasets = dataset_search(paradigm="imagery")
+
+# Only multi-session datasets (for CrossSessionEvaluation)
+datasets = dataset_search(paradigm="imagery", multi_session=True)
+
+# Datasets with at least 10 subjects
+datasets = dataset_search(paradigm="p300", min_subjects=10)
+
+# Datasets with specific events
+datasets = dataset_search(paradigm="imagery", events=["left_hand", "right_hand"], has_all_events=True)
+
+# Or let the paradigm auto-find compatible datasets:
+paradigm = LeftRightImagery()
+compatible = paradigm.datasets  # auto-filtered list
+```
+
+## API Reference
+
+### Paradigm constructors
+
+All paradigms inherit from `BaseParadigm` and share these parameters:
+
+```python
+BaseParadigm(
+    filters,           # List of [fmin, fmax] tuples for bandpass filtering
+    events=None,       # List of event names; None = all dataset events
+    tmin=0.0,          # Epoch start (seconds) relative to event onset
+    tmax=None,         # Epoch end (seconds); None = dataset default interval
+    baseline=None,     # Tuple (a, b) for baseline correction, or None
+    channels=None,     # List of channel names; None = all EEG channels
+    resample=None,     # Target sampling rate in Hz; None = no resampling
+    overlap=None,      # Sliding window overlap 0-100 (%); None = no overlap
+    scorer=None,       # sklearn scorer string/callable; None = paradigm default
+)
+```
+
+**Motor Imagery specific:**
+
+```python
+LeftRightImagery(fmin=8, fmax=32, **kwargs)
+# Events fixed to ["left_hand", "right_hand"]. Scorer: roc_auc.
+
+MotorImagery(n_classes=None, fmin=8, fmax=32, events=None, **kwargs)
+# n_classes: number of classes to use (None = all available).
+# Scorer: roc_auc if 2 classes, accuracy otherwise.
+
+FilterBankMotorImagery(n_classes=2, filters=((8,12),(12,16),(16,20),(20,24),(24,28),(28,32)), **kwargs)
+# Each filter band is applied separately → multi-band feature extraction.
+
+SpeechImagery(n_classes=None, fmin=1, fmax=100, events=None, **kwargs)
+# Broadband defaults for imagined speech.
+```
+
+**P300 specific:**
+
+```python
+P300(fmin=1, fmax=24, events=["Target", "NonTarget"], **kwargs)
+# Scorer: roc_auc. Binary classification.
+```
+
+**SSVEP specific:**
+
+```python
+SSVEP(fmin=7, fmax=45, n_classes=None, **kwargs)
+# n_classes: limit number of frequency classes. Cannot pass filters parameter.
+# Scorer: roc_auc if 2 classes, accuracy otherwise.
+
+FilterBankSSVEP(filters=None, n_classes=None, **kwargs)
+# If filters=None, auto-creates [f-0.5, f+0.5] for each stimulus frequency.
+```
+
+### Evaluation constructors
+
+All evaluations share these parameters:
+
+```python
+WithinSessionEvaluation(  # or CrossSessionEvaluation, CrossSubjectEvaluation
+    paradigm,                   # BaseParadigm instance (required)
+    datasets=None,              # List of BaseDataset instances; None = paradigm.datasets
+    random_state=None,          # int seed for reproducibility
+    n_jobs=1,                   # Parallel jobs (1=serial, -1=all cores)
+    overwrite=False,            # Recompute even if cached results exist
+    error_score="raise",        # "raise" or float fallback score on errors
+    suffix="",                  # Suffix for results filename
+    hdf5_path=None,             # Results cache dir (default: ~/mne_data/results)
+    return_epochs=False,        # Return MNE Epochs instead of numpy arrays
+    return_raws=False,          # Return MNE Raw objects (mutually exclusive with return_epochs)
+    save_model=False,           # Persist fitted models to disk
+    cache_config=None,          # CacheConfig instance for dataset caching
+    n_splits=None,              # CrossSubjectEvaluation only: number of CV folds
+)
+```
+
+**Running an evaluation:**
+
+```python
+results = evaluation.process(pipelines)
+# pipelines: dict of {"name": sklearn_pipeline_or_estimator}
+# returns: pandas DataFrame
+```
+
+### Dataset attributes
+
+Every dataset instance exposes:
+
+```python
+dataset.paradigm        # str: "imagery", "p300", "ssvep", "cvep"
+dataset.event_id        # dict: {"left_hand": 1, "right_hand": 2, ...}
+dataset.n_sessions      # int: sessions per subject
+dataset.subject_list    # list[int]: available subject IDs (modifiable to limit subjects)
+dataset.interval        # tuple (tmin, tmax): task interval in seconds
+dataset.code            # str: dataset identifier (e.g. "BNCI2014-001")
+```
+
+### dataset_search() function
+
+```python
+dataset_search(
+    paradigm=None,          # "imagery", "p300", "ssvep", "cvep", or None (all)
+    multi_session=False,    # Only datasets with >= 2 sessions
+    events=None,            # Filter by required event names
+    has_all_events=False,   # If True, dataset must have ALL listed events
+    interval=None,          # Minimum task interval length (seconds)
+    min_subjects=1,         # Minimum number of subjects
+    channels=()             # Required channel names
+) -> list[BaseDataset]
+```
+
+### benchmark() function
+
+```python
+moabb.benchmark(
+    pipelines="./pipelines/",   # Dir of YAML files, single file, or list of dicts
+    evaluations=None,           # ["WithinSession", "CrossSession", "CrossSubject"]
+    paradigms=None,             # ["LeftRightImagery", "MotorImagery", "P300", ...]
+    results="./results/",       # Directory for cached results
+    output="./benchmark/",      # Directory for analysis output
+    overwrite=False,
+    n_jobs=-1,                  # -1 = all cores
+    include_datasets=None,      # List of dataset codes to include
+    exclude_datasets=None,      # List of dataset codes to exclude
+    n_splits=None,              # CV splits for CrossSubjectEvaluation
+    plot=False,                 # Generate analysis plots
+) -> pd.DataFrame
+```
+
+### Results DataFrame columns
+
+```
+score       - Classification metric (roc_auc or accuracy, depends on paradigm)
+time        - Training time in seconds
+samples     - Number of training samples
+dataset     - Dataset code string
+pipeline    - Pipeline name string
+subject     - Subject ID (int)
+session     - Session name (str)
+n_channels  - Number of EEG channels used
+n_classes   - Number of classes
+```
+
+### Built-in pipeline components
+
+```python
+from moabb.pipelines.features import LogVariance    # Log-variance feature extraction
+from moabb.pipelines.features import FM             # Instantaneous frequency (Hilbert)
+
+from moabb.pipelines.utils import FilterBank        # Apply FilterBank paradigm outputs
+from moabb.pipelines import TRCSP                   # Tikhonov-regularized CSP
+
+# Also commonly used from other libraries:
+from pyriemann.estimation import Covariances
+from pyriemann.classification import MDM, TSclassifier
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.svm import SVC
+from sklearn.pipeline import make_pipeline
+from mne.decoding import CSP
+```
+
+### Getting raw data for custom analysis
+
+```python
+# Get preprocessed epoch data directly (bypass evaluation)
+X, y, metadata = paradigm.get_data(dataset, subjects=[1, 2])
+# X: ndarray (n_epochs, n_channels, n_times)
+# y: ndarray of string labels (e.g. ["left_hand", "right_hand", ...])
+# metadata: DataFrame with subject, session, run columns
+```
+
+## Complete working examples
+
+### Example 1: Minimal left/right motor imagery benchmark
+
+```python
+from moabb.datasets import BNCI2014_001
+from moabb.evaluations import CrossSessionEvaluation
+from moabb.paradigms import LeftRightImagery
+from moabb.pipelines.features import LogVariance
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
+from sklearn.pipeline import make_pipeline
+
+paradigm = LeftRightImagery(fmin=8, fmax=35)
+dataset = BNCI2014_001()
+dataset.subject_list = dataset.subject_list[:2]  # fast demo
+
+pipelines = {"LogVar+LDA": make_pipeline(LogVariance(), LDA())}
+evaluation = CrossSessionEvaluation(paradigm=paradigm, datasets=[dataset])
+results = evaluation.process(pipelines)
+print(results[["subject", "session", "pipeline", "score"]])
+```
+
+### Example 2: Compare pipelines across multiple datasets
+
+```python
+from moabb.datasets import BNCI2014_001, Cho2017, PhysionetMI
+from moabb.evaluations import WithinSessionEvaluation
+from moabb.paradigms import LeftRightImagery
+from moabb.pipelines.features import LogVariance
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
+from sklearn.svm import SVC
+from sklearn.pipeline import make_pipeline
+
+paradigm = LeftRightImagery(fmin=8, fmax=32)
+
+pipelines = {
+    "LogVar+LDA": make_pipeline(LogVariance(), LDA()),
+    "LogVar+SVM": make_pipeline(LogVariance(), SVC()),
+}
+
+evaluation = WithinSessionEvaluation(
+    paradigm=paradigm,
+    datasets=[BNCI2014_001(), Cho2017(), PhysionetMI()],
+    n_jobs=4,
+)
+results = evaluation.process(pipelines)
+```
+
+### Example 3: P300 evaluation
+
+```python
+from moabb.datasets import BNCI2014_008
+from moabb.evaluations import WithinSessionEvaluation
+from moabb.paradigms import P300
+from pyriemann.estimation import XdawnCovariances
+from pyriemann.classification import MDM
+from sklearn.pipeline import make_pipeline
+
+paradigm = P300(fmin=1, fmax=24)
+dataset = BNCI2014_008()
+
+pipelines = {"Xdawn+MDM": make_pipeline(XdawnCovariances(nfilter=2), MDM())}
+evaluation = WithinSessionEvaluation(paradigm=paradigm, datasets=[dataset])
+results = evaluation.process(pipelines)
+```
+
+### Example 4: SSVEP with filter banks
+
+```python
+from moabb.datasets import Wang2016
+from moabb.evaluations import WithinSessionEvaluation
+from moabb.paradigms import FilterBankSSVEP
+from pyriemann.estimation import Covariances
+from pyriemann.classification import MDM
+from sklearn.pipeline import make_pipeline
+
+paradigm = FilterBankSSVEP(n_classes=4)
+dataset = Wang2016()
+dataset.subject_list = dataset.subject_list[:5]
+
+pipelines = {"Cov+MDM": make_pipeline(Covariances("oas"), MDM())}
+evaluation = WithinSessionEvaluation(paradigm=paradigm, datasets=[dataset])
+results = evaluation.process(pipelines)
+```
+
+### Example 5: Cross-subject transfer learning
+
+```python
+from moabb.datasets import BNCI2014_001
+from moabb.evaluations import CrossSubjectEvaluation
+from moabb.paradigms import LeftRightImagery
+from moabb.pipelines.features import LogVariance
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
+from sklearn.pipeline import make_pipeline
+
+paradigm = LeftRightImagery(fmin=8, fmax=32)
+dataset = BNCI2014_001()
+
+pipelines = {"LogVar+LDA": make_pipeline(LogVariance(), LDA())}
+evaluation = CrossSubjectEvaluation(paradigm=paradigm, datasets=[dataset])
+results = evaluation.process(pipelines)
+# Each row: train on all-but-one subject, test on held-out subject
+```
+
+## Common mistakes and how to fix them
+
+1. **CrossSessionEvaluation with single-session dataset** → AssertionError.
+   Fix: Check `dataset.n_sessions >= 2` or use `WithinSessionEvaluation`.
+
+2. **Paradigm-dataset mismatch** → e.g. `LeftRightImagery` with a P300 dataset.
+   Fix: Paradigm validates `dataset.paradigm`. Use matching types.
+
+3. **Missing events** → dataset lacks events the paradigm expects.
+   Fix: Check `dataset.event_id.keys()` against paradigm requirements. Use `events=` parameter to restrict.
+
+4. **return_epochs=True AND return_raws=True** → mutually exclusive, will error.
+
+5. **Slow first run** → datasets download from Zenodo/BNCI on first use. Cached in `~/mne_data/`.
+   Fix: This is expected. Set `moabb.set_download_dir("/path/to/cache")` to control location.
+
+6. **n_classes larger than dataset events** → error during paradigm validation.
+   Fix: Set `n_classes` to None (use all) or check `len(dataset.event_id)`.
+
+7. **FilterBankSSVEP with explicit filters fails** → SSVEP class raises ValueError if you pass `filters`.
+   Fix: Use `FilterBankSSVEP` for multiple filters, `SSVEP` for single band.
+
+## Popular datasets by paradigm
+
+### Motor Imagery (dataset.paradigm == "imagery")
+
+| Dataset | Subjects | Sessions | Channels | Classes | Events |
+|---|---|---|---|---|---|
+| `BNCI2014_001` | 9 | 2 | 22 | 4 | left_hand, right_hand, feet, tongue |
+| `BNCI2014_002` | 14 | 1 | 15 | 2 | right_hand, feet |
+| `BNCI2014_004` | 9 | 5 | 3 | 2 | left_hand, right_hand |
+| `BNCI2015_001` | 12 | 2-3 | 13 | 2 | right_hand, feet |
+| `Cho2017` | 52 | 1 | 64 | 2 | left_hand, right_hand |
+| `Lee2019_MI` | 54 | 2 | 62 | 2 | left_hand, right_hand |
+| `PhysionetMI` | 109 | 1 | 64 | 4 | left_hand, right_hand, hands, feet |
+| `Schirrmeister2017` | 14 | 1 | 128 | 4 | left_hand, right_hand, feet, rest |
+| `Weibo2014` | 10 | 1 | 60 | 7 | multiple MI classes |
+| `Zhou2016` | 4 | 3 | 14 | 3 | left_hand, right_hand, feet |
+
+### P300/ERP (dataset.paradigm == "p300")
+
+| Dataset | Subjects | Sessions | Channels | Events |
+|---|---|---|---|---|
+| `BNCI2014_008` | 8 | 1 | 8 | Target, NonTarget |
+| `BNCI2014_009` | 10 | 3 | 16 | Target, NonTarget |
+| `BNCI2015_003` | 10 | 1 | 8 | Target, NonTarget |
+| `BI2012` | 25 | 1 | 16 | Target, NonTarget |
+| `BI2013a` | 24 | 1 | 16 | Target, NonTarget |
+| `BI2014a` | 64 | 1 | 16 | Target, NonTarget |
+| `BI2015a` | 43 | 3 | 32 | Target, NonTarget |
+| `EPFLP300` | 8 | 4 | 32 | Target, NonTarget |
+| `Lee2019_ERP` | 54 | 2 | 62 | Target, NonTarget |
+| `Sosulski2019` | 13 | 1 | 31 | Target, NonTarget |
+
+### SSVEP (dataset.paradigm == "ssvep")
+
+| Dataset | Subjects | Sessions | Channels | Frequencies |
+|---|---|---|---|---|
+| `Wang2016` | 35 | 1 | 64 | 40 frequencies (8-15.8 Hz) |
+| `Lee2019_SSVEP` | 54 | 2 | 62 | 4 frequencies |
+| `MAMEM1` | 11 | 1 | 256 | 5 frequencies |
+| `MAMEM2` | 11 | 1 | 256 | 5 frequencies |
+| `MAMEM3` | 11 | 1 | 14 | 5 frequencies |
+| `Nakanishi2015` | 9 | 1 | 8 | 12 frequencies |
+| `Liu2020BETA` | 70 | 1 | 64 | 40 frequencies |
+| `Liu2022EldBETA` | 100 | 1 | 64 | 40 frequencies |
+
+### c-VEP (dataset.paradigm == "cvep")
+
+| Dataset | Subjects | Sessions | Channels |
+|---|---|---|---|
+| `CastillosCVEP100` | 15 | 1 | 32 |
+| `CastillosCVEP40` | 15 | 1 | 32 |
+| `Thielen2015` | 12 | 1 | 8 |
+| `Thielen2021` | 30 | 2 | 64 |
+
+## Documentation
+
+- [Installation](https://moabb.neurotechx.com/docs/install/install.html): pip, source, optional extras (deeplearning, optuna, interactive)
+- [Dataset Catalog](https://moabb.neurotechx.com/docs/dataset_summary.html): All 158 datasets with interactive filtering
+- [API Reference](https://moabb.neurotechx.com/docs/api.html): Full class/method documentation
+- [Tutorials](https://moabb.neurotechx.com/docs/auto_examples/tutorials/index.html): Step-by-step guides
+- [Paradigm Examples](https://moabb.neurotechx.com/docs/auto_examples/paradigm_examples/index.html): MI, P300, SSVEP walkthroughs
+- [Advanced Examples](https://moabb.neurotechx.com/docs/auto_examples/advanced_examples/index.html): Preprocessing, statistics, ensembles
+- [Benchmark Results](https://moabb.neurotechx.com/docs/paper_results.html): Largest BCI reproducibility benchmark
+- [Citation](https://moabb.neurotechx.com/docs/cite.html): DOI: 10.5281/zenodo.10034223

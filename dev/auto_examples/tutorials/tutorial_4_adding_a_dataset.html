@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="moabb icon" sizes="180x180" href="../../_static/_static/moabb_logo.png" type="image/png">
+    <link rel="icon" href="../../_static/favicon.svg" type="image/svg+xml">
+    <link rel="icon" sizes="144x144" href="../../_static/favicon-144.png" type="image/png">
+    <link rel="mask-icon" href="../../_static/favicon_mask-icon.svg" color="#222832" type="image/svg+xml">
+    <link rel="apple-touch-icon" sizes="500x500" href="../../_static/favicon-500.png" type="image/png"><meta property="og:title" content="Tutorial 4: Creating custom datasets" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://moabb.neurotechx.com/docs/auto_examples/tutorials/tutorial_4_adding_a_dataset.html" />
+<meta property="og:site_name" content="MOABB - Mother of all BCI Benchmarks" />
+<meta property="og:description" content="MOABB provides several ways to integrate a custom dataset, depending on the format of your data: BaseDataset — for datasets with arbitrary file formats. Requires implementing data downloading and f..." />
+<meta property="og:image" content="https://moabb.neurotechx.com/docs/_static/moabb_og_card.png" />
+<meta property="og:image:alt" content="MOABB - Mother of all BCI Benchmarks: 158 open EEG datasets for reproducible BCI research" />
+<meta name="description" content="MOABB provides several ways to integrate a custom dataset, depending on the format of your data: BaseDataset — for datasets with arbitrary file formats. Requires implementing data downloading and f..." />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@NeuroTechX" />
+
+    <title>Tutorial 4: Creating custom datasets &#8212; MOABB Documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=c83e6b79" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=d694e5f0" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/macro-table.css?v=4c18d17a" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.2.0/css/dataTables.dataTables.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/3.2.6/css/buttons.dataTables.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/searchpanes/2.3.5/css/searchPanes.dataTables.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/select/3.1.3/css/select.dataTables.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedheader/4.0.6/css/fixedHeader.dataTables.css" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../../_static/documentation_options.js?v=1e7238b3"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('consent', 'default', {
+                    'ad_storage': 'denied',
+                    'ad_user_data': 'denied',
+                    'ad_personalization': 'denied',
+                    'analytics_storage': 'denied'
+                });
+            </script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-5WJBKDMSTE"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', 'G-5WJBKDMSTE');
+            </script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/tutorials/tutorial_4_adding_a_dataset';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://moabb.neurotechx.com/dev/_static/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            true;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/2.2.0/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.6/js/dataTables.buttons.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.6/js/buttons.html5.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.6/js/buttons.colVis.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.6/js/buttons.print.js"></script>
+    <script src="https://cdn.datatables.net/select/3.1.3/js/dataTables.select.js"></script>
+    <script src="https://cdn.datatables.net/searchpanes/2.3.5/js/dataTables.searchPanes.js"></script>
+    <script src="https://cdn.datatables.net/searchpanes/2.3.5/js/searchPanes.dataTables.js"></script>
+    <script src="https://cdn.datatables.net/fixedheader/4.0.6/js/dataTables.fixedHeader.js"></script>
+    <script src="../../_static/js/sortable-numeric.js?v=9b328e85"></script>
+    <script src="../../_static/js/section-nav-hierarchy.js?v=c53969c2"></script>
+    <script src="../../_static/js/macro-table.js?v=c799a707"></script>
+    <link rel="canonical" href="https://moabb.neurotechx.com/docs/auto_examples/tutorials/tutorial_4_adding_a_dataset.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Tutorial 5: Combining Multiple Datasets into a Single Dataset" href="tutorial_5_combining_datasets.html" />
+    <link rel="prev" title="Tutorial 3: Benchmarking multiple pipelines" href="tutorial_3_benchmarking_multiple_pipelines.html" />
+    <link rel="canonical" href="https://moabb.neurotechx.com/docs/auto_examples/tutorials/tutorial_4_adding_a_dataset.html" />
+
+    
+    
+
+    
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "MOABB",
+          "item": "https://moabb.neurotechx.com/docs/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Tutorial 4: Creating custom datasets",
+          "item": "https://moabb.neurotechx.com/docs/auto_examples/tutorials/tutorial_4_adding_a_dataset.html"
+        }
+      ]
+    }
+    </script>
+    
+
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.8.0" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+
+  </head>
+  <body data-default-mode="light">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+<aside class="bd-header-announcement" aria-label="Announcement">
+  <div class="bd-header-announcement__content"><strong>Using MOABB in academic work?</strong> <a class='moabb-announcement-cta' href='cite.html'>Cite MOABB</a> <span class='moabb-announcement-secondary'>DOI: <a href='https://doi.org/10.5281/zenodo.10034223'>10.5281/zenodo.10034223</a> · Explore <a href='paper_results.html'>benchmark results</a></span></div>
+</aside>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../../_static/moabb_light.svg" class="logo__image only-light" alt="MOABB Documentation - Home"/>
+    <img src="../../_static/moabb_dark.svg" class="logo__image only-dark pst-js-only" alt="MOABB Documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../paper_results.html">
+    The largest EEG benchmark
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../dataset_summary.html">
+    Datasets
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install/install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../cite.html">
+    Citation
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../whats_new.html">
+    Release notes
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="External Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/NeuroTechX/moabb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/moabb/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../paper_results.html">
+    The largest EEG benchmark
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../dataset_summary.html">
+    Datasets
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install/install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../cite.html">
+    Citation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../whats_new.html">
+    Release notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="External Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/NeuroTechX/moabb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/moabb/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Getting Started!</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="tutorial_0_plot_getting_started.html">Tutorial 0: Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_1_simple_example_motor_imagery.html">Tutorial 1: Simple Motor Imagery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_2_using_mulitple_datasets.html">Tutorial 2: Using multiple datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_3_benchmarking_multiple_pipelines.html">Tutorial 3: Benchmarking multiple pipelines</a></li>
+<li class="toctree-l2 current active"><a aria-current="page" class="current reference internal" href="#">Tutorial 4: Creating custom datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_5_combining_datasets.html">Tutorial 5: Combining Multiple Datasets into a Single Dataset</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../paradigm_examples/index.html">Paradigm-Specific Evaluation Examples (Within- &amp; Cross-Session)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../paradigm_examples/plot_cross_session_motor_imagery.html">Cross-Session Motor Imagery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../paradigm_examples/plot_cross_session_multiple_datasets.html">Cross-Session on Multiple Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../paradigm_examples/plot_cross_subject_ssvep.html">Cross-Subject SSVEP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../paradigm_examples/plot_vr_pc_p300_different_epoch_size.html">Changing epoch size in P300 VR dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../paradigm_examples/plot_within_session_p300.html">Within Session P300</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../paradigm_examples/plot_within_session_ssvep.html">Within Session SSVEP</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../data_management_and_configuration/index.html">Data Management and Configuration</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/noplot_load_model.html">Load Model (Scikit) with MOABB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/plot_bids_conversion.html">Convert a MOABB dataset to BIDS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/plot_changing_download_directory.html">Change Download Directory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/plot_disk_cache.html">Cache on disk intermediate data processing states</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/plot_explore_paradigm.html">Explore Paradigm Object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/plot_fixed_interval_windows.html">Fixed interval windows processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/plot_metadata_preflight.html">Check paradigm metadata before loading</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../how_to_benchmark/index.html">Benchmarking and Pipeline Evaluation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/noplot_example_codecarbon.html">Benchmarking with MOABB showing the CO2 footprint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_benchmark.html">Benchmarking with MOABB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_benchmark_grid_search.html">Benchmarking with MOABB with Grid Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_cross_subject_transfer_rpa.html">Cross-subject transfer with Riemannian alignment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_cross_subject_transfer_sp_mdm.html">Trialwise cross-subject subject-prototype classification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_within_session_splitter.html">Tutorial: Within-Session Splitting on Real MI Dataset</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../advanced_examples/index.html">Advanced examples</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_examples/noplot_mne_features_pipeline.html">Pipelines using the mne-features library</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_dataset_bubbles.html">Dataset bubble plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_dreyer_clf_scores_vs_subj_info.html">Examples of analysis of a Dreyer2023 A dataset.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_euclidean_alignment.html">Euclidean Alignment for cross-subject transfer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_filterbank_csp_vs_csp.html">FilterBank CSP versus CSP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_geometry_aware_recentering.html">Comparing fitted and test-batch tangent-space references</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_grid_search_withinsession.html">GridSearch within a session</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_hinss2021_classification.html">Hinss2021 classification example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_mne_and_scikit_estimators.html">MNE Epochs-based pipelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_phmd_ml_spectrum.html">Spectral analysis of the trials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_pre_processing_steps.html">Playing with the pre-processing steps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_pseudoonline.html">Pseudo-Online Motor Imagery with Sliding Window</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_riemannian_artifact_rejection.html">Riemannian Artifact Rejection as a Pre-processing Step</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_select_electrodes_resample.html">Select Electrodes and Resampling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_sliding_estimator.html">Time-Resolved Decoding with SlidingEstimator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_statistical_analysis.html">Statistical Analysis and Chance Level Assessment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_use_an_X_y_dataset.html">Using X y data (epoched data) instead of continuous signal</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../learning_curve/index.html">Evaluation with learning curve</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../learning_curve/noplot_learning_curve_p300_external.html">Within Session P300 with Learning Curve</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../learning_curve/plot_learning_curve_motor_imagery.html">Within Session Motor Imagery with Learning Curve</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../learning_curve/plot_learning_curve_p300.html">Within Session P300 with Learning Curve</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">MOABB Examples</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Getting Started!</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Tutorial 4: Creating custom datasets</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+<div>
+  
+  
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-auto-examples-tutorials-tutorial-4-adding-a-dataset-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code.</p>
+</div>
+<section class="sphx-glr-example-title" id="tutorial-4-creating-custom-datasets">
+<span id="sphx-glr-auto-examples-tutorials-tutorial-4-adding-a-dataset-py"></span><h1>Tutorial 4: Creating custom datasets<a class="headerlink" href="#tutorial-4-creating-custom-datasets" title="Link to this heading">#</a></h1>
+<p>MOABB provides several ways to integrate a custom dataset, depending on the
+format of your data:</p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="../../generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDataset</span></code></a> — for datasets with arbitrary
+file formats. Requires implementing data downloading and file reading.</p></li>
+<li><p><a class="reference internal" href="../../generated/moabb.datasets.base.BaseBIDSDataset.html#moabb.datasets.base.BaseBIDSDataset" title="moabb.datasets.base.BaseBIDSDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseBIDSDataset</span></code></a> /
+<a class="reference internal" href="../../generated/moabb.datasets.base.LocalBIDSDataset.html#moabb.datasets.base.LocalBIDSDataset" title="moabb.datasets.base.LocalBIDSDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">LocalBIDSDataset</span></code></a> — for datasets already
+provided in <a class="reference external" href="https://bids.neuroimaging.io/">BIDS format</a>.
+<code class="docutils literal notranslate"><span class="pre">BaseBIDSDataset</span></code> is used for online datasets (only the download step
+needs to be implemented); <code class="docutils literal notranslate"><span class="pre">LocalBIDSDataset</span></code> is used for local or private
+datasets with no subclassing required at all.</p></li>
+</ol>
+<p><strong>BIDS is the preferred format for new datasets in MOABB.</strong></p>
+<p>This tutorial illustrates both approaches.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="c1"># Authors: Pedro L. C. Rodrigues, Sylvain Chevallier</span><span class="w">
+</span><span class="c1">#</span><span class="w">
+</span><span class="c1"># https://github.com/plcrodrigues/Workshop-MOABB-BCI-Graz-2019</span><span class="w">
+</span><span class="w">
+</span><span class="kn">import</span><span class="w"> </span><span class="nn">mne</span><span class="w">
+</span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">pyriemann</span><span class="nn">.</span><span class="nn">classification</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator"><span class="n">MDM</span></a><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">pyriemann</span><span class="nn">.</span><span class="nn">estimation</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin"><span class="n">Covariances</span></a><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="nn">.</span><span class="nn">io</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-scipy-io sphx-glr-backref-type-py-function reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.io.loadmat.html#scipy.io.loadmat" title="scipy.io.loadmat"><span class="n">loadmat</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-scipy-io sphx-glr-backref-type-py-function reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.io.savemat.html#scipy.io.savemat" title="scipy.io.savemat"><span class="n">savemat</span></a><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn</span><span class="nn">.</span><span class="nn">pipeline</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline"><span class="n">make_pipeline</span></a><span class="w">
+</span><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">moabb</span><span class="nn">.</span><span class="nn">datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">download</span> <span class="k">as</span> <span class="n">dl</span><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">moabb</span><span class="nn">.</span><span class="nn">datasets</span><span class="nn">.</span><span class="nn">base</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-class reference internal" href="../../generated/moabb.datasets.base.BaseBIDSDataset.html#moabb.datasets.base.BaseBIDSDataset" title="moabb.datasets.base.BaseBIDSDataset"><span class="n">BaseBIDSDataset</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-class reference internal" href="../../generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset"><span class="n">BaseDataset</span></a><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">moabb</span><span class="nn">.</span><span class="nn">evaluations</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-moabb-evaluations sphx-glr-backref-type-py-class reference internal" href="../../generated/moabb.evaluations.WithinSessionEvaluation.html#moabb.evaluations.WithinSessionEvaluation" title="moabb.evaluations.WithinSessionEvaluation"><span class="n">WithinSessionEvaluation</span></a><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">moabb</span><span class="nn">.</span><span class="nn">paradigms</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class reference internal" href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery"><span class="n">LeftRightImagery</span></a><span class="w">
+</span></pre></div></div>
+<section id="creating-a-dataset-class-from-scratch-basedataset">
+<h2>1. Creating a dataset class from scratch (BaseDataset)<a class="headerlink" href="#creating-a-dataset-class-from-scratch-basedataset" title="Link to this heading">#</a></h2>
+<section id="creating-some-data">
+<h3>Creating some Data<a class="headerlink" href="#creating-some-data" title="Link to this heading">#</a></h3>
+<p>To illustrate the creation of a dataset class in MOABB, we first create an
+example dataset saved in .mat file. It contains a single fake recording on
+8 channels lasting for 150 seconds (sampling frequency 256 Hz). We have
+included the script that creates this dataset and have uploaded it online.
+The fake dataset is available on the
+<a class="reference external" href="https://zenodo.org/records/14973598">Zenodo website</a></p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">create_example_dataset</span><span class="p">(</span><span class="p">)</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a fake example for a dataset.&quot;&quot;&quot;</span><span class="w">
+</span>    <span class="n">sfreq</span> <span class="o">=</span> <span class="mi">256</span><span class="w">
+</span>    <span class="n">t_recording</span> <span class="o">=</span> <span class="mi">150</span><span class="w">
+</span>    <span class="n">t_trial</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># duration of a trial</span><span class="w">
+</span>    <span class="n">intertrial</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># time between end of a trial and the next one</span><span class="w">
+</span>    <span class="n">n_chan</span> <span class="o">=</span> <span class="mi">8</span><span class="w">
+</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">x</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.zeros.html#numpy.zeros" title="numpy.zeros"><span class="n">np</span><span class="o">.</span><span class="n">zeros</span></a><span class="p">(</span><span class="p">(</span><span class="n">n_chan</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">t_recording</span> <span class="o">*</span> <span class="n">sfreq</span><span class="p">)</span><span class="p">)</span>  <span class="c1"># electrodes + stimulus</span><span class="w">
+</span>    <span class="n">stim</span> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.zeros.html#numpy.zeros" title="numpy.zeros"><span class="n">np</span><span class="o">.</span><span class="n">zeros</span></a><span class="p">(</span><span class="n">t_recording</span> <span class="o">*</span> <span class="n">sfreq</span><span class="p">)</span><span class="w">
+</span>    <span class="n">t_offset</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># offset where the trials start</span><span class="w">
+</span>    <span class="n">n_trials</span> <span class="o">=</span> <span class="mi">40</span><span class="w">
+</span><span class="w">
+</span>    <span class="n">rep</span> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.linspace.html#numpy.linspace" title="numpy.linspace"><span class="n">np</span><span class="o">.</span><span class="n">linspace</span></a><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">t_trial</span><span class="p">,</span> <span class="n">t_trial</span> <span class="o">*</span> <span class="n">sfreq</span><span class="p">)</span><span class="w">
+</span>    <span class="n">signal</span> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc"><span class="n">np</span><span class="o">.</span><span class="n">sin</span></a><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">np</span><span class="o">.</span><span class="n">pi</span></a> <span class="o">/</span> <span class="n">t_trial</span> <span class="o">*</span> <span class="n">rep</span><span class="p">)</span><span class="w">
+</span>    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_trials</span><span class="p">)</span><span class="p">:</span><span class="w">
+</span>        <span class="n">label</span> <span class="o">=</span> <span class="n">n</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1"># alternate between class 0 and class 1</span><span class="w">
+</span>        <span class="n">tn</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">t_offset</span> <span class="o">*</span> <span class="n">sfreq</span> <span class="o">+</span> <span class="n">n</span> <span class="o">*</span> <span class="p">(</span><span class="n">t_trial</span> <span class="o">+</span> <span class="n">intertrial</span><span class="p">)</span> <span class="o">*</span> <span class="n">sfreq</span><span class="p">)</span><span class="w">
+</span>        <span class="n">stim</span><span class="p">[</span><span class="n">tn</span><span class="p">]</span> <span class="o">=</span> <span class="n">label</span><span class="w">
+</span>        <span class="n">noise</span> <span class="o">=</span> <span class="mf">0.1</span> <span class="o">*</span> <a class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.randn.html#numpy.random.randn" title="numpy.random.randn"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span></a><span class="p">(</span><span class="n">n_chan</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">x</span></a><span class="p">[</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">tn</span> <span class="p">:</span> <span class="p">(</span><span class="n">tn</span> <span class="o">+</span> <span class="n">t_trial</span> <span class="o">*</span> <span class="n">sfreq</span><span class="p">)</span><span class="p">]</span> <span class="o">=</span> <span class="n">label</span> <span class="o">*</span> <span class="n">signal</span> <span class="o">+</span> <span class="n">noise</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">x</span></a><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:</span><span class="p">]</span> <span class="o">=</span> <span class="n">stim</span><span class="w">
+</span>    <span class="k">return</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">x</span></a><span class="p">,</span> <span class="n">sfreq</span><span class="w">
+</span><span class="w">
+</span><span class="w">
+</span><span class="c1"># Create the fake data</span><span class="w">
+</span><span class="k">for</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">subject</span></a> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span><span class="p">:</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">x</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">fs</span></a> <span class="o">=</span> <span class="n">create_example_dataset</span><span class="p">(</span><span class="p">)</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">filename</span></a> <span class="o">=</span> <span class="s2">&quot;</span><span class="s2">subject_</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">subject</span></a><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="s2">.mat</span><span class="s2">&quot;</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">mdict</span></a> <span class="o">=</span> <span class="p">{</span><span class="p">}</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">mdict</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">x</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">x</span></a><span class="w">
+</span>    <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">mdict</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">fs</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">fs</span></a><span class="w">
+</span>    <a class="sphx-glr-backref-module-scipy-io sphx-glr-backref-type-py-function reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.io.savemat.html#scipy.io.savemat" title="scipy.io.savemat"><span class="n">savemat</span></a><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">filename</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">mdict</span></a><span class="p">)</span><span class="w">
+</span></pre></div></div>
+</section>
+<section id="creating-a-dataset-class">
+<h3>Creating a Dataset Class<a class="headerlink" href="#creating-a-dataset-class" title="Link to this heading">#</a></h3>
+<p>We will create now a dataset class using the fake data simulated with the
+code from above. For this, we first need to import the right classes from
+MOABB:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">dl</span></code> is a very useful script that downloads automatically a dataset online
+if it is not yet available in the user’s computer. The script knows where
+to download the files because we create a global variable telling the URL
+where to fetch the data.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">BaseDataset</span></code> is the basic class that we overload to create our dataset.</p></li>
+</ul>
+<p>The global variable with the dataset’s URL should specify an online
+repository where all the files are stored.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">ExampleDataset_URL</span></a> <span class="o">=</span> <span class="s2">&quot;</span><span class="s2">https://zenodo.org/records/14973598</span><span class="s2">&quot;</span><span class="w">
+</span></pre></div></div>
+<p>The <code class="docutils literal notranslate"><span class="pre">ExampleDataset</span></code> needs to implement only 3 functions:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">__init__</span></code> for indicating the parameter of the dataset</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_get_single_subject_data</span></code> to define how to process the data once they
+have been downloaded</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">data_path</span></code> to define how the data are downloaded.</p></li>
+</ul>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="k">class</span><span class="w"> </span><a class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-class reference internal" href="../../generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset"><span class="nc">ExampleDataset</span></a><span class="p">(</span><a class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-class reference internal" href="../../generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset"><span class="n">BaseDataset</span></a><span class="p">)</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Dataset used to exemplify the creation of a dataset class in MOABB.
+
+    The data samples have been simulated and has no physiological
+    meaning whatsoever.
+    &quot;&quot;&quot;</span><span class="w">
+</span><span class="w">
+</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="p">:</span><span class="w">
+</span>        <span class="nb">super</span><span class="p">(</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="w">
+</span>            <span class="n">subjects</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span><span class="p">,</span><span class="w">
+</span>            <span class="n">sessions_per_subject</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="w">
+</span>            <span class="n">events</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;</span><span class="s2">left_hand</span><span class="s2">&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">right_hand</span><span class="s2">&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span><span class="p">,</span><span class="w">
+</span>            <span class="n">code</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">ExampleDataset</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>            <span class="n">interval</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">]</span><span class="p">,</span><span class="w">
+</span>            <a class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery"><span class="n">paradigm</span></a><span class="o">=</span><span class="s2">&quot;</span><span class="s2">imagery</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>            <span class="n">doi</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>        <span class="p">)</span><span class="w">
+</span><span class="w">
+</span>    <span class="k">def</span><span class="w"> </span><span class="nf">_get_single_subject_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">subject</span></a><span class="p">)</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return data for a single subject.&quot;&quot;&quot;</span><span class="w">
+</span>        <span class="n">file_path_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">subject</span></a><span class="p">)</span><span class="w">
+</span><span class="w">
+</span>        <span class="n">data</span> <span class="o">=</span> <a class="sphx-glr-backref-module-scipy-io sphx-glr-backref-type-py-function reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.io.loadmat.html#scipy.io.loadmat" title="scipy.io.loadmat"><span class="n">loadmat</span></a><span class="p">(</span><span class="n">file_path_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="p">)</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">x</span></a> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">x</span><span class="s2">&quot;</span><span class="p">]</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">fs</span></a> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">fs</span><span class="s2">&quot;</span><span class="p">]</span><span class="w">
+</span>        <span class="n">ch_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;</span><span class="s2">ch</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;</span><span class="s2">stim</span><span class="s2">&quot;</span><span class="p">]</span><span class="w">
+</span>        <span class="n">ch_types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;</span><span class="s2">eeg</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;</span><span class="s2">stim</span><span class="s2">&quot;</span><span class="p">]</span><span class="w">
+</span>        <span class="n">info</span> <span class="o">=</span> <a class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function reference external" href="https://mne.tools/stable/generated/mne.create_info.html#mne.create_info" title="mne.create_info"><span class="n">mne</span><span class="o">.</span><span class="n">create_info</span></a><span class="p">(</span><span class="n">ch_names</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.squeeze.html#numpy.squeeze" title="numpy.squeeze"><span class="n">np</span><span class="o">.</span><span class="n">squeeze</span></a><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">fs</span></a><span class="p">)</span><span class="p">)</span><span class="p">,</span> <span class="n">ch_types</span><span class="p">)</span><span class="w">
+</span>        <span class="n">raw</span> <span class="o">=</span> <a class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class reference external" href="https://mne.tools/stable/generated/mne.io.RawArray.html#mne.io.RawArray" title="mne.io.RawArray"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">RawArray</span></a><span class="p">(</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">x</span></a><span class="p">,</span> <span class="n">info</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span>        <span class="n">sessions</span> <span class="o">=</span> <span class="p">{</span><span class="p">}</span><span class="w">
+</span>        <span class="n">sessions</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">0</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="p">}</span><span class="w">
+</span>        <span class="n">sessions</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">0</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">0</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">raw</span><span class="w">
+</span>        <span class="k">return</span> <span class="n">sessions</span><span class="w">
+</span><span class="w">
+</span>    <span class="k">def</span><span class="w"> </span><span class="nf">data_path</span><span class="p">(</span><span class="w">
+</span>        <span class="bp">self</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">subject</span></a><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">force_update</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">update_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="w">
+</span>    <span class="p">)</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Download the data from one subject.&quot;&quot;&quot;</span><span class="w">
+</span>        <span class="k">if</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">subject</span></a> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">subject_list</span><span class="p">:</span><span class="w">
+</span>            <span class="k">raise</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">Invalid subject number</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span>        <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{:s}</span><span class="s2">/files/subject_0</span><span class="si">{:d}</span><span class="s2">.mat</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">ExampleDataset_URL</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">subject</span></a><span class="p">)</span><span class="w">
+</span>        <span class="n">path</span> <span class="o">=</span> <a class="sphx-glr-backref-module-moabb-datasets-download sphx-glr-backref-type-py-function reference internal" href="../../generated/moabb.datasets.download.data_dl.html#moabb.datasets.download.data_dl" title="moabb.datasets.download.data_dl"><span class="n">dl</span><span class="o">.</span><span class="n">data_dl</span></a><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">ExampleDataset</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span>        <span class="k">return</span> <span class="p">[</span><span class="n">path</span><span class="p">]</span>  <span class="c1"># it has to return a list</span><span class="w">
+</span></pre></div></div>
+</section>
+<section id="using-the-exampledataset">
+<h3>Using the ExampleDataset<a class="headerlink" href="#using-the-exampledataset" title="Link to this heading">#</a></h3>
+<p>Now that the <cite>ExampleDataset</cite> is defined, it could be instantiated directly.
+The rest of the code follows the steps described in the previous tutorials.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">dataset</span> <span class="o">=</span> <a class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-class reference internal" href="../../generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset"><span class="n">ExampleDataset</span></a><span class="p">(</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><a class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery"><span class="n">paradigm</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class reference internal" href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery"><span class="n">LeftRightImagery</span></a><span class="p">(</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">X</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">labels</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">meta</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-moabb-paradigms-base sphx-glr-backref-type-py-method reference internal" href="../../generated/moabb.paradigms.base.BaseProcessing.html#moabb.paradigms.base.BaseProcessing.get_data" title="moabb.paradigms.base.BaseProcessing.get_data"><span class="n">paradigm</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span> <span class="n">subjects</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><a class="sphx-glr-backref-module-moabb-evaluations sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/moabb.evaluations.WithinSessionEvaluation.html#moabb.evaluations.WithinSessionEvaluation" title="moabb.evaluations.WithinSessionEvaluation"><span class="n">evaluation</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-moabb-evaluations sphx-glr-backref-type-py-class reference internal" href="../../generated/moabb.evaluations.WithinSessionEvaluation.html#moabb.evaluations.WithinSessionEvaluation" title="moabb.evaluations.WithinSessionEvaluation"><span class="n">WithinSessionEvaluation</span></a><span class="p">(</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery"><span class="n">paradigm</span></a><span class="o">=</span><a class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery"><span class="n">paradigm</span></a><span class="p">,</span> <span class="n">datasets</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">newdataset</span><span class="s2">&quot;</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">pipelines</span></a> <span class="o">=</span> <span class="p">{</span><span class="p">}</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">pipelines</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">MDM</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <a class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline"><span class="n">make_pipeline</span></a><span class="p">(</span><a class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="sklearn.base.TransformerMixin"><span class="n">Covariances</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">oas</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">,</span> <a class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator"><span class="n">MDM</span></a><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">riemann</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">scores</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-moabb-evaluations-base sphx-glr-backref-type-py-method reference internal" href="../../generated/moabb.evaluations.base.BaseEvaluation.html#moabb.evaluations.base.BaseEvaluation.process" title="moabb.evaluations.base.BaseEvaluation.process"><span class="n">evaluation</span><span class="o">.</span><span class="n">process</span></a><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">pipelines</span></a><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">scores</span></a><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
+  0%|                                     | 2.05k/2.77M [00:00&lt;02:15, 20.3kB/s]
+  1%|▍                                     | 31.7k/2.77M [00:00&lt;00:16, 166kB/s]
+  3%|█▏                                    | 87.0k/2.77M [00:00&lt;00:08, 310kB/s]
+  5%|██                                     | 146k/2.77M [00:00&lt;00:06, 390kB/s]
+  8%|██▉                                    | 211k/2.77M [00:00&lt;00:05, 449kB/s]
+ 11%|████                                   | 292k/2.77M [00:00&lt;00:04, 511kB/s]
+ 14%|█████▌                                 | 393k/2.77M [00:00&lt;00:03, 625kB/s]
+ 17%|██████▋                                | 475k/2.77M [00:00&lt;00:03, 645kB/s]
+ 22%|████████▌                              | 606k/2.77M [00:01&lt;00:02, 790kB/s]
+ 25%|█████████▉                             | 705k/2.77M [00:01&lt;00:02, 804kB/s]
+ 28%|███████████                            | 786k/2.77M [00:01&lt;00:02, 772kB/s]
+ 32%|████████████▍                          | 885k/2.77M [00:01&lt;00:02, 791kB/s]
+ 35%|█████████████▋                         | 967k/2.77M [00:01&lt;00:02, 763kB/s]
+ 38%|██████████████▌                       | 1.06M/2.77M [00:01&lt;00:02, 782kB/s]
+ 42%|███████████████▉                      | 1.16M/2.77M [00:01&lt;00:02, 798kB/s]
+ 47%|█████████████████▊                    | 1.29M/2.77M [00:01&lt;00:01, 895kB/s]
+ 53%|███████████████████▍                 | 1.46M/2.77M [00:01&lt;00:01, 1.04MB/s]
+ 57%|█████████████████████▏               | 1.59M/2.77M [00:02&lt;00:01, 1.06MB/s]
+ 61%|██████████████████████▋              | 1.69M/2.77M [00:02&lt;00:01, 1.01MB/s]
+ 65%|████████████████████████▋             | 1.80M/2.77M [00:02&lt;00:01, 968kB/s]
+ 68%|██████████████████████████            | 1.89M/2.77M [00:02&lt;00:00, 926kB/s]
+ 72%|███████████████████████████▎          | 1.99M/2.77M [00:02&lt;00:00, 887kB/s]
+ 75%|████████████████████████████▌         | 2.07M/2.77M [00:02&lt;00:00, 849kB/s]
+ 79%|█████████████████████████████▉        | 2.18M/2.77M [00:02&lt;00:00, 853kB/s]
+ 83%|███████████████████████████████▋      | 2.31M/2.77M [00:02&lt;00:00, 931kB/s]
+ 88%|█████████████████████████████████▎    | 2.42M/2.77M [00:03&lt;00:00, 943kB/s]
+ 91%|██████████████████████████████████▌   | 2.52M/2.77M [00:03&lt;00:00, 904kB/s]
+ 95%|███████████████████████████████████▉  | 2.62M/2.77M [00:03&lt;00:00, 889kB/s]
+  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 21.9GB/s]
+
+  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
+  1%|▏                                     | 15.4k/2.77M [00:00&lt;00:23, 116kB/s]
+  2%|▋                                     | 49.2k/2.77M [00:00&lt;00:13, 199kB/s]
+  4%|█▌                                     | 114k/2.77M [00:00&lt;00:07, 333kB/s]
+  7%|██▊                                    | 202k/2.77M [00:00&lt;00:05, 466kB/s]
+  9%|███▋                                   | 261k/2.77M [00:00&lt;00:05, 461kB/s]
+ 12%|████▌                                  | 327k/2.77M [00:00&lt;00:05, 474kB/s]
+ 14%|█████▎                                 | 377k/2.77M [00:00&lt;00:05, 444kB/s]
+ 17%|██████▌                                | 465k/2.77M [00:01&lt;00:04, 515kB/s]
+ 22%|████████▍                              | 596k/2.77M [00:01&lt;00:03, 665kB/s]
+ 24%|█████████▌                             | 677k/2.77M [00:01&lt;00:03, 650kB/s]
+ 30%|███████████▊                           | 841k/2.77M [00:01&lt;00:02, 831kB/s]
+ 35%|█████████████▍                         | 955k/2.77M [00:01&lt;00:02, 842kB/s]
+ 38%|██████████████▎                       | 1.04M/2.77M [00:01&lt;00:02, 783kB/s]
+ 42%|███████████████▊                      | 1.15M/2.77M [00:01&lt;00:02, 800kB/s]
+ 45%|████████████████▉                     | 1.23M/2.77M [00:01&lt;00:02, 746kB/s]
+ 48%|██████████████████▎                   | 1.33M/2.77M [00:02&lt;00:01, 746kB/s]
+ 51%|███████████████████▍                  | 1.41M/2.77M [00:02&lt;00:01, 709kB/s]
+ 54%|████████████████████▌                 | 1.50M/2.77M [00:02&lt;00:01, 682kB/s]
+ 58%|█████████████████████▉                | 1.59M/2.77M [00:02&lt;00:01, 702kB/s]
+ 61%|███████████████████████▏              | 1.69M/2.77M [00:02&lt;00:01, 715kB/s]
+ 66%|█████████████████████████▎            | 1.84M/2.77M [00:02&lt;00:01, 834kB/s]
+ 70%|██████████████████████████▍           | 1.92M/2.77M [00:02&lt;00:01, 775kB/s]
+ 73%|███████████████████████████▋          | 2.02M/2.77M [00:03&lt;00:00, 762kB/s]
+ 76%|████████████████████████████▊         | 2.10M/2.77M [00:03&lt;00:00, 735kB/s]
+ 80%|██████████████████████████████▍       | 2.21M/2.77M [00:03&lt;00:00, 793kB/s]
+ 84%|███████████████████████████████▊      | 2.31M/2.77M [00:03&lt;00:00, 793kB/s]
+ 90%|██████████████████████████████████▎   | 2.49M/2.77M [00:03&lt;00:00, 993kB/s]
+ 95%|███████████████████████████████████▎ | 2.64M/2.77M [00:03&lt;00:00, 1.06MB/s]
+ 99%|████████████████████████████████████▊| 2.75M/2.77M [00:03&lt;00:00, 1.00MB/s]
+  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 29.5GB/s]
+
+  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
+  0%|                                     | 1.02k/2.77M [00:00&lt;05:05, 9.04kB/s]
+  1%|▍                                     | 33.8k/2.77M [00:00&lt;00:18, 151kB/s]
+  3%|█▏                                    | 90.1k/2.77M [00:00&lt;00:09, 296kB/s]
+  5%|█▉                                     | 139k/2.77M [00:00&lt;00:07, 331kB/s]
+  7%|██▉                                    | 207k/2.77M [00:00&lt;00:06, 402kB/s]
+ 10%|████                                   | 285k/2.77M [00:00&lt;00:05, 471kB/s]
+ 13%|█████▏                                 | 372k/2.77M [00:00&lt;00:04, 538kB/s]
+ 17%|██████▍                                | 460k/2.77M [00:01&lt;00:03, 584kB/s]
+ 20%|███████▋                               | 542k/2.77M [00:01&lt;00:03, 600kB/s]
+ 22%|████████▌                              | 607k/2.77M [00:01&lt;00:03, 571kB/s]
+ 25%|█████████▋                             | 688k/2.77M [00:01&lt;00:03, 588kB/s]
+ 28%|██████████▊                            | 770k/2.77M [00:01&lt;00:03, 603kB/s]
+ 31%|████████████                           | 852k/2.77M [00:01&lt;00:03, 612kB/s]
+ 36%|█████████████▊                         | 983k/2.77M [00:01&lt;00:02, 735kB/s]
+ 39%|██████████████▊                       | 1.08M/2.77M [00:01&lt;00:02, 742kB/s]
+ 42%|███████████████▉                      | 1.16M/2.77M [00:02&lt;00:02, 711kB/s]
+ 45%|█████████████████                     | 1.24M/2.77M [00:02&lt;00:02, 686kB/s]
+ 47%|██████████████████                    | 1.31M/2.77M [00:02&lt;00:02, 639kB/s]
+ 53%|████████████████████                  | 1.46M/2.77M [00:02&lt;00:01, 783kB/s]
+ 57%|█████████████████████▊                | 1.59M/2.77M [00:02&lt;00:01, 853kB/s]
+ 61%|███████████████████████               | 1.67M/2.77M [00:02&lt;00:01, 797kB/s]
+ 66%|████████████████████████▉             | 1.82M/2.77M [00:02&lt;00:01, 888kB/s]
+ 70%|██████████████████████████▌           | 1.93M/2.77M [00:02&lt;00:00, 888kB/s]
+ 73%|███████████████████████████▊          | 2.02M/2.77M [00:03&lt;00:00, 828kB/s]
+ 76%|█████████████████████████████         | 2.11M/2.77M [00:03&lt;00:00, 792kB/s]
+ 82%|███████████████████████████████       | 2.26M/2.77M [00:03&lt;00:00, 894kB/s]
+ 85%|████████████████████████████████▎     | 2.35M/2.77M [00:03&lt;00:00, 834kB/s]
+ 88%|█████████████████████████████████▍    | 2.43M/2.77M [00:03&lt;00:00, 780kB/s]
+ 91%|██████████████████████████████████▌   | 2.51M/2.77M [00:03&lt;00:00, 729kB/s]
+ 96%|████████████████████████████████████▋ | 2.67M/2.77M [00:03&lt;00:00, 875kB/s]
+100%|█████████████████████████████████████▉| 2.76M/2.77M [00:03&lt;00:00, 838kB/s]
+  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 24.9GB/s]
+   score      time  samples  ...         dataset pipeline codecarbon_task_name
+0    1.0  0.011047     40.0  ...  ExampleDataset      MDM
+1    1.0  0.010253     40.0  ...  ExampleDataset      MDM
+2    1.0  0.010413     40.0  ...  ExampleDataset      MDM
+
+[3 rows x 13 columns]
+</pre></div>
+</div>
+</section>
+<section id="pushing-on-moabb-github">
+<h3>Pushing on MOABB Github<a class="headerlink" href="#pushing-on-moabb-github" title="Link to this heading">#</a></h3>
+<p>If you want to make your dataset available to everyone, you could upload
+your data on a public server (like Zenodo or Figshare) and signal that you
+want to add your dataset to MOABB in the  <a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/1">dedicated issue</a>.
+You could then follow the instructions on <a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/master/CONTRIBUTING.md">how to contribute</a></p>
+<p>For new datasets, the preferred host is <a class="reference external" href="https://nemar.org">NEMAR</a>, which
+MOABB uses as the default download source — see
+<em>Publishing your dataset on NEMAR</em> below.</p>
+</section>
+</section>
+<section id="creating-a-bids-dataset-class-basebidsdataset">
+<h2>2. Creating a BIDS dataset class (BaseBIDSDataset)<a class="headerlink" href="#creating-a-bids-dataset-class-basebidsdataset" title="Link to this heading">#</a></h2>
+<p>If your dataset is already provided in the
+<a class="reference external" href="https://bids.neuroimaging.io/">BIDS format</a>, you can subclass
+<a class="reference internal" href="../../generated/moabb.datasets.base.BaseBIDSDataset.html#moabb.datasets.base.BaseBIDSDataset" title="moabb.datasets.base.BaseBIDSDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseBIDSDataset</span></code></a> instead of
+<a class="reference internal" href="../../generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDataset</span></code></a>.
+The <code class="docutils literal notranslate"><span class="pre">BaseBIDSDataset</span></code> base class handles reading the BIDS files
+automatically via <code class="docutils literal notranslate"><span class="pre">mne-bids</span></code>; you only need to implement the
+<code class="docutils literal notranslate"><span class="pre">_download_subject</span></code> method that downloads the data for a single subject
+and returns the local path to the <strong>root</strong> of the BIDS dataset.</p>
+<p>Several MOABB datasets already use this approach — for example
+<a class="reference internal" href="../../generated/moabb.datasets.Zhou2016.html#moabb.datasets.Zhou2016" title="moabb.datasets.Zhou2016"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.Zhou2016</span></code></a>.</p>
+<p>The skeleton below shows the minimal implementation required.
+<strong>Note:</strong> <code class="docutils literal notranslate"><span class="pre">ExampleBIDSDataset</span></code> is intentionally non-functional — its
+<code class="docutils literal notranslate"><span class="pre">_download_subject</span></code> raises <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code>. Replace it with your
+own download logic before instantiating the class.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="k">class</span><span class="w"> </span><span class="nc">ExampleBIDSDataset</span><span class="p">(</span><a class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-class reference internal" href="../../generated/moabb.datasets.base.BaseBIDSDataset.html#moabb.datasets.base.BaseBIDSDataset" title="moabb.datasets.base.BaseBIDSDataset"><span class="n">BaseBIDSDataset</span></a><span class="p">)</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Skeleton showing how to wrap an online BIDS dataset.
+
+    Replace ``_download_subject`` with the actual download logic for your
+    dataset (e.g. fetching a zip archive from Zenodo and extracting it).
+    &quot;&quot;&quot;</span><span class="w">
+</span><span class="w">
+</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="p">:</span><span class="w">
+</span>        <span class="nb">super</span><span class="p">(</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="w">
+</span>            <span class="n">subjects</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span><span class="p">,</span><span class="w">
+</span>            <span class="n">sessions_per_subject</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="w">
+</span>            <span class="n">events</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;</span><span class="s2">left_hand</span><span class="s2">&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">right_hand</span><span class="s2">&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span><span class="p">,</span><span class="w">
+</span>            <span class="n">code</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">ExampleBIDSDataset</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>            <span class="n">interval</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">]</span><span class="p">,</span><span class="w">
+</span>            <a class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery"><span class="n">paradigm</span></a><span class="o">=</span><span class="s2">&quot;</span><span class="s2">imagery</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>            <span class="n">doi</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>        <span class="p">)</span><span class="w">
+</span><span class="w">
+</span>    <span class="k">def</span><span class="w"> </span><span class="nf">_download_subject</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">subject</span></a><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">force_update</span><span class="p">,</span> <span class="n">update_path</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Download the BIDS dataset for *subject* and return the BIDS root.&quot;&quot;&quot;</span><span class="w">
+</span>        <span class="c1"># Example (not executed here — replace with your actual download URL):</span><span class="w">
+</span>        <span class="c1">#</span><span class="w">
+</span>        <span class="c1">#   url = f&quot;https://zenodo.org/records/XXXXX/files/bids_dataset.zip&quot;</span><span class="w">
+</span>        <span class="c1">#   bids_root = dl.data_dl(url, &quot;ExampleBIDSDataset&quot;)</span><span class="w">
+</span>        <span class="c1">#   return bids_root</span><span class="w">
+</span>        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">Replace this with your actual download logic.</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<section id="using-localbidsdataset-for-local-private-bids-datasets">
+<h3>Using LocalBIDSDataset for local/private BIDS datasets<a class="headerlink" href="#using-localbidsdataset-for-local-private-bids-datasets" title="Link to this heading">#</a></h3>
+<p>If you already have a BIDS dataset on your local machine and you do <strong>not</strong>
+want to write a dedicated class, you can use
+<a class="reference internal" href="../../generated/moabb.datasets.base.LocalBIDSDataset.html#moabb.datasets.base.LocalBIDSDataset" title="moabb.datasets.base.LocalBIDSDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">LocalBIDSDataset</span></code></a> directly.
+It auto-discovers subjects and sessions from the BIDS directory structure:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span class="kn">from</span><span class="w"> </span><span class="nn">moabb</span><span class="nn">.</span><span class="nn">datasets</span><span class="nn">.</span><span class="nn">base</span><span class="w"> </span><span class="kn">import</span> <span class="n">LocalBIDSDataset</span><span class="w">
+</span><span class="w">
+</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">LocalBIDSDataset</span><span class="p">(</span><span class="w">
+</span>    <span class="n">bids_root</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">/path/to/bids/dataset</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="n">events</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;</span><span class="s2">left_hand</span><span class="s2">&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">right_hand</span><span class="s2">&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span><span class="p">,</span><span class="w">
+</span>    <span class="n">interval</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">]</span><span class="p">,</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery"><span class="n">paradigm</span></a><span class="o">=</span><span class="s2">&quot;</span><span class="s2">imagery</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><a class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery"><span class="n">paradigm</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class reference internal" href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery"><span class="n">LeftRightImagery</span></a><span class="p">(</span><span class="p">)</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">X</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">labels</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">meta</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-moabb-paradigms-base sphx-glr-backref-type-py-method reference internal" href="../../generated/moabb.paradigms.base.BaseProcessing.html#moabb.paradigms.base.BaseProcessing.get_data" title="moabb.paradigms.base.BaseProcessing.get_data"><span class="n">paradigm</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span> <span class="n">subjects</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+</section>
+</section>
+<section id="publishing-your-dataset-on-nemar">
+<h2>Publishing your dataset on NEMAR<a class="headerlink" href="#publishing-your-dataset-on-nemar" title="Link to this heading">#</a></h2>
+<p><a class="reference external" href="https://nemar.org">NEMAR</a> is the default download source for MOABB
+datasets. Hosting your (BIDS-formatted) data there lets MOABB fetch it
+directly through <a class="reference external" href="https://pypi.org/project/nemar-py/">nemar-py</a>, while the
+dataset’s own <code class="docutils literal notranslate"><span class="pre">data_path</span></code> is kept as an automatic fallback.</p>
+<p>Pushing a dataset is done with the <code class="docutils literal notranslate"><span class="pre">nemar</span></code> command-line tool:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1. Install the CLI and sign in</span>
+npm<span class="w"> </span>install<span class="w"> </span>-g<span class="w"> </span>nemar-cli<span class="w">          </span><span class="c1"># or: bun add -g nemar-cli</span>
+nemar<span class="w"> </span>signup<span class="w">                      </span><span class="c1"># first time only</span>
+nemar<span class="w"> </span>login
+
+<span class="c1"># 2. One-time sandbox training (required before your first upload)</span>
+nemar<span class="w"> </span>sandbox
+
+<span class="c1"># 3. Upload your BIDS dataset (runs BIDS validation and collects</span>
+<span class="c1">#    co-author ORCIDs); use --dry-run first to preview</span>
+nemar<span class="w"> </span>dataset<span class="w"> </span>upload<span class="w"> </span>/path/to/bids/dataset<span class="w"> </span>--dry-run
+nemar<span class="w"> </span>dataset<span class="w"> </span>upload<span class="w"> </span>/path/to/bids/dataset
+
+<span class="c1"># 4. Request publication, then track its status</span>
+nemar<span class="w"> </span>dataset<span class="w"> </span>publish<span class="w"> </span>request<span class="w"> </span>nm00XXXX
+nemar<span class="w"> </span>dataset<span class="w"> </span>publish<span class="w"> </span>status<span class="w">  </span>nm00XXXX
+</pre></div>
+</div>
+<p>Once the deposit is public, NEMAR assigns it an id (e.g. <code class="docutils literal notranslate"><span class="pre">nm000123</span></code>). Add it to your
+dataset class so MOABB downloads from NEMAR by default:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span class="k">class</span><span class="w"> </span><span class="nc">MyDataset</span><span class="p">(</span><a class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-class reference internal" href="../../generated/moabb.datasets.base.BaseBIDSDataset.html#moabb.datasets.base.BaseBIDSDataset" title="moabb.datasets.base.BaseBIDSDataset"><span class="n">BaseBIDSDataset</span></a><span class="p">)</span><span class="p">:</span><span class="w">
+</span>    <span class="n">nemar_id</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s2">nm000123</span><span class="s2">&quot;</span><span class="w">
+</span>    <span class="c1"># Only if NEMAR subject labels are zero-padded (sub-001, sub-002, ...)</span><span class="w">
+</span>    <span class="n">nemar_subject_template</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{subject:03d}</span><span class="s2">&quot;</span><span class="w">
+</span>    <span class="c1"># ...or, for arbitrary labels (sub-zdvm, sub-A01, ...), map them:</span><span class="w">
+</span>    <span class="c1"># nemar_subject_template = {1: &quot;zdvm&quot;, 2: &quot;A01&quot;}</span><span class="w">
+</span>    <span class="o">.</span><span class="o">.</span><span class="o">.</span><span class="w">
+</span></pre></div></div>
+<p>Fallback behaviour:</p>
+<ul class="simple">
+<li><p>If <code class="docutils literal notranslate"><span class="pre">nemar_id</span></code> is left unset (<code class="docutils literal notranslate"><span class="pre">None</span></code>) — for example while the deposit is
+still private/pending publication — MOABB skips NEMAR entirely and uses the
+dataset’s own <code class="docutils literal notranslate"><span class="pre">data_path</span></code> downloader.</p></li>
+<li><p>If a NEMAR download fails at runtime, MOABB emits a warning and
+automatically falls back to <code class="docutils literal notranslate"><span class="pre">data_path</span></code>.</p></li>
+</ul>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 14.810 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  489 MB</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-tutorials-tutorial-4-adding-a-dataset-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/46d014244b321e934a890e079a5f0042/tutorial_4_adding_a_dataset.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">tutorial_4_adding_a_dataset.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/337d0bb0f3327b553a011f5603258154/tutorial_4_adding_a_dataset.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">tutorial_4_adding_a_dataset.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/5eaf030c194fbc294dc6ae4327ec642d/tutorial_4_adding_a_dataset.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">tutorial_4_adding_a_dataset.zip</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+
+
+</div>
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="tutorial_3_benchmarking_multiple_pipelines.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Tutorial 3: Benchmarking multiple pipelines</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="tutorial_5_combining_datasets.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Tutorial 5: Combining Multiple Datasets into a Single Dataset</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-a-dataset-class-from-scratch-basedataset">1. Creating a dataset class from scratch (BaseDataset)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-some-data">Creating some Data</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-a-dataset-class">Creating a Dataset Class</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-the-exampledataset">Using the ExampleDataset</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pushing-on-moabb-github">Pushing on MOABB Github</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-a-bids-dataset-class-basebidsdataset">2. Creating a BIDS dataset class (BaseBIDSDataset)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-localbidsdataset-for-local-private-bids-datasets">Using LocalBIDSDataset for local/private BIDS datasets</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#publishing-your-dataset-on-nemar">Publishing your dataset on NEMAR</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+
+  <div class="sphx-glr-sidebar-component">
+    
+      
+        <div class="sphx-glr-sidebar-item sphx-glr-download-python-sidebar" title="tutorial_4_adding_a_dataset.py">
+          <a download href="../../_downloads/337d0bb0f3327b553a011f5603258154/tutorial_4_adding_a_dataset.py">
+            <i class="fa-solid fa-download"></i>
+            Download source code
+          </a>
+        </div>
+      
+    
+      
+        <div class="sphx-glr-sidebar-item sphx-glr-download-jupyter-sidebar" title="tutorial_4_adding_a_dataset.ipynb">
+          <a download href="../../_downloads/46d014244b321e934a890e079a5f0042/tutorial_4_adding_a_dataset.ipynb">
+            <i class="fa-solid fa-download"></i>
+            Download Jupyter notebook
+          </a>
+        </div>
+      
+    
+      
+        <div class="sphx-glr-sidebar-item sphx-glr-download-zip-sidebar" title="tutorial_4_adding_a_dataset.zip">
+          <a download href="../../_downloads/5eaf030c194fbc294dc6ae4327ec642d/tutorial_4_adding_a_dataset.zip">
+            <i class="fa-solid fa-download"></i>
+            Download zipped
+          </a>
+        </div>
+      
+    
+  </div>
+</div>
+
+  <div class="sidebar-secondary-item">
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+<div class="sd-card sd-shadow-sm sd-mb-3 moabb-colab-card">
+  <div class="sd-card-body moabb-colab-card-body">
+    <p class="sd-card-text sd-fs-5 sd-font-weight-bold sd-mb-0">Run this example</p>
+    <a class="sd-btn sd-btn-primary" href="https://colab.research.google.com/github/NeuroTechX/moabb/blob/gh-pages/docs/auto_examples/_notebooks/tutorials/tutorial_4_adding_a_dataset.ipynb" target="_blank" rel="noopener">
+      <img class="moabb-colab-badge" alt="Open in Colab" src="https://colab.research.google.com/assets/colab-badge.svg">
+    </a>
+  </div>
+</div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2018-2026 MOABB contributors.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
