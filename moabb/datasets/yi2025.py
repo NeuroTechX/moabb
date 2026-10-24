@@ -135,6 +135,7 @@ class Yi2025(BaseDataset):
     """
 
     nemar_id = "nm000160"
+    nemar_seed_cache = True
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,

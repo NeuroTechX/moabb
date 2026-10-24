@@ -103,7 +103,7 @@ from .Lee2019 import Lee2019_ERP, Lee2019_MI, Lee2019_SSVEP
 from .lee2021_mobile import Lee2021Mobile_ERP, Lee2021Mobile_SSVEP
 from .lee2022 import Lee2022
 from .lee2024 import Lee2024_AC, Lee2024_BS, Lee2024_DL, Lee2024_EL, Lee2024_TV
-from .lenaig2026 import Lenaig2026
+from .lenaig2026 import Gueho2026, Lenaig2026
 from .lioi2020_xp1 import Lioi2020_XP1
 from .lioi2020_xp2 import Lioi2020_XP2
 from .liu2024 import Liu2024

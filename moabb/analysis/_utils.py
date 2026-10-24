@@ -41,7 +41,12 @@ def _match_float(s):
 
 
 def _compute_n_trials(row, paradigm):
-    """Compute total number of trials per session from a summary table row.
+    """Compute the number of trials of one subject from a summary table row.
+
+    ``#Trials / class`` in the ``summary_*.csv`` tables counts the trials of
+    one subject over all of that subject's sessions and runs, so the result is
+    the number of trials per subject, not per session: it must not be
+    multiplied by ``#Sessions`` or ``#Runs`` again.
 
     Parameters
     ----------
@@ -53,7 +58,8 @@ def _compute_n_trials(row, paradigm):
     Returns
     -------
     int or None
-        Total number of trials, or None if parsing fails.
+        Number of trials per subject (all classes, sessions and runs
+        together), or None if parsing fails.
     """
     if paradigm in ("imagery", "ssvep"):
         trials_per_class = _match_int(row.get("#Trials / class", ""), default=None)

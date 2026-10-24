@@ -15,10 +15,10 @@ columns_name = [
     "#Subj",
     "#Chan",
     "#Classes",
-    "trials/events",
-    "Window Size (s)",
+    "#Trials / class",
+    "Trials length (s)",
     "Freq (Hz)",
-    "#Session",
+    "#Sessions",
     "#Runs",
     "Total_trials",
 ]
@@ -59,7 +59,7 @@ def process_trial_freq(trials_per_events, prdgm):
     elif prdgm == "p300":
         not_target = max(trials_per_events.values())
         target = min(trials_per_events.values())
-        return f"NT{not_target} / T {target}"
+        return f"{not_target} NT / {target} T"
 
 
 def get_meta_info(dataset, dataset_name, paradigm, prdgm_name):
@@ -82,6 +82,8 @@ def get_meta_info(dataset, dataset_name, paradigm, prdgm_name):
     subjects = len(dataset.subject_list)
     session = dataset.n_sessions
 
+    # All sessions and runs of the first subject: the counts below are per
+    # subject, not per session or per run.
     X, _, metadata = paradigm.get_data(dataset, [1], return_epochs=True)
 
     sfreq = int(X.info["sfreq"])
@@ -105,7 +107,8 @@ def get_meta_info(dataset, dataset_name, paradigm, prdgm_name):
             sfreq,
             session,
             runs,
-            session * runs * total_trials * subjects,
+            # total_trials already spans every session and run of the subject
+            total_trials * subjects,
         ],
         index=columns_name,
     )

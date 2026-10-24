@@ -20,7 +20,14 @@ from mne_bids import BIDSPath, read_raw_bids
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
-from moabb.utils import _handle_deprecated_kwargs
+from moabb.datasets.metadata.schema import (
+    AcquisitionMetadata,
+    DatasetMetadata,
+    DocumentationMetadata,
+    ExperimentMetadata,
+    ParticipantMetadata,
+)
+from moabb.utils import _handle_deprecated_kwargs, get_download_provider
 
 
 OSF_BASE_URL = "https://files.osf.io/v1/resources/"
@@ -35,6 +42,13 @@ _manifest_link = (
 # ERP CORE is one BIDS dataset where the component is the ``task-`` entity;
 # every class shares this root and selects its files by task.
 DATASET_FOLDER = "MNE-erpcore2021-data"
+
+# NEMAR's nm000132 holds the same recordings as one raw BIDS dataset (no
+# sourcedata/): the ERN and LRP classes read its shared ``task-flankers`` files.
+_NEMAR_TASK = {"ERN": "flankers", "LRP": "flankers"}
+# Files read_raw_bids needs next to the recording, per task.
+_BIDS_RECORDING_SUFFIXES = ("eeg.set", "eeg.fdt", "events.tsv", "channels.tsv")
+_NEMAR_SUBJECT_SIDECARS = ["electrodes", "coordsystem"]
 
 # The original distribution shipped one standalone BIDS dataset per component.
 # Kept only to read pre-existing downloads in that layout without re-fetching.
@@ -91,7 +105,7 @@ _docstring_tail = """
 
 
 class ErpCore2021(BaseDataset):
-    __doc__ = f"""Abstract base dataset class the ERP CORE dataset by Kappenman et al. 2020.
+    __doc__ = f"""Abstract base dataset class the ERP CORE dataset by Kappenman et al. 2021.
     {_docstring_head}
     **Experimental procedures**:
     - **N170**: Subjects viewed faces and objects to elicit the N170 component. In this task,
@@ -120,6 +134,25 @@ class ErpCore2021(BaseDataset):
     arrowhead on each trial with a left- or right-hand buttonpress.
     {_docstring_tail}
     """
+
+    METADATA = DatasetMetadata(
+        acquisition=AcquisitionMetadata(sampling_rate=1024.0, channel_types={"eeg": 30}),
+        participants=ParticipantMetadata(n_subjects=40),
+        experiment=ExperimentMetadata(paradigm="p300"),
+        documentation=DocumentationMetadata(
+            doi="10.1016/j.neuroimage.2020.117465",
+            data_url="https://doi.org/10.18115/D5JW4R",
+            investigators=[
+                "Emily S. Kappenman",
+                "Jaclyn L. Farrens",
+                "Wendy Zhang",
+                "Andrew X. Stewart",
+                "Steven J. Luck",
+            ],
+            publication_year=2021,
+            repository="ERP CORE",
+        ),
+    )
 
     def __init__(
         self, task, subjects=None, sessions=None, *, return_all_modalities=False, **kwargs
@@ -182,6 +215,7 @@ class ErpCore2021(BaseDataset):
         """
         # Get the file path for the subject's data
         file_path = self.data_path(subject)[0]
+        events_path = file_path.copy().update(suffix="events", extension=".tsv").fpath
 
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
@@ -197,7 +231,6 @@ class ErpCore2021(BaseDataset):
         if self.task != "MMN":
             raw.annotations.onset = raw.annotations.onset + 0.026
 
-        events_path = self.events_path(subject)
         raw = self.handle_events_reading(events_path, raw)
 
         # There is only one session
@@ -238,15 +271,14 @@ class ErpCore2021(BaseDataset):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
-        # Download and extract the dataset
-        dataset_path = self.download_by_subject(
-            subject=subject, path=path, force_update=force_update
+        dataset_path, task = self._subject_root(
+            subject, path=path, force_update=force_update, verbose=verbose
         )
 
         # Create a BIDSPath object for the subject
         bids_path = BIDSPath(
             subject=f"{subject:03d}",
-            task=self.task,
+            task=task,
             suffix="eeg",
             datatype="eeg",
             root=dataset_path,
@@ -255,6 +287,134 @@ class ErpCore2021(BaseDataset):
         subject_paths = [bids_path]
 
         return subject_paths
+
+    @property
+    def _nemar_task(self):
+        """The ``task-`` label of this component in the NEMAR deposit."""
+        return _NEMAR_TASK.get(self.task, self.task)
+
+    @staticmethod
+    def _has_recording(root, subject, task):
+        """Whether ``root`` holds the files one recording is read from."""
+        eeg_dir = Path(root) / f"sub-{subject:03d}" / "eeg"
+        stem = f"sub-{subject:03d}_task-{task}_"
+        return all(
+            (eeg_dir / (stem + suffix)).is_file() for suffix in _BIDS_RECORDING_SUFFIXES
+        )
+
+    def _nemar_root(self, path=None):
+        # One store for all seven classes: ERN and LRP read the same files.
+        root = Path(dl.get_dataset_path("ERPCORE2021", path))
+        return root / DATASET_FOLDER / self.nemar_id
+
+    def _upstream_root(self, subject, path=None):
+        """The local upstream copy holding this subject's recording, or None."""
+        root = Path(dl.get_dataset_path("ERPCORE2021", path)) / DATASET_FOLDER
+        legacy_root = root.parent / DATASET_PARAMS[self.task]["folder_name"]
+        for candidate in (root, legacy_root):
+            if self._has_recording(candidate, subject, self.task):
+                return candidate
+        return None
+
+    def _download_nemar(
+        self, subject, path=None, force_update=False, update_path=None, verbose=None
+    ):
+        """Fetch one subject's recording of this component from NEMAR.
+
+        The deposit is raw BIDS without ``sourcedata/``: select the subject's
+        files of this component's task, plus its task-independent
+        ``electrodes.tsv`` / ``coordsystem.json``, which a task filter alone
+        would drop.
+        """
+        label = self._nemar_subject(subject)
+        for filters in ({"task": self._nemar_task}, {"suffix": _NEMAR_SUBJECT_SIDECARS}):
+            root = dl.nemar_dl(
+                self.nemar_id,
+                "ERPCORE2021",
+                path=path,
+                force_update=force_update,
+                subject=label,
+                verbose=verbose,
+                **filters,
+            )
+        return root
+
+    def _prefetch_nemar_sourcedata(self, subjects, verbose=None):
+        # nm000132 has no sourcedata/: data_path reads its raw BIDS files.
+        return None
+
+    def download(
+        self,
+        subject_list=None,
+        path=None,
+        force_update=False,
+        update_path=None,
+        accept=False,
+        verbose=None,
+    ):
+        """Download the subjects' recordings of this component.
+
+        Unlike most mirrored datasets, the NEMAR deposit (``nm000132``) is the
+        raw BIDS dataset itself (no ``sourcedata/``), so this fetches the same
+        files :meth:`data_path` reads, with the provider policy described
+        there.
+        """
+        for subject in self.subject_list if subject_list is None else subject_list:
+            self.data_path(subject, path=path, force_update=force_update, verbose=verbose)
+
+    def _subject_root(self, subject, path=None, force_update=False, verbose=None):
+        """Return ``(bids_root, task)`` holding the subject's recording.
+
+        The NEMAR deposit ``nm000132`` is the ERP CORE BIDS dataset itself:
+        its EEGLAB files and events are the upstream OSF files (the ERN and
+        LRP components read its shared ``task-flankers`` recording), so it
+        serves loads unless the provider is ``"upstream"``. With ``"auto"``
+        a local upstream copy is reused without a download, and a NEMAR
+        failure falls back to OSF with a warning; ``"nemar"`` makes it fatal.
+        """
+        provider = get_download_provider()
+        if provider != "upstream":
+            nemar_root = self._nemar_root(path)
+            if not force_update and self._has_recording(
+                nemar_root, subject, self._nemar_task
+            ):
+                return nemar_root, self._nemar_task
+            upstream_root = self._upstream_root(subject, path)
+            if provider == "auto" and not force_update and upstream_root is not None:
+                return upstream_root, self.task
+            try:
+                root = self._download_nemar(
+                    subject, path=path, force_update=force_update, verbose=verbose
+                )
+            except dl.NemarDownloadError as exc:
+                if provider == "nemar":
+                    raise
+                warnings.warn(
+                    f"Could not fetch {self.code} subject {subject} from NEMAR "
+                    f"({self.nemar_id}); downloading it from OSF instead. "
+                    f"Original error: {exc}",
+                    RuntimeWarning,
+                    stacklevel=2,
+                )
+            else:
+                if self._has_recording(root, subject, self._nemar_task):
+                    return Path(root), self._nemar_task
+                if provider == "nemar":
+                    raise dl.NemarDownloadError(
+                        f"NEMAR dataset {self.nemar_id} has no task-"
+                        f"{self._nemar_task} recording for subject {subject}."
+                    )
+                warnings.warn(
+                    f"NEMAR dataset {self.nemar_id} has no task-{self._nemar_task} "
+                    f"recording for {self.code} subject {subject}; downloading it "
+                    "from OSF instead.",
+                    RuntimeWarning,
+                    stacklevel=2,
+                )
+        root = self.download_by_subject(
+            subject=subject, path=path, force_update=force_update
+        )
+        return Path(root), self.task
 
     def download_by_subject(self, subject, path=None, force_update=False):
         """

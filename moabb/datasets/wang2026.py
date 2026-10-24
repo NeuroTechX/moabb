@@ -296,6 +296,13 @@ class Wang2026(BaseDataset):
        https://doi.org/10.1184/R1/32293995.v1
     """
 
+    nemar_id = "nm000335"
+    # The deposit's sourcedata_provenance.json files each subject as
+    # ``sub-<global id>`` (e.g. ``sub-1`` for JointLearning/S001).
+    nemar_subject_template = "sub-{subject}"
+    # data_path reads the extracted <group>/<S0NN>/*.mat before it opens the
+    # KiltHub archive, so the deposit's files are seeded there.
+    nemar_seed_cache = True
     METADATA = _METADATA
 
     def __init__(

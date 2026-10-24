@@ -3,6 +3,7 @@ import glob
 import logging
 import os
 import zipfile
+from pathlib import Path
 
 import mne
 import numpy as np
@@ -69,6 +70,17 @@ class EPFLP300(BaseDataset):
     between runs was approximately 30 minutes. One session comprised on average
     810 trials, and the whole data for one subject consisted on average of 3240
     trials.
+
+    Notes
+    -----
+    In the files of subject 3, the rows of T7 and T8 in sessions ``"0"`` and
+    ``"1"`` (the first recording day) are identical to those of the mastoid
+    channels MA1 and MA2. After the mastoid re-reference applied by this class,
+    T7 is the opposite of T8 in these two sessions, so their 32 EEG channels
+    have rank 31. Covariance estimators without shrinkage, such as the
+    ``"scm"`` ``xdawn_estimator`` of ``pyriemann.estimation.XdawnCovariances``,
+    then fail with a ``LinAlgError`` or fit a spatial filter to rounding noise;
+    shrinkage estimators (``"lwf"``, ``"oas"``) are not affected.
 
     References
     ----------
@@ -240,6 +252,7 @@ class EPFLP300(BaseDataset):
         file_format="MATLAB",
     )
     nemar_id = "nm000231"
+    nemar_seed_cache = True
 
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
         super().__init__(
@@ -347,6 +360,19 @@ class EPFLP300(BaseDataset):
     ):
         if subject not in self.subject_list:
             raise (ValueError("Invalid subject number"))
+
+        # A seeded NEMAR store (or an earlier extraction) already holds the
+        # subject tree; only download the ZIP when it is not there.
+        sign_path = Path(dl.get_dataset_path("EPFLP300", path))
+        seeded_dir = (
+            sign_path
+            / "MNE-epflp300-data"
+            / "groups/m/mm/mmspg/www/BCI/p300"
+            / f"subject{subject}"
+        )
+        if not force_update and seeded_dir.is_dir():
+            pattern = os.path.join(f"subject{subject}", "*", "*")
+            return glob.glob(str(seeded_dir.parent / pattern))
 
         # check if has the .zip
         url = "{:s}subject{:d}.zip".format(EPFLP300_URL, subject)
