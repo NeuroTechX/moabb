@@ -3007,6 +3007,48 @@ def test_cross_subject_cv_class_with_reserved_metadata_columns_saves(tmp_path):
     assert set(results["session"]) == {"1"}
 
 
+class _EveryBand(sklearn.base.BaseEstimator, sklearn.base.TransformerMixin):
+    """Raise unless the input holds every band of the filter-bank paradigm."""
+
+    def __init__(self, n_bands=1):
+        self.n_bands = n_bands
+
+    def _check(self, X):
+        if X.ndim != 4 or X.shape[-1] != self.n_bands:
+            raise ValueError(
+                f"expected {self.n_bands} filter bands on the last axis, got X of shape {X.shape}"
+            )
+
+    def fit(self, X, y=None):
+        self._check(X)
+        return self
+
+    def transform(self, X):
+        self._check(X)
+        return X.reshape(len(X), -1)
+
+
+@pytest.mark.parametrize(
+    "evaluation_class",
+    [ev.WithinSessionEvaluation, ev.CrossSessionEvaluation, ev.CrossSubjectEvaluation],
+)
+def test_filterbank_paradigm_reaches_pipeline_with_every_band(evaluation_class, tmp_path):
+    # Regression: the evaluations passed only the first band's processing
+    # pipeline to ``get_data``, so filter-bank pipelines saw a single band.
+    from moabb.paradigms import FilterBankLeftRightImagery
+
+    paradigm = FilterBankLeftRightImagery()
+    n_bands = len(paradigm.filters)
+    data = FakeDataset(["left_hand", "right_hand"], n_subjects=2, n_sessions=2, seed=7)
+    pipeline = make_pipeline(_EveryBand(n_bands=n_bands), LDA())
+    evaluation = evaluation_class(
+        paradigm=paradigm, datasets=[data], hdf5_path=str(tmp_path), overwrite=True
+    )
+    results = evaluation.process({"every-band": pipeline})
+    assert len(results) > 0
+    assert np.isfinite(results["score"]).all()
+
+
 def test_saved_fold_models_can_be_unpickled(tmp_path):
     # Regression: _ensure_fitted marked each fitted step that lacks
     # __sklearn_is_fitted__ with a method bound to a local function, which
