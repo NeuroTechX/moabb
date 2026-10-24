@@ -223,3 +223,10 @@ def test_rejects_postprocess_pipeline(tmp_path):
             {"rec": _recorder_pipeline()},
             postprocess_pipeline=FunctionTransformer(_identity),
         )
+
+
+def test_unknown_target_dataset_raises(tmp_path):
+    ds_a, ds_b = _datasets()
+    other = FakeDataset(["left_hand", "right_hand"], channels=("C3", "Pz"), n_subjects=2)
+    with pytest.raises(ValueError, match="not among the valid datasets"):
+        _evaluation(tmp_path, [ds_a, ds_b], target_datasets=[other])

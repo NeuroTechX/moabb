@@ -33,6 +33,7 @@ from moabb.evaluations.utils import (
     _average_scores,
     _carbonfootprint,
     _create_scorer,
+    _pipeline_requires_epochs,
     _update_result_with_scores,
 )
 
@@ -806,7 +807,15 @@ class CrossSystemEvaluation(CrossSubjectEvaluation):
         self.groups = "system"
         # All systems are loaded as sources, only targets are evaluated.
         self.systems = self.datasets
+        self._trials = None
         if target_datasets is not None:
+            codes = {system.code for system in self.systems}
+            unknown = [d.code for d in target_datasets if d.code not in codes]
+            if unknown:
+                raise ValueError(
+                    f"target_datasets {unknown} are not among the valid datasets "
+                    f"{sorted(codes)}."
+                )
             self.datasets = list(target_datasets)
 
     def is_valid(self, dataset):
@@ -820,6 +829,17 @@ class CrossSystemEvaluation(CrossSubjectEvaluation):
             raise ValueError(
                 "CrossSystemEvaluation does not support postprocess_pipeline."
             )
+        if any(_pipeline_requires_epochs(clf) for clf in run_pipes.values()):
+            raise ValueError(
+                "CrossSystemEvaluation gives pipelines arrays, not mne.Epochs."
+            )
+        # ponytail: every target needs the same trials of all systems, so load
+        # them once per evaluation (held in memory for the whole run).
+        if self._trials is None:
+            self._trials = self._load_systems()
+        return self._trials
+
+    def _load_systems(self):
         systems = []
         for system in self.systems:
             epochs, y, metadata = self.paradigm.get_data(
