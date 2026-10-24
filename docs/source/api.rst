@@ -260,6 +260,7 @@ ERP/P300 Datasets
     Mainsah2025_R
     Mainsah2025_S1
     Mainsah2025_S2
+    Peters2026
     Simoes2020
     Speier2017
     Yagan2023
@@ -287,7 +288,7 @@ SSVEP Datasets
     Han2024Fatigue
     Kim2025BetaRange
     Lee2021Mobile_SSVEP
-    Lenaig2026
+    Gueho2026
     Liu2020BETA
     Liu2022EldBETA
     Wang2021Combined

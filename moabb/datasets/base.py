@@ -36,6 +36,7 @@ from moabb.datasets.download import (
     nemar_sourcedata_dl,
     nemar_sourcedata_is_local,
     nemar_store,
+    seed_loader_cache,
 )
 from moabb.datasets.preprocessing import FixedPipeline, SetRawAnnotations
 from moabb.utils import get_download_provider
@@ -610,6 +611,15 @@ class BaseDataset(metaclass=MetaclassDataset):
         an explicit ``{moabb_subject: label}`` mapping, e.g.
         ``dict(enumerate(["zdvm", "A01"], start=1))``. ``None`` disables
         subject filtering.
+    nemar_seed_cache : bool
+        Class attribute, ``False`` by default. When ``True``, :meth:`get_data`
+        links the subject's prefetched NEMAR ``sourcedata/`` into the loader's
+        own cache (see :func:`moabb.datasets.download.seed_loader_cache`), so
+        a loader that caches files under names its URLs do not carry (an
+        extracted archive, figshare/Dataverse ids) finds them there. Enable it
+        only for loaders verified against their deposit: a loader that skips
+        its download as soon as *some* file is cached would load less data,
+        or fail, from an incomplete deposit.
 
     return_all_modalities : bool | dict, optional
         Controls which channel types are retained when data is picked:
@@ -625,6 +635,7 @@ class BaseDataset(metaclass=MetaclassDataset):
     nemar_id: str | None = None
     nemar_subject_template: str | Mapping[Any, str] | None = "{subject}"
     nemar_bids_filters: dict[str, Any] | None = None
+    nemar_seed_cache: bool = False
 
     def __init__(
         self,
@@ -654,7 +665,15 @@ class BaseDataset(metaclass=MetaclassDataset):
                 "See moabb.datasets.base.is_camel_kebab_case for more information."
             )
         class_name = self.__class__.__name__.replace("_", "-")
-        if not is_abbrev(class_name, code):
+        # Renamed classes keep their original ``code`` (cache key); the old
+        # name in ``aliases_list`` marks the pair, so do not warn about it.
+        from moabb.utils import aliases_list
+
+        renamed = any(
+            new.replace("_", "-") == class_name and old == code
+            for old, new, _expire in aliases_list
+        )
+        if not renamed and not is_abbrev(class_name, code):
             log.warning(
                 f"The dataset class name {class_name!r} must be an abbreviation "
                 f"of its code {code!r}. "
@@ -764,10 +783,20 @@ class BaseDataset(metaclass=MetaclassDataset):
         250.0
         """
         from moabb.datasets.metadata import get_dataset_metadata
+        from moabb.utils import aliases_list
 
+        name = self.__class__.__name__
         try:
-            return get_dataset_metadata(self.__class__.__name__)
+            return get_dataset_metadata(name)
         except KeyError:
+            # Deprecated aliases are excluded from the catalog; resolve them
+            # to the renamed class's metadata.
+            for old, new, _expire in aliases_list:
+                if old == name:
+                    try:
+                        return get_dataset_metadata(new)
+                    except KeyError:
+                        break
             return None
 
     def _create_process_pipeline(self):
@@ -1197,6 +1226,20 @@ class BaseDataset(metaclass=MetaclassDataset):
             return subject
         return [subject, label]
 
+    def _seed_loader_cache(self, subject):
+        """Place a subject's NEMAR sourcedata where the loader caches it.
+
+        The store answers URL lookups (:func:`moabb.datasets.download.data_dl`)
+        only for files kept under the URL's own name; archives and opaque URLs
+        miss there. Seeding the loader's cache tree from the deposit's
+        provenance covers those loaders too. A no-op without a fetched store or
+        with the provider pinned to ``"upstream"``.
+        """
+        store = self._sourcedata_store()
+        if store is None or not self.nemar_seed_cache:
+            return 0
+        return seed_loader_cache(store.parent, self._nemar_subject_ids(subject))
+
     def _sourcedata_store(self):
         """Local NEMAR sourcedata store to serve this dataset's loads from.
 
@@ -1484,6 +1527,7 @@ class BaseDataset(metaclass=MetaclassDataset):
             if len(cached_steps) == 0:  # last option: we don't use cache
                 if get_download_provider() != "upstream":
                     self._prefetch_nemar_sourcedata([subject])
+                self._seed_loader_cache(subject)
                 with active_sourcedata_store(self._sourcedata_store()):
                     sessions_data = self._get_single_subject_data(subject)
                 assert sessions_data is not None  # should not happen

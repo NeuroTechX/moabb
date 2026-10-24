@@ -82,8 +82,27 @@ def test_imumia2026_archive_transport_and_missing_task(tmp_path, monkeypatch):
     assert _flags(data_dl) == [(tmp_path, True, "ERROR")]
 
     Path(paths[-1]).unlink()
-    with pytest.raises(FileNotFoundError, match="Expected at least"):
+    with pytest.raises(FileNotFoundError, match="Expected one .cdt file of subject 5"):
         IMUMIA2026().data_path(5, path=tmp_path)
+
+
+def test_imumia2026_selects_by_subject_position_not_rank(tmp_path, monkeypatch):
+    """A cache seeded from NEMAR one subject at a time holds only some files."""
+    raw = tmp_path / "MNE-imumia2026-data" / "MI_A_Dataset" / "MI_A_Dataset" / "Raw_data"
+    suffix = {"task1": "001", "task2": "050", "task3": "100", "task4": "0150"}
+    suffix["task5"] = "0200"
+    for task, tail in suffix.items():
+        (raw / task).mkdir(parents=True)
+        for position in (1, 3):  # subjects 1 and 3 seeded, 2/4/5 not
+            (raw / task / f"010{position}{tail}.cdt").write_bytes(b"")
+    data_dl = _capture_transport(monkeypatch, tmp_path / "unused.zip")
+
+    paths = IMUMIA2026().data_path(3, path=tmp_path)
+
+    assert [Path(p).name for p in paths] == [f"0103{t}.cdt" for t in suffix.values()]
+    assert data_dl.call_count == 0
+    with pytest.raises(FileNotFoundError, match="subject 2"):
+        IMUMIA2026().data_path(2, path=tmp_path)
 
 
 def test_leeuwis_first_last_si_and_discontinuities(tmp_path):

@@ -402,8 +402,13 @@ class BNCI2019_001(BaseDataset):
                 f"Invalid subject number {subject}. Valid: {self.subject_list}"
             )
         url = f"{BNCI_URL_001_2019}P{subject:02d}.zip"
-        zip_path = dl.data_dl(url, "BNCI", path, force_update, verbose)
-        zip_dir = Path(zip_path).parent
+        zip_dir = dl.data_dl_destination(url, "BNCI", path).parent
+        needed = [
+            zip_dir / f"P{subject:02d} Run {run}.gdf" for run in self._MOVEMENT_RUNS
+        ]
+        if force_update or not dl.fill_from_store(zip_dir, needed):
+            zip_path = dl.data_dl(url, "BNCI", path, force_update, verbose)
+            zip_dir = Path(zip_path).parent
         if not (zip_dir / f"P{subject:02d} Run 3.gdf").exists():
             with zipfile.ZipFile(zip_path, "r") as z:
                 z.extractall(zip_dir)

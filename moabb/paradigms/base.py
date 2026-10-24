@@ -22,6 +22,7 @@ from moabb.datasets.preprocessing import (
     RawToEpochs,
     RawToEvents,
     SetRawAnnotations,
+    _keep_first_samples,
     get_crop_pipeline,
     get_filter_pipeline,
     get_resample_pipeline,
@@ -31,6 +32,41 @@ from moabb.utils import MoabbMetaClass
 
 
 log = logging.getLogger(__name__)
+
+
+def _cut_to_shortest(X, sfreq):
+    """Cut resampled epochs of several recordings to their shortest length.
+
+    Resampled epochs keep the window's number of samples, but a recording
+    downsampled by more than a factor of two can have one sample less (MNE
+    rounds the resampled length). Every epoch is then cut to the shortest
+    length so the recordings can be stacked: nothing is padded or invented.
+    """
+    if isinstance(X[0], mne.BaseEpochs):
+        n_times = [len(x.times) for x in X]
+    elif all(isinstance(x, np.ndarray) and x.ndim >= 3 for x in X):
+        n_times = [x.shape[2] for x in X]
+    else:  # e.g. features from a postprocess_pipeline: no time axis
+        return X
+    n_min = min(n_times)
+    if n_min == max(n_times):
+        return X
+    log.warning(
+        "Epochs resampled to %s Hz have %s samples, depending on the native "
+        "sampling rate of each recording; keeping the first %d samples of "
+        "every epoch so that they can be stacked.",
+        sfreq,
+        sorted(set(n_times)),
+        n_min,
+    )
+    return [
+        (
+            _keep_first_samples(x, n_min)
+            if isinstance(x, mne.BaseEpochs)
+            else x[:, :, :n_min]
+        )
+        for x in X
+    ]
 
 
 def _normalize_scorer(scorer):
@@ -219,7 +255,13 @@ class BaseProcessing(metaclass=MoabbMetaClass):
         the dataset. Defaults to ``None``.
     resample : float or None
         If not None, resample the eeg data with the sampling rate provided.
-        Defaults to ``None``.
+        Resampled epochs have the number of samples :class:`mne.Epochs` gives
+        for the epoch window at that rate (e.g. 601 for 0-3 s at 200 Hz),
+        whatever the native sampling rate: samples that resampling places
+        after the window are dropped. Downsampling by more than a factor of
+        two can give one sample less (MNE rounds the resampled length); when
+        the recordings of one ``get_data`` call differ in this way, all epochs
+        are cut to the shortest length. Defaults to ``None``.
     overlap : float or None
         Overlap percentage (0-100) for the sliding window approach used in
         pseudo-online evaluation. If None, no overlap is applied. When overlap
@@ -607,6 +649,13 @@ class BaseProcessing(metaclass=MoabbMetaClass):
 
         metadata = pd.concat(metadata, ignore_index=True)
         labels = np.concatenate(labels)
+        if (
+            self.resample is not None
+            and postprocess_pipeline is None
+            and not return_raws
+            and len(X) > 1
+        ):
+            X = _cut_to_shortest(X, self.resample)
         if return_epochs:
             for ep in X:
                 ep.set_annotations(None)
@@ -676,7 +725,9 @@ class BaseProcessing(metaclass=MoabbMetaClass):
         if bmin < tmin or bmax > tmax:
             steps.append(("crop", get_crop_pipeline(tmin=tmin, tmax=tmax)))
         if self.resample is not None:
-            steps.append(("resample", get_resample_pipeline(self.resample)))
+            steps.append(
+                ("resample", get_resample_pipeline(self.resample, tmin=tmin, tmax=tmax))
+            )
         if return_epochs:  # needed to concatenate epochs
             # MNE: mne.Epochs.load_data (preload epochs arrays into memory)
             steps.append(

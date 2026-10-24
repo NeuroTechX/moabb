@@ -311,6 +311,9 @@ class Liu2025(BaseDataset):
         if subj_dir.exists() and list(subj_dir.rglob("*.vhdr")) and not force_update:
             return str(data_dir)
 
+        if not force_update and dl.fill_tree_from_store(data_dir, subj_dir.name):
+            return str(data_dir)
+
         # Download per-subject ZIP from Zenodo and extract.
         url = f"https://zenodo.org/records/{_ZENODO_RECORD}/files/sub-{subject:02d}.zip"
         download_and_extract_subject_zip(url, sign, data_dir, path, force_update, verbose)

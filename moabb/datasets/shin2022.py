@@ -264,6 +264,21 @@ class Shin2022(BaseDataset):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
+        # The NEMAR deposit (nm000315) keeps the extracted LIVE directory
+        # ``S{NN}_<date>``, not the archive: take it from the local store
+        # before downloading the whole archive.
+        if not force_update:
+            extract_root = Path(
+                dl.data_dl_destination(_FIGSHARE_ZIP_URL, self.code, path=path)
+            ).parent
+            live = [
+                name for name in dl.store_glob(f"S{subject:02d}_*") if "/" not in name
+            ]
+            if len(live) == 1 and dl.fill_tree_from_store(extract_root, live[0]):
+                dat_files = sorted((extract_root / live[0]).rglob("*.dat"))
+                if dat_files:
+                    return str(dat_files[0].parents[1])
+
         zip_path = Path(
             dl.data_dl(_FIGSHARE_ZIP_URL, self.code, path, force_update, verbose)
         )

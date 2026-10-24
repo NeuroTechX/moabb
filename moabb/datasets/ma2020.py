@@ -164,6 +164,7 @@ class Ma2020(BaseDataset):
     """
 
     nemar_id = "nm000167"
+    nemar_seed_cache = True
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,

@@ -36,13 +36,16 @@ log = logging.getLogger(__name__)
 # Figshare download URLs for raw data ZIPs (article 28831730).
 _FIGSHARE_BASE = "https://ndownloader.figshare.com/files/"
 _ZIP_FILES = {
-    # ZIP name -> (figshare_file_id, subjects_in_zip)
-    "Raw_EEG_Data_01_05": (57432889, list(range(1, 6))),
-    "Raw_EEG_Data_06_10": (57433693, list(range(6, 11))),
-    "Raw_EEG_Data_11_15": (57435691, list(range(11, 16))),
-    "Raw_EEG_Data_15_20": (57435694, list(range(16, 21))),
-    "Raw_EEG_Data_21_25": (57560707, list(range(21, 26))),
-    "Raw_EEG_Data_26_30": (57560710, list(range(26, 31))),
+    # ZIP name -> (figshare_file_id, original subject IDs in the ZIP). The
+    # ZIPs are split by original ID (S201-S230), not by MOABB subject number:
+    # S207 and S218 are absent, so e.g. MOABB subject 10 (S211) is in
+    # Raw_EEG_Data_11_15.
+    "Raw_EEG_Data_01_05": (57432889, ["S201", "S202", "S203", "S204", "S205"]),
+    "Raw_EEG_Data_06_10": (57433693, ["S206", "S208", "S209", "S210"]),
+    "Raw_EEG_Data_11_15": (57435691, ["S211", "S212", "S213", "S214", "S215"]),
+    "Raw_EEG_Data_15_20": (57435694, ["S216", "S217", "S219", "S220"]),
+    "Raw_EEG_Data_21_25": (57560707, ["S221", "S222", "S223", "S224", "S225"]),
+    "Raw_EEG_Data_26_30": (57560710, ["S226", "S227", "S228", "S229", "S230"]),
 }
 
 # Subject IDs: S201-S230 excluding S207 and S218 (28 usable).
@@ -346,28 +349,47 @@ class Chang2025(BaseDataset):
 
         # Find which ZIP contains this subject.
         target_zip = None
-        for zip_name, (file_id, subj_range) in _ZIP_FILES.items():
-            if subject in subj_range:
+        for zip_name, (file_id, zip_ids) in _ZIP_FILES.items():
+            if orig_id in zip_ids:
                 target_zip = (zip_name, file_id)
                 break
 
         if target_zip is None:
             raise ValueError(f"No download ZIP found for subject {subject}")
 
+        # The NEMAR deposit keeps the extracted subjects; take the subject
+        # tree from the store before downloading the ZIP that contains it.
+        if not force_update and dl.fill_tree_from_store(basepath, orig_id):
+            return str(basepath)
+
         zip_name, file_id = target_zip
         url = f"{_FIGSHARE_BASE}{file_id}"
 
         log.info("Downloading Chang2025 %s for subject %d ...", zip_name, subject)
+        # The NEMAR deposit nests the file under MNE-chang2025-data/; probe
+        # that store path so the lookup matches instead of downloading.
         local_zip = dl.data_dl(
             url,
             "Chang2025",
-            path=str(basepath),
+            path=str(basepath.parent),
             force_update=force_update,
             verbose=verbose,
+            fname=f"MNE-chang2025-data/files/{file_id}",
         )
 
-        # Extract the ZIP.
+        # Extract the ZIP. data_dl returns the destination it filled (from
+        # the store or the network); fall back to it if the returned path
+        # does not name the file (pooch may return the containing folder).
         local_zip_path = Path(local_zip)
+        if not local_zip_path.is_file():
+            for cand in (
+                local_zip_path / f"MNE-chang2025-data/files/{file_id}",
+                local_zip_path / "files" / str(file_id),
+                local_zip_path / str(file_id),
+            ):
+                if cand.is_file():
+                    local_zip_path = cand
+                    break
         if local_zip_path.exists() and not subj_dir.exists():
             log.info("Extracting %s ...", local_zip_path.name)
             with zipfile.ZipFile(str(local_zip_path), "r") as zf:

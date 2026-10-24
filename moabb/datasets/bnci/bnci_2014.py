@@ -592,10 +592,11 @@ class BNCI2014_002(MNEBNCI):
 
     References
     ----------
-    .. [1] Scherer, R., Faller, J., Balderas, D., Friedrich, E. V., &
-           Müller-Putz, G. (2015). Brain-computer interfacing: more than the
-           sum of its parts. Soft Computing, 19(11), 3173-3186.
-           https://doi.org/10.1007/s00500-012-0895-4
+    .. [1] Steyrl, D., Scherer, R., Faller, J., & Müller-Putz, G. R. (2016).
+           Random forests in non-invasive sensorimotor rhythm brain-computer
+           interfaces: a practical and convenient non-linear classifier.
+           Biomedical Engineering / Biomedizinische Technik, 61(1), 77-86.
+           https://doi.org/10.1515/bmt-2014-0117
 
     Notes
     -----
@@ -649,7 +650,7 @@ class BNCI2014_002(MNEBNCI):
             primary_modality="visual",
             synchronicity="synchronous",
             mode="online",
-            events={"right_hand": 769, "feet": 770},
+            events={"right_hand": 1, "feet": 2},
         ),
         documentation=DocumentationMetadata(
             doi="10.1515/bmt-2014-0117",
@@ -736,7 +737,7 @@ class BNCI2014_002(MNEBNCI):
             code="BNCI2014-002",
             interval=[3, 8],
             paradigm="imagery",
-            doi="10.1007/s00500-012-0895-4",
+            doi="10.1515/bmt-2014-0117",
             selected_subjects=subjects,
             selected_sessions=sessions,
         )
@@ -840,21 +841,7 @@ class BNCI2014_004(MNEBNCI):
         experiment=ExperimentMetadata(
             paradigm="imagery",
             task_type="motor_imagery",
-            events={
-                "276": "Idling EEG (eyes open)",
-                "277": "Idling EEG (eyes closed)",
-                "768": "Start of a trial",
-                "769": "Cue onset left (class 1)",
-                "770": "Cue onset right (class 2)",
-                "781": "BCI feedback (continuous)",
-                "783": "Cue unknown",
-                "1023": "Rejected trial",
-                "1077": "Horizontal eye movement",
-                "1078": "Vertical eye movement",
-                "1079": "Eye rotation",
-                "1081": "Eye blinks",
-                "32766": "Start of a new run",
-            },
+            events={"left_hand": 1, "right_hand": 2},
             n_classes=2,
             class_labels=["left_hand", "right_hand"],
             trials_per_class=None,
@@ -1064,7 +1051,7 @@ class BNCI2014_008(MNEBNCI):
         experiment=ExperimentMetadata(
             paradigm="p300",
             n_classes=2,
-            class_labels=["target", "non-target"],
+            class_labels=["Target", "NonTarget"],
             trial_duration=None,
             study_design="P300 speller with 6x6 matrix for copy-spelling task in ALS patients",
             feedback_type="visual",
@@ -1075,7 +1062,7 @@ class BNCI2014_008(MNEBNCI):
             mode="online",
             has_training_test_split=True,
             instructions="Copy spell seven predefined words of five characters each by focusing attention on desired letters",
-            events={"target": 1, "non-target": 2},
+            events={"Target": 2, "NonTarget": 1},
         ),
         documentation=DocumentationMetadata(
             doi="10.3389/fnhum.2013.00732",
@@ -1265,9 +1252,9 @@ class BNCI2014_009(MNEBNCI):
         experiment=ExperimentMetadata(
             paradigm="p300",
             task_type="spelling",
-            events={"target": 1, "non_target": 5},
+            events={"Target": 2, "NonTarget": 1},
             n_classes=2,
-            class_labels=["target", "non_target"],
+            class_labels=["Target", "NonTarget"],
             trial_duration=16.0,
             study_design="P300-based BCI with two interfaces: P300 Speller (overt attention) and GeoSpell (covert attention). 36 alphanumeric characters presented. Eight stimulation sequences per trial with 16 target intensifications.",
             feedback_type="none",

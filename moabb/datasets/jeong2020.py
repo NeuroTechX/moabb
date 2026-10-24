@@ -159,6 +159,7 @@ class Jeong2020(BaseDataset):
     """
 
     nemar_id = "nm000311"
+    nemar_seed_cache = True
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,

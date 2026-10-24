@@ -141,6 +141,7 @@ class Beetl2021_A(BaseDataset):
     """
 
     nemar_id = "nm000220"
+    nemar_seed_cache = True
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
@@ -647,6 +648,7 @@ class Beetl2021_B(BaseDataset):
     """
 
     nemar_id = "nm000274"
+    nemar_seed_cache = True
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=200.0,

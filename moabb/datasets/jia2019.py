@@ -99,6 +99,7 @@ class Jia2019(BaseDataset):
     """
 
     nemar_id = "nm000306"
+    nemar_seed_cache = True
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(

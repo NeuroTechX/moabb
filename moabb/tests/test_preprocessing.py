@@ -1,5 +1,6 @@
 """Tests for moabb.datasets.preprocessing module."""
 
+import pickle
 from unittest.mock import patch
 
 import mne
@@ -733,6 +734,60 @@ def test_named_function_transformer_repr_html(display_name, expected_name):
 def test_pipeline_helpers(factory, args, label):
     t = factory(*args)
     assert isinstance(t, NamedFunctionTransformer) and label in repr(t)
+
+
+@pytest.mark.parametrize("tmin", [0.0, 0.0625, 0.1, -0.2])
+def test_resample_pipeline_keeps_the_epoch_window(tmin):
+    """385 samples at 128 Hz give 602 at 200 Hz; the window holds 601.
+
+    tmin=0.0625 puts the first sample half a 200 Hz sample off the grid of
+    multiples of 1/200 s, where cropping by time is ambiguous.
+    """
+    info = mne.create_info(["C3", "C4"], 128.0, "eeg")
+    data = np.random.RandomState(0).randn(4, 2, 385)
+    t0 = round(tmin * 128) / 128
+    epochs = mne.EpochsArray(data, info, tmin=t0, verbose=False)
+    expected = epochs.copy().resample(200, verbose=False)
+    assert len(expected.times) == 602
+
+    step = get_resample_pipeline(200, tmin=tmin, tmax=tmin + 3)
+    out = step.fit_transform(epochs.copy())
+
+    assert out.info["sfreq"] == 200
+    assert len(out.times) == 601
+    np.testing.assert_array_equal(out.times, expected.times[:601])
+    np.testing.assert_array_equal(out.get_data(), expected.get_data()[..., :601])
+
+
+def test_resample_pipeline_leaves_epochs_inside_the_window():
+    info = mne.create_info(["C3", "C4"], 160.0, "eeg")
+    epochs = mne.EpochsArray(np.random.RandomState(1).randn(3, 2, 481), info)
+    expected = epochs.copy().resample(200, verbose=False)
+    out = get_resample_pipeline(200, tmin=0, tmax=3).fit_transform(epochs.copy())
+    assert len(out.times) == 601
+    np.testing.assert_array_equal(out.times, expected.times)
+    np.testing.assert_array_equal(out.get_data(), expected.get_data())
+
+
+def test_resample_pipeline_only_resamples_raw():
+    raw = _raw(sfreq=128, duration=3.0)
+    out = get_resample_pipeline(200, tmin=0, tmax=3).fit_transform(raw)
+    assert out.info["sfreq"] == 200
+    assert out.n_times == 600
+
+
+def test_resample_pipeline_window_changes_the_cache_key():
+    """Arrays cached with the previous resample step must not be reused."""
+    from moabb.analysis.results import get_digest
+
+    step = get_resample_pipeline(200, tmin=0.0, tmax=3.0)
+    assert repr(step) == "Resample (200 Hz, at most 601 samples)"
+    digests = {
+        get_digest(FixedPipeline([("resample", s)]))
+        for s in (get_resample_pipeline(200), step)
+    }
+    assert len(digests) == 2
+    assert pickle.loads(pickle.dumps(step)).func.n_times == 601
 
 
 def test_filter_pipeline_no_bandpass_is_noop():

@@ -5,6 +5,7 @@ import warnings
 from pathlib import Path
 
 import mne
+import numpy as np
 from mne.channels import make_standard_montage
 
 from moabb.datasets import download as dl
@@ -36,6 +37,28 @@ _AUX_CHANNELS = {"17", "18"}
 # their ordered intersection is the cross-subject channel space, never padded.
 _COMMON_EEG_CHANNELS = ("Fz", "Cz", "Pz", "F3", "F4", "P3", "P4", "C3", "C4")
 
+# The sixteen scalp electrodes of the 2020-2021 recordings (500 Hz), in file
+# order. T3-T6 are the legacy names of T7, T8, P7 and P8.
+_FULL_EEG_CHANNELS = (
+    "Fp1", "F3", "F4", "C3", "C4", "P3", "P4", "F7", "F8",
+    "T3", "T4", "T5", "T6", "Cz", "Fz", "Pz",
+)  # fmt: skip
+
+# Two recording setups (checked on every header of the Zenodo archive): the
+# 2020-2021 recordings hold 16 scalp + 2 auxiliary channels at 500 Hz, the
+# 2021-2023 recordings (``HR_*`` names and the 03_04_2023 short names) the
+# nine shared channels at 1000 Hz. MOABB paradigms stack every subject of a
+# dataset into one array, so the default returns all subjects on the shared
+# channels resampled to the common (lowest) rate.
+_SFREQ = 500.0
+_SETUPS = {
+    "16ch": {"sfreq": 500.0, "channels": _FULL_EEG_CHANNELS},
+    "9ch": {"sfreq": 1000.0, "channels": _COMMON_EEG_CHANNELS},
+}
+
+# Download folder shared by every ``cohort`` variant (their codes differ).
+_SIGN = "Kodera2023"
+
 # One subject == one (recording-date, person-token) group of recordings holding
 # both left- and right-hand runs. Short names follow
 # ``<idx><initial><ddmmyyyy><lh|rh><run>``; ``HR_<ddmmyyyy>_<NN>_*`` names carry
@@ -57,6 +80,40 @@ SUBJECTS = [
     )
     for token in tokens.split()
 ]
+
+# Recording setup of each date folder (see ``_SETUPS``).
+_FOLDER_SETUP = {
+    "01_12_2020": "16ch",
+    "10_12_2020": "16ch",
+    "14_01_2021": "16ch",
+    "21_01_2021": "16ch",
+    "28_01_2021": "16ch",
+    "02_09_2021": "9ch",
+    "23_09_2021": "9ch",
+    "30_09_2021": "9ch",
+    "07_10_2021": "9ch",
+    "14_10_2021": "9ch",
+    "03_04_2023": "9ch",
+}
+
+# Subjects (1-based, MOABB numbering) and dataset code of each ``cohort``
+# option. ``is_abbrev("Kodera2023", code)`` only lets lower-case letters,
+# digits and dashes follow a letter of the class name, and nothing follow its
+# final digits, so the cohort tag sits before the year.
+_COHORTS = {
+    None: {"subjects": list(range(1, len(SUBJECTS) + 1)), "code": "Kodera2023"},
+    **{
+        setup: {
+            "subjects": [
+                i + 1
+                for i, (folder, _) in enumerate(SUBJECTS)
+                if _FOLDER_SETUP[folder] == setup
+            ],
+            "code": f"Kodera-{setup}2023",
+        }
+        for setup in _SETUPS
+    },
+}
 
 
 def _class_from_stem(stem):
@@ -86,56 +143,37 @@ def _matches_subject(stem, date_folder, token):
     return stem.startswith(token) and date8 in stem
 
 
-class Kodera2023(BaseDataset):
-    """Left/right-hand motor-imagery EEG dataset [1]_.
-
-    EEG recorded at the University of West Bohemia (Pilsen) during cue-based left-
-    versus right-hand motor imagery. Each recording holds a single class, encoded
-    in its file name; the ``S 1`` BrainVision marker is the per-trial imagery cue
-    (the markers themselves are identical across classes). The archive mixes a
-    16-channel 500 Hz cohort (short names such as ``1z01122020lh1``, legacy
-    T3-T6 labels, DC-coupled with large slow drifts) and a 9-channel 1000 Hz
-    cohort (``HR_<date>_<nn>_..._leva``).
-
-    A subject is one (recording-date, person) group holding both left- and
-    right-hand runs: 29 subjects, one session of two to four runs each. Every run
-    is annotated at its ``S 1`` onsets with the run's class. To make both cohorts
-    comparable the loader keeps only their ordered nine-channel intersection (Fz,
-    Cz, Pz, F3, F4, P3, P4, C3, C4); the extra scalp and two unnamed auxiliary
-    channels are dropped, never padded. The one unlabelled recording is excluded.
-
-    The Zenodo record carries only the title "EEG motor imagery", the creator
-    list and a one-line description ("EEG dataset used for automatic motor
-    imagery detection."); there is no linked paper. Subject, channel, rate and
-    class information above is derived from the archive contents and could not
-    be checked against a publication (paper audit, 2026-09-30).
-
-    References
-    ----------
-
-    .. [1] Kodera, J., Moucek, R., Moutner, P., Mochura, P., Saleh, J. Y.,
-       Bruha, P., Solcova, J., Vareka, L., and Snejdar, P. (2023). EEG motor
-       imagery [Data set]. Zenodo. https://doi.org/10.5281/zenodo.7893846
-
-    .. versionadded:: 1.8.0
-
-    """
-
-    nemar_id = "nm000295"
-
-    METADATA = DatasetMetadata(
+def _make_metadata(cohort=None):
+    """``DatasetMetadata`` of the variant returned for ``cohort``."""
+    setup = _SETUPS.get(cohort)
+    channels = list(setup["channels"] if setup else _COMMON_EEG_CHANNELS)
+    sfreq = setup["sfreq"] if setup else _SFREQ
+    n_subjects = len(_COHORTS[cohort]["subjects"])
+    description = {
+        None: "Left/right-hand motor-imagery EEG (University of West Bohemia): "
+        "29 subjects from two recording setups (16 channels at 500 Hz and 9 "
+        "channels at 1000 Hz), returned on the 9 shared channels at 500 Hz; "
+        "2 classes, BrainVision format.",
+        "16ch": "Left/right-hand motor-imagery EEG (University of West "
+        "Bohemia), 2020-2021 recordings: 14 subjects, 16 channels at 500 Hz, "
+        "2 classes, BrainVision format.",
+        "9ch": "Left/right-hand motor-imagery EEG (University of West "
+        "Bohemia), 2021-2023 recordings: 15 subjects, 9 channels at 1000 Hz, "
+        "2 classes, BrainVision format.",
+    }[cohort]
+    return DatasetMetadata(
         acquisition=AcquisitionMetadata(
-            sampling_rate=500.0,
-            channel_types={"eeg": 9},
+            sampling_rate=sfreq,
+            channel_types={"eeg": len(channels)},
             montage="standard_1020",
             hardware="BrainVision Recorder (BrainProducts)",
             reference=None,
             ground=None,
-            sensors=["Fz", "Cz", "Pz", "F3", "F4", "P3", "P4", "C3", "C4"],
+            sensors=channels,
             line_freq=50.0,
         ),
         participants=ParticipantMetadata(
-            n_subjects=29, health_status="healthy", species="homo sapiens"
+            n_subjects=n_subjects, health_status="healthy", species="homo sapiens"
         ),
         experiment=ExperimentMetadata(
             paradigm="imagery",
@@ -151,9 +189,7 @@ class Kodera2023(BaseDataset):
         ),
         documentation=DocumentationMetadata(
             doi="10.5281/zenodo.7893846",
-            description="Left/right-hand motor-imagery EEG (University of West "
-            "Bohemia): 29 subjects across two cohorts (16-channel 500 Hz and "
-            "9-channel 1000 Hz), 2 classes, BrainVision format.",
+            description=description,
             investigators=[
                 "Jakub Kodera",
                 "Roman Moucek",
@@ -186,12 +222,98 @@ class Kodera2023(BaseDataset):
         file_format="BrainVision",
     )
 
-    def __init__(self, subjects=None, sessions=None):
+
+class Kodera2023(BaseDataset):
+    """Left/right-hand motor-imagery EEG dataset [1]_.
+
+    EEG recorded at the University of West Bohemia (Pilsen) during cue-based left-
+    versus right-hand motor imagery. Each recording holds a single class, encoded
+    in its file name; the ``S 1`` BrainVision marker is the per-trial imagery cue
+    (the markers themselves are identical across classes).
+
+    A subject is one (recording-date, person) group holding both left- and
+    right-hand runs: 29 subjects, one session of two to four runs each. Every run
+    is annotated at its ``S 1`` onsets with the run's class. The one unlabelled
+    recording is excluded.
+
+    **Recording setups.** The archive mixes two setups (every BrainVision header
+    of the Zenodo record was checked):
+
+    - the 2020-2021 recordings (date folders ``01_12_2020`` to ``28_01_2021``,
+      short names such as ``1z01122020lh1``; 14 subjects): 16 scalp channels
+      (Fp1, F3, F4, C3, C4, P3, P4, F7, F8, T3, T4, T5, T6, Cz, Fz, Pz; T3-T6 are
+      the legacy names of T7, T8, P7, P8) plus two unnamed auxiliary channels,
+      sampled at **500 Hz**, DC-coupled with large slow drifts;
+    - the 2021-2023 recordings (``HR_<date>_<nn>_..._leva`` names and the
+      ``03_04_2023`` short names; 15 subjects): the nine channels Fz, Cz, Pz,
+      F3, F4, P3, P4, C3, C4, sampled at **1000 Hz**.
+
+    MOABB paradigms and evaluations stack the epochs of every subject of a
+    dataset into one array, so all subjects of a dataset object must return the
+    same channels at the same rate. The ``cohort`` option selects which:
+
+    - ``cohort=None`` (default, code ``Kodera2023``): all 29 subjects with the
+      nine channels both setups share, in one order, at **500 Hz**. The 1000 Hz
+      recordings are resampled to 500 Hz when loaded (the common, lowest rate);
+      the extra scalp and auxiliary channels are dropped, never padded.
+    - ``cohort="16ch"`` (code ``Kodera-16ch2023``): the 14 subjects of the
+      2020-2021 setup with all 16 scalp channels at 500 Hz.
+    - ``cohort="9ch"`` (code ``Kodera-9ch2023``): the 15 subjects of the
+      2021-2023 setup with their nine channels at the native 1000 Hz.
+
+    Subject numbers are the same in every option; asking a cohort for a subject
+    of the other setup raises a ``ValueError``. Each option has its own ``code``
+    and ``METADATA``, so cached epochs and results never mix channel sets or
+    rates; downloads are shared.
+
+    The Zenodo record carries only the title "EEG motor imagery", the creator
+    list and a one-line description ("EEG dataset used for automatic motor
+    imagery detection."); there is no linked paper. Subject, channel, rate and
+    class information above is derived from the archive contents and could not
+    be checked against a publication (paper audit, 2026-09-30).
+
+    Parameters
+    ----------
+    subjects : list of int | None
+        Subjects to load (restricted to the selected ``cohort``).
+    sessions : list of int | str | None
+        Sessions to keep.
+    cohort : None | "16ch" | "9ch"
+        ``None`` returns all 29 subjects on the nine shared channels at
+        500 Hz; ``"16ch"`` the 14 subjects of the 2020-2021 setup with 16
+        channels at 500 Hz; ``"9ch"`` the 15 subjects of the 2021-2023 setup
+        at 1000 Hz.
+
+    References
+    ----------
+
+    .. [1] Kodera, J., Moucek, R., Moutner, P., Mochura, P., Saleh, J. Y.,
+       Bruha, P., Solcova, J., Vareka, L., and Snejdar, P. (2023). EEG motor
+       imagery [Data set]. Zenodo. https://doi.org/10.5281/zenodo.7893846
+
+    .. versionadded:: 1.8.0
+
+    """
+
+    nemar_id = "nm000295"
+    nemar_seed_cache = True
+
+    METADATA = _make_metadata(None)
+
+    def __init__(self, subjects=None, sessions=None, *, cohort=None):
+        if cohort not in _COHORTS:
+            raise ValueError(f"cohort must be None, '16ch' or '9ch', got {cohort!r}")
+        self.cohort = cohort
+        if cohort is not None:
+            # Instance override: METADATA describes what this variant returns.
+            self.METADATA = _make_metadata(cohort)
+        if subjects is not None:
+            self._check_cohort(subjects)
         super().__init__(
-            subjects=list(range(1, len(SUBJECTS) + 1)),
+            subjects=list(_COHORTS[cohort]["subjects"]),
             sessions_per_subject=1,
             events=dict(EVENTS),
-            code="Kodera2023",
+            code=_COHORTS[cohort]["code"],
             interval=[0, 4],
             paradigm="imagery",
             doi="10.5281/zenodo.7893846",
@@ -199,20 +321,53 @@ class Kodera2023(BaseDataset):
             selected_sessions=sessions,
         )
 
+    @property
+    def metadata(self):
+        """Structured metadata of this ``cohort`` variant."""
+        if self.cohort is None:
+            return super().metadata
+        return self.METADATA
+
+    def _check_cohort(self, subjects):
+        """Raise a ``ValueError`` naming the setup of out-of-cohort subjects."""
+        if self.cohort is None:
+            return
+        allowed = _COHORTS[self.cohort]["subjects"]
+        outside = [s for s in subjects if s not in allowed]
+        if outside:
+            raise ValueError(
+                f"Kodera2023(cohort={self.cohort!r}) holds subjects {allowed} "
+                f"only; subject(s) {outside} were recorded with the other setup. "
+                f"Use cohort=None for all 29 subjects on the 9 shared channels at "
+                f"500 Hz, or cohort='16ch' / cohort='9ch'."
+            )
+
+    def get_data(self, subjects=None, cache_config=None, process_pipeline=None, n_jobs=1):
+        if subjects is not None:
+            self._check_cohort(subjects)
+        return super().get_data(
+            subjects=subjects,
+            cache_config=cache_config,
+            process_pipeline=process_pipeline,
+            n_jobs=n_jobs,
+        )
+
+    get_data.__doc__ = BaseDataset.get_data.__doc__
+
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
         """Return the BrainVision header paths of a single subject's labelled runs."""
+        self._check_cohort([subject])
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
+        # One download folder for every cohort variant, whatever self.code is.
         data_dir = (
-            Path(dl.get_dataset_path(self.code, path))
-            / f"MNE-{self.code.lower()}-data"
-            / "data"
+            Path(dl.get_dataset_path(_SIGN, path)) / f"MNE-{_SIGN.lower()}-data" / "data"
         )
         if force_update or not data_dir.exists():
             download_and_extract_subject_zip(
-                KODERA2023_URL, self.code, data_dir.parent, path, force_update, verbose
+                KODERA2023_URL, _SIGN, data_dir.parent, path, force_update, verbose
             )
         date_folder, token = SUBJECTS[subject - 1]
         folder = data_dir / date_folder
@@ -230,20 +385,39 @@ class Kodera2023(BaseDataset):
         return [str(p) for p in vhdrs]
 
     def _read_run(self, vhdr_path):
-        """Read one BrainVision run and annotate it with its class at S 1 onsets."""
+        """Read one BrainVision run and annotate it with its class at S 1 onsets.
+
+        The run keeps the channels of the selected ``cohort`` (the nine shared
+        ones by default) and, by default, is resampled to 500 Hz.
+        """
         cls = _class_from_stem(Path(vhdr_path).stem)
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             raw = mne.io.read_raw_brainvision(vhdr_path, preload=True, verbose=False)
 
+        setup = _SETUPS.get(self.cohort)
+        channels = setup["channels"] if setup else _COMMON_EEG_CHANNELS
         raw.set_channel_types({ch: "misc" for ch in raw.ch_names if ch in _AUX_CHANNELS})
-        missing = [ch for ch in _COMMON_EEG_CHANNELS if ch not in raw.ch_names]
+        missing = [ch for ch in channels if ch not in raw.ch_names]
         if missing:
             raise ValueError(
-                "Kodera2023 recording is missing required shared EEG channels "
-                f"{missing}: {vhdr_path}"
+                f"Kodera2023 recording is missing required EEG channels {missing}: "
+                f"{vhdr_path}"
             )
-        raw.pick(list(_COMMON_EEG_CHANNELS))
+        raw.pick(list(channels))
+
+        # Only the two rates of the archive are expected; anything else is a
+        # file this loader was not checked against.
+        sfreq = raw.info["sfreq"]
+        expected = setup["sfreq"] if setup else (500.0, 1000.0)
+        if sfreq not in np.atleast_1d(expected):
+            raise ValueError(
+                f"Kodera2023 recording sampled at {sfreq:g} Hz, expected "
+                f"{expected} Hz: {vhdr_path}"
+            )
+        if setup is None and sfreq != _SFREQ:
+            # Common rate of the default dataset: the lowest of the archive.
+            raw.resample(_SFREQ, verbose=False)
         raw.set_montage(
             make_standard_montage("colin27_1020"), on_missing="ignore", match_case=False
         )

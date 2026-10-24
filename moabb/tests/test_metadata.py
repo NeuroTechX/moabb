@@ -440,7 +440,7 @@ class TestMetadataCatalog:
     def test_wang2016_ssvep_metadata(self):
         """Test Wang2016 SSVEP metadata."""
         metadata = get_dataset_metadata("Wang2016")
-        assert metadata.participants.n_subjects == 34
+        assert metadata.participants.n_subjects == 35
         assert metadata.experiment.paradigm == "ssvep"
         assert metadata.experiment.n_classes == 40
         assert metadata.acquisition.n_channels == 64
@@ -510,7 +510,7 @@ class TestMetadataCatalog:
 
     def test_catalog_dataset_count(self):
         """Test that catalog contains expected number of datasets."""
-        assert len(DATASET_METADATA_CATALOG) == 205
+        assert len(DATASET_METADATA_CATALOG) == 206
 
     def test_bnci2015_006_metadata(self):
         """Test BNCI2015_006 music BCI metadata."""

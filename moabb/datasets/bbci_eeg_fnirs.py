@@ -12,7 +12,7 @@ from pooch import retrieve
 from pooch.downloaders import choose_downloader
 from scipy.io import loadmat
 
-from moabb.datasets.download import get_dataset_path
+from moabb.datasets.download import fill_from_store, get_dataset_path
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
     AuxiliaryChannelsMetadata,
@@ -40,6 +40,12 @@ def eeg_data_path(base_path, subject, accept, force_update=False):
     datapath = op.join(
         base_path, "EEG", "subject {:02d}".format(subject), "with occular artifact"
     )
+    files = [op.join(datapath, fn) for fn in ["cnt.mat", "mrk.mat"]]
+    # The NEMAR deposits (nm000267, nm000268) keep the extracted EEG tree: take
+    # the subject's files from the local store before downloading its archive.
+    # Only once the licence is accepted, as for the download.
+    if not force_update and accept:
+        fill_from_store(op.join(base_path, "EEG"), files)
     if force_update or not op.isfile(op.join(datapath, "cnt.mat")):
         if not op.isdir(op.join(base_path, "EEG")):
             os.makedirs(op.join(base_path, "EEG"))
@@ -67,7 +73,7 @@ def eeg_data_path(base_path, subject, accept, force_update=False):
                 os.remove(op.join(base_path, "EEG.zip"))
                 break
     assert op.isfile(op.join(datapath, "cnt.mat")), op.join(datapath, "cnt.mat")
-    return [op.join(datapath, fn) for fn in ["cnt.mat", "mrk.mat"]]
+    return files
 
 
 def fnirs_data_path(path, subject, accept, force_update=False):

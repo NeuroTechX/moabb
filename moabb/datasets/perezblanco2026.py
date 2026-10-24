@@ -45,6 +45,11 @@ _EMG_NAMES = ["M1L", "M1R", "M2L", "M2R", "M3L", "M3R", "M4L", "M4R"]
 _EVENTS = {"flexion": 1, "extension": 2, "radial_deviation": 3, "ulnar_deviation": 4}
 _CODE_TO_NAME = {v: k for k, v in _EVENTS.items()}
 
+# Sampling rate of the release. One run (sub-09 run-01) is stored at ~1200 Hz
+# (EDF header: 8 samples per 0.00667 s record, i.e. 1199.4 Hz); the loader
+# resamples any run at another rate to this one so all runs and subjects stack.
+_SFREQ = 512.0
+
 
 class PerezBlanco2026(BaseDataset):
     """Wrist-motion (4-direction pointing) motor-execution dataset [1]_.
@@ -75,7 +80,12 @@ class PerezBlanco2026(BaseDataset):
     and 2.5 s return-to-center. Participants completed at least 8 runs of 40
     trials; the released run count varies by subject, so :meth:`data_path`
     loads every ``task-*_run-*`` EDF present. Signals (8 EEG, 8 bipolar EMG)
-    were recorded at 512 Hz with BCI2000 and converted to EDF for BIDS.
+    were recorded at 512 Hz with BCI2000 and converted to EDF for BIDS. One
+    released run is the exception: ``sub-09`` ``run-01`` is stored at about
+    1200 Hz (its EDF header gives 8 samples per 0.00667 s record, 1199.4 Hz;
+    every other run of the 45 subjects is at 512 Hz). MOABB paradigms stack
+    all runs and subjects into one array, so the loader resamples any run at
+    another rate to 512 Hz, after locating its events at the native rate.
 
     The trigger information is carried inside the EDF as BCI2000 state channels.
     This loader places one event at each movement-execution onset (the
@@ -97,18 +107,25 @@ class PerezBlanco2026(BaseDataset):
 
     References
     ----------
-    .. [1] Perez-Blanco, J. G., Antelis-Ortiz, J. M., Hernandez-Rojas, L. G., &
-           Lizarraga-Torreblanca, H. (2026). An EEG-EMG-kinematics dataset of
-           wrist movements with a rehabilitation exoskeleton. Scientific Data.
+    .. [1] Perez-Blanco, J. G., Huegel, J. C., Hernández-Rojas, L. G.,
+           Valdez-Calderón, A., Lizárraga-Torreblanca, H., Cruz-Ortiz, D.,
+           Ballesteros, M., Gomez-Correa, J. C., & Antelis, J. M. (2026).
+           An EEG-EMG-kinematics dataset from wrist pointing tasks for
+           biomarker research in neurorehabilitation. Scientific Data.
            DOI: https://doi.org/10.1038/s41597-026-07287-z
-           Data: https://doi.org/10.6084/m9.figshare.29666735
+           Data (``EEG-EMG-WristMotion Dataset``):
+           https://doi.org/10.6084/m9.figshare.29666735
 
     .. versionadded:: 1.8
     """
 
+    nemar_id = "nm000304"
+    # The deposit's sourcedata/ holds every subject's extracted run EDFs under
+    # sub-NN/eeg/, where data_path looks before it queries figshare.
+    nemar_seed_cache = True
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
-            sampling_rate=512.0,
+            sampling_rate=_SFREQ,
             channel_types={"eeg": 8, "emg": 8},
             montage="10-10",
             hardware="g.tec g.USBamp (serial UB-2016.05.01)",
@@ -327,6 +344,10 @@ class PerezBlanco2026(BaseDataset):
             events, sfreq=raw.info["sfreq"], event_desc=_CODE_TO_NAME
         )
         raw = raw.set_annotations(annotations)
+        if raw.info["sfreq"] != _SFREQ:
+            # Events were found on the native samples; the annotations keep
+            # their times through the resampling.
+            raw.resample(_SFREQ, verbose=False)
 
         return stim_channels_with_selected_ids(raw, self.event_id)
 

@@ -123,6 +123,7 @@ class Pressel2016(BaseDataset):
     """
 
     nemar_id = "nm000258"
+    nemar_seed_cache = True
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1024.0,

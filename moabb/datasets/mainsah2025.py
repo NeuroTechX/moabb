@@ -11,6 +11,8 @@ Each study is exposed as a separate MOABB dataset class (e.g.,
 ``Mainsah2025_A``, ``Mainsah2025_B``, ..., ``Mainsah2025_S2``).
 """
 
+import hashlib
+import json
 import logging
 import re
 import warnings
@@ -42,6 +44,37 @@ _BASE_URL = "https://physionet.org/files/bigp3bci/1.0.0/"
 _MANIFEST_URL = _BASE_URL + "SHA256SUMS.txt"
 _DOI = "10.13026/0byy-ry86"
 _SIGN = "Mainsah2025"
+
+# Sampling rate of every BigP3BCI recording (g.USBamp, BCI2000).
+_SFREQ = 256.0
+
+
+def _restore_nominal_rate(raw, edf_path):
+    """Return ``raw`` at exactly 256 Hz when its header rate is a rounding artefact.
+
+    Each EDF stores the whole run as one data record whose duration field has
+    eight characters, so the duration is truncated (35208 samples / 256 Hz =
+    137.53125 s is written ``137.5312``) and MNE derives rates such as
+    256.00009 Hz that differ from file to file. Epochs of runs with different
+    rates cannot be concatenated, so the samples are relabelled at 256 Hz
+    (no resampling). A header rate that is not explained by this truncation
+    (more than one sample of drift over the run) raises.
+    """
+    sfreq = raw.info["sfreq"]
+    if sfreq == _SFREQ:
+        return raw
+    drift = raw.n_times * abs(1.0 / _SFREQ - 1.0 / sfreq) * _SFREQ
+    if drift >= 1.0:
+        raise ValueError(
+            f"Mainsah2025 recording sampled at {sfreq} Hz, expected {_SFREQ:g} Hz "
+            f"(drift of {drift:.1f} samples over the run): {edf_path}"
+        )
+    info = mne.create_info(raw.ch_names, _SFREQ, raw.get_channel_types())
+    fixed = mne.io.RawArray(raw.get_data(), info, verbose=False)
+    fixed.set_meas_date(raw.info["meas_date"])
+    fixed.set_annotations(raw.annotations)
+    return fixed
+
 
 # Module-level manifest cache (parsed once, shared across instances)
 _manifest_cache = None
@@ -290,6 +323,13 @@ class Mainsah2025(BaseDataset):
     Events are extracted from the ``StimulusBegin`` and ``StimulusType``
     signal channels.
 
+    Every recording is at 256 Hz, but each EDF stores the run as one data
+    record whose 8-character duration field is truncated, so the rate read
+    from the header is off by less than 1 ppm and differs from file to
+    file (e.g. 256.00008 and 256.00009 Hz). The loader relabels such runs at
+    exactly 256 Hz (no resampling), so epochs of all runs and subjects can be
+    concatenated.
+
     This base class is not intended to be instantiated directly.
     Use the study-specific subclasses (e.g., ``Mainsah2025_A``).
 
@@ -299,6 +339,10 @@ class Mainsah2025(BaseDataset):
        BigP3BCI: A large P300-based brain-computer interface dataset.
        PhysioNet, 2025. DOI: https://doi.org/10.13026/0byy-ry86
     """
+
+    # The file list comes from PhysioNet's SHA256SUMS.txt, so a deposit that
+    # lacks some EDFs only means those few are still fetched from PhysioNet.
+    nemar_seed_cache = True
 
     def __init__(self, study, subjects=None, sessions=None):
         config = _STUDY_CONFIGS[study]
@@ -317,13 +361,87 @@ class Mainsah2025(BaseDataset):
         )
 
     @staticmethod
+    def _manifest_from_store():
+        """File list from the active store's provenance, or None.
+
+        The deposit's ``sourcedata_provenance.json`` records every file with
+        its upstream name and SHA-256 (the same hash SHA256SUMS.txt lists),
+        so when the store holds the files there is no need to fetch the
+        PhysioNet index. Files whose bytes do not match their provenance
+        hash are left out, so they fall back to the upstream download.
+        """
+        store = dl.active_store()
+        if store is None:
+            return None
+        provenance = store / "sourcedata_provenance.json"
+        if not provenance.is_file():
+            return None
+        try:
+            record = json.loads(provenance.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            return None
+        result = {}
+        for entry in record.get("files") or []:
+            if not isinstance(entry, dict):
+                continue
+            # Provenance entries name the file ``file`` (relative to
+            # sourcedata/, e.g. ``B_01/SE001/Test/CB/B_01_....edf``), not the
+            # full upstream ``bigP3BCI-data/Study...`` path.
+            raw_name = entry.get("name") or entry.get("file") or ""
+            name = raw_name
+            if name and not name.startswith("bigP3BCI-data/"):
+                # Rebuild the upstream relative path the manifest parser keys
+                # on: Study<study>/<subj>/SE<nnn>/<Test|Train>/.../<file>.edf
+                parts = name.split("/")
+                if len(parts) >= 4:
+                    subj = parts[0]
+                    study = subj.split("_")[0]
+                    name = f"bigP3BCI-data/Study{study}/" + name
+            if not name.endswith(".edf"):
+                continue
+            stored = store / raw_name
+            if not stored.is_file():
+                continue
+            expected = entry.get("sha256")
+            if expected:
+                digest = hashlib.sha256(stored.read_bytes()).hexdigest()
+                if digest != expected:
+                    continue
+            m = re.match(
+                r"bigP3BCI-data/Study([\w-]+)/([\w-]+)/SE(\d+)/"
+                r"(Test|Train)/(?:[\w-]+/)?(.+\.edf)",
+                name,
+            )
+            if not m:
+                continue
+            study, subj_str, session_str = m.group(1), m.group(2), m.group(3)
+            result.setdefault(study, {}).setdefault(subj_str, {}).setdefault(
+                int(session_str), []
+            ).append(name)
+        if not result:
+            return None
+        for study in result.values():
+            for subj in study.values():
+                for sess in subj:
+                    subj[sess].sort()
+        return result
+
+    @staticmethod
     def _get_manifest():
-        """Download and parse the SHA256SUMS manifest (cached in memory)."""
+        """Parse the SHA256SUMS manifest (cached in memory).
+
+        Taken from the active NEMAR store's provenance when it holds the
+        files; only otherwise is SHA256SUMS.txt fetched from PhysioNet.
+        """
         global _manifest_cache
         if _manifest_cache is None:
-            manifest_path = _get_manifest_path()
-            dl.download_if_missing(str(manifest_path), _MANIFEST_URL, warn_missing=False)
-            _manifest_cache = _parse_manifest(manifest_path)
+            _manifest_cache = Mainsah2025._manifest_from_store()
+            if _manifest_cache is None:
+                manifest_path = _get_manifest_path()
+                dl.download_if_missing(
+                    str(manifest_path), _MANIFEST_URL, warn_missing=False
+                )
+                _manifest_cache = _parse_manifest(manifest_path)
         return _manifest_cache
 
     def _subject_str(self, subject):
@@ -425,6 +543,7 @@ class Mainsah2025(BaseDataset):
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", RuntimeWarning)
             raw = mne.io.read_raw_edf(edf_path, preload=True, verbose=False)
+        raw = _restore_nominal_rate(raw, edf_path)
 
         # Extract stimulus signals before dropping non-EEG channels
         required = {"StimulusBegin", "StimulusType"}
@@ -467,7 +586,7 @@ def _make_study_metadata(study):
     config = _STUDY_CONFIGS[study]
     return DatasetMetadata(
         acquisition=AcquisitionMetadata(
-            sampling_rate=256.0,
+            sampling_rate=_SFREQ,
             channel_types={"eeg": config["n_eeg"]},
             hardware="g.USBamp (g.tec)",
             montage="standard_1020",

@@ -383,34 +383,44 @@ class Sosulski2019(BaseDataset):
         if subject not in self.subject_list:
             raise (ValueError("Invalid subject number"))
 
-        # Download the main ZIP file containing all subjects
-        path_zip = dl.data_dl(
-            SPOT_PILOT_P300_URL,
-            "spot",
-            path=path,
-            force_update=force_update,
-            verbose=verbose,
-        )
-        path_base = os.path.dirname(path_zip)
-        path_extracted = os.path.join(path_base, "extracted")
-
-        # Extract main ZIP if not already done
-        if force_update or not os.path.isdir(path_extracted):
-            with zipfile.ZipFile(path_zip, "r") as zip_ref:
-                zip_ref.extractall(path_extracted)
-
-        # Find and extract subject-specific ZIP
-        subject_zip_name = f"subject{subject}.zip"
-        subject_zip_path = os.path.join(path_extracted, subject_zip_name)
-        path_folder = os.path.join(path_extracted, f"subject{subject}")
-
-        if force_update or not os.path.isdir(path_folder):
-            if os.path.exists(subject_zip_path):
-                with zipfile.ZipFile(subject_zip_path, "r") as zip_ref:
-                    zip_ref.extractall(path_extracted)
-
-        # get the path to all files
         # We only load data from the second run. The first run is a potpourri of SOAs
         pattern = "/*Run_2*.vhdr"
+        path_base = os.path.dirname(
+            dl.data_dl_destination(SPOT_PILOT_P300_URL, "spot", path=path)
+        )
+        path_extracted = os.path.join(path_base, "extracted")
+        path_folder = os.path.join(path_extracted, f"subject{subject}")
+        # NEMAR deposits keep the extracted subject directory, not the archive:
+        # take it from the local store (or a previous extraction) first.
+        if force_update or not (
+            dl.fill_tree_from_store(path_extracted, f"subject{subject}")
+            or glob.glob(path_folder + pattern)
+        ):
+            # Download the main ZIP file containing all subjects
+            path_zip = dl.data_dl(
+                SPOT_PILOT_P300_URL,
+                "spot",
+                path=path,
+                force_update=force_update,
+                verbose=verbose,
+            )
+            path_base = os.path.dirname(path_zip)
+            path_extracted = os.path.join(path_base, "extracted")
+            path_folder = os.path.join(path_extracted, f"subject{subject}")
+
+            # Extract main ZIP if not already done (subjects taken from the
+            # store leave "extracted" without the per-subject ZIPs).
+            subject_zip_path = os.path.join(path_extracted, f"subject{subject}.zip")
+            if force_update or not os.path.exists(subject_zip_path):
+                with zipfile.ZipFile(path_zip, "r") as zip_ref:
+                    zip_ref.extractall(path_extracted)
+
+            # Find and extract subject-specific ZIP
+            if force_update or not os.path.isdir(path_folder):
+                if os.path.exists(subject_zip_path):
+                    with zipfile.ZipFile(subject_zip_path, "r") as zip_ref:
+                        zip_ref.extractall(path_extracted)
+
+        # get the path to all files
         subject_paths = glob.glob(path_folder + pattern)
         return sorted(subject_paths)

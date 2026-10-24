@@ -5,7 +5,7 @@ import json
 import logging
 import warnings
 from pathlib import Path
-from pickle import HIGHEST_PROTOCOL, dump
+from pickle import HIGHEST_PROTOCOL, PicklingError, dump
 from typing import Sequence
 
 import numpy as np
@@ -37,6 +37,16 @@ except ImportError:
     _carbonfootprint = False
 
 
+def _sklearn_is_fitted_true():
+    """``__sklearn_is_fitted__`` that :func:`_ensure_fitted` sets on an estimator.
+
+    pickle stores it by reference to this module. A method bound to a local
+    function was stored as ``getattr(estimator, "_sklearn_is_fitted_true")``,
+    which does not exist on the class, so the saved model failed to load.
+    """
+    return True
+
+
 def _ensure_fitted(estimator):
     """Ensure an estimator is properly marked as fitted for sklearn 1.8+.
 
@@ -66,26 +76,16 @@ def _ensure_fitted(estimator):
     We add a __sklearn_is_fitted__ method that returns True.
     """
 
-    # Define a method that returns True to indicate fitted state
-    def _sklearn_is_fitted_true(self):
-        return True
-
-    # Add __sklearn_is_fitted__ method if not present or if it returns False
+    # Add __sklearn_is_fitted__ if not present or if it returns False. It is a
+    # module-level function stored on the instance (not a method bound to a
+    # local function), so that saved models can be unpickled.
     if not hasattr(estimator, "__sklearn_is_fitted__"):
-        import types
-
-        estimator.__sklearn_is_fitted__ = types.MethodType(
-            _sklearn_is_fitted_true, estimator
-        )
+        estimator.__sklearn_is_fitted__ = _sklearn_is_fitted_true
     else:
         # Check if existing method returns False (unfitted)
         try:
             if not estimator.__sklearn_is_fitted__():
-                import types
-
-                estimator.__sklearn_is_fitted__ = types.MethodType(
-                    _sklearn_is_fitted_true, estimator
-                )
+                estimator.__sklearn_is_fitted__ = _sklearn_is_fitted_true
         except Exception:
             pass
 
@@ -128,6 +128,28 @@ def _check_if_is_pytorch_steps(model):
         return skorch_valid
     except Exception:
         return skorch_valid
+
+
+def _dump_model(model, file):
+    """Pickle ``model`` into the open binary ``file``.
+
+    pickle stores a function or class by reference to its module. In a joblib
+    worker (``n_jobs > 1``) the module of an object defined in a ``.py``
+    pipeline config cannot be imported, and neither can ``__main__`` objects
+    such as lambdas, so pickle fails there; cloudpickle stores those objects
+    by value instead. The file is read back with :func:`pickle.load` either way.
+    """
+    try:
+        dump(model, file, protocol=HIGHEST_PROTOCOL)
+    except (PicklingError, AttributeError):
+        try:
+            import cloudpickle  # a joblib dependency since joblib 1.6
+        except ImportError:
+            from joblib.externals import cloudpickle  # vendored before 1.6
+
+        file.seek(0)
+        file.truncate()
+        cloudpickle.dump(model, file, protocol=HIGHEST_PROTOCOL)
 
 
 def _save_model_cv(model: object, save_path: str | Path, cv_index: str | int):
@@ -175,10 +197,10 @@ def _save_model_cv(model: object, save_path: str | Path, cv_index: str | int):
                 )
             else:
                 with _open_lock((Path(save_path) / f"{file_step}.pkl"), "wb") as file:
-                    dump(step, file, protocol=HIGHEST_PROTOCOL)
+                    _dump_model(step, file)
     else:
         with _open_lock((Path(save_path) / f"fitted_model_{cv_index}.pkl"), "wb") as file:
-            dump(model, file, protocol=HIGHEST_PROTOCOL)
+            _dump_model(model, file)
 
 
 def _save_model_list(model_list: list | Pipeline, score_list: Sequence, save_path: str):

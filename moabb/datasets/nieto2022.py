@@ -4,9 +4,12 @@ Scientific Data DOI: 10.1038/s41597-022-01147-2
 OpenNeuro: ds003626
 """
 
+from pathlib import Path
+
 import mne
 
 from . import download as dl
+from ._openneuro_mirror import OpenNeuroMirrorMixin
 from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
@@ -49,7 +52,7 @@ def _speech_hed(label, modality):
     )
 
 
-class Nieto2022(BaseDataset):
+class Nieto2022(OpenNeuroMirrorMixin, BaseDataset):
     """Inner Speech EEG dataset (Nieto et al., 2022).
 
     Dataset containing 10 subjects performing four directional tasks (Up, Down,
@@ -61,6 +64,7 @@ class Nieto2022(BaseDataset):
     """
 
     nemar_id = "on003626"
+    nemar_subject_template = "{subject:02d}"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=_SFREQ,
@@ -260,5 +264,31 @@ class Nieto2022(BaseDataset):
         subj_str = f"sub-{subject:02d}"
         ses_str = f"ses-{session:02d}"
         filename = f"{subj_str}_{ses_str}_task-innerspeech_eeg.bdf"
-        url = f"{_OPENNEURO_URL}{subj_str}/{ses_str}/eeg/{filename}"
+        rel_path = f"{subj_str}/{ses_str}/eeg/{filename}"
+        # The NEMAR raw mirror holds the same OpenNeuro BDF files.
+        mirror_root = self._mirror_root(subject, path, force_update, update_path, verbose)
+        if mirror_root is not None:
+            return str(Path(mirror_root) / rel_path)
+        url = f"{_OPENNEURO_URL}{rel_path}"
         return dl.data_dl(url, "NIETO2022", path=path, force_update=force_update)
+
+    def download(
+        self,
+        subject_list=None,
+        path=None,
+        force_update=False,
+        update_path=None,
+        accept=False,
+        verbose=None,
+    ):
+        """Fetch each subject's three session BDFs."""
+        for subject in self.subject_list if subject_list is None else subject_list:
+            for session in range(1, 4):
+                self.data_path(
+                    subject,
+                    session=session,
+                    path=path,
+                    force_update=force_update,
+                    update_path=update_path,
+                    verbose=verbose,
+                )

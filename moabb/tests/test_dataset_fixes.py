@@ -207,7 +207,7 @@ def test_hefmi_ich_data_path_downloads_subject_files(tmp_path: Path, monkeypatch
         "moabb.datasets.hefmi_ich2025._MANIFEST", {1: [(42, "sub01_1_epo.mat")]}
     )
 
-    def fake_download(url, sign, root, force_update, verbose):
+    def fake_download(url, sign, root, force_update, verbose, fname=None):
         downloaded = tmp_path / "MNE-hefmiich2025-data" / "42"
         downloaded.write_bytes(b"data")
         return downloaded

@@ -204,7 +204,7 @@ class Hinss2021(BaseDataset):
                 "Scientific Data, 10, 85. https://doi.org/10.1038/s41597-022-01898-y"
             ),
             repository="Zenodo",
-            data_url="https://doi.org/10.5281/zenodo.6874128",
+            data_url="https://doi.org/10.5281/zenodo.5055046",
             license="CC-BY-SA-4.0",
         ),
         tags=Tags(pathology=["Healthy"], modality=["Cognitive"], type=["Research"]),
@@ -363,13 +363,27 @@ class Hinss2021(BaseDataset):
         # check if has the .zip
         url = f"{URL}P{subject:02}.zip"
 
-        path_zip = dl.data_dl(
-            url,
-            "Neuroergonomics2021",
-            path=path,
-            force_update=force_update,
-            verbose=verbose,
-        )
+        path_zip = str(dl.data_dl_destination(url, "Neuroergonomics2021", path=path))
+        # The members _get_single_subject_data reads.
+        needed = [
+            osp.join(
+                osp.dirname(path_zip),
+                f"P{subject:02}",
+                f"S{session}",
+                "eeg",
+                f"alldata_sbj{subject:02}_sess{session}_{task}.set",
+            )
+            for session in range(1, self.n_sessions + 1)
+            for task in ("RS", "MATBeasy", "MATBmed", "MATBdiff")
+        ]
+        if force_update or not dl.fill_from_store(osp.dirname(path_zip), needed):
+            path_zip = dl.data_dl(
+                url,
+                "Neuroergonomics2021",
+                path=path,
+                force_update=force_update,
+                verbose=verbose,
+            )
         path_folder = path_zip.strip(f"P{subject:02}.zip")
 
         # check if has to unzip

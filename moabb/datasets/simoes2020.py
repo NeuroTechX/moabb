@@ -87,6 +87,7 @@ class Simoes2020(BaseDataset):
     """
 
     nemar_id = "nm000210"
+    nemar_seed_cache = True
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,

@@ -48,22 +48,29 @@ _FIGSHARE_URL = "https://ndownloader.figshare.com/files/9700792"
 _EGI32_NONFACIAL_ORDER = [f"E{i}" for i in range(1, 17)] + ["E28"]
 
 
-def _bci2000_channel_names(parameters, n_channels):
-    """Return ``(names, source)`` for the BCI2000 channels.
+def _bci2000_channel_names(parameters, n_channels, fpath=None):
+    """Return the channel names of a released KI.rar BCI2000 file.
 
-    ``source`` is ``"header"`` when read from the ``ChannelNames`` parameter,
-    ``"egi"`` for the assumed EGI sensor order (17-channel KI.rar files), or
-    ``"generic"`` for the ``EEG001`` fallback.
+    Every released file (all 180 ``.dat`` files of the 12 subjects, checked)
+    has 17 source channels and an empty ``ChannelNames`` parameter, so the
+    names are the EGI sensor order of ``_EGI32_NONFACIAL_ORDER``. A file with
+    another channel count or with its own channel names is one this loader
+    was not checked against: it raises instead of guessing generic names,
+    which would give its subject a channel set of its own.
     """
     try:
         names = [str(n).strip() for n in parameters["ChannelNames"]]
     except (KeyError, TypeError):
         names = []
-    if len(names) == n_channels and all(names):
-        return names, "header"
-    if n_channels == len(_EGI32_NONFACIAL_ORDER):
-        return list(_EGI32_NONFACIAL_ORDER), "egi"
-    return [f"EEG{i:03d}" for i in range(1, n_channels + 1)], "generic"
+    has_names = len(names) == n_channels and all(names)
+    if has_names or n_channels != len(_EGI32_NONFACIAL_ORDER):
+        raise ValueError(
+            f"Zhang2017 file {fpath} has {n_channels} channels and ChannelNames "
+            f"{names or 'empty'}; every released file has "
+            f"{len(_EGI32_NONFACIAL_ORDER)} channels and no names (EGI order "
+            f"{_EGI32_NONFACIAL_ORDER})."
+        )
+    return list(_EGI32_NONFACIAL_ORDER)
 
 
 def _read_bci2000_file(fpath):
@@ -121,11 +128,9 @@ def _bci2000_to_raw(fpath, event_mapping):
     n_channels, n_samples = signals.shape
 
     # Use all source channels — the BCI2000 files contain only the
-    # transmitted EEG channels (17 in this dataset).
-    #
-    # Prefer the channel labels stored in the BCI2000 header when present;
-    # otherwise use the assumed EGI sensor order (see _EGI32_NONFACIAL_ORDER).
-    ch_names, ch_source = _bci2000_channel_names(parameters, n_channels)
+    # transmitted EEG channels (17 in this dataset), in the EGI sensor order
+    # of _EGI32_NONFACIAL_ORDER; any other layout raises.
+    ch_names = _bci2000_channel_names(parameters, n_channels, fpath)
     ch_types = ["eeg"] * n_channels
     info = mne.create_info(ch_names=ch_names, sfreq=sfreq, ch_types=ch_types)
 
@@ -142,16 +147,10 @@ def _bci2000_to_raw(fpath, event_mapping):
         signals.astype(np.float64) * gain_uv * 1e-6, info, verbose=False
     )
 
-    # Attach electrode positions: standard_1005 for header-provided 10-20
-    # labels, or the EGI HydroCel-32 geometry for the assumed E# order.
-    if ch_source == "header":
-        raw.set_montage(
-            mne.channels.make_standard_montage("colin27_1005"), on_missing="ignore"
-        )
-    elif ch_source == "egi":
-        raw.set_montage(
-            mne.channels.make_standard_montage("GSN-HydroCel-32"), on_missing="ignore"
-        )
+    # Attach electrode positions: the EGI HydroCel-32 geometry of the E# order.
+    raw.set_montage(
+        mne.channels.make_standard_montage("GSN-HydroCel-32"), on_missing="ignore"
+    )
 
     # Extract event annotations from StimulusCode state variable
     stim_key = None
@@ -247,6 +246,7 @@ class Zhang2017(BaseDataset):
     """
 
     nemar_id = "nm000152"
+    nemar_seed_cache = True
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
