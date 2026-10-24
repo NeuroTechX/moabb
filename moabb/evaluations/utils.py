@@ -572,7 +572,11 @@ def _get_nchan(X):
     """Extract number of channels from data (Epochs or ndarray)."""
     from mne.epochs import BaseEpochs
 
-    return X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
+    if isinstance(X, BaseEpochs):
+        return X.info["nchan"]
+    if X.dtype == object:  # nested trials of different shapes: the largest
+        return max(trial.shape[0] for trial in X)
+    return X.shape[1]
 
 
 class Emissions:
