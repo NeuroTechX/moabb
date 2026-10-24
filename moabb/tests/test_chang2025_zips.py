@@ -29,7 +29,7 @@ _RELEASED = {
 def fake_figshare(monkeypatch, tmp_path):
     requested = []
 
-    def data_dl(url, sign, path=None, force_update=False, verbose=None):
+    def data_dl(url, sign, path=None, force_update=False, verbose=None, fname=None):
         file_id = int(url.rsplit("/", 1)[-1])
         requested.append(file_id)
         zpath = tmp_path / f"{file_id}.zip"

@@ -107,15 +107,22 @@ class PerezBlanco2026(BaseDataset):
 
     References
     ----------
-    .. [1] Perez-Blanco, J. G., Antelis-Ortiz, J. M., Hernandez-Rojas, L. G., &
-           Lizarraga-Torreblanca, H. (2026). An EEG-EMG-kinematics dataset of
-           wrist movements with a rehabilitation exoskeleton. Scientific Data.
+    .. [1] Perez-Blanco, J. G., Huegel, J. C., Hernández-Rojas, L. G.,
+           Valdez-Calderón, A., Lizárraga-Torreblanca, H., Cruz-Ortiz, D.,
+           Ballesteros, M., Gomez-Correa, J. C., & Antelis, J. M. (2026).
+           An EEG-EMG-kinematics dataset from wrist pointing tasks for
+           biomarker research in neurorehabilitation. Scientific Data.
            DOI: https://doi.org/10.1038/s41597-026-07287-z
-           Data: https://doi.org/10.6084/m9.figshare.29666735
+           Data (``EEG-EMG-WristMotion Dataset``):
+           https://doi.org/10.6084/m9.figshare.29666735
 
     .. versionadded:: 1.8
     """
 
+    nemar_id = "nm000304"
+    # The deposit's sourcedata/ holds every subject's extracted run EDFs under
+    # sub-NN/eeg/, where data_path looks before it queries figshare.
+    nemar_seed_cache = True
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=_SFREQ,

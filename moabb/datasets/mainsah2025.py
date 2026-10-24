@@ -11,6 +11,8 @@ Each study is exposed as a separate MOABB dataset class (e.g.,
 ``Mainsah2025_A``, ``Mainsah2025_B``, ..., ``Mainsah2025_S2``).
 """
 
+import hashlib
+import json
 import logging
 import re
 import warnings
@@ -359,13 +361,87 @@ class Mainsah2025(BaseDataset):
         )
 
     @staticmethod
+    def _manifest_from_store():
+        """File list from the active store's provenance, or None.
+
+        The deposit's ``sourcedata_provenance.json`` records every file with
+        its upstream name and SHA-256 (the same hash SHA256SUMS.txt lists),
+        so when the store holds the files there is no need to fetch the
+        PhysioNet index. Files whose bytes do not match their provenance
+        hash are left out, so they fall back to the upstream download.
+        """
+        store = dl.active_store()
+        if store is None:
+            return None
+        provenance = store / "sourcedata_provenance.json"
+        if not provenance.is_file():
+            return None
+        try:
+            record = json.loads(provenance.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            return None
+        result = {}
+        for entry in record.get("files") or []:
+            if not isinstance(entry, dict):
+                continue
+            # Provenance entries name the file ``file`` (relative to
+            # sourcedata/, e.g. ``B_01/SE001/Test/CB/B_01_....edf``), not the
+            # full upstream ``bigP3BCI-data/Study...`` path.
+            raw_name = entry.get("name") or entry.get("file") or ""
+            name = raw_name
+            if name and not name.startswith("bigP3BCI-data/"):
+                # Rebuild the upstream relative path the manifest parser keys
+                # on: Study<study>/<subj>/SE<nnn>/<Test|Train>/.../<file>.edf
+                parts = name.split("/")
+                if len(parts) >= 4:
+                    subj = parts[0]
+                    study = subj.split("_")[0]
+                    name = f"bigP3BCI-data/Study{study}/" + name
+            if not name.endswith(".edf"):
+                continue
+            stored = store / raw_name
+            if not stored.is_file():
+                continue
+            expected = entry.get("sha256")
+            if expected:
+                digest = hashlib.sha256(stored.read_bytes()).hexdigest()
+                if digest != expected:
+                    continue
+            m = re.match(
+                r"bigP3BCI-data/Study([\w-]+)/([\w-]+)/SE(\d+)/"
+                r"(Test|Train)/(?:[\w-]+/)?(.+\.edf)",
+                name,
+            )
+            if not m:
+                continue
+            study, subj_str, session_str = m.group(1), m.group(2), m.group(3)
+            result.setdefault(study, {}).setdefault(subj_str, {}).setdefault(
+                int(session_str), []
+            ).append(name)
+        if not result:
+            return None
+        for study in result.values():
+            for subj in study.values():
+                for sess in subj:
+                    subj[sess].sort()
+        return result
+
+    @staticmethod
     def _get_manifest():
-        """Download and parse the SHA256SUMS manifest (cached in memory)."""
+        """Parse the SHA256SUMS manifest (cached in memory).
+
+        Taken from the active NEMAR store's provenance when it holds the
+        files; only otherwise is SHA256SUMS.txt fetched from PhysioNet.
+        """
         global _manifest_cache
         if _manifest_cache is None:
-            manifest_path = _get_manifest_path()
-            dl.download_if_missing(str(manifest_path), _MANIFEST_URL, warn_missing=False)
-            _manifest_cache = _parse_manifest(manifest_path)
+            _manifest_cache = Mainsah2025._manifest_from_store()
+            if _manifest_cache is None:
+                manifest_path = _get_manifest_path()
+                dl.download_if_missing(
+                    str(manifest_path), _MANIFEST_URL, warn_missing=False
+                )
+                _manifest_cache = _parse_manifest(manifest_path)
         return _manifest_cache
 
     def _subject_str(self, subject):

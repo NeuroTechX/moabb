@@ -64,21 +64,39 @@ def _store_lookup(url, fname=None):
     ``fname`` is probed first, but the URL tails remain fallbacks: a caller's
     ``fname`` names the *destination* (e.g. Lee2024 prefixes the experiment
     directory and zero-pads subject 8), while the store keeps the upstream
-    names, so the two can legitimately differ. A miss returns None and the
-    caller downloads.
+    names, so the two can legitimately differ. A tail of two or more segments
+    whose file name has no extension also matches a single stored file that
+    adds one: deposits keep some extension-less downloads under their content
+    type (Mendeley's ``<uuid>/file_downloaded`` as ``file_downloaded.xdf``).
+    A miss returns None and the caller downloads.
     """
     store = _ACTIVE_STORE.get()
     if store is None:
         return None
     tails = [PurePosixPath(fname).parts] if fname is not None else []
     parts = PurePosixPath(urlparse(url).path).parts
-    # ponytail: three trailing segments cover every current dataset layout;
-    # deepen if a deposit ever nests further.
-    tails += [parts[i:] for i in range(max(len(parts) - 3, 0), len(parts))]
+    # ponytail: four trailing segments cover every current dataset layout
+    # (Thielen2021: offline/sub-01/block_1/trainlabels.mat); deepen if a
+    # deposit ever nests further.
+    tails += [parts[i:] for i in range(max(len(parts) - 4, 0), len(parts))]
     for tail in tails:
         if not tail:
             continue
         candidate = Path(store).joinpath(*tail)
+        if not candidate.is_file() and len(tail) > 1 and not candidate.suffix:
+            variants = (
+                [
+                    path
+                    for path in candidate.parent.glob(
+                        glob_module.escape(candidate.name) + ".*"
+                    )
+                    if path.is_file()
+                ]
+                if candidate.parent.is_dir()
+                else []
+            )
+            if len(variants) == 1:
+                candidate = variants[0]
         if candidate.is_file():
             logger.info(
                 "Filling %s from the local NEMAR store instead of downloading %s.",
@@ -500,6 +518,68 @@ def fill_from_store(base_dir, files):
     return True
 
 
+def fill_tree_from_store(base_dir, member_dir):
+    """Place a whole extracted directory from the active NEMAR store.
+
+    :func:`fill_from_store` for loaders that read every file an archive
+    extracts below one directory (e.g. one per subject) instead of a fixed
+    list: the members are the files the store holds below ``member_dir``.
+    Recordings whose headers name files the store lacks (a BrainVision
+    ``.vhdr`` without its ``.eeg``/``.vmrk``, an EEGLAB ``.set`` without its
+    ``.fdt``) mean the directory is incomplete, and nothing is placed.
+
+    Parameters
+    ----------
+    base_dir : str | pathlib.Path
+        Directory the archive extracts into.
+    member_dir : str
+        The directory, relative to ``base_dir``, the loader reads.
+
+    Returns
+    -------
+    bool
+        True when ``base_dir / member_dir`` holds every file the store has
+        there afterwards; False without an active store or when the store
+        does not hold a complete copy of the directory.
+    """
+    store = _ACTIVE_STORE.get()
+    if store is None:
+        return False
+    store = Path(store)
+    source_dir = store.joinpath(*PurePosixPath(Path(member_dir).as_posix()).parts)
+    if not source_dir.is_dir():
+        return False
+    names = sorted(
+        path.relative_to(store).as_posix()
+        for path in source_dir.rglob("*")
+        if path.is_file()
+    )
+    if not names or _missing_companions(store, names):
+        return False
+    return fill_from_store(base_dir, [Path(base_dir, name) for name in names])
+
+
+def active_store():
+    """The active local sourcedata store root, or None."""
+    store = _ACTIVE_STORE.get()
+    return Path(store) if store is not None else None
+
+
+def store_glob(pattern):
+    """Names in the active NEMAR store matching ``pattern``, relative to its root.
+
+    For loaders that locate a member by pattern rather than by a fixed name
+    (e.g. a subject directory named after its unknown recording date), before
+    handing the match to :func:`fill_tree_from_store`. Empty without an active
+    store.
+    """
+    store = _ACTIVE_STORE.get()
+    if store is None:
+        return []
+    store = Path(store)
+    return sorted(path.relative_to(store).as_posix() for path in store.glob(pattern))
+
+
 @verbose
 def nemar_dl(
     nemar_id,
@@ -837,8 +917,22 @@ def _missing_companions(sourcedata_dir, files):
         except OSError:
             continue
         for companion in _BRAINVISION_COMPANION.findall(text):
-            if not (header.parent / companion).is_file():
-                missing.add(str(PurePosixPath(name).parent / companion))
+            if (header.parent / companion).is_file():
+                continue
+            # Some deposits rename the recordings to BIDS names but leave the
+            # header naming the pre-rename file (Thapa2025 subject 9). The
+            # loaders that read such deposits override the data/marker file
+            # names with the header's own stem, so a same-suffix companion
+            # under that stem satisfies the reference.
+            stem = PurePosixPath(name).stem
+            if any(
+                PurePosixPath(f).parent == PurePosixPath(name).parent
+                and PurePosixPath(f).stem == stem
+                and PurePosixPath(f).suffix == PurePosixPath(companion).suffix
+                for f in files
+            ):
+                continue
+            missing.add(str(PurePosixPath(name).parent / companion))
     return missing
 
 
@@ -1202,7 +1296,10 @@ def download_if_missing(
     """Download file from url to a specified path if it is not already there.
 
     If ``force_update`` is True, an existing local copy is deleted and
-    downloaded again.
+    downloaded again. Like :func:`data_dl`, a missing file is first taken
+    from the active NEMAR store when it holds it under the URL's trailing
+    path segments (e.g. a ``SHA256SUMS.txt`` index at the root of the
+    deposit's ``sourcedata/``).
     """
 
     folder_path = osp.dirname(file_path)
@@ -1215,6 +1312,15 @@ def download_if_missing(
 
     if force_update and osp.exists(file_path):
         os.remove(file_path)
+
+    if not force_update and not osp.exists(file_path):
+        mirror = _store_lookup(url)
+        if mirror is not None:
+            try:
+                os.link(mirror, file_path)
+            except OSError:
+                shutil.copy2(mirror, file_path)
+            return str(file_path)
 
     # Check if file exists, if not download it
     if not osp.exists(file_path):
@@ -1237,16 +1343,34 @@ def download_if_missing(
 
 
 def create_metainfo_osf(osf_code: str) -> pd.DataFrame:
-    """Create a metadata file for a dataset stored on OSF."""
+    """List every file of an OSF project's OSF storage.
+
+    Parameters
+    ----------
+    osf_code : str
+        OSF project (node) id, e.g. ``"r7s9b"``.
+
+    Returns
+    -------
+    metainfo : pandas.DataFrame
+        One row per file with columns ``filename`` (bare file name), ``url``
+        (download link) and ``path`` (the file's full path inside the
+        project, e.g. ``/sourcedata/sub-01/ses-01/eeg/sub-01_eeg.vhdr``).
+        A project can hold several files with the same name in different
+        folders; ``path`` tells them apart, ``filename`` does not. The row
+        order follows the OSF listing and is not guaranteed.
+    """
     # OSF API base URL for the project's OSF storage
 
     base_url = f"https://api.osf.io/v2/nodes/{osf_code}/files/osfstorage/"
 
-    files = []  # to collect (name, url) tuples
-    stack = [base_url + "?page[size]=100"]  # start with base URL, up to 100 results
+    files = []  # to collect (name, url, path) tuples
+    # (listing URL, folder path) pairs; start with the root, up to 100 results.
+    # The folder path is a fallback for items without ``materialized_path``.
+    stack = [(base_url + "?page[size]=100", "/")]
 
     while stack:
-        url = stack.pop()
+        url, folder_path = stack.pop()
         try:
             response = requests.get(url)
             data = response.json()
@@ -1258,25 +1382,31 @@ def create_metainfo_osf(osf_code: str) -> pd.DataFrame:
         for item in data.get("data", []):
             attrs = item.get("attributes", {})
             kind = attrs.get("kind")
+            name = attrs.get("name")
+            item_path = attrs.get("materialized_path")
             if kind == "folder":
                 # If folder, add its listing URL to stack for later retrieval
                 rel = item.get("relationships", {})
                 files_rel = rel.get("files", {}) if rel else {}
                 folder_url = files_rel.get("links", {}).get("related", {}).get("href")
                 if folder_url:
+                    sub_path = item_path or f"{folder_path}{name}/"
+                    if not sub_path.endswith("/"):
+                        sub_path += "/"
                     # Append page[size]=100 to folder URL as well for efficiency
-                    stack.append(folder_url + "?page[size]=100")
+                    stack.append((folder_url + "?page[size]=100", sub_path))
             elif kind == "file":
-                name = attrs.get("name")
                 download_url = item.get("links", {}).get("download")
                 if name and download_url:
-                    files.append((name, download_url))
+                    files.append(
+                        (name, download_url, item_path or f"{folder_path}{name}")
+                    )
 
         # If there's a next page, add it to stack to continue pagination
         next_url = data.get("links", {}).get("next")
         if next_url:
-            stack.append(next_url)
+            stack.append((next_url, folder_path))
 
-    metainfo = pd.DataFrame(files, columns=["filename", "url"])
+    metainfo = pd.DataFrame(files, columns=["filename", "url", "path"])
 
     return metainfo

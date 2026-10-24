@@ -117,20 +117,28 @@ class _BaseVisualMatrixSpellerDataset(BaseDataset, ABC):
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
         url = f"{self._src_url}subject{subject:02d}.zip"
-        zipfile_path = Path(
-            dl.data_dl(url, "llp", path=path, force_update=force_update, verbose=verbose)
-        )
-        zipfile_extracted_path = zipfile_path.parent
-
-        subject_dir_path = zipfile_extracted_path / f"subject{subject:02d}"
-
-        if force_update or not subject_dir_path.is_dir():
-            _BaseVisualMatrixSpellerDataset._extract_data(
-                zipfile_extracted_path, zipfile_path
+        subject_dir = f"subject{subject:02d}"
+        # NEMAR deposits keep the extracted subject directory, not the ZIP:
+        # take it from the local store (or a previous extraction) first.
+        zipfile_extracted_path = dl.data_dl_destination(url, "llp", path=path).parent
+        subject_dir_path = zipfile_extracted_path / subject_dir
+        if force_update or not (
+            dl.fill_tree_from_store(zipfile_extracted_path, subject_dir)
+            or any(subject_dir_path.glob("matrixSpeller_Block*_Run*.vhdr"))
+        ):
+            zipfile_path = Path(
+                dl.data_dl(
+                    url, "llp", path=path, force_update=force_update, verbose=verbose
+                )
             )
+            zipfile_extracted_path = zipfile_path.parent
+            subject_dir_path = zipfile_extracted_path / subject_dir
+            if force_update or not subject_dir_path.is_dir():
+                _BaseVisualMatrixSpellerDataset._extract_data(
+                    zipfile_extracted_path, zipfile_path
+                )
 
-        subject_paths = zipfile_extracted_path / f"subject{subject:02d}"
-        subject_paths = subject_paths.glob("matrixSpeller_Block*_Run*.vhdr")
+        subject_paths = subject_dir_path.glob("matrixSpeller_Block*_Run*.vhdr")
         subject_paths = [str(p) for p in subject_paths]
         return sorted(subject_paths)
 

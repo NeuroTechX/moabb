@@ -204,7 +204,7 @@ class Hinss2021(BaseDataset):
                 "Scientific Data, 10, 85. https://doi.org/10.1038/s41597-022-01898-y"
             ),
             repository="Zenodo",
-            data_url="https://doi.org/10.5281/zenodo.6874128",
+            data_url="https://doi.org/10.5281/zenodo.5055046",
             license="CC-BY-SA-4.0",
         ),
         tags=Tags(pathology=["Healthy"], modality=["Cognitive"], type=["Research"]),

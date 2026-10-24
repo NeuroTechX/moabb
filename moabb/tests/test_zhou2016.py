@@ -35,6 +35,8 @@ def test_subject_has_downloaded_data_detects_incomplete_dir(tmp_path):
 
 
 def test_download_subject_repairs_incomplete_subject_dir(tmp_path, monkeypatch):
+    # The Zenodo path under test; "auto" would read the NEMAR deposit first.
+    monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", "upstream")
     dataset = Zhou2016()
     dataset_path = tmp_path / "MNE-BIDS-zhou2016"
     incomplete_subject_dir = dataset_path / "sub-1"

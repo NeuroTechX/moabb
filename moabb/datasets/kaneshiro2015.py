@@ -212,6 +212,12 @@ class Kaneshiro2015(BaseDataset):
             if downloaded != local:
                 downloaded.rename(local)
 
+        # A copy from the NEMAR store (nm000263) is complete: it has the
+        # store's size, which nemar-py verified against the deposit.
+        stored = dl._store_lookup(url)
+        if stored is not None and Path(stored).stat().st_size == local.stat().st_size:
+            return str(local)
+
         # Stanford uses chunked transfer (no Content-Length), so pooch
         # can silently accept truncated downloads.  Verify size via a
         # range request and re-download if truncated.

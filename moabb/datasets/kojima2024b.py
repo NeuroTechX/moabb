@@ -157,6 +157,7 @@ class Kojima2024B(BaseDataset):
     """
 
     nemar_id = "nm000207"
+    nemar_seed_cache = True
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,

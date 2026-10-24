@@ -24,6 +24,7 @@ from sklearn.model_selection import (
     PredefinedSplit,
 )
 from sklearn.pipeline import FunctionTransformer, Pipeline, make_pipeline
+from sklearn.utils.validation import check_is_fitted
 
 from moabb.analysis.results import get_digest, get_string_rep
 from moabb.datasets.compound_dataset import compound
@@ -3127,3 +3128,27 @@ def test_evaluate_fold_routes_extra_fit_params(requested):
         np.testing.assert_array_equal(routed, systems[train])
     else:
         assert routed is None
+
+
+def test_saved_fold_models_can_be_unpickled(tmp_path):
+    # Regression: _ensure_fitted marked each fitted step that lacks
+    # __sklearn_is_fitted__ with a method bound to a local function, which
+    # pickle stores as getattr(step, "_sklearn_is_fitted_true"), so every model
+    # saved with save_model=True failed to load (AttributeError).
+    ds = FakeDataset(["left_hand", "right_hand"], n_subjects=1, n_sessions=1, seed=5)
+    evaluation = ev.WithinSessionEvaluation(
+        paradigm=FakeImageryParadigm(),
+        datasets=[ds],
+        hdf5_path=str(tmp_path),
+        save_model=True,
+        overwrite=True,
+    )
+    evaluation.process({"CSP+LDA": make_pipeline(Covariances("oas"), CSP(4), LDA())})
+
+    saved = sorted(tmp_path.rglob("fitted_model_*.pkl"))
+    assert saved
+    for path in saved:
+        with open(path, "rb") as file:
+            model = pickle.load(file)
+        check_is_fitted(model)
+        assert model[-1].__sklearn_is_fitted__()

@@ -73,18 +73,17 @@ _MISC_TYPES = {"HEO": "eog", "VEO": "eog", "EKG": "ecg", "EMG": "emg", "Trigger"
 
 
 def _subject_number(cdt_path):
-    """Return a per-task sort key for the archive's purely numeric file names.
+    """Return the released-sample position (1..5) a ``.cdt`` file belongs to.
 
     The Zenodo release ships five participants (Sub_01, Sub_50, Sub_100,
     Sub_150, Sub_200 of the full 244-participant pool) as per-task ``.cdt``
     files whose stems are purely numeric (e.g. ``0101001.cdt`` under
-    ``task1``, ``01020200.cdt`` under ``task5``). Within one ``task*``
-    directory every file has the same digit count and the only varying
-    field is the subject position in the released sample, so a plain
-    lexicographic sort by file name reproduces the authors' order and
-    maps subject ``n`` (1..5) to the n-th file.
+    ``task1``, ``01020200.cdt`` under ``task5``): ``01``, the two-digit
+    position of the participant in the released sample, then task-specific
+    digits. Subject ``n`` (1..5) is the file whose position field is ``n``,
+    which is also the n-th file of the lexicographically sorted task folder.
     """
-    return cdt_path.name
+    return int(cdt_path.name[2:4])
 
 
 def _dpa_parameter(dpa, name, cdt_path):
@@ -147,6 +146,7 @@ class IMUMIA2026(BaseDataset):
     """
 
     nemar_id = "nm000316"
+    nemar_seed_cache = True
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
@@ -261,13 +261,17 @@ class IMUMIA2026(BaseDataset):
         paths = []
         for task in _TASKS:
             task_dir = raw_dir / task
-            cdt_files = sorted(task_dir.glob("*.cdt"), key=_subject_number)
-            if len(cdt_files) < subject:
+            # Select by the subject-position field, not by rank: a cache
+            # filled one subject at a time (NEMAR store) holds only some files.
+            cdt_files = sorted(
+                p for p in task_dir.glob("*.cdt") if _subject_number(p) == subject
+            )
+            if len(cdt_files) != 1:
                 raise FileNotFoundError(
-                    f"Expected at least {subject} .cdt files under {task_dir}, "
+                    f"Expected one .cdt file of subject {subject} under {task_dir}, "
                     f"found {len(cdt_files)}"
                 )
-            paths.append(str(cdt_files[subject - 1]))
+            paths.append(str(cdt_files[0]))
         return paths
 
     def _get_single_subject_data(self, subject):

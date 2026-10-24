@@ -85,6 +85,27 @@ def test_thapa_transport_and_missing_sessions(tmp_path, monkeypatch):
     }
 
 
+def test_thapa_data_path_returns_only_brainvision_headers(tmp_path, monkeypatch):
+    # A real run is a .vhdr with its .eeg/.vmrk and events.tsv beside it;
+    # read_raw_brainvision accepts only the header.
+    archive = tmp_path / "source.zip"
+    stem = "sub-01/ses-01/eeg/sub-01_ses-01_task-reachingandgrasping_run-{run}"
+    with zipfile.ZipFile(archive, "w") as zf:
+        zf.writestr("dataset_description.json", "{}")
+        for run in ("0001", "0002"):
+            for suffix in ("_eeg.vhdr", "_eeg.eeg", "_eeg.vmrk", "_events.tsv"):
+                zf.writestr(stem.format(run=run) + suffix, "synthetic")
+    monkeypatch.setattr(thapa2025.dl, "get_dataset_path", Mock(return_value=tmp_path))
+    monkeypatch.setattr(thapa2025.dl, "data_dl", Mock(return_value=archive))
+
+    paths = Thapa2025().data_path(1, path=str(tmp_path), verbose=False)
+
+    assert sorted(p.fpath.name for p in paths) == [
+        "sub-01_ses-01_task-reachingandgrasping_run-0001_eeg.vhdr",
+        "sub-01_ses-01_task-reachingandgrasping_run-0002_eeg.vhdr",
+    ]
+
+
 def test_nebula2025_transport_and_subject_local_tasks(tmp_path, monkeypatch):
     archive = tmp_path / "source.zip"
     with zipfile.ZipFile(archive, "w") as zf:

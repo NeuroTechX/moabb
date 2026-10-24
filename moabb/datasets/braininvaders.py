@@ -294,12 +294,32 @@ def _bi_data_path(  # noqa: C901
         else:
             zipname_list = [f"subject{subject:02}.zip"]
 
+        # The NEMAR deposit keeps the extracted runs (subject_NN/Session*/
+        # *.mat + meta.yml); place them before asking for any session ZIP.
+        # fill_tree_from_store is all-or-nothing over the files it holds, so
+        # a partial deposit falls through to the ZIPs below.
+        dest0 = str(
+            dl.data_dl_destination(BI2013a_URL + zipname_list[0], "BRAININVADERS2013")
+        )
+        folder0 = dest0.strip(zipname_list[0])
+        dl.fill_tree_from_store(folder0, f"subject_{subject:02}")
+
         for i, zipname in enumerate(zipname_list):
             url = BI2013a_URL + zipname
+            # check if has the directory for the subject
+            directory = f"{folder0}subject_{subject:02}"
+            if not (osp.isdir(directory)):
+                os.makedirs(directory)
+
+            # Sessions are 1-based in the deposit/cache; the single-zip
+            # subjects (>7) hold every session under the same tree.
+            if len(zipname_list) == 1:
+                if osp.isfile(osp.join(directory, "meta.yml")):
+                    continue
+            elif osp.isdir(osp.join(directory, f"Session{i + 1}")):
+                continue
             path_zip = dl.data_dl(url, "BRAININVADERS2013")
             path_folder = path_zip.strip(zipname)
-
-            # check if has the directory for the subject
             directory = f"{path_folder}subject_{subject:02}"
             if not (osp.isdir(directory)):
                 os.makedirs(directory)
@@ -1655,9 +1675,9 @@ class BI2015b(BaseDataset):
         ),
         experiment=ExperimentMetadata(
             paradigm="p300",
-            events={"Target": 1, "Non-Target": 2},
+            events={"Target": 2, "NonTarget": 1},
             n_classes=2,
-            class_labels=["Target", "Non-Target"],
+            class_labels=["Target", "NonTarget"],
             study_design="Subjects played in pairs to the multi-user version of Brain Invaders during four randomised conditions (Cooperation 1-Target, Cooperation 2-Targets, Competition 1-Target, Competition 2-Targets). The interface uses the oddball paradigm on a grid of 36 symbols (1 or 2 Target, 35 or 34 Non-Target).",
             feedback_type="visual (game interface with reward screen)",
             stimulus_type="visual flash",
