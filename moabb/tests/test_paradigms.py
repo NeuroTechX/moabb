@@ -1643,3 +1643,46 @@ def test_metadata_has_the_dataset_of_each_trial():
         1: (a.code,),
         2: (b.code,),
     }
+
+
+def _two_systems():
+    """A pool of two recordings setups with different montages and rates."""
+    from moabb.datasets.compound_dataset import CompoundDataset
+
+    a = FakeDataset(
+        ["left_hand", "right_hand"],
+        channels=("C3", "Cz", "C4", "Pz"),
+        n_subjects=1,
+        n_sessions=1,
+        sfreq=128,
+    )
+    b = FakeDataset(
+        ["left_hand", "right_hand"],
+        channels=("C3", "Cz", "C4"),
+        n_subjects=1,
+        n_sessions=1,
+        sfreq=256,
+    )
+    return CompoundDataset(
+        [(a, 1, None, None), (b, 1, None, None)],
+        code="CompoundDatasetTwoSystems",
+        interval=a.interval,
+    )
+
+
+def test_recordings_of_different_shapes_give_nested_trials():
+    X, y, metadata = LeftRightImagery().get_data(_two_systems())
+
+    assert X.dtype == object and X.shape == (len(y),) == (len(metadata),)
+    shapes = {trial.shape for trial in X}
+    assert shapes == {(4, 385), (3, 769)}
+    # Same shapes still stack into a regular array.
+    X, _, _ = LeftRightImagery(channels=["C3", "Cz", "C4"], resample=128).get_data(
+        _two_systems()
+    )
+    assert X.dtype != object and X.shape[1] == 3
+
+
+def test_epochs_of_different_shapes_raise_clearly():
+    with pytest.raises(ValueError, match="return_epochs=False"):
+        LeftRightImagery().get_data(_two_systems(), return_epochs=True)

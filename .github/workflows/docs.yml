@@ -7,6 +7,7 @@ concurrency:
 on:
   push:
     branches: [ master, develop ]
+    tags: [ 'v*' ]
   pull_request:
     branches: [ master, develop ]
 permissions:
@@ -18,6 +19,9 @@ env:
   # Install CPU-only PyTorch wheels (torch arrives transitively via the
   # deeplearning extra -> braindecode). Avoids pulling CUDA builds on CI.
   UV_TORCH_BACKEND: cpu
+  # v* tags build the release ("stable") docs, deployed to docs/; develop
+  # deploys the dev docs to dev/. conf.py reads it for the version switcher.
+  MOABB_DOCS_VERSION: ${{ startsWith(github.ref, 'refs/tags/v') && 'stable' || 'dev' }}
 
 jobs:
   build_docs:
@@ -221,8 +225,9 @@ jobs:
           path: docs/build/html/
 
   deploy_neurotechx:
-    if: ${{ github.ref == 'refs/heads/develop' }}
+    if: ${{ github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/tags/v') }}
     needs: build_docs
+    concurrency: deploy-neurotechx  # a release pushes develop and a tag together
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -249,14 +254,15 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
           external_repository: NeuroTechX/moabb.github.io
-          destination_dir: docs/
+          destination_dir: ${{ env.MOABB_DOCS_VERSION == 'stable' && 'docs/' || 'dev/' }}
           publish_branch: master
           publish_dir: ./docs/build/html
           cname: moabb.neurotechx.com/
 
   deploy_gh_pages:
-    if: ${{ github.ref == 'refs/heads/develop' }}
+    if: ${{ github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/tags/v') }}
     needs: build_docs
+    concurrency: deploy-gh-pages
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -282,7 +288,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           deploy_key: ${{ secrets.MOABB_DEPLOY_KEY_NEW }}
-          destination_dir: docs/
+          destination_dir: ${{ env.MOABB_DOCS_VERSION == 'stable' && 'docs/' || 'dev/' }}
           publish_branch: gh-pages
           publish_dir: ./docs/build/html
           cname: neurotechx.github.io/moabb/

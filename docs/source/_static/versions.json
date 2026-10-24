@@ -1,0 +1,13 @@
+[
+    {
+        "name": "stable (latest release)",
+        "version": "stable",
+        "url": "https://moabb.neurotechx.com/docs/",
+        "preferred": true
+    },
+    {
+        "name": "dev (develop)",
+        "version": "dev",
+        "url": "https://moabb.neurotechx.com/dev/"
+    }
+]

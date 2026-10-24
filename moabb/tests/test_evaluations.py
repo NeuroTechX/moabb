@@ -3102,3 +3102,39 @@ def test_cross_subject_leave_one_dataset_out(tmp_path):
     # Both folds train on two subjects of one dataset: half of the trials.
     _, y, _ = FakeImageryParadigm().get_data(pool)
     assert set(results["samples"]) == {len(y) / 2}
+
+
+def test_cross_subject_on_nested_trials_of_different_shapes(tmp_path):
+    # Datasets with different montages and rates pooled in a CompoundDataset
+    # give nested trials; leave-one-dataset-out runs on them unchanged.
+    from moabb.datasets.compound_dataset import CompoundDataset
+    from moabb.paradigms import LeftRightImagery
+
+    systems = [
+        FakeDataset(
+            ["left_hand", "right_hand"], channels=ch, n_subjects=2, sfreq=sf, seed=i
+        )
+        for i, (ch, sf) in enumerate(
+            ((("C3", "Cz", "C4", "Pz"), 128), (("C3", "C4"), 256))
+        )
+    ]
+    pool = CompoundDataset(
+        [(d, s, None, None) for d in systems for s in d.subject_list],
+        code="CompoundDatasetNested",
+        interval=systems[0].interval,
+    )
+    origin = np.array([d.code for d, *_ in pool.subjects_list])
+    evaluation = ev.CrossSubjectEvaluation(
+        paradigm=LeftRightImagery(),
+        datasets=[pool],
+        cv_class=LeaveOneGroupOut,
+        groups=lambda m: origin[m["subject"].astype(int).to_numpy() - 1],
+        hdf5_path=str(tmp_path),
+        overwrite=True,
+    )
+    log_var = FunctionTransformer(lambda X: np.array([[np.log(np.var(t))] for t in X]))
+    results = evaluation.process({"var": make_pipeline(log_var, LDA())})
+
+    # 2 systems x 2 subjects x 2 sessions, each system held out once
+    assert len(results) == 8 and np.isfinite(results["score"]).all()
+    assert set(results["channels"]) == {4}
