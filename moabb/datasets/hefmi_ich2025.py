@@ -202,6 +202,11 @@ def _epoch_files_from_record(record):
     return tuple(sorted(rows, key=lambda row: (row[1], row[2], row[3])))
 
 
+def _is_record(obj):
+    """Whether ``obj`` looks like a figshare article record with folders."""
+    return isinstance(obj, dict) and "folder_structure" in obj and "files" in obj
+
+
 def _subject(group, folder_subject):
     """MOABB subject of the depositor folder ``<group>/EEG/subject<N>``."""
     return folder_subject if group == "Normals" else _N_HEALTHY + folder_subject
@@ -478,7 +483,10 @@ class HefmiIch2025(BaseDataset):
         if dl.fill_from_store(basepath, [cache_path]):
             try:
                 with open(cache_path) as f:
-                    return json.load(f)
+                    record = json.load(f)
+                if not _is_record(record):
+                    raise ValueError("not a figshare article record")
+                return record
             except (OSError, ValueError) as e:
                 log.warning("Refetching unreadable %s: %s", cache_path, e)
                 cache_path.unlink(missing_ok=True)
@@ -491,11 +499,14 @@ class HefmiIch2025(BaseDataset):
         except Exception as e:
             log.warning("Could not fetch the figshare record: %s", e)
             return None
+        if not _is_record(record):
+            log.warning("The figshare API answer is not an article record.")
+            return None
         try:
             basepath.mkdir(parents=True, exist_ok=True)
             with open(cache_path, "w") as f:
                 json.dump(record, f)
-        except (OSError, TypeError):
+        except OSError:
             pass
         return record
 

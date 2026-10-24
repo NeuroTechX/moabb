@@ -276,6 +276,28 @@ def test_without_the_record_the_shipped_map_is_used(mne_data, synthetic, monkeyp
     assert not (base / "figshare_article_28955456_v4.json").exists()
 
 
+@pytest.mark.parametrize("answer", [b"<html>busy</html>", {"message": "Rate limited"}])
+def test_an_answer_that_is_not_a_record_is_not_cached(
+    mne_data, synthetic, monkeypatch, answer
+):
+    monkeypatch.setattr(dl, "fs_issue_request", lambda *args, **kwargs: answer)
+    base = mne_data / "MNE-hefmiich2025-data"
+    assert HefmiIch2025().data_path(26)[0] == str(
+        base / "epo_data/Patients/EEG/subject9/1_epo.mat"
+    )
+    assert not (base / "figshare_article_28955456_v4.json").exists()
+    # An unusable cached record is fetched again.
+    (base / "figshare_article_28955456_v4.json").write_text('{"files": []}')
+    monkeypatch.setattr(
+        dl,
+        "fs_issue_request",
+        lambda *args, **kwargs: _record(hefmi_ich2025._EPOCH_FILES),
+    )
+    HefmiIch2025().data_path(26)
+    cached = json.loads((base / "figshare_article_28955456_v4.json").read_text())
+    assert "folder_structure" in cached
+
+
 def test_a_record_that_disagrees_warns_and_keeps_the_shipped_map(
     mne_data, synthetic, monkeypatch
 ):
