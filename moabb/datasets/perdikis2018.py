@@ -94,6 +94,8 @@ class Perdikis2018(BaseDataset):
 
     """
 
+    nemar_id = "nm000307"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
@@ -205,6 +207,16 @@ class Perdikis2018(BaseDataset):
 
         pilot = _PILOTS[subject]
         url = PERDIKIS2018_BASE.format(name=f"{pilot}.tar.gz")
+        # The NEMAR deposit (nm000307) keeps the extracted pilot directory, not
+        # the archive: take it from the local store (or an earlier extraction)
+        # before downloading the archive.
+        if not force_update:
+            extract_base = dl.data_dl_destination(url, self.code, path=path).parent
+            if dl.fill_tree_from_store(extract_base, pilot) or (
+                (extract_base / pilot).is_dir()
+            ):
+                return [str(extract_base / pilot)]
+
         tar_path = Path(dl.data_dl(url, self.code, path, force_update, verbose))
 
         pilot_dir = tar_path.parent / pilot

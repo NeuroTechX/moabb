@@ -146,6 +146,8 @@ class Pan2023(_PanDataverse):
 
     """
 
+    nemar_id = "nm000291"
+
     _file_ids = PAN2023_FILE_IDS
 
     METADATA = DatasetMetadata(

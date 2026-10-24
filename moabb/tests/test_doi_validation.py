@@ -44,6 +44,8 @@ _DATA_REPO_PREFIXES = (
     "10.48550/arXiv.",
     "10.35376/",
     "10.13026/",
+    "10.21227/",  # IEEE DataPort
+    "10.18112/",  # OpenNeuro
 )
 _DOI_URL_PREFIXES = ("https://doi.org/", "http://doi.org/", "https://dx.doi.org/")
 _DOI_RE = re.compile(r"^10\.\d{4,}/")

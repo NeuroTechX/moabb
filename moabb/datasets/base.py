@@ -7,7 +7,7 @@ import logging
 import re
 import traceback
 import warnings
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from functools import cached_property
 from inspect import signature
@@ -36,6 +36,7 @@ from moabb.datasets.download import (
     nemar_sourcedata_dl,
     nemar_sourcedata_is_local,
     nemar_store,
+    seed_loader_cache,
 )
 from moabb.datasets.preprocessing import FixedPipeline, SetRawAnnotations
 from moabb.utils import get_download_provider
@@ -74,6 +75,7 @@ def get_summary_table(paradigm: str, dir_name: str | None = None):
 
 
 _summary_table_imagery = get_summary_table("imagery")
+_summary_table_cognitive = get_summary_table("cognitive")
 _summary_table_p300 = get_summary_table("p300")
 _summary_table_ssvep = get_summary_table("ssvep")
 _summary_table_cvep = get_summary_table("cvep")
@@ -81,6 +83,7 @@ _summary_table_rstate = get_summary_table("rstate")
 _summary_table = pd.concat(
     [
         _summary_table_imagery,
+        _summary_table_cognitive,
         _summary_table_p300,
         _summary_table_ssvep,
         _summary_table_cvep,
@@ -600,9 +603,23 @@ class BaseDataset(metaclass=MetaclassDataset):
         DOI for the dataset.
     nemar_id : str | None
         NEMAR dataset identifier used by :meth:`download` when available.
-    nemar_subject_template : str | None
-        Template for formatting subject IDs for NEMAR downloads. For example,
-        ``"{subject:03d}"`` formats subject ``1`` as ``"001"``.
+    nemar_subject_template : str | Mapping | None
+        How a MOABB subject id maps to the deposit's BIDS subject label (the
+        part after ``sub-``). Either a format template, e.g.
+        ``"{subject:03d}"`` formats subject ``1`` as ``"001"``; or, for labels
+        no template can produce (BIDS labels are any alphanumeric string),
+        an explicit ``{moabb_subject: label}`` mapping, e.g.
+        ``dict(enumerate(["zdvm", "A01"], start=1))``. ``None`` disables
+        subject filtering.
+    nemar_seed_cache : bool
+        Class attribute, ``False`` by default. When ``True``, :meth:`get_data`
+        links the subject's prefetched NEMAR ``sourcedata/`` into the loader's
+        own cache (see :func:`moabb.datasets.download.seed_loader_cache`), so
+        a loader that caches files under names its URLs do not carry (an
+        extracted archive, figshare/Dataverse ids) finds them there. Enable it
+        only for loaders verified against their deposit: a loader that skips
+        its download as soon as *some* file is cached would load less data,
+        or fail, from an incomplete deposit.
 
     return_all_modalities : bool | dict, optional
         Controls which channel types are retained when data is picked:
@@ -616,8 +633,9 @@ class BaseDataset(metaclass=MetaclassDataset):
 
     _summary_table: dict[str, Any]
     nemar_id: str | None = None
-    nemar_subject_template: str | None = "{subject}"
+    nemar_subject_template: str | Mapping[Any, str] | None = "{subject}"
     nemar_bids_filters: dict[str, Any] | None = None
+    nemar_seed_cache: bool = False
 
     def __init__(
         self,
@@ -647,7 +665,15 @@ class BaseDataset(metaclass=MetaclassDataset):
                 "See moabb.datasets.base.is_camel_kebab_case for more information."
             )
         class_name = self.__class__.__name__.replace("_", "-")
-        if not is_abbrev(class_name, code):
+        # Renamed classes keep their original ``code`` (cache key); the old
+        # name in ``aliases_list`` marks the pair, so do not warn about it.
+        from moabb.utils import aliases_list
+
+        renamed = any(
+            new.replace("_", "-") == class_name and old == code
+            for old, new, _expire in aliases_list
+        )
+        if not renamed and not is_abbrev(class_name, code):
             log.warning(
                 f"The dataset class name {class_name!r} must be an abbreviation "
                 f"of its code {code!r}. "
@@ -757,10 +783,20 @@ class BaseDataset(metaclass=MetaclassDataset):
         250.0
         """
         from moabb.datasets.metadata import get_dataset_metadata
+        from moabb.utils import aliases_list
 
+        name = self.__class__.__name__
         try:
-            return get_dataset_metadata(self.__class__.__name__)
+            return get_dataset_metadata(name)
         except KeyError:
+            # Deprecated aliases are excluded from the catalog; resolve them
+            # to the renamed class's metadata.
+            for old, new, _expire in aliases_list:
+                if old == name:
+                    try:
+                        return get_dataset_metadata(new)
+                    except KeyError:
+                        break
             return None
 
     def _create_process_pipeline(self):
@@ -1081,10 +1117,23 @@ class BaseDataset(metaclass=MetaclassDataset):
         Raises
         ------
         RuntimeError
-            If ``nemar_subject_template`` cannot format the subject value.
+            If ``nemar_subject_template`` cannot format the subject value, or
+            is a mapping without an entry for it.
         """
         if self.nemar_subject_template is None:
             return None
+        if isinstance(self.nemar_subject_template, Mapping):
+            try:
+                return str(self.nemar_subject_template[subject])
+            except KeyError:
+                key_types = sorted(
+                    {type(k).__name__ for k in self.nemar_subject_template}
+                )
+                raise RuntimeError(
+                    f"{self.code} subject {subject!r} ({type(subject).__name__}) "
+                    "has no NEMAR label in its nemar_subject_template mapping "
+                    f"(keys are {', '.join(key_types)})."
+                ) from None
         try:
             return self.nemar_subject_template.format(subject=subject)
         except (IndexError, KeyError, ValueError) as exc:
@@ -1176,6 +1225,20 @@ class BaseDataset(metaclass=MetaclassDataset):
         if label is None or str(label) == str(subject):
             return subject
         return [subject, label]
+
+    def _seed_loader_cache(self, subject):
+        """Place a subject's NEMAR sourcedata where the loader caches it.
+
+        The store answers URL lookups (:func:`moabb.datasets.download.data_dl`)
+        only for files kept under the URL's own name; archives and opaque URLs
+        miss there. Seeding the loader's cache tree from the deposit's
+        provenance covers those loaders too. A no-op without a fetched store or
+        with the provider pinned to ``"upstream"``.
+        """
+        store = self._sourcedata_store()
+        if store is None or not self.nemar_seed_cache:
+            return 0
+        return seed_loader_cache(store.parent, self._nemar_subject_ids(subject))
 
     def _sourcedata_store(self):
         """Local NEMAR sourcedata store to serve this dataset's loads from.
@@ -1464,6 +1527,7 @@ class BaseDataset(metaclass=MetaclassDataset):
             if len(cached_steps) == 0:  # last option: we don't use cache
                 if get_download_provider() != "upstream":
                     self._prefetch_nemar_sourcedata([subject])
+                self._seed_loader_cache(subject)
                 with active_sourcedata_store(self._sourcedata_store()):
                     sessions_data = self._get_single_subject_data(subject)
                 assert sessions_data is not None  # should not happen
@@ -1642,6 +1706,39 @@ class BaseBIDSDataset(BaseDataset):
 
     If necessary, the methods ``_get_path_search_params`` and
     ``_get_read_extra_params`` can be implemented in the subclass.
+
+    See Also
+    --------
+    moabb.datasets.Zhou2016 : Reference implementation to copy when adding a
+        new BIDS dataset.
+    LocalBIDSDataset : Load a BIDS dataset that is already on disk, without
+        writing a subclass.
+
+    Notes
+    -----
+    **How to add a BIDS dataset.** Use :class:`moabb.datasets.Zhou2016` as the
+    template. It is the simplest ``BaseBIDSDataset`` subclass in MOABB: of
+    the base-class hooks it only implements ``__init__`` and
+    ``_download_subject`` (a Zenodo download), and it keeps the default BIDS
+    reading, so sessions and runs come from the BIDS entities. To add your
+    own dataset:
+
+    1. Create ``moabb/datasets/<yourdataset>.py`` with a class that inherits
+       from ``BaseBIDSDataset``.
+    2. In ``__init__``, call ``super().__init__`` with the subject list,
+       ``sessions_per_subject``, ``events`` (mapping from the event names in
+       ``events.tsv`` to integer codes), ``code``, ``interval``, ``paradigm``
+       and ``doi``, and forward ``selected_subjects`` / ``selected_sessions``.
+    3. Implement ``_download_subject`` so that it downloads (or reuses) the
+       data of one subject and returns the path to the **root** of the BIDS
+       dataset (the folder that contains ``dataset_description.json``).
+    4. Override ``_get_path_search_params`` only if the default search (all
+       raw EEG files of the subject) picks up files that should be skipped,
+       for example another task or modality.
+
+    The ``ExampleBIDSDataset`` skeleton in
+    :ref:`sphx_glr_auto_examples_tutorials_tutorial_4_adding_a_dataset.py`
+    walks through the same steps.
     """
 
     def _get_path_search_params(self, subject: int | None) -> dict[str, Any]:

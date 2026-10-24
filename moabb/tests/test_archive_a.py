@@ -143,23 +143,52 @@ def test_han_deduplicates_only_exact_trial_markers(monkeypatch):
 
 
 def test_han_transport_flags(tmp_path, monkeypatch):
+    monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", "upstream")
     data_dl = Mock(return_value=str(tmp_path / "synthetic.set"))
     monkeypatch.setattr(download, "data_dl", data_dl)
     ds = Han2026()
     ds.data_path(1, path=tmp_path, force_update=True, verbose="ERROR")
     assert data_dl.call_args.args[2:] == (tmp_path, True, "ERROR")
     assert "ds007327/sub-001/sub-001_task-dribble_eeg.set" in data_dl.call_args.args[0]
-    assert ds.nemar_id is None
+    assert ds.nemar_id == "on007327"
     _assert_invalid_subject_rejected(ds)
+
+
+def test_han_reads_the_recording_from_the_nemar_mirror(tmp_path, monkeypatch):
+    monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", "nemar")
+    data_dl = Mock(side_effect=AssertionError("must not reach OpenNeuro"))
+    monkeypatch.setattr(download, "data_dl", data_dl)
+    ds = Han2026()
+    monkeypatch.setattr(ds, "_download_nemar", Mock(return_value=str(tmp_path)))
+    paths = ds.data_path(3, path=tmp_path, verbose="ERROR")
+    assert paths == [str(tmp_path / "sub-003" / "eeg" / "sub-003_task-dribble_eeg.set")]
+    ds._download_nemar.assert_called_once_with(3, tmp_path, False, None, "ERROR")
+
+
+def test_han_falls_back_to_openneuro_when_the_mirror_fails(tmp_path, monkeypatch):
+    monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", "auto")
+    data_dl = Mock(return_value=str(tmp_path / "synthetic.set"))
+    monkeypatch.setattr(download, "data_dl", data_dl)
+    ds = Han2026()
+    monkeypatch.setattr(
+        ds, "_download_nemar", Mock(side_effect=download.NemarDownloadError("offline"))
+    )
+    with pytest.warns(RuntimeWarning, match="on007327"):
+        ds.data_path(1, path=tmp_path, verbose="ERROR")
+    assert "ds007327/sub-001/sub-001_task-dribble_eeg.set" in data_dl.call_args.args[0]
 
 
 def test_kodera_shared_channels_preserve_units_and_bads(monkeypatch):
     channels = list(kodera2023._COMMON_EEG_CHANNELS)
-    monkeypatch.setattr(
-        mne.io,
-        "read_raw_brainvision",
-        Mock(return_value=raw(channels + ["Fp1"], ["Stimulus/S  1", "Stimulus/S  1"])),
+    # The loader only accepts the archive's rates; 500 Hz is kept as is.
+    run = mne.io.RawArray(
+        np.full((len(channels) + 1, 5001), 2e-6),
+        mne.create_info(channels + ["Fp1"], 500, "eeg"),
+        verbose=False,
     )
+    run.info["bads"] = [channels[0]]
+    run.set_annotations(mne.Annotations([0, 6], 0, ["Stimulus/S  1"] * 2))
+    monkeypatch.setattr(mne.io, "read_raw_brainvision", Mock(return_value=run))
     result = Kodera2023()._read_run("synthetic_lh1.vhdr")
     assert result.ch_names == channels
     assert result.info["bads"] == [channels[0]]

@@ -258,7 +258,15 @@ def _bi_data_path(  # noqa: C901
     if ds.code == "BrainInvaders2012":
         # check if has the .zip
         url = f"{BI2012a_URL}subject_{subject:02}.zip"
-        path_zip = dl.data_dl(url, "BRAININVADERS2012")
+        path_zip = str(dl.data_dl_destination(url, "BRAININVADERS2012"))
+        planned = path_zip.strip(f"subject_{subject:02}.zip")
+        needed = [
+            osp.join(f"{planned}subject_{subject:02}", name)
+            for name, wanted in (("training.mat", ds.training), ("online.mat", ds.online))
+            if wanted
+        ]
+        if not dl.fill_from_store(osp.dirname(path_zip), needed):
+            path_zip = dl.data_dl(url, "BRAININVADERS2012")
         path_folder = path_zip.strip(f"subject_{subject:02}.zip")
 
         # check if has to unzip
@@ -286,12 +294,32 @@ def _bi_data_path(  # noqa: C901
         else:
             zipname_list = [f"subject{subject:02}.zip"]
 
+        # The NEMAR deposit keeps the extracted runs (subject_NN/Session*/
+        # *.mat + meta.yml); place them before asking for any session ZIP.
+        # fill_tree_from_store is all-or-nothing over the files it holds, so
+        # a partial deposit falls through to the ZIPs below.
+        dest0 = str(
+            dl.data_dl_destination(BI2013a_URL + zipname_list[0], "BRAININVADERS2013")
+        )
+        folder0 = dest0.strip(zipname_list[0])
+        dl.fill_tree_from_store(folder0, f"subject_{subject:02}")
+
         for i, zipname in enumerate(zipname_list):
             url = BI2013a_URL + zipname
+            # check if has the directory for the subject
+            directory = f"{folder0}subject_{subject:02}"
+            if not (osp.isdir(directory)):
+                os.makedirs(directory)
+
+            # Sessions are 1-based in the deposit/cache; the single-zip
+            # subjects (>7) hold every session under the same tree.
+            if len(zipname_list) == 1:
+                if osp.isfile(osp.join(directory, "meta.yml")):
+                    continue
+            elif osp.isdir(osp.join(directory, f"Session{i + 1}")):
+                continue
             path_zip = dl.data_dl(url, "BRAININVADERS2013")
             path_folder = path_zip.strip(zipname)
-
-            # check if has the directory for the subject
             directory = f"{path_folder}subject_{subject:02}"
             if not (osp.isdir(directory)):
                 os.makedirs(directory)
@@ -332,7 +360,11 @@ def _bi_data_path(  # noqa: C901
 
     elif ds.code == "BrainInvaders2014a":
         url = f"{BI2014a_URL}subject_{subject:02}.zip"
-        path_zip = dl.data_dl(url, "BRAININVADERS2014A")
+        path_zip = str(dl.data_dl_destination(url, "BRAININVADERS2014A"))
+        planned = f"{path_zip.strip(f'subject_{subject:02}.zip')}subject_{subject:02}"
+        needed = [osp.join(planned, f"subject_{subject:02}.mat")]
+        if not dl.fill_from_store(osp.dirname(path_zip), needed):
+            path_zip = dl.data_dl(url, "BRAININVADERS2014A")
         path_folder = path_zip.strip(f"subject_{subject:02}.zip")
 
         # check if has to unzip
@@ -348,7 +380,12 @@ def _bi_data_path(  # noqa: C901
     elif ds.code == "BrainInvaders2014b":
         group = (subject + 1) // 2
         url = f"{BI2014b_URL}group_{group:02}_mat.zip"
-        path_zip = dl.data_dl(url, "BRAININVADERS2014B")
+        path_zip = str(dl.data_dl_destination(url, "BRAININVADERS2014B"))
+        planned = f"{path_zip.strip(f'group_{group:02}_mat.zip')}group_{group:02}"
+        member = 1 if subject % 2 == 1 else 2
+        needed = [osp.join(planned, f"group_{group:02}_sujet_{member:02}.mat")]
+        if not dl.fill_from_store(osp.dirname(path_zip), needed):
+            path_zip = dl.data_dl(url, "BRAININVADERS2014B")
         path_folder = path_zip.strip(f"group_{group:02}_mat.zip")
 
         # check if has to unzip
@@ -374,7 +411,14 @@ def _bi_data_path(  # noqa: C901
     elif ds.code == "BrainInvaders2015a":
         # TODO: possible fusion with 2014a?
         url = f"{BI2015a_URL}subject_{subject:02}_mat.zip"
-        path_zip = dl.data_dl(url, "BRAININVADERS2015A")
+        path_zip = str(dl.data_dl_destination(url, "BRAININVADERS2015A"))
+        planned = f"{path_zip.strip(f'subject_{subject:02}.zip')}subject_{subject:02}"
+        needed = [
+            osp.join(planned, f"subject_{subject:02}_session_{session:02}.mat")
+            for session in [1, 2, 3]
+        ]
+        if not dl.fill_from_store(osp.dirname(path_zip), needed):
+            path_zip = dl.data_dl(url, "BRAININVADERS2015A")
         path_folder = path_zip.strip(f"subject_{subject:02}.zip")
 
         # check if has to unzip
@@ -395,7 +439,12 @@ def _bi_data_path(  # noqa: C901
     elif ds.code == "BrainInvaders2015b":
         # TODO: possible fusion with 2014b?
         url = f"{BI2015b_URL}group_{(subject + 1) // 2:02}_mat.zip"
-        path_zip = dl.data_dl(url, "BRAININVADERS2015B")
+        group = (subject + 1) // 2
+        path_zip = str(dl.data_dl_destination(url, "BRAININVADERS2015B"))
+        planned = f"{path_zip.strip(f'group_{group:02}_mat.zip')}group_{group:02}"
+        needed = [osp.join(planned, f"group_{group:02}_s{i}.mat") for i in range(1, 5)]
+        if not dl.fill_from_store(osp.dirname(path_zip), needed):
+            path_zip = dl.data_dl(url, "BRAININVADERS2015B")
         path_folder = path_zip.strip(f"group_{(subject + 1) // 2:02}_mat.zip")
         # check if has to unzip
         path_folder_subject = f"{path_folder}group_{(subject + 1) // 2:02}"
@@ -1626,9 +1675,9 @@ class BI2015b(BaseDataset):
         ),
         experiment=ExperimentMetadata(
             paradigm="p300",
-            events={"Target": 1, "Non-Target": 2},
+            events={"Target": 2, "NonTarget": 1},
             n_classes=2,
-            class_labels=["Target", "Non-Target"],
+            class_labels=["Target", "NonTarget"],
             study_design="Subjects played in pairs to the multi-user version of Brain Invaders during four randomised conditions (Cooperation 1-Target, Cooperation 2-Targets, Competition 1-Target, Competition 2-Targets). The interface uses the oddball paradigm on a grid of 36 symbols (1 or 2 Target, 35 or 34 Non-Target).",
             feedback_type="visual (game interface with reward screen)",
             stimulus_type="visual flash",

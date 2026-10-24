@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
-authors:
+authors: &authors
 - family-names: "Aristimunha"
   given-names: "Bruno"
   orcid: "https://orcid.org/0000-0001-5258-2995"
@@ -128,3 +128,19 @@ version: 1.7.1
 doi: 10.5281/zenodo.10034223
 date-released: 2026-08-31
 url: "https://github.com/NeuroTechX/moabb"
+# GitHub's "Cite this repository" turns a software entry into a BibTeX
+# @software, which many bibliography styles do not support, so the DOI gets
+# lost. A generic preferred citation is exported as @misc and keeps the DOI.
+# Keep its version, DOI and date in sync with the fields above.
+preferred-citation:
+  type: generic
+  title: "Mother of all BCI Benchmarks"
+  authors: *authors
+  version: 1.7.1
+  doi: 10.5281/zenodo.10034223
+  date-released: 2026-08-31
+  year: 2026
+  month: 8
+  publisher:
+    name: "Zenodo"
+  url: "https://github.com/NeuroTechX/moabb"

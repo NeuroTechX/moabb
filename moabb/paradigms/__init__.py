@@ -6,6 +6,8 @@ have two-class, multi-class, or continuous paradigms; similarly,
 different preprocessing is necessary for ERP vs ERD paradigms.
 """
 
+from .cognitive import CognitiveTask as CognitiveTask
+from .cognitive import FakeCognitiveParadigm as FakeCognitiveParadigm
 from .cvep import CVEP as CVEP
 from .cvep import BaseCVEP as BaseCVEP
 from .cvep import FakeCVEPParadigm as FakeCVEPParadigm

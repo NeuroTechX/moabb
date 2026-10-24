@@ -11,6 +11,8 @@ from pathlib import Path
 import mne
 import numpy as np
 
+from moabb.utils import depreciated_alias
+
 from . import download as dl
 from .base import BaseDataset
 from .metadata.schema import (
@@ -122,7 +124,8 @@ DEFAULT_EVENTS = {"Silence": 8}
 DATA_DIR = Path("../data_zenodo")
 
 
-class Lenaig2026(BaseDataset):
+@depreciated_alias("Lenaig2026", "1.9")
+class Gueho2026(BaseDataset):
     """
     SSAEP BCI dataset from Guého et al. (2026).
 
@@ -214,7 +217,7 @@ class Lenaig2026(BaseDataset):
 
     def __init__(self, exp=1, run="both", stim="Sinus"):
         """
-        Initialize the Lenaig2026 dataset object.
+        Initialize the Gueho2026 dataset object.
 
         Parameters
         ----------

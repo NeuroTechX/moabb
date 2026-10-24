@@ -85,6 +85,8 @@ class MIMED2024(BaseDataset):
 
     """
 
+    nemar_id = "nm000296"
+
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=128.0,
@@ -174,7 +176,17 @@ class MIMED2024(BaseDataset):
             Path(dl.get_dataset_path(self.code, path)) / f"MNE-{self.code.lower()}-data"
         )
         root = data_dir / "Motor Imagery"
-        if force_update or not root.exists():
+        files = [
+            root / scenario / f"P{subject:02d}.mat" for scenario in MIMED2024_SCENARIOS
+        ]
+        # The NEMAR deposit (nm000296) keeps the extracted "Motor Imagery" tree:
+        # take the subject's files from the local store before downloading the
+        # archive. A tree filled that way holds only some subjects, so the
+        # archive is needed whenever this subject's files are absent, and it
+        # then extracts only what is absent (never through a store link).
+        if force_update or not (
+            dl.fill_from_store(root, files) or all(f.is_file() for f in files)
+        ):
             download_and_extract_subject_zip(
                 MIMED2024_MI_URL,
                 self.code,
@@ -183,9 +195,9 @@ class MIMED2024(BaseDataset):
                 force_update,
                 verbose,
                 redownload_corrupted=True,
+                skip_existing=not force_update,
             )
-        sub = f"P{subject:02d}"
-        return [str(root / scenario / f"{sub}.mat") for scenario in MIMED2024_SCENARIOS]
+        return [str(f) for f in files]
 
     def _get_single_subject_data(self, subject):
         """Return two day sessions of six scenario-block runs each."""

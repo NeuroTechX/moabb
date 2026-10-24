@@ -13,13 +13,14 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from moabb.datasets import Daly2020, Damm2026, Peterson2020
+from moabb.datasets import Daly2020, Damm2026, Han2026, Peterson2020
 from moabb.datasets.base import BaseBIDSDataset
 
 
 CASES = [
     (Daly2020, "on002720", 1, "01"),
     (Damm2026, "on008446", 1, "01"),
+    (Han2026, "on007327", 1, "001"),
     (Peterson2020, "on003810", 2, "02"),
 ]
 
@@ -104,8 +105,16 @@ def _assert_loaded(raw, expected, event_id=None, tmax=None):
         assert len(epochs) == len(expected)
 
 
-def test_peterson_units_native_stim_and_boundary_trials(monkeypatch):
-    raw = _raw(["OVTK_GDF_Right", "OVTK_GDF_Tongue"])
+@pytest.mark.parametrize(
+    "labels",
+    [
+        pytest.param(["OVTK_GDF_Right", "OVTK_GDF_Tongue"], id="edf-annotations"),
+        # NEMAR mirror: read_raw_bids takes the events.tsv values instead.
+        pytest.param(["7", "9"], id="bids-events-tsv"),
+    ],
+)
+def test_peterson_units_native_stim_and_boundary_trials(monkeypatch, labels):
+    raw = _raw(labels)
     monkeypatch.setattr(
         BaseBIDSDataset, "_get_single_subject_data", Mock(return_value={"0": {"1": raw}})
     )

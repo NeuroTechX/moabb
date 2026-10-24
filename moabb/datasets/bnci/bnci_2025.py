@@ -146,12 +146,23 @@ def _load_data_001_2025(
     zip_filename = f"p{subject:03d}.zip"
     url = f"{base_url}{zip_filename}"
 
-    # Download the ZIP file
-    zip_path = dl.data_dl(url, "BNCI", path, force_update, verbose)
-
-    # Determine the extraction directory (same as ZIP location)
-    zip_dir = Path(zip_path).parent
+    # NEMAR deposits keep the extracted members, not the ZIP: take the trial
+    # file from the local store first.
+    zip_dir = dl.data_dl_destination(url, "BNCI", path).parent
     extract_dir = zip_dir / f"p{subject:03d}"
+    # The .set keeps its samples in the .fdt next to it.
+    if force_update or not any(
+        dl.fill_from_store(
+            zip_dir, [extract_dir / f"{stem}.set", extract_dir / f"{stem}.fdt"]
+        )
+        for stem in (f"p{subject:03d}v2-trialblocks", f"p{subject:03d}-trialblocks")
+    ):
+        # Download the ZIP file
+        zip_path = dl.data_dl(url, "BNCI", path, force_update, verbose)
+
+        # Determine the extraction directory (same as ZIP location)
+        zip_dir = Path(zip_path).parent
+        extract_dir = zip_dir / f"p{subject:03d}"
 
     # Extract if not already extracted or if force_update
     # Try v2 naming first (subject 1 style: p001v2-trialblocks.set)
@@ -1184,6 +1195,7 @@ class BNCI2025_002(BNCIBaseDataset):
             doi="10.1088/1741-2552/ac689f",
             description="Continuous 2D trajectory decoding from attempted movement: across-session performance in able-bodied and feasibility in a spinal cord injured participant",
             investigators=[
+                "Robert J Kobler",
                 "Hannah S Pulferer",
                 "Brynja Ásgeirsdóttir",
                 "Valeria Mondini",

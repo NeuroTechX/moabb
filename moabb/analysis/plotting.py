@@ -1785,10 +1785,19 @@ def _get_dataset_parameters(dataset):
 
 
 def get_bubble_size(size_mode, n_sessions, n_trials, trial_len):
+    """Size of the bubble of one subject.
+
+    ``n_trials`` is the number of trials of one subject over all of its
+    sessions and runs (the ``#Trials / class`` convention of the summary
+    tables), so the size does not depend on ``n_sessions``: the number of
+    sessions only sets the bubble transparency in
+    :func:`dataset_bubble_plot`. ``n_sessions`` is kept in the signature for
+    backward compatibility.
+    """
     if size_mode == "duration":
-        return n_trials * n_sessions * trial_len
+        return n_trials * trial_len
     elif size_mode == "count":
-        return n_trials * n_sessions
+        return n_trials
     else:
         raise ValueError(f"Unknown size_mode {size_mode}")
 
@@ -1835,9 +1844,9 @@ def dataset_bubble_plot(
     """Plot a bubble plot for a dataset.
 
     Each bubble represents one subject. The size of the bubble is
-    proportional to the number of trials per subject on a log scale,
-    the color represents the paradigm, and the alpha is proportional to
-    the number of sessions.
+    proportional to the number of trials per subject (all sessions and runs
+    together) on a log scale, the color represents the paradigm, and the
+    alpha is proportional to the number of sessions.
 
     You may pass a :class:`moabb.datasets.base.BaseDataset` object
     via the ``dataset`` parameret, and all the characteristics of this dataset
@@ -1892,9 +1901,11 @@ def dataset_bubble_plot(
     n_subjects: int | None
         Number of subjects. Required if ``dataset`` is None.
     n_sessions: int | None
-        Number of sessions. Required if ``dataset`` is None.
+        Number of sessions per subject; it sets the bubble transparency only.
+        Required if ``dataset`` is None.
     n_trials: int | None
-        Number of trials per session. Required if ``dataset`` is None.
+        Number of trials per subject, all sessions and runs together.
+        Required if ``dataset`` is None.
     trial_len: float | None
         Duration of one trial, in seconds. Required if ``dataset`` is None.
     random_state: int | numpy.random.Generator | None
@@ -1902,8 +1913,10 @@ def dataset_bubble_plot(
         The default, 0, produces reproducible layouts. Pass ``None`` for a fresh,
         non-deterministic layout on each call.
     """
-    p = sea.color_palette("tab10", 5)
-    color_map = color_map or dict(zip(["imagery", "p300", "ssvep", "cvep", "rstate"], p))
+    p = sea.color_palette("tab10", 6)
+    color_map = color_map or dict(
+        zip(["imagery", "cognitive", "p300", "ssvep", "cvep", "rstate"], p)
+    )
 
     alphas = alphas or [0.8, 0.65, 0.5, 0.35, 0.2]
 

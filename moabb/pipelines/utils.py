@@ -1,6 +1,10 @@
+import hashlib
 import importlib
+import importlib.util
 import logging
 import os
+import re
+import sys
 from collections import OrderedDict
 from copy import deepcopy
 from glob import glob
@@ -73,6 +77,69 @@ def create_pipeline_from_config(config):
     return pipeline
 
 
+def _pipeline_module_name(python_file):
+    """Return a module name for a Python pipeline config that no other uses.
+
+    The name is derived from the absolute path, so two configs sharing a file
+    name in different directories get different modules, and a fresh process
+    that parses the same file first gets the same name again (which lets it
+    unpickle models saved from it). A file parsed again in the same process
+    gets a new name, so objects from the earlier parse remain picklable.
+    """
+    path = os.path.abspath(python_file)
+    stem = re.sub(r"\W", "_", os.path.splitext(os.path.basename(path))[0])
+    digest = hashlib.sha256(path.encode("utf-8")).hexdigest()[:12]
+    base = f"moabb_pipeline_config_{stem}_{digest}"
+    name, n_loaded = base, 0
+    while name in sys.modules:
+        n_loaded += 1
+        name = f"{base}_{n_loaded}"
+    return name
+
+
+def _pickle_by_value_in_workers(module):
+    """Send the objects of ``module`` to joblib/loky workers by value.
+
+    A worker process cannot import a module that was executed from a config
+    file, so cloudpickle must not pickle its functions and classes by
+    reference now that the module is registered in ``sys.modules``.
+    """
+    for name in ("joblib.externals.cloudpickle", "cloudpickle"):
+        try:
+            cloudpickle = importlib.import_module(name)
+        except ImportError:
+            continue
+        register = getattr(cloudpickle, "register_pickle_by_value", None)
+        if register is not None:
+            register(module)
+
+
+def _load_python_pipeline_config(python_file):
+    """Execute a Python pipeline config as a module registered in sys.modules.
+
+    pickle stores functions and classes by module name, so anything defined in
+    the config (e.g. the function of a ``FunctionTransformer``) can only be
+    pickled (``pickle.dumps``, ``save_model``) if its module is found in
+    ``sys.modules``.
+    """
+    module_name = _pipeline_module_name(python_file)
+    spec = importlib.util.spec_from_file_location(module_name, python_file)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[module_name] = module
+    try:
+        spec.loader.exec_module(module)
+    except BaseException:
+        sys.modules.pop(module_name, None)
+        raise
+    if not hasattr(module, "PIPELINE"):
+        sys.modules.pop(module_name, None)
+        raise ValueError(
+            f"Python pipeline config {python_file} must define a PIPELINE object"
+        )
+    _pickle_by_value_in_workers(module)
+    return module.PIPELINE
+
+
 def parse_pipelines_from_directory(dir_path):
     """Parse pipeline configuration files from a directory or one config file.
 
@@ -87,6 +154,14 @@ def parse_pipelines_from_directory(dir_path):
     pipeline_configs : list of dict
         Generated pipeline config dictionaries. Each entry contains name,
         pipeline and paradigms; YAML configs may also contain param_grid.
+
+    Notes
+    -----
+    Each Python config is executed as its own module, registered in
+    :data:`sys.modules` under a name derived from its path
+    (``moabb_pipeline_config_<file name>_<hash>``), so functions and classes it
+    defines can be pickled, e.g. by ``save_model``. To unpickle such a model in
+    another Python session, parse the same config file first.
 
     Raises
     ------
@@ -132,14 +207,7 @@ def parse_pipelines_from_directory(dir_path):
             pipeline_configs.append(pipeline_config)
 
     for python_file in sorted(python_files):
-        spec = importlib.util.spec_from_file_location("custom", python_file)
-        foo = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(foo)
-        if not hasattr(foo, "PIPELINE"):
-            raise ValueError(
-                f"Python pipeline config {python_file} must define a PIPELINE object"
-            )
-        pipeline_configs.append(foo.PIPELINE)
+        pipeline_configs.append(_load_python_pipeline_config(python_file))
 
     return pipeline_configs
 

@@ -31,6 +31,8 @@ format can also be used via
 A visual overview of all datasets can be generated using the functions :func:`moabb.datasets.utils.plot_datasets_grid`
 or :func:`moabb.datasets.utils.plot_datasets_cluster`.
 This overview allows to quickly compare the number of subjects, trials, and sessions across different datasets.
+Each bubble is one subject: its size is the number of trials of that subject, all sessions and runs together
+(**#Classes** × **#Trials / class** in the tables below), and its transparency the number of sessions.
 The function will generate a figure like this:
 
 .. figure:: images/datasets_overview.png
@@ -49,11 +51,11 @@ Column definitions:
 - **Dataset** is the name of the dataset.
 - **#Subj** is the number of subjects.
 - **#Chan** is the number of EEG channels.
-- **#Trials / class** is the number of repetitions performed by one subject for each class. This number is computed using only the first subject of each dataset. *The definitions of a **class** and of a **trial** depend on the paradigm used (see sections below)*.
+- **#Trials / class** is the number of repetitions performed by one subject for each class, counted over all the sessions and runs of that subject: it is not a number per session or per run. When subjects differ, the number of a typical subject is given and the dataset's documentation describes the differences. P300 tables give it as ``<NT> NT / <T> T`` (non-target and target trials of one subject). *The definitions of a **class** and of a **trial** depend on the paradigm used (see sections below)*.
 - **Trials length** is the duration of trial in seconds.
-- **Total_trials** is the total number of trials in the dataset (all subjects and classes together).
+- **Total_trials** is the total number of trials in the dataset (all subjects, sessions, runs and classes together). It is about **#Subj** × **#Classes** × **#Trials / class**, exactly that when every subject has the same number of trials; it is not multiplied again by **#Sessions** or **#Runs**.
 - **Freq** is the sampling frequency of the raw data.
-- **#Session** is the number of sessions per subject. Different sessions are often recorded on different days.
+- **#Sessions** is the number of sessions per subject, as the dataset class returns them by default. Different sessions are often recorded on different days. When subjects differ, the cell starts with the number of sessions of a typical (median) subject and gives the others in parentheses, e.g. ``1 (8 for subjects 1-7)`` or ``2 (1-3)``: :func:`~moabb.datasets.utils.plot_datasets_grid` and :func:`~moabb.analysis.plotting.dataset_bubble_plot` read the first integer of the cell.
 - **#Runs** is the number of runs per session. A run is a continuous recording of the EEG data. Often, the different runs of a given session are recorded without removing the EEG cap in between.
 
 
@@ -124,6 +126,25 @@ motor band:
 
 .. csv-table::
    :file: ../build/summary_imagined_speech.csv
+   :header-rows: 1
+   :class: sortable
+
+
+Cognitive Tasks
+======================
+
+Non-motor endogenous tasks decoded with
+:class:`~moabb.paradigms.CognitiveTask` (``paradigm="cognitive"``):
+mental arithmetic, handwriting/stroke imagery, mental rotation,
+word generation, music imagery.
+
+Cognitive-specific definitions:
+
+- **#Classes** is the number of different cognitive tasks.
+- **Trial** is one repetition of the cognitive task.
+
+.. csv-table::
+   :file: ../build/summary_cognitive.csv
    :header-rows: 1
    :class: sortable
 
@@ -233,6 +254,12 @@ but we are open to any suggestion.
 
 If you want to actively contribute to inclusion of one new dataset, you can follow also this tutorial
 `tutorial <https://moabb.neurotechx.com/docs/auto_examples/tutorials/tutorial_4_adding_a_dataset.html>`__.
+
+If the data are already in BIDS format, subclass
+:class:`~moabb.datasets.base.BaseBIDSDataset` and use
+:class:`~moabb.datasets.Zhou2016` as the template: of the base-class hooks it
+only implements ``__init__`` and ``_download_subject``. The ``BaseBIDSDataset`` docstring lists
+the steps.
 
 .. raw:: html
 

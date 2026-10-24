@@ -207,7 +207,7 @@ def test_hefmi_ich_data_path_downloads_subject_files(tmp_path: Path, monkeypatch
         "moabb.datasets.hefmi_ich2025._MANIFEST", {1: [(42, "sub01_1_epo.mat")]}
     )
 
-    def fake_download(url, sign, root, force_update, verbose):
+    def fake_download(url, sign, root, force_update, verbose, fname=None):
         downloaded = tmp_path / "MNE-hefmiich2025-data" / "42"
         downloaded.write_bytes(b"data")
         return downloaded
@@ -451,3 +451,56 @@ def test_schrag2026_skips_run_with_zero_annotations_after_high_drift(
         "zero labelled trials" in record.message and "1personal" in record.message
         for record in caplog.records
     ), "a warning naming the subject/run must be logged"
+
+
+def test_rozado2015_picks_scalp_channels_by_label_in_microvolts(monkeypatch):
+    """Rozado2015 (#1070): channel 0 of the BioSemi stream is ``Trig1``.
+
+    The loader took the first 32 channels by position (trigger served as Fp1,
+    every label shifted, Cz dropped) and scaled microvolts as ADC counts.
+    """
+    from moabb.datasets import rozado2015
+    from moabb.datasets.rozado2015 import Rozado2015
+
+    scalp = list(Rozado2015._ch_names)
+    labels = ["Trig1"] + scalp + [f"EX{i}" for i in range(1, 9)]
+    n_times = 2048
+    ts = 100.0 + np.arange(n_times) / 512.0
+    # channel k (scalp k-1) holds a constant k microvolts; Trig1 a huge code
+    data = np.tile(np.arange(len(labels), dtype=np.float32), (n_times, 1))
+    data[:, 0] = 7697260.0
+    channels = [{"label": [lab], "unit": ["microvolts"]} for lab in labels]
+    eeg = {
+        "info": {
+            "type": ["EEG"],
+            "nominal_srate": ["512"],
+            "channel_count": [str(len(labels))],
+            "desc": [{"channels": [{"channel": channels}]}],
+        },
+        "time_series": data,
+        "time_stamps": ts,
+    }
+    markers = {
+        "info": {"type": ["Markers"]},
+        "time_series": [["229"], ["left"], ["nothing"], ["experiment_end"]],
+        "time_stamps": np.array([100.1, 101.0, 102.0, 103.0]),
+    }
+    monkeypatch.setattr(rozado2015, "read_xdf", lambda path: ([markers, eeg], {}))
+
+    raw = Rozado2015()._load_xdf_run("experiment.xdf")
+
+    assert raw.ch_names == scalp + ["stim"]
+    values = raw.get_data()
+    np.testing.assert_allclose(values[:32, 0] * 1e6, np.arange(1, 33), rtol=1e-6)
+    assert values[scalp.index("Cz"), 0] == pytest.approx(32e-6)
+    stim = values[32]
+    assert np.flatnonzero(stim).tolist() == [512, 1024]
+    assert stim[512] == 1 and stim[1024] == 2
+
+    channels[5]["unit"] = ["counts"]
+    with pytest.raises(ValueError, match="Unexpected EEG units"):
+        Rozado2015()._load_xdf_run("experiment.xdf")
+    channels[5]["unit"] = ["microvolts"]
+    channels[labels.index("Cz")]["label"] = ["A32"]
+    with pytest.raises(ValueError, match="lacks channels"):
+        Rozado2015()._load_xdf_run("experiment.xdf")

@@ -440,7 +440,7 @@ class TestMetadataCatalog:
     def test_wang2016_ssvep_metadata(self):
         """Test Wang2016 SSVEP metadata."""
         metadata = get_dataset_metadata("Wang2016")
-        assert metadata.participants.n_subjects == 34
+        assert metadata.participants.n_subjects == 35
         assert metadata.experiment.paradigm == "ssvep"
         assert metadata.experiment.n_classes == 40
         assert metadata.acquisition.n_channels == 64
@@ -501,6 +501,7 @@ class TestMetadataCatalog:
             # Experiment required field
             assert metadata.experiment.paradigm in [
                 "imagery",
+                "cognitive",
                 "p300",
                 "ssvep",
                 "cvep",
@@ -509,7 +510,7 @@ class TestMetadataCatalog:
 
     def test_catalog_dataset_count(self):
         """Test that catalog contains expected number of datasets."""
-        assert len(DATASET_METADATA_CATALOG) == 204
+        assert len(DATASET_METADATA_CATALOG) == 206
 
     def test_bnci2015_006_metadata(self):
         """Test BNCI2015_006 music BCI metadata."""
@@ -570,7 +571,9 @@ class TestMetadataCatalog:
             assert metadata.experiment.paradigm == "p300"
             assert "10.1016/j.neuroimage.2020.117465" in metadata.documentation.doi
 
-    @pytest.mark.parametrize("paradigm", ["imagery", "p300", "ssvep", "cvep", "rstate"])
+    @pytest.mark.parametrize(
+        "paradigm", ["imagery", "cognitive", "p300", "ssvep", "cvep", "rstate"]
+    )
     def test_paradigm_counts(self, paradigm):
         """Cross-check catalog paradigm counts against summary CSV rows."""
         catalog_names = {
@@ -606,6 +609,7 @@ class TestMetadataCatalog:
         """Test that detected_paradigm agrees with experiment.paradigm."""
         expected_by_paradigm = {
             "imagery": "motor_imagery",
+            "cognitive": "cognitive",
             "p300": "p300",
             "ssvep": "ssvep",
             "cvep": "cvep",

@@ -21,6 +21,10 @@ from moabb.utils import _handle_deprecated_kwargs
 
 BASE_URL = "https://physionet.org/files/eegmmidb/1.0.0/"
 
+# Sampling rate of 106 of the 109 subjects; the 128 Hz runs of subjects 88, 92
+# and 100 are resampled to it.
+_SFREQ = 160.0
+
 
 class PhysionetMI(BaseDataset):
     """Physionet Motor Imagery dataset.
@@ -58,11 +62,24 @@ class PhysionetMI(BaseDataset):
        until the target disappears. Then the subject relaxes.
 
     .. note::
-        Subject 88 was recorded at 128 Hz instead of 160 Hz like all other
-        subjects. Loading subject 88 together with other subjects will cause
-        errors in any paradigm due to incompatible sampling rates. To avoid
-        this, exclude subject 88 when loading the full dataset, e.g.
-        ``PhysionetMI(subjects=[s for s in range(1, 110) if s != 88])``.
+        Subjects 88, 92 and 100 were recorded at 128 Hz instead of 160 Hz like
+        all other subjects (every imagery and execution run of these three
+        subjects; checked on every released file of those runs). MOABB
+        paradigms stack every subject into one array, so the loader resamples
+        any run that is not at 160 Hz to 160 Hz, and all 109 subjects can be
+        loaded together. The signals of subjects 88, 92 and 100 therefore hold
+        no content above 64 Hz.
+
+    .. note::
+        Files are fetched from the byte-identical AWS Open Data mirror
+        (``https://physionet-open.s3.amazonaws.com``) first, because
+        ``physionet.org`` often serves this dataset at tens of kB/s and times
+        out. On any mirror error the loader falls back to ``physionet.org``.
+        Set ``MOABB_S3_MIRROR=0`` to always use ``physionet.org``. For a full
+        bulk copy, ``s5cmd --no-sign-request sync
+        "s3://physionet-open/eegmmidb/1.0.0/*"
+        $MNE_DATA/MNE-eegbci-data/files/eegmmidb/1.0.0/`` fills the same
+        layout the loader expects.
 
     Parameters
     ----------
@@ -90,7 +107,7 @@ class PhysionetMI(BaseDataset):
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
-            sampling_rate=160.0,
+            sampling_rate=_SFREQ,
             channel_types={"eeg": 64},
             software="BCI2000",
             sensors=[
@@ -267,6 +284,11 @@ class PhysionetMI(BaseDataset):
     def _load_one_run(self, subject, run, preload=True):
         raw_fname = self._load_data(subject, runs=[run], verbose="ERROR")[0]
         raw = read_raw_edf(raw_fname, preload=preload, verbose="ERROR")
+        if raw.info["sfreq"] != _SFREQ:
+            # Subjects 88, 92 and 100 were recorded at 128 Hz; one rate for
+            # all subjects.
+            # The annotations keep their times through the resampling.
+            raw.load_data(verbose="ERROR").resample(_SFREQ, verbose="ERROR")
         raw.rename_channels(lambda x: x.strip("."))
         raw.rename_channels(lambda x: x.upper())
         # fmt: off

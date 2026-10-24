@@ -19,11 +19,14 @@ import moabb.datasets.compound_dataset as db_compound
 from moabb.datasets import (
     BNCI2014_001,
     Cattan2019_VR,
+    Han2026,
     Kojima2024A,
     Kojima2024B,
+    PerezBlanco2026,
     Shin2017A,
     Shin2017B,
     Thielen2015,
+    Wang2026,
 )
 from moabb.datasets.base import (
     BaseDataset,
@@ -61,20 +64,24 @@ NEMAR_ID_PATTERN = r"(nm|on|ds)\d{6}"
 NEMAR_ID_EXEMPT = {
     "FakeDataset",
     "FakeVirtualRealityDataset",
-    "Schrag2026Pediatric",
-    "Lenaig2026",
-    "Wang2026",
-    "MartinezPeon2025",  # no public NEMAR mirror yet; tracked in #1198
-    "MIND2026",  # no public NEMAR mirror yet; tracked in #1195
-    "Han2026",  # no public NEMAR mirror yet; tracked in #1194
-    "Brodu2012",  # no public NEMAR mirror yet; tracked in #1193
-    "MIBMPI2024",  # no public NEMAR mirror yet; tracked in #1190
-    "Yagan2023",  # hosted on Mendeley Data; no NEMAR deposit
+    # Deposits that exist but are private: their publication was denied, so a
+    # class attribute would only make every load try NEMAR and fall back.
+    # Set ``nemar_id`` once each deposit is published.
+    "Brodu2012",  # nm000366 (licence "free for research use": author consent)
+    "Gueho2026",  # nm000333 (Lenaig2026 alias) (CC BY-NC-ND 4.0: a conversion is an adaptation)
+    "MartinezPeon2025",  # nm000332 (CC BY-NC-SA 4.0: authors' permission)
+    "MIBMPI2024",  # nm000331 (licence/consent evidence requested by NEMAR)
+    "MIND2026",  # nm000337 (acquisition timestamps to coarsen)
+    # No NEMAR deposit yet; BIDS deposits prepared, not uploaded.
+    "Yagan2023",  # Mendeley Data vyczny2r4w
+    "Wang2026Handwriting",  # figshare 29987758
 }
 # Datasets whose NEMAR deposit is assigned but not yet public (private,
 # pending publication). Their ids are valid and still checked; tracked here
 # so we know which deposits remain to be published.
 NEMAR_ID_PENDING = {
+    # Removed on 2026-10-08: the other 30 deposits listed here were published
+    # on NEMAR and are anonymously reachable.
     # Removed on 2026-10-05: these 15 deposits were published on NEMAR and are
     # anonymously reachable (fresh clone + annexed-EDF HTTP 200 against
     # https://nemar.s3.us-east-2.amazonaws.com/<id>/objects/<key>).
@@ -84,38 +91,8 @@ NEMAR_ID_PENDING = {
     #   nm000258 Pressel2016, nm000261 Nguyen2017_V, nm000263 Kaneshiro2015,
     #   nm000269 Mainsah2025_A, nm000273 Lee2019_SSVEP, nm000274 Beetl2021_B.
     # Removed on 2026-10-06 (published): nm000292 Vagaja2023.
-    "Alawieh2025": "nm000312",
-    "Batista2022": "nm000318",
-    "Farabbi2020": "nm000294",
-    "IMUMIA2026": "nm000316",
-    "Jia2019": "nm000306",
-    "Kodera2023": "nm000295",
-    "Kueper2024": "nm000319",
-    "Kumar2024": "nm000177",
-    "Lee2019_SSVEP": "nm000273",
-    "Ma2022": "nm000288",
-    "Leelakittisin2025": "nm000330",
-    "Leeuwis2021": "nm000327",
-    "MILimbEEG": "nm000328",
-    "MIMED2024": "nm000296",
-    "MOVING2024": "nm000293",
-    "MartinezPeon2024": "nm000314",
-    "NETBCI2026": "nm000305",
-    "NeBULA2025": "nm000322",
-    "NeuroTUMBCI2025": "nm000308",
-    "Ortiz2023": "nm000320",
-    "Pan2023": "nm000291",
-    "Pan2025": "nm000300",
-    "PardoGarcia2026": "nm000309",
-    "Perdikis2018": "nm000307",
-    "PerezBlanco2026": "nm000304",
-    "PoloHortiguela2025": "nm000302",
-    "Shin2022": "nm000315",
-    "Thapa2025": "nm000324",
-    "WRCC2023_MI_A": "nm000297",
-    "WRCC2023_MI_B": "nm000298",
-    "WRCC2023_MI_C": "nm000299",
-    "Wang2025": "nm000325",
+    # Removed on 2026-10-17 (published): nm000304 PerezBlanco2026.
+    "Ma2022": "nm000288"
 }
 
 
@@ -373,13 +350,36 @@ class Test_Datasets:
             pytest.param(BNCI2014_001, "nm000139", id="BNCI2014_001"),
             pytest.param(BI2012, "nm000260", id="BI2012"),
             pytest.param(Thielen2015, "nm000196", id="Thielen2015"),
+            pytest.param(PerezBlanco2026, "nm000304", id="PerezBlanco2026"),
+            pytest.param(Wang2026, "nm000335", id="Wang2026"),
+            pytest.param(Han2026, "on007327", id="Han2026"),
         ],
     )
     def test_nemar_id_class_attributes(self, dataset, nemar_id):
         assert dataset.nemar_id == nemar_id
 
+    def test_wang2026_matches_the_deposit_subject_labels(self):
+        """nm000335 files each subject as ``sub-<global id>``, not the bare id."""
+        from moabb.datasets.download import _manifest_subject_files
+
+        record = {
+            "files": [
+                {"file": "JointLearning/S001/S001_run0.mat", "subject": "sub-1"},
+                {"file": "TactileControl/S001/S001_run0.mat", "subject": "sub-24"},
+            ]
+        }
+        ds = Wang2026()
+        assert _manifest_subject_files(record, ds._nemar_subject_ids(1)) == [
+            "JointLearning/S001/S001_run0.mat"
+        ]
+        assert _manifest_subject_files(record, ds._nemar_subject_ids(24)) == [
+            "TactileControl/S001/S001_run0.mat"
+        ]
+
     @pytest.mark.parametrize("dataset", dataset_list)
     def test_all_datasets_have_valid_nemar_id(self, dataset):
+        if dataset.__name__ in {old for old, _n, _e in aliases_list}:
+            pytest.skip("deprecated alias")
         if dataset.__name__ in NEMAR_ID_EXEMPT:
             pytest.skip(f"{dataset.__name__} has no NEMAR deposit")
         if dataset.__name__ in NEMAR_ID_PENDING:
@@ -445,6 +445,79 @@ class Test_Datasets:
         dataset.sourcedata_path(subject=1, path=tmp_path)
 
         assert calls[-1]["subject"] == expected
+
+    @pytest.mark.parametrize(
+        ("labels", "subject", "expected"),
+        [
+            pytest.param({1: "zdvm", 2: "bvgy"}, 1, "zdvm", id="lowercase-word"),
+            pytest.param({1: "A01", 2: "A02"}, 2, "A02", id="alphanumeric"),
+            pytest.param({1: "001"}, 1, "001", id="zero-padded-digits"),
+        ],
+    )
+    def test_nemar_subject_accepts_explicit_mapping(self, labels, subject, expected):
+        """BIDS subject labels can be any alphanumeric string (gh-1098).
+
+        A ``{moabb_subject: bids_label}`` mapping covers labels no format
+        template can produce, such as ``sub-zdvm`` or ``sub-A01``.
+        """
+        dataset = FakeDataset(n_subjects=2)
+        dataset.nemar_subject_template = labels
+
+        assert dataset._nemar_subject(subject) == expected
+
+    def test_nemar_subject_mapping_reaches_nemar_dl(self, monkeypatch, tmp_path):
+        """The mapped label, not the MOABB integer, is what NEMAR receives."""
+        dataset = FakeDataset(n_subjects=2)
+        dataset.nemar_id = "nm000001"
+        dataset.nemar_subject_template = {1: "zdvm", 2: "bvgy"}
+        calls = []
+
+        def nemar_dl(*args, **kwargs):
+            calls.append(kwargs["subject"])
+            return str(tmp_path)
+
+        monkeypatch.setattr("moabb.datasets.base.nemar_dl", nemar_dl)
+        dataset._download_nemar(subject=2, path=tmp_path)
+
+        assert calls == ["bvgy"]
+
+    def test_sourcedata_path_aliases_mapped_label(self, monkeypatch, tmp_path):
+        """A mapped label is offered alongside the raw MOABB id."""
+        dataset = FakeDataset(n_subjects=1)
+        dataset.nemar_id = "nm000001"
+        dataset.nemar_subject_template = {1: "A01"}
+        calls = []
+
+        def nemar_sourcedata_dl(*args, **kwargs):
+            calls.append(kwargs["subject"])
+            return str(tmp_path)
+
+        monkeypatch.setattr(
+            "moabb.datasets.base.nemar_sourcedata_dl", nemar_sourcedata_dl
+        )
+        dataset.sourcedata_path(subject=1, path=tmp_path)
+
+        assert calls == [[1, "A01"]]
+
+    def test_nemar_subject_mapping_missing_subject_raises(self):
+        dataset = FakeDataset(n_subjects=2)
+        dataset.nemar_subject_template = {1: "zdvm"}
+
+        with pytest.raises(RuntimeError, match=r"subject 2 .*no NEMAR label"):
+            dataset._nemar_subject(2)
+
+    def test_lioi2020_xp2_uses_declarative_subject_mapping(self):
+        """Lioi2020_XP2's non-contiguous labels need no method override."""
+        from moabb.datasets import Lioi2020_XP2
+        from moabb.datasets.base import BaseDataset
+
+        assert Lioi2020_XP2._nemar_subject is BaseDataset._nemar_subject
+        dataset = Lioi2020_XP2()
+        labels = [dataset._nemar_subject(s) for s in dataset.subject_list]
+        assert labels[:3] == ["xp201", "xp202", "xp203"]
+        assert dataset._nemar_subject(8) == "xp210"
+        assert labels[-1] == "xp222"
+        assert len(set(labels)) == len(dataset.subject_list) == 17
 
     def test_download_falls_back_from_nemar(self, monkeypatch, tmp_path):
         dataset = FakeDataset(n_subjects=1)
@@ -872,7 +945,10 @@ class TestSubjectSessionFiltering:
 
     def test_all_datasets_accept_subjects_param(self):
         """Every dataset class in dataset_list accepts subjects or sessions."""
+        deprecated = {old for old, _new, _exp in aliases_list}
         for cls in dataset_list:
+            if cls.__name__ in deprecated:
+                continue  # deprecated alias: delegates to the renamed class
             sig = inspect.signature(cls.__init__)
             params = set(sig.parameters.keys())
             # Check own params or inherited from parent

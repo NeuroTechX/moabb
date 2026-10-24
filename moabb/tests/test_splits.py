@@ -1,7 +1,10 @@
+import warnings
+
 import numpy as np
 import pandas as pd
 import pytest
 from sklearn.model_selection import (
+    BaseCrossValidator,
     GroupKFold,
     GroupShuffleSplit,
     KFold,
@@ -850,6 +853,42 @@ def test_learning_curve_partial_iteration_advances_only_one_base_fold(random_sta
         actual_state = np.random.get_state()
 
     _assert_random_states_equal(actual_state, expected_state)
+
+
+def test_learning_curve_ratio_subsets_are_stratified():
+    """Ratio subsets keep every class (minority last in the pool on purpose)."""
+    y = np.array([0] * 90 + [1] * 10)
+    values = [0.05, 0.1, 0.5, 1.0]
+    splitter = LearningCurveSplitter(
+        data_size={"policy": "ratio", "value": values}, n_perms=1, random_state=0
+    )
+    subsets = splitter._get_data_size_subsets(y)
+
+    assert [len(s) for s in subsets] == [5, 10, 50, 100]
+    for small, large in zip(subsets, subsets[1:]):
+        assert set(small) < set(large)
+    for subset in subsets:
+        labels = y[subset]
+        assert set(labels) == {0, 1}
+        # proportional up to rounding: 10% minority
+        assert abs((labels == 1).sum() - 0.1 * len(subset)) <= 1
+
+
+def test_learning_curve_ratio_split_never_yields_single_class_train():
+    rng = np.random.default_rng(0)
+    y = rng.permutation(np.array([0] * 45 + [1] * 5))
+    splitter = LearningCurveSplitter(
+        data_size={"policy": "ratio", "value": [0.1, 0.5]},
+        n_perms=4,
+        test_size=0.2,
+        random_state=0,
+    )
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", RuntimeWarning)  # no skipped splits
+        splits = list(splitter.split(np.arange(len(y)), y))
+    assert len(splits) == 8
+    for train, _ in splits:
+        assert set(y[train]) == {0, 1}
 
 
 @pytest.mark.parametrize(
@@ -1805,3 +1844,92 @@ def test_purged_epoch_nullable_float32_missing_sample_fails_closed():
     timing.loc[3, "event_sample"] = pd.NA
     with pytest.raises(ValueError, match="unambiguous sample coordinates"):
         epoch_interval_groups(timing)
+
+
+class _TargetSubjectSplitter(BaseCrossValidator):
+    """Metadata-aware top-level splitter with a 3-way train/test/excluded fold.
+
+    Train on every other subject, test on ``target`` at ``test_session``, and
+    drop the target's other sessions from both sets (issue #1104).
+    """
+
+    metadata_columns = ("subject", "session")
+
+    def __init__(self, target, test_session):
+        self.target = target
+        self.test_session = test_session
+
+    def split(self, y, metadata):
+        del y
+        subject = metadata["subject"].to_numpy()
+        session = metadata["session"].to_numpy()
+        positions = np.arange(len(metadata))
+        test = (subject == self.target) & (session == self.test_session)
+        yield positions[subject != self.target], positions[test]
+
+    def get_n_splits(self, *args, **kwargs):
+        return 1
+
+
+def _three_subject_two_session_metadata():
+    metadata = pd.DataFrame(
+        {
+            "subject": np.repeat([1, 2, 3], 4),
+            "session": np.tile(["0train", "0train", "1test", "1test"], 3),
+        }
+    )
+    return np.tile([0, 1], 6), metadata
+
+
+@pytest.mark.parametrize("splitter_class", [CrossSubjectSplitter, CrossSessionSplitter])
+def test_metadata_aware_cv_class_is_used_directly(splitter_class):
+    """A ``split(y, metadata)`` cv_class is called directly, not as inner CV."""
+    y, metadata = _three_subject_two_session_metadata()
+    split = splitter_class(
+        cv_class=_TargetSubjectSplitter, target=2, test_session="1test"
+    )
+
+    folds = list(split.split(y, metadata))
+
+    assert len(folds) == 1
+    assert split.get_n_splits(metadata) == 1
+    train, test = folds[0]
+    assert set(metadata.loc[train, "subject"]) == {1, 3}
+    assert set(map(tuple, metadata.loc[test, ["subject", "session"]].values)) == {
+        (2, "1test")
+    }
+    excluded = np.setdiff1d(metadata.index, np.concatenate([train, test]))
+    assert set(map(tuple, metadata.loc[excluded, ["subject", "session"]].values)) == {
+        (2, "0train")
+    }
+
+
+def test_learning_curve_splitter_is_not_a_top_level_splitter():
+    """``metadata_columns`` alone (no ``split(..., metadata)``) keeps inner-CV use."""
+    assert not splitters_module._is_metadata_splitter(LearningCurveSplitter)
+    assert not splitters_module._is_metadata_splitter(LeaveOneGroupOut)
+    assert splitters_module._is_metadata_splitter(_TargetSubjectSplitter)
+
+
+class _DirectMetadataSplitter:
+    metadata_columns = ("target",)
+
+    def split(self, y, metadata):
+        yield np.arange(1), np.arange(1, 2)
+
+    def get_n_splits(self, metadata=None):
+        return 1
+
+
+@pytest.mark.parametrize(
+    "splitter_cls, default",
+    [
+        (splitters_module.CrossSubjectSplitter, "subject"),
+        (splitters_module.CrossSessionSplitter, "session"),
+    ],
+)
+def test_metadata_splitter_rejects_ignored_groups(splitter_cls, default):
+    # the default groups value is accepted (it is what evaluations pass)
+    splitter_cls(cv_class=_DirectMetadataSplitter, groups=default)
+    with pytest.raises(ValueError, match="metadata-aware"):
+        splitter_cls(cv_class=_DirectMetadataSplitter, groups=["subject", "session"])

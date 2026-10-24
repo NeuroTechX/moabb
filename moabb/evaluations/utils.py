@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import functools
+import json
 import logging
 import warnings
 from pathlib import Path
-from pickle import HIGHEST_PROTOCOL, dump
+from pickle import HIGHEST_PROTOCOL, PicklingError, dump
 from typing import Sequence
 
 import numpy as np
@@ -14,6 +15,7 @@ from sklearn.base import ClassifierMixin
 from sklearn.metrics import check_scoring
 from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import Pipeline
+from sklearn.utils.metaestimators import available_if
 
 
 log = logging.getLogger(__name__)
@@ -33,6 +35,16 @@ try:
     _carbonfootprint = True
 except ImportError:
     _carbonfootprint = False
+
+
+def _sklearn_is_fitted_true():
+    """``__sklearn_is_fitted__`` that :func:`_ensure_fitted` sets on an estimator.
+
+    pickle stores it by reference to this module. A method bound to a local
+    function was stored as ``getattr(estimator, "_sklearn_is_fitted_true")``,
+    which does not exist on the class, so the saved model failed to load.
+    """
+    return True
 
 
 def _ensure_fitted(estimator):
@@ -64,26 +76,16 @@ def _ensure_fitted(estimator):
     We add a __sklearn_is_fitted__ method that returns True.
     """
 
-    # Define a method that returns True to indicate fitted state
-    def _sklearn_is_fitted_true(self):
-        return True
-
-    # Add __sklearn_is_fitted__ method if not present or if it returns False
+    # Add __sklearn_is_fitted__ if not present or if it returns False. It is a
+    # module-level function stored on the instance (not a method bound to a
+    # local function), so that saved models can be unpickled.
     if not hasattr(estimator, "__sklearn_is_fitted__"):
-        import types
-
-        estimator.__sklearn_is_fitted__ = types.MethodType(
-            _sklearn_is_fitted_true, estimator
-        )
+        estimator.__sklearn_is_fitted__ = _sklearn_is_fitted_true
     else:
         # Check if existing method returns False (unfitted)
         try:
             if not estimator.__sklearn_is_fitted__():
-                import types
-
-                estimator.__sklearn_is_fitted__ = types.MethodType(
-                    _sklearn_is_fitted_true, estimator
-                )
+                estimator.__sklearn_is_fitted__ = _sklearn_is_fitted_true
         except Exception:
             pass
 
@@ -128,6 +130,28 @@ def _check_if_is_pytorch_steps(model):
         return skorch_valid
 
 
+def _dump_model(model, file):
+    """Pickle ``model`` into the open binary ``file``.
+
+    pickle stores a function or class by reference to its module. In a joblib
+    worker (``n_jobs > 1``) the module of an object defined in a ``.py``
+    pipeline config cannot be imported, and neither can ``__main__`` objects
+    such as lambdas, so pickle fails there; cloudpickle stores those objects
+    by value instead. The file is read back with :func:`pickle.load` either way.
+    """
+    try:
+        dump(model, file, protocol=HIGHEST_PROTOCOL)
+    except (PicklingError, AttributeError):
+        try:
+            import cloudpickle  # a joblib dependency since joblib 1.6
+        except ImportError:
+            from joblib.externals import cloudpickle  # vendored before 1.6
+
+        file.seek(0)
+        file.truncate()
+        cloudpickle.dump(model, file, protocol=HIGHEST_PROTOCOL)
+
+
 def _save_model_cv(model: object, save_path: str | Path, cv_index: str | int):
     """Save a model fitted to a given fold from cross-validation.
 
@@ -150,6 +174,15 @@ def _save_model_cv(model: object, save_path: str | Path, cv_index: str | int):
     else:
         Path(save_path).mkdir(parents=True, exist_ok=True)
 
+    best = getattr(model, "best_estimator_", None)
+    if best is not None and _check_if_is_pytorch_steps(best):
+        # Search over a torch pipeline: save the refitted best pipeline like an
+        # unwrapped one (not a pickle of the search holding the live net) and
+        # keep the chosen hyper-parameters that the search pickle used to hold.
+        with open(Path(save_path) / f"best_params_{cv_index}.json", "w") as file:
+            json.dump(model.best_params_, file, default=str)
+        model = best
+
     if _check_if_is_pytorch_steps(model):
         for step_name in model.named_steps:
             step = model.named_steps[step_name]
@@ -164,10 +197,10 @@ def _save_model_cv(model: object, save_path: str | Path, cv_index: str | int):
                 )
             else:
                 with _open_lock((Path(save_path) / f"{file_step}.pkl"), "wb") as file:
-                    dump(step, file, protocol=HIGHEST_PROTOCOL)
+                    _dump_model(step, file)
     else:
         with _open_lock((Path(save_path) / f"fitted_model_{cv_index}.pkl"), "wb") as file:
-            dump(model, file, protocol=HIGHEST_PROTOCOL)
+            _dump_model(model, file)
 
 
 def _save_model_list(model_list: list | Pipeline, score_list: Sequence, save_path: str):
@@ -320,6 +353,17 @@ try:
 
     class OptunaSearchCVClassifier(_BaseOptunaSearchCV, ClassifierMixin):
         _estimator_type = "classifier"
+
+        # optuna-integration defines decision_function unconditionally, so
+        # ROC-AUC scorers call it on predict_proba-only estimators (skorch nets,
+        # GaussianNB) and crash. Guard it like scikit-learn's BaseSearchCV.
+        @available_if(
+            lambda self: hasattr(
+                getattr(self, "best_estimator_", self.estimator), "decision_function"
+            )
+        )
+        def decision_function(self, X, **kwargs):
+            return super().decision_function(X, **kwargs)
 
         def __sklearn_tags__(self):  # scikit-learn >=1.7 tag override
             tags = super().__sklearn_tags__()
@@ -494,13 +538,25 @@ def _pipeline_requires_epochs(pipeline):
     """Check if any step in the pipeline requires MNE Epochs objects."""
     from moabb.pipelines.classification import (
         SSVEP_CCA,
+        SSVEP_SSCOR,
+        SSVEP_TDCA,
         SSVEP_TRCA,
+        SSVEP_TRCA_R,
         SSVEP_eCCA,
         SSVEP_itCCA,
         SSVEP_MsetCCA,
     )
 
-    epochs_classifiers = (SSVEP_CCA, SSVEP_TRCA, SSVEP_MsetCCA, SSVEP_itCCA, SSVEP_eCCA)
+    epochs_classifiers = (
+        SSVEP_CCA,
+        SSVEP_TRCA,
+        SSVEP_MsetCCA,
+        SSVEP_itCCA,
+        SSVEP_eCCA,
+        SSVEP_TRCA_R,
+        SSVEP_SSCOR,
+        SSVEP_TDCA,
+    )
 
     # Handle non-pipeline classifiers (like DummyClassifier)
     if not hasattr(pipeline, "steps"):

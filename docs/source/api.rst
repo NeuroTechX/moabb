@@ -85,7 +85,6 @@ Motor Imagery Datasets
     BNCI2019_001
     BNCI2020_001
     BNCI2022_001
-    BNCI2024_001
     BNCI2025_001
     BNCI2025_002
     Cho2017
@@ -111,7 +110,6 @@ Motor Imagery Datasets
     NeuroTUMBCI2025
     Shin2022
     Shin2017A
-    Shin2017B
     Weibo2014
     Zhou2016
     MIMED2024
@@ -174,6 +172,23 @@ tag with motor imagery and can be decoded with the existing
     Nguyen2017_V
     Nieto2022
     Pressel2016
+
+-----------------------
+Cognitive Task Datasets
+-----------------------
+
+Non-motor endogenous tasks decoded with
+:class:`~moabb.paradigms.CognitiveTask` (``paradigm="cognitive"``):
+mental arithmetic, handwriting/stroke imagery, mental rotation,
+word generation, music imagery.
+
+.. autosummary::
+    :toctree: generated/
+    :template: class.rst
+
+    Shin2017B
+    BNCI2024_001
+    Wang2026Handwriting
 
 -----------------
 ERP/P300 Datasets
@@ -245,6 +260,7 @@ ERP/P300 Datasets
     Mainsah2025_R
     Mainsah2025_S1
     Mainsah2025_S2
+    Peters2026
     Simoes2020
     Speier2017
     Yagan2023
@@ -272,7 +288,7 @@ SSVEP Datasets
     Han2024Fatigue
     Kim2025BetaRange
     Lee2021Mobile_SSVEP
-    Lenaig2026
+    Gueho2026
     Liu2020BETA
     Liu2022EldBETA
     Wang2021Combined
@@ -419,6 +435,21 @@ work (Aguilera-Rodriguez et al. 2025).
 
     FilterBankLeftRightImagery
     FilterBankMotorImagery
+
+------------------------
+Cognitive Task Paradigms
+------------------------
+
+Standalone ``cognitive`` paradigm for non-motor endogenous tasks
+(handwriting/stroke imagery, mental arithmetic, mental rotation,
+word generation, music imagery). Valid on both ``paradigm="cognitive"``
+datasets and the existing ``paradigm="imagery"`` tag.
+
+.. autosummary::
+    :toctree: generated/
+    :template: class.rst
+
+    CognitiveTask
 
 --------------
 P300 Paradigms

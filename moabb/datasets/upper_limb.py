@@ -26,9 +26,37 @@ from . import download as dl
 
 UPPER_LIMB_URL = "https://zenodo.org/record/834976/files/"
 
+# Arm-kinematics channels of the Armeo device (misc channels 84-96 of the GDF
+# files), in file order. The ten imagination runs of subject 1 hold
+# placeholder channels "armeodummy-0".."armeodummy-12" (random values) instead.
+_ARMEO = [
+    "handPosX", "handPosY", "handPosZ", "elbowPosX", "elbowPosY", "elbowPosZ",
+    "ShoulderAdductio", "ShoulderFlexionE", "ShoulderRotation", "Elbow",
+    "ProSupination", "Wrist", "GripPressure",
+]  # fmt: skip
+
+
+def _same_layout_for_every_run(raw, eog):
+    """Give every run the channel names and order of the released majority.
+
+    Subject 1's execution runs store the EOG channels as eog-r, eog-m, eog-l
+    (every other run: eog-l, eog-m, eog-r), so they are put back in that
+    order. Subject 1's imagination runs store 13 placeholder channels instead
+    of the Armeo channels: they are renamed to the Armeo names and set to 0,
+    the value the loader returns for runs without Armeo recording (NaN in
+    the files).
+    """
+    dummy = [f"armeodummy-{i}" for i in range(len(_ARMEO))]
+    if set(dummy) <= set(raw.ch_names):
+        raw.rename_channels(dict(zip(dummy, _ARMEO)))
+        raw._data[[raw.ch_names.index(ch) for ch in _ARMEO]] = 0.0
+    first_eog = min(raw.ch_names.index(ch) for ch in eog)
+    others = [ch for ch in raw.ch_names if ch not in eog]
+    return raw.reorder_channels(others[:first_eog] + eog + others[first_eog:])
+
 
 class Ofner2017(BaseDataset):
-    """Motor Imagery ataset from Ofner et al 2017.
+    """Motor Imagery Dataset from Ofner et al 2017.
 
     Upper limb Motor imagery dataset from the paper [1]_.
 
@@ -63,6 +91,20 @@ class Ofner2017(BaseDataset):
     session, we recorded 10 runs with 42 trials per run. We presented 6
     movement classes and a rest class and recorded 60 trials per class in a
     session.
+
+    **Channels**
+
+    Every run has 61 EEG, 3 EOG and 32 misc channels (finger, wrist and
+    Armeo arm-kinematics signals). The released files of subject 1 differ
+    from the others in two ways, which the loader evens out so that all runs
+    have the same channel names in the same order (needed by
+    ``return_all_modalities``, which returns the EOG and misc channels): its
+    execution runs store the EOG channels in the order eog-r, eog-m, eog-l
+    (reordered to eog-l, eog-m, eog-r by name), and its imagination runs hold
+    13 placeholder channels ``armeodummy-0``..``armeodummy-12`` with random
+    values instead of the Armeo channels (renamed to the Armeo names and set
+    to 0). In 270 of the 300 released runs the Armeo channels are empty (NaN
+    in the files) and are returned as 0; 20 runs hold arm kinematics.
 
     References
     ----------
@@ -110,6 +152,7 @@ class Ofner2017(BaseDataset):
                 "CPP6h",
                 "CPz",
                 "Cz",
+                "Elbow",
                 "F1",
                 "F2",
                 "F3",
@@ -136,32 +179,31 @@ class Ofner2017(BaseDataset):
                 "FTT7h",
                 "FTT8h",
                 "Fz",
+                "GripPressure",
                 "P1",
                 "P2",
                 "P3",
                 "P4",
                 "PPO1h",
                 "PPO2h",
+                "ProSupination",
                 "Pz",
+                "ShoulderAdductio",
+                "ShoulderFlexionE",
+                "ShoulderRotation",
                 "TTP7h",
                 "TTP8h",
-                "armeodummy-0",
-                "armeodummy-1",
-                "armeodummy-10",
-                "armeodummy-11",
-                "armeodummy-12",
-                "armeodummy-2",
-                "armeodummy-3",
-                "armeodummy-4",
-                "armeodummy-5",
-                "armeodummy-6",
-                "armeodummy-7",
-                "armeodummy-8",
-                "armeodummy-9",
+                "Wrist",
+                "elbowPosX",
+                "elbowPosY",
+                "elbowPosZ",
                 "eog-l",
                 "eog-m",
                 "eog-r",
                 "gesture",
+                "handPosX",
+                "handPosY",
+                "handPosZ",
                 "index_far",
                 "index_middle",
                 "index_near",
@@ -464,6 +506,7 @@ class Ofner2017(BaseDataset):
                 generic = [ch for ch in raw.ch_names if ch.startswith("eeg-")]
                 if generic and len(generic) == len(_correct_eeg_names):
                     raw.rename_channels(dict(zip(generic, _correct_eeg_names)))
+                raw = _same_layout_for_every_run(raw, eog)
                 raw = raw.set_montage(montage)
 
                 # there is nan in the data

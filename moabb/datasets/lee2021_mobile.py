@@ -43,6 +43,12 @@ class Lee2021Mobile(BaseDataset):
     - **ERP**: Target ('OOO') vs non-target ('XXX'), 300 trials/session
 
     Data is in BrainVision format (.eeg/.vhdr/.vmrk) organized as BIDS on OSF.
+    The OSF project holds each recording twice under the same file name: the
+    BIDS copy (``/sub-XX/``, 73 channels at 100 Hz, EEG merged with the IMU)
+    and the original recording (``/sourcedata/sub-XX/``, 50 channels at
+    500 Hz: 32 scalp-EEG, 4 EOG and 14 ear-EEG; the header types HEOGL/HEOGR
+    as EOG and VEOGU/VEOGL as EEG). MOABB always downloads and loads the
+    original 500 Hz recording; the IMU channels are not loaded.
 
     Sessions correspond to motion conditions:
     - Session '02': Standing (0 m/s)
@@ -71,8 +77,8 @@ class Lee2021Mobile(BaseDataset):
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
-            sampling_rate=100.0,
-            channel_types={"eeg": 73},
+            sampling_rate=500.0,
+            channel_types={"eeg": 48, "eog": 2},
             montage="standard_1005",
             hardware="BrainAmp (Brain Product GmbH)",
             line_freq=60.0,
@@ -321,36 +327,135 @@ class Lee2021Mobile(BaseDataset):
             )
         return [str(f) for f in vhdr_files]
 
+    # BrainVision files the loader reads. OSF r7s9b stores each of them twice
+    # under the same file name: the BIDS copy (``/sub-XX/ses-YY/eeg/``, 73
+    # channels at 100 Hz: EEG and EOG resampled and merged with the IMU
+    # channels) and the original recording (``/sourcedata/sub-XX/ses-YY/eeg/``,
+    # 50 channels at 500 Hz). The loader only reads the original recording.
+    _EEG_EXTENSIONS = (".vhdr", ".eeg", ".vmrk")
+    _ROOT_FILES = ("dataset_description.json", "participants.tsv", "participants.json")
+
     def _download_from_osf(self, subject, bids_root, force_update, verbose):
-        """Download subject files from OSF per-file API."""
+        """Download subject files from OSF per-file API.
+
+        Files are selected by their path on OSF, not by file name: the
+        BrainVision files come from ``/sourcedata/sub-XX/`` only (see
+        :meth:`_select_osf_files`). They are stored at the same local path
+        as before (``sub-XX/ses-YY/eeg/<file name>``).
+        """
         bids_root.mkdir(parents=True, exist_ok=True)
 
         metainfo = self._get_metainfo()
+        try:
+            to_download = self._select_osf_files(metainfo, subject, self._task_name)
+        except FileNotFoundError:
+            # The listing may be incomplete (OSF errors are logged and the
+            # folder skipped): list again on the next call.
+            type(self)._metainfo_cache = None
+            raise
 
         # Download root BIDS files
-        for fname in [
-            "dataset_description.json",
-            "participants.tsv",
-            "participants.json",
-        ]:
+        for fname in self._ROOT_FILES:
             local_path = bids_root / fname
             if not local_path.exists() or force_update:
                 matches = metainfo[metainfo["filename"] == fname]
+                if "path" in metainfo.columns:
+                    at_root = matches[matches["path"] == f"/{fname}"]
+                    if not at_root.empty:
+                        matches = at_root
                 if not matches.empty:
                     url = matches.iloc[0]["url"]
-                    dl.download_if_missing(str(local_path), url, warn_missing=False)
+                    dl.download_if_missing(
+                        str(local_path),
+                        url,
+                        warn_missing=False,
+                        force_update=force_update,
+                    )
 
         # Download subject files
-        sub_str = f"sub-{subject:02d}"
-        sub_files = metainfo[metainfo["filename"].str.startswith(sub_str)]
-
-        for _, row in sub_files.iterrows():
-            fname = row["filename"]
-            url = row["url"]
+        for fname, url in to_download.items():
             local_path = self._filename_to_bids_path(fname, bids_root)
             if not local_path.exists() or force_update:
                 local_path.parent.mkdir(parents=True, exist_ok=True)
-                dl.download_if_missing(str(local_path), url, warn_missing=False)
+                dl.download_if_missing(
+                    str(local_path), url, warn_missing=False, force_update=force_update
+                )
+
+    @classmethod
+    def _select_osf_files(cls, metainfo, subject, task):
+        """Pick the OSF copy of each of one subject's files.
+
+        Parameters
+        ----------
+        metainfo : pandas.DataFrame
+            OSF listing from :func:`moabb.datasets.download.create_metainfo_osf`,
+            with ``filename``, ``url`` and ``path`` columns.
+        subject : int
+            Subject number.
+        task : str
+            ``"ERP"`` or ``"SSVEP"``; its recordings must all be available
+            in ``/sourcedata/``.
+
+        Returns
+        -------
+        files : dict
+            ``{file name: download url}``, one entry per local file name.
+            BrainVision files (``.vhdr``, ``.eeg``, ``.vmrk``) are taken from
+            ``/sourcedata/sub-XX/`` only, whatever the listing order; other
+            files from ``/sourcedata/sub-XX/`` when present there, else from
+            the BIDS copy ``/sub-XX/``.
+
+        Raises
+        ------
+        FileNotFoundError
+            If a BrainVision file of a ``task`` recording listed on OSF
+            (in either copy) is missing from ``/sourcedata/sub-XX/``.
+        """
+        if "path" not in metainfo.columns:
+            raise ValueError(
+                "The OSF listing has no 'path' column, so the /sourcedata/ "
+                "copy of the EEG files cannot be told apart from the BIDS "
+                "copy (same file names, 100 Hz instead of 500 Hz)."
+            )
+        sub = f"sub-{subject:02d}"
+        paths = metainfo["path"].astype(str)
+        names = metainfo["filename"].astype(str)
+        is_eeg = names.str.endswith(cls._EEG_EXTENSIONS)
+        in_source = paths.str.startswith(f"/sourcedata/{sub}/")
+        in_bids = paths.str.startswith(f"/{sub}/")
+
+        files = {}
+        # Other files: BIDS copy first, overridden by the /sourcedata/ copy.
+        for mask in (in_bids & ~is_eeg, in_source & ~is_eeg):
+            files.update(zip(names[mask], metainfo["url"][mask]))
+        # BrainVision files: /sourcedata/ only.
+        source_eeg = dict(
+            zip(names[in_source & is_eeg], metainfo["url"][in_source & is_eeg])
+        )
+        files.update(source_eeg)
+
+        suffix = f"_task-{task}_eeg.vhdr"
+        recordings = {
+            name[: -len(".vhdr")]
+            for name in names[in_source | in_bids]
+            if name.startswith(f"{sub}_") and name.endswith(suffix)
+        }
+        missing = sorted(
+            stem + ext
+            for stem in recordings
+            for ext in cls._EEG_EXTENSIONS
+            if stem + ext not in source_eeg
+        )
+        if missing:
+            raise FileNotFoundError(
+                f"Lee2021Mobile subject {subject}, task {task}: the OSF listing "
+                f"of project {OSF_CODE} has no /sourcedata/{sub}/ copy of "
+                f"{', '.join(missing)}. MOABB reads only that copy (50 channels "
+                "at 500 Hz); the BIDS copy under the same name is 73 channels "
+                "at 100 Hz and is not used. The listing may be incomplete if "
+                f"OSF returned errors; retry later or check https://osf.io/{OSF_CODE}/."
+            )
+        return files
 
     @staticmethod
     def _filename_to_bids_path(filename, bids_root):
@@ -392,8 +497,8 @@ class Lee2021Mobile_ERP(Lee2021Mobile):
     nemar_id = "nm000201"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
-            sampling_rate=100.0,
-            channel_types={"eeg": 73},
+            sampling_rate=500.0,
+            channel_types={"eeg": 48, "eog": 2},
             montage="standard_1005",
             hardware="BrainAmp (Brain Product GmbH)",
             line_freq=60.0,

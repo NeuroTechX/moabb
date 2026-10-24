@@ -49,6 +49,25 @@ search_methods, optuna_available = check_search_available()
 
 log = logging.getLogger(__name__)
 
+# Columns every result row already carries; a splitter's metadata_columns that
+# name one of them (e.g. "subject", "session") must not be stored a second time
+# as an extra column, which Results cannot write for string values.
+RESULT_COLUMNS = frozenset(
+    {
+        "dataset",
+        "pipeline",
+        "subject",
+        "session",
+        "score",
+        "time",
+        "samples",
+        "samples_test",
+        "n_classes",
+        "channels",
+        "n_sessions",
+    }
+)
+
 
 def _score_trialwise(estimator, X, y, scoring):
     """Score a fitted estimator from isolated, one-trial predictions.
@@ -102,10 +121,14 @@ def _grid_search_static(
             else:
                 search = search_methods["grid"]
 
-            if isinstance(scoring, dict):
-                refit = next(iter(scoring))
-            else:
-                refit = True
+            refit = True
+            if isinstance(scoring, (dict, list, tuple)):  # multi-metric
+                primary = next(iter(scoring))  # dict key or first metric name
+                if optuna:
+                    # OptunaSearchCV takes one scorer: optimise the primary.
+                    scoring = scoring[primary] if isinstance(scoring, dict) else primary
+                else:
+                    refit = primary  # GridSearchCV refits on the primary metric
 
             search = search(
                 grid_clf,
@@ -437,6 +460,14 @@ class BaseEvaluation(ABC):
         Can use combination of CodeCarbon environment variable and configuration files.
         See CodeCarbon developer documentation for more information.
         Defaults to ``dict(save_to_file=False, log_level="error")``.
+    n_jobs_data : int
+        Number of jobs used to load the subjects' data in parallel. It is
+        forwarded as ``n_jobs`` to
+        :meth:`~moabb.paradigms.base.BaseParadigm.get_data`, which reads
+        subjects concurrently. Independent of ``n_jobs`` (loading happens
+        before the folds are evaluated). Useful when reading is
+        latency-bound, e.g. raw files on a network filesystem. Defaults to
+        ``1`` (sequential, the previous behavior).
 
     Notes
     -----
@@ -446,6 +477,8 @@ class BaseEvaluation(ABC):
        optuna, time_out parameters.
     .. versionadded:: 1.5
        verbose parameter.
+    .. versionadded:: 1.8
+       n_jobs_data parameter.
     """
 
     search = False
@@ -480,6 +513,7 @@ class BaseEvaluation(ABC):
         time_out: int = 60 * 15,
         verbose: Optional[Union[bool, str, int]] = None,
         codecarbon_config: Optional[dict] = None,
+        n_jobs_data: int = 1,
     ):
         self.random_state = random_state
         self.n_jobs = n_jobs
@@ -501,6 +535,7 @@ class BaseEvaluation(ABC):
         self.time_out = time_out
         self.verbose = verbose
         self.emissions = Emissions(codecarbon_config=codecarbon_config)
+        self.n_jobs_data = n_jobs_data
 
         self.additional_columns = additional_columns
         if additional_columns is None:
@@ -508,7 +543,7 @@ class BaseEvaluation(ABC):
 
         if self.cv_class is not None and hasattr(self.cv_class, "metadata_columns"):
             for col in self.cv_class.metadata_columns:
-                if col not in self.additional_columns:
+                if col not in self.additional_columns and col not in RESULT_COLUMNS:
                     self.additional_columns.append(col)
 
         if self.optuna and not optuna_available:
@@ -533,6 +568,9 @@ class BaseEvaluation(ABC):
             raise (ValueError("mne_labels could only be set with return_epochs"))
 
         # if no dataset provided, then we get the list from the paradigm
+        # Auto-selected datasets are filtered quietly (INFO); datasets the user
+        # passed explicitly keep the WARNING when dropped (#862).
+        user_selected = datasets is not None
         if datasets is None:
             datasets = self.paradigm.datasets
 
@@ -545,32 +583,32 @@ class BaseEvaluation(ABC):
         for dataset in datasets:
             if not (isinstance(dataset, BaseDataset)):
                 raise (ValueError("datasets must only contains dataset instance"))
-        rm = []
+        rm, reasons = [], []
+        report = log.warning if user_selected else log.info
         for dataset in datasets:
             valid_for_paradigm = self.paradigm.is_valid(dataset)
             valid_for_eval = self.is_valid(dataset)
             if not valid_for_paradigm:
-                log.warning(
-                    f"{dataset} not compatible with "
-                    "paradigm. Removing this dataset from the list."
-                )
-                rm.append(dataset)
+                reasons.append(f"{dataset} not compatible with paradigm")
             elif not valid_for_eval:
                 # Get specific reason for incompatibility
                 eval_type = self.__class__.__name__
                 reason = self._get_incompatibility_reason(dataset)
-                log.warning(
-                    f"{dataset} not compatible with {eval_type}: {reason}. "
-                    "Removing this dataset from the list."
-                )
-                rm.append(dataset)
+                reasons.append(f"{dataset} not compatible with {eval_type}: {reason}")
+            else:
+                continue
+            report(f"{reasons[-1]}. Removing this dataset from the list.")
+            rm.append(dataset)
 
         [datasets.remove(r) for r in rm]
         if len(datasets) > 0:
             self.datasets = datasets
         else:
-            raise Exception("""No datasets left after paradigm
-            and evaluation checks""")
+            # The per-dataset reasons may have been logged at INFO only.
+            raise Exception(
+                "No datasets left after paradigm and evaluation checks: "
+                + "; ".join(reasons)
+            )
 
         self.results = Results(
             type(self),
@@ -643,6 +681,8 @@ class BaseEvaluation(ABC):
             kwargs["include_epoch_timing"] = True
         if subjects is not None:
             kwargs["subjects"] = subjects
+        if self.n_jobs_data != 1:  # keep custom get_data without n_jobs working
+            kwargs["n_jobs"] = self.n_jobs_data
         return self.paradigm.get_data(**kwargs)
 
     @staticmethod
@@ -939,6 +979,155 @@ class BaseEvaluation(ABC):
         list of dict
             Result dictionaries matching :meth:`evaluate`.
         """
+        prepared = self._prepare_parallel_dataset(
+            dataset,
+            pipelines,
+            param_grid,
+            process_pipeline,
+            postprocess_pipeline=postprocess_pipeline,
+            work_plan=work_plan,
+        )
+        if prepared is None:
+            return []
+        X, y, metadata, tasks, aggregate = prepared
+
+        # X, y, metadata passed as positional args for joblib auto-mmap.
+        fold_results = Parallel(n_jobs=self.n_jobs)(
+            delayed(_evaluate_fold)(X, y, metadata, **task) for task in tasks
+        )
+        return self._finalize_results(list(chain.from_iterable(fold_results)), aggregate)
+
+    def _iter_parallel_dataset_batches(
+        self,
+        dataset,
+        pipelines,
+        param_grid,
+        process_pipeline,
+        postprocess_pipeline=None,
+        work_plan=None,
+    ):
+        """Yield the results of one dataset as soon as they are complete.
+
+        Same computation as :meth:`_evaluate_parallel_dataset`, but the fold
+        results are consumed while the folds still run, and a batch is yielded
+        once every fold of a ``(pipeline, subject)`` pair has finished. That
+        pair is the unit the results cache uses to skip work on a rerun
+        (:meth:`~moabb.analysis.results.Results.batch_not_yet_computed`), so
+        a batch is never written for a subject whose folds are not all done:
+        a crash leaves no partial subject behind, and a rerun recomputes
+        exactly the missing pairs (:gh:`419`).
+
+        Batches come out in the order in which the pairs first appear in the
+        task list. The built-in splitters keep a subject's folds together, so
+        the rows of each pipeline reach the HDF5 file in the same order as when
+        the whole dataset was saved at once.
+
+        Parameters
+        ----------
+        dataset, pipelines, param_grid, process_pipeline, postprocess_pipeline, work_plan
+            See :meth:`_evaluate_parallel_dataset`.
+
+        Yields
+        ------
+        list of dict
+            Finished (and, if needed, fold-aggregated) result dictionaries.
+        """
+        prepared = self._prepare_parallel_dataset(
+            dataset,
+            pipelines,
+            param_grid,
+            process_pipeline,
+            postprocess_pipeline=postprocess_pipeline,
+            work_plan=work_plan,
+        )
+        if prepared is None:
+            return
+        X, y, metadata, tasks, aggregate = prepared
+
+        # Which (pipeline, subject) pairs each task produces rows for, and how
+        # many tasks every pair still waits on.
+        key_order, pending, task_keys = [], {}, []
+        for task in tasks:
+            subjects = task["score_subjects"]
+            if subjects is None:
+                subjects = [task["subject"]]
+            keys = list(dict.fromkeys((task["pipeline_name"], str(s)) for s in subjects))
+            for key in keys:
+                if key not in pending:
+                    pending[key] = 0
+                    key_order.append(key)
+                pending[key] += 1
+            task_keys.append(keys)
+
+        buffers = defaultdict(list)
+        unexpected = []
+        score_cols = {}
+        next_key = 0
+        fold_iter = self._iter_fold_results(X, y, metadata, tasks)
+        for keys, fold_results in zip(task_keys, fold_iter):
+            for res in fold_results:
+                score_cols.update(dict.fromkeys(c for c in res if c.startswith("score_")))
+                key = (res["pipeline"], str(res["subject"]))
+                (buffers[key] if key in pending else unexpected).append(res)
+            for key in keys:
+                pending[key] -= 1
+
+            batch = []
+            while next_key < len(key_order) and pending[key_order[next_key]] == 0:
+                batch.extend(buffers.pop(key_order[next_key], []))
+                next_key += 1
+            if batch:
+                yield self._finalize_results(batch, aggregate, list(score_cols))
+
+        # Rows for a subject the task list did not announce (custom splitters):
+        # keep them, as before, and save them once all folds are done.
+        leftover = [res for key in key_order[next_key:] for res in buffers.pop(key, [])]
+        leftover += unexpected
+        if leftover:
+            yield self._finalize_results(leftover, aggregate, list(score_cols))
+
+    def _iter_fold_results(self, X, y, metadata, tasks):
+        """Run the fold tasks, returning their results in task order.
+
+        With joblib >= 1.3 the results are streamed: each one is available as
+        soon as its fold (and the folds before it) finished. Older joblib
+        versions return the full list at the end.
+        """
+        # X, y, metadata passed as positional args for joblib auto-mmap.
+        jobs = (delayed(_evaluate_fold)(X, y, metadata, **task) for task in tasks)
+        try:
+            parallel = Parallel(n_jobs=self.n_jobs, return_as="generator")
+        except TypeError:  # joblib < 1.3 has no return_as
+            parallel = Parallel(n_jobs=self.n_jobs)
+        return parallel(jobs)
+
+    def _finalize_results(self, results, aggregate, score_cols=None):
+        """Aggregate folds if requested and drop the internal bookkeeping keys."""
+        if aggregate:
+            results = self._aggregate_fold_results(results, score_cols=score_cols)
+        for res in results:
+            res.pop("n_samples_total", None)
+            res.pop("is_error", None)
+        return results
+
+    def _prepare_parallel_dataset(
+        self,
+        dataset,
+        pipelines,
+        param_grid,
+        process_pipeline,
+        postprocess_pipeline=None,
+        work_plan=None,
+    ):
+        """Load one dataset and build its fold tasks.
+
+        Returns
+        -------
+        tuple | None
+            ``(X, y, metadata, tasks, aggregate)``, or ``None`` when there is
+            nothing left to compute. ``aggregate`` tells whether fold results
+            must be averaged per subject/session/pipeline.
+        """
         dataset_splitter = self._create_splitter()
         if dataset_splitter is None:
             raise RuntimeError(
@@ -957,7 +1146,7 @@ class BaseEvaluation(ABC):
                     work_plan[subject] = run_pipes
 
         if not work_plan:
-            return []
+            return None
 
         subjects_to_load = (
             dataset.subject_list if self._needs_all_subjects else list(work_plan.keys())
@@ -979,26 +1168,15 @@ class BaseEvaluation(ABC):
             dataset, X, y, metadata, dataset_splitter, work_plan, pipelines, param_grid
         )
         if not tasks:
-            return []
+            return None
 
-        # X, y, metadata passed as positional args for joblib auto-mmap.
-        fold_results = Parallel(n_jobs=self.n_jobs)(
-            delayed(_evaluate_fold)(X, y, metadata, **task) for task in tasks
-        )
-        all_results = list(chain.from_iterable(fold_results))
-
-        if self._aggregate_folds and not hasattr(
+        aggregate = self._aggregate_folds and not hasattr(
             getattr(dataset_splitter, "cv_class", None), "get_metadata"
-        ):
-            all_results = self._aggregate_fold_results(all_results)
-
-        for res in all_results:
-            res.pop("n_samples_total", None)
-            res.pop("is_error", None)
-        return all_results
+        )
+        return X, y, metadata, tasks, aggregate
 
     @staticmethod
-    def _aggregate_fold_results(fold_results):
+    def _aggregate_fold_results(fold_results, score_cols=None):
         """Aggregate per-fold results into averaged results.
 
         Groups by (subject, session, pipeline) and averages scores/durations.
@@ -1007,6 +1185,10 @@ class BaseEvaluation(ABC):
         ----------
         fold_results : list of dict
             Per-fold result dicts.
+        score_cols : list of str | None
+            Extra ``score_*`` columns seen in other batches of the same
+            dataset. A batch made only of error folds lacks them; they are then
+            filled from ``score`` like any other error fold.
 
         Returns
         -------
@@ -1017,6 +1199,9 @@ class BaseEvaluation(ABC):
             return []
 
         df = pd.DataFrame(fold_results)
+        for col in score_cols or ():
+            if col not in df.columns:
+                df[col] = np.nan
         group_keys = ["subject", "session", "pipeline"]
         score_cols = [c for c in df.columns if c == "score" or c.startswith("score_")]
         agg_ops = dict.fromkeys(score_cols + ["time"], "mean")
@@ -1091,6 +1276,16 @@ class BaseEvaluation(ABC):
         -------
         results: :class:`pandas.DataFrame`
             A dataframe containing the results.
+
+        Notes
+        -----
+        Results are written to the results file as soon as every fold of a
+        ``(pipeline, subject)`` pair has finished, so a run that crashes keeps
+        the subjects already evaluated; rerunning with ``overwrite=False``
+        computes only the missing ones. With ``n_jobs=1`` every finished
+        subject is kept. With ``n_jobs > 1`` this is best effort: joblib can
+        raise the worker error before the main process has consumed results
+        that other workers already finished, and those are then lost.
         """
 
         # check pipelines
@@ -1194,25 +1389,19 @@ class BaseEvaluation(ABC):
                 )
                 work_plan = {subj: dict(pipelines) for subj in dataset.subject_list}
 
-            all_results = self._evaluate_parallel_dataset(
+            # Save each (pipeline, subject) as soon as all its folds are done,
+            # so a crash later in the dataset does not lose finished work.
+            for batch in self._iter_parallel_dataset_batches(
                 dataset=dataset,
                 pipelines=pipelines,
                 param_grid=param_grid,
                 process_pipeline=process_pipeline,
                 postprocess_pipeline=postprocess_pipeline,
                 work_plan=work_plan,
-            )
-            if not all_results:
-                res_per_db.append(
-                    self.results.to_dataframe(
-                        pipelines=pipelines, process_pipeline=process_pipeline
-                    )
-                )
-                continue
-
-            for res in all_results:
-                self._log_result(res)
-            self._push_results_batch(all_results, pipelines, process_pipeline)
+            ):
+                for res in batch:
+                    self._log_result(res)
+                self._push_results_batch(batch, pipelines, process_pipeline)
 
             res_per_db.append(
                 self.results.to_dataframe(

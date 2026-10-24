@@ -46,7 +46,7 @@ def _run_number(bids_path):
 
 
 class Daly2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
-    """Tempo-based BCMI motor imagery dataset from Daly et al. 2018 [1]_.
+    """Tempo-based BCMI motor imagery dataset from Daly et al. 2020 [1]_.
 
     Recorded at the University of Reading during development of a tempo-based
     brain-computer music interface (BCMI-MIdAS). 18 healthy participants
@@ -66,7 +66,7 @@ class Daly2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
     References
     ----------
     .. [1] Daly, I., Nicolaou, N., Williams, D., Hwang, F., Kirke, A.,
-           Miranda, E., & Nasuto, S. J. (2018). A dataset recorded during
+           Miranda, E., & Nasuto, S. J. (2020). A dataset recorded during
            development of a tempo-based brain-computer music interface.
            OpenNeuro ds002720.
            https://doi.org/10.18112/openneuro.ds002720.v1.0.1
@@ -120,7 +120,7 @@ class Daly2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
             institution="University of Reading",
             country="GB",
             data_url="https://openneuro.org/datasets/ds002720",
-            publication_year=2018,
+            publication_year=2020,
             license="CC0",
         ),
         sessions_per_subject=1,

@@ -55,6 +55,40 @@ def _cv_keyword_capability(cv_class, name):
     )
 
 
+def _is_metadata_splitter(cv_class):
+    """Return whether ``cv_class`` is a metadata-aware top-level splitter.
+
+    Such a splitter declares ``metadata_columns`` and implements
+    ``split(self, y, metadata)``. It owns the whole fold (including rows it
+    leaves out of both train and test), so it is called directly instead of
+    being wrapped as the inner groups-CV.
+    """
+    if not hasattr(cv_class, "metadata_columns"):
+        return False
+    try:
+        parameters = inspect.signature(cv_class.split).parameters
+    except (AttributeError, TypeError, ValueError):
+        return False
+    return "metadata" in parameters
+
+
+def _check_groups_unused(cv_class, groups, default):
+    """Reject a non-default ``groups`` for a metadata-aware ``cv_class``.
+
+    Such a splitter owns the whole fold and is called as
+    ``split(y, metadata)``, so ``groups`` would be silently ignored.
+    """
+    if _is_metadata_splitter(cv_class) and not (
+        isinstance(groups, str) and groups == default
+    ):
+        raise ValueError(
+            f"groups={groups!r} is not used when cv_class "
+            f"({getattr(cv_class, '__name__', cv_class)}) is a metadata-aware "
+            "splitter: it receives the full metadata and defines the folds "
+            "itself. Remove the groups argument."
+        )
+
+
 def _resolved_inner_kwargs(cv_class, direct_kwargs, resolved, control_keys):
     """Combine direct and evaluation-routed kwargs without losing provenance."""
     inner_kwargs = dict(direct_kwargs)
@@ -531,7 +565,11 @@ class CrossSessionSplitter(BaseCrossValidator):
     cv_class : type
         Inner cross-validation strategy for splitting the sessions of one subject.
         LeaveOneGroupOut is the most common default.
-        Defaults to ``LeaveOneGroupOut``.
+        Defaults to ``LeaveOneGroupOut``. A metadata-aware splitter (with
+        ``metadata_columns`` and ``split(y, metadata)``) is called directly on
+        the metadata it is given; note that
+        :class:`~moabb.evaluations.CrossSessionEvaluation` loads one subject at
+        a time, so such a splitter only ever sees one subject's rows there.
     shuffle : bool
         Whether to shuffle the session order for each subject. It can only be
         used when changing the `cv_class` to a class compatible with `shuffle`.
@@ -577,6 +615,7 @@ class CrossSessionSplitter(BaseCrossValidator):
         self.cv_class = cv_class
         # ``groups`` is the within-subject held-out axis (default: sessions),
         # resolved per subject and fed to the stock sklearn cv_class.
+        _check_groups_unused(cv_class, groups, default="session")
         self.groups = groups
         control_keys = {"shuffle", "random_state"}
         self.cv_kwargs = _public_cv_kwargs(cv_kwargs, resolved_cv, control_keys)
@@ -640,6 +679,8 @@ class CrossSessionSplitter(BaseCrossValidator):
         n_splits: int
             The number of splits for the cross-validation
         """
+        if _is_metadata_splitter(self.cv_class):
+            return self.cv_class(**self._cv_kwargs).get_n_splits(metadata)
         subjects = metadata["subject"].unique()
         n_splits = 0
         for subject in subjects:  # noqa: B007 — referenced via @subject in pandas query below
@@ -672,6 +713,14 @@ class CrossSessionSplitter(BaseCrossValidator):
         cv_kwargs = {**self._cv_kwargs}  # Copy the original kwargs
         if self._need_rng:
             cv_kwargs["random_state"] = check_random_state(self.random_state)
+
+        if _is_metadata_splitter(self.cv_class):
+            # A metadata-aware splitter owns the whole fold: call it directly.
+            splitter = self.cv_class(**cv_kwargs)
+            for train_idx, test_idx in splitter.split(y, metadata):
+                self._last_split_metadata = _splitter_metadata(splitter)
+                yield all_index[train_idx], all_index[test_idx]
+            return
 
         # For each subject I am creating the mask to select the subject metainformation.
         for subject in subjects:
@@ -798,6 +847,7 @@ class CrossSubjectSplitter(BaseCrossValidator):
         # ``groups`` selects what defines a fold: a metadata column ("subject"),
         # a list of columns (["subject", "session"]), or a callable
         # ``metadata -> array``. Fed straight to the stock sklearn cv_class.
+        _check_groups_unused(cv_class, groups, default="subject")
         self.groups = groups
         self.calibration_size = calibration_size
         self.calibration_labeled = calibration_labeled
@@ -843,6 +893,8 @@ class CrossSubjectSplitter(BaseCrossValidator):
             The number of splits for the cross-validation
         """
 
+        if _is_metadata_splitter(self.cv_class):
+            return self.cv_class(**self._cv_kwargs).get_n_splits(metadata)
         splitter = self.cv_class(**_materialize_cv_kwargs(self._cv_kwargs, metadata))
         get_n_splits_kwargs = {"X": metadata.index}
         if self._cv_uses_groups:
@@ -854,17 +906,23 @@ class CrossSubjectSplitter(BaseCrossValidator):
         # here, I am getting the index across all the subject
         all_index = metadata.index.values
 
-        splitter = self.cv_class(**_materialize_cv_kwargs(self._cv_kwargs, metadata))
         self._last_split_metadata = None
+        if _is_metadata_splitter(self.cv_class):
+            # A metadata-aware splitter owns the whole fold (it may leave rows
+            # out of both train and test): call it directly.
+            splitter = self.cv_class(**self._cv_kwargs)
+            folds = splitter.split(y, metadata)
+        else:
+            splitter = self.cv_class(**_materialize_cv_kwargs(self._cv_kwargs, metadata))
+            # Only pass groups to cv_classes that actually use them
+            # (detected via GroupsConsumerMixin). This avoids the
+            # "The groups parameter is ignored" warning from e.g. TimeSeriesSplit.
+            split_kwargs = {"X": all_index, "y": y}
+            if self._cv_uses_groups:
+                split_kwargs["groups"] = _resolve_groups(self.groups, metadata)
+            folds = splitter.split(**split_kwargs)
 
-        # Only pass groups to cv_classes that actually use them
-        # (detected via GroupsConsumerMixin). This avoids the
-        # "The groups parameter is ignored" warning from e.g. TimeSeriesSplit.
-        split_kwargs = {"X": all_index, "y": y}
-        if self._cv_uses_groups:
-            split_kwargs["groups"] = _resolve_groups(self.groups, metadata)
-
-        for train_session_idx, test_session_idx in splitter.split(**split_kwargs):
+        for train_session_idx, test_session_idx in folds:
             self._last_split_metadata = _splitter_metadata(splitter) or {}
             self._last_split_metadata.update(
                 {
@@ -1037,6 +1095,22 @@ class CrossDatasetSplitter(BaseCrossValidator):
         return self._last_split_metadata
 
 
+def _stratified_order(y):
+    """Order positions of ``y`` so that every prefix is class-stratified.
+
+    Each sample gets the key ``rank_within_its_class / class_size``; a stable
+    sort on this key places one sample of every class first (all keys 0), then
+    interleaves classes in proportion to their size. Within a class the input
+    order is kept, so the randomness of a shuffled pool is preserved.
+    """
+    y = np.asarray(y)
+    keys = np.empty(len(y), dtype=float)
+    for label in np.unique(y):
+        positions = np.flatnonzero(y == label)
+        keys[positions] = np.arange(len(positions)) / len(positions)
+    return np.argsort(keys, kind="stable")
+
+
 class LearningCurveSplitter(GroupsConsumerMixin, BaseCrossValidator):
     """Learning curve splitter following sklearn CV interface.
 
@@ -1204,7 +1278,11 @@ class LearningCurveSplitter(GroupsConsumerMixin, BaseCrossValidator):
             if np.any(vals < 0) or np.any(vals > 1):
                 raise ValueError("Data subset ratios must be in range [0, 1]")
             upto = np.ceil(vals * len(y)).astype(int)
-            indices = [np.array(range(i)) for i in upto]
+            # Prefixes of a class-interleaved ordering of the (already shuffled)
+            # pool: sizes and nesting are unchanged, but small subsets keep
+            # every class instead of whatever an unstratified prefix holds.
+            order = _stratified_order(y)
+            indices = [order[:i] for i in upto]
         elif self.data_size["policy"] == "per_class":
             classwise_indices = {}
             n_smallest_class = np.inf

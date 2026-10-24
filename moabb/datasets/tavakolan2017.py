@@ -338,6 +338,13 @@ class Tavakolan2017(BaseDataset):
         if len(dat_files) >= 4 and not force_update:
             return str(data_dir)
 
+        # The NEMAR deposit keeps the extracted subject; take it before
+        # downloading the per-subject ZIP.
+        if not force_update and dl.fill_tree_from_store(data_dir, subj_dir.name):
+            dat_files = sorted(subj_dir.glob("*.DAT"))
+            if len(dat_files) >= 4:
+                return str(data_dir)
+
         # Download per-subject ZIP from Zenodo and extract session ZIPs.
         url = f"{_ZENODO_BASE}/P{subject:02d}.zip"
         download_and_extract_subject_zip(url, sign, subj_dir, path, force_update, verbose)

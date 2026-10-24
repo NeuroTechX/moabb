@@ -12,7 +12,7 @@ from pooch import retrieve
 from pooch.downloaders import choose_downloader
 from scipy.io import loadmat
 
-from moabb.datasets.download import get_dataset_path
+from moabb.datasets.download import fill_from_store, get_dataset_path
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
     AuxiliaryChannelsMetadata,
@@ -40,6 +40,12 @@ def eeg_data_path(base_path, subject, accept, force_update=False):
     datapath = op.join(
         base_path, "EEG", "subject {:02d}".format(subject), "with occular artifact"
     )
+    files = [op.join(datapath, fn) for fn in ["cnt.mat", "mrk.mat"]]
+    # The NEMAR deposits (nm000267, nm000268) keep the extracted EEG tree: take
+    # the subject's files from the local store before downloading its archive.
+    # Only once the licence is accepted, as for the download.
+    if not force_update and accept:
+        fill_from_store(op.join(base_path, "EEG"), files)
     if force_update or not op.isfile(op.join(datapath, "cnt.mat")):
         if not op.isdir(op.join(base_path, "EEG")):
             os.makedirs(op.join(base_path, "EEG"))
@@ -67,7 +73,7 @@ def eeg_data_path(base_path, subject, accept, force_update=False):
                 os.remove(op.join(base_path, "EEG.zip"))
                 break
     assert op.isfile(op.join(datapath, "cnt.mat")), op.join(datapath, "cnt.mat")
-    return [op.join(datapath, fn) for fn in ["cnt.mat", "mrk.mat"]]
+    return files
 
 
 def fnirs_data_path(path, subject, accept, force_update=False):
@@ -150,7 +156,9 @@ class BaseShin2017(BaseDataset):
             code="Shin2017" + suffix,
             # marker is for *task* start not cue start
             interval=[0, 10],
-            paradigm="imagery",  # no arithmetic paradigm in MOABB at the moment
+            paradigm="cognitive"
+            if mental_arithmetic and not motor_imagery
+            else "imagery",
             doi="10.1109/TNSRE.2016.2628057",
             selected_subjects=subjects,
             selected_sessions=sessions,
@@ -574,7 +582,7 @@ class Shin2017A(BaseShin2017):
 
 
 class Shin2017B(BaseShin2017):
-    """Mental Arithmetic Dataset from Shin et al 2017.
+    """Mental Arithmetic Dataset from Shin et al 2017 (cognitive paradigm).
 
     Dataset from [1]_.
 
@@ -746,7 +754,7 @@ class Shin2017B(BaseShin2017):
             species="human",
         ),
         experiment=ExperimentMetadata(
-            paradigm="imagery",
+            paradigm="cognitive",
             n_classes=2,
             class_labels=["subtraction", "rest"],
             trial_duration=10.0,
@@ -851,7 +859,7 @@ class Shin2017B(BaseShin2017):
             online_feedback=False,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="imagery",
+            detected_paradigm="cognitive",
             n_repetitions=20,
             imagery_tasks=None,
             imagery_duration_s=None,
