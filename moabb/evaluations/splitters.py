@@ -969,7 +969,11 @@ class CrossDatasetSplitter(BaseCrossValidator):
     """Data splitter for leave-dataset-out style evaluation.
 
     This splitter works like CrossSubjectSplitter, but defaults to grouping by
-    the ``"dataset"`` metadata column to define train/test groups.
+    the ``"dataset"`` metadata column to define train/test groups. Paradigms
+    fill that column with each trial's dataset code (for a
+    :class:`~moabb.datasets.compound_dataset.CompoundDataset`, the dataset the
+    subject comes from). Within an evaluation, use
+    ``CrossSubjectEvaluation(cv_class=LeaveOneGroupOut, groups="dataset")``.
 
     Parameters
     ----------

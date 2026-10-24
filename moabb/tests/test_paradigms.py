@@ -1529,7 +1529,7 @@ class TestMetadata:
         assert (raw_metadata == epo2.metadata).all().all()
         assert (metadata2 == epo2.metadata).all().all()
 
-        assert (metadata1.columns == ["subject", "session", "run"]).all()
+        assert (metadata1.columns == ["subject", "session", "run", "dataset"]).all()
 
         assert "value" in metadata2.columns
         assert "value" in metadata3.columns
@@ -1619,3 +1619,27 @@ class TestMetadata:
         # Verify specific extra fields are present
         non_empty = [e for e in raw_out.annotations.extras if len(e) > 0]
         assert all("value" in e and "custom_col" in e for e in non_empty)
+
+
+def test_metadata_has_the_dataset_of_each_trial():
+    from moabb.datasets.compound_dataset import CompoundDataset
+
+    a, b = (
+        FakeDataset(["left_hand", "right_hand"], n_subjects=1, n_sessions=1, seed=s)
+        for s in (1, 2)
+    )
+    b.code = "FakeDatasetB"
+    paradigm = LeftRightImagery()
+    _, _, metadata = paradigm.get_data(a)
+    assert set(metadata["dataset"]) == {a.code}
+
+    pool = CompoundDataset(
+        [(a, 1, None, None), (b, 1, None, None)],
+        code="CompoundDatasetAB",
+        interval=a.interval,
+    )
+    _, _, metadata = paradigm.get_data(pool)
+    assert metadata.groupby("subject")["dataset"].unique().map(tuple).to_dict() == {
+        1: (a.code,),
+        2: (b.code,),
+    }

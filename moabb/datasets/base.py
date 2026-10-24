@@ -1610,6 +1610,10 @@ class BaseDataset(metaclass=MetaclassDataset):
             return sessions_data
         raise ValueError("should not happen")
 
+    def _source_code(self, subject):
+        """Code of the dataset ``subject`` comes from, the ``dataset`` metadata column."""
+        return self.code
+
     @abc.abstractmethod
     def _get_single_subject_data(self, subject):
         """Return the data of a single subject.

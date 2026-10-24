@@ -3071,3 +3071,34 @@ def test_saved_fold_models_can_be_unpickled(tmp_path):
             model = pickle.load(file)
         check_is_fitted(model)
         assert model[-1].__sklearn_is_fitted__()
+
+
+def test_cross_subject_leave_one_dataset_out(tmp_path):
+    from moabb.datasets.compound_dataset import CompoundDataset
+
+    a, b = (
+        FakeDataset(["left_hand", "right_hand"], n_subjects=2, n_sessions=1, seed=s)
+        for s in (1, 2)
+    )
+    b.code = "FakeDatasetB"
+    pool = CompoundDataset(
+        [(d, s, None, None) for d in (a, b) for s in d.subject_list],
+        code="CompoundDatasetAB",
+        interval=a.interval,
+    )
+    evaluation = ev.CrossSubjectEvaluation(
+        paradigm=FakeImageryParadigm(),
+        datasets=[pool],
+        cv_class=LeaveOneGroupOut,
+        groups="dataset",
+        hdf5_path=str(tmp_path),
+        overwrite=True,
+    )
+    results = evaluation.process(
+        {"CSP+LDA": make_pipeline(Covariances("oas"), CSP(2), LDA())}
+    )
+    # Each subject is scored once, by the model trained on the other dataset only.
+    assert sorted(results["subject"].astype(int)) == [1, 2, 3, 4]
+    # Both folds train on two subjects of one dataset: half of the trials.
+    _, y, _ = FakeImageryParadigm().get_data(pool)
+    assert set(results["samples"]) == {len(y) / 2}

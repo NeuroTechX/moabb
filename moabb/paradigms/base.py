@@ -620,6 +620,7 @@ class BaseProcessing(metaclass=MoabbMetaClass):
                     met["subject"] = subject
                     met["session"] = session
                     met["run"] = run
+                    met["dataset"] = dataset._source_code(subject)
 
                     metadata.append(met)
 
