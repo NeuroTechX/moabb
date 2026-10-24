@@ -45,6 +45,11 @@ def _identity(x):
     return x
 
 
+def _trial_variances(X):
+    """One feature per trial, whatever its channels and time samples."""
+    return np.array([[np.var(trial)] for trial in X])
+
+
 class OpaqueLeaveOneGroupOut(LeaveOneGroupOut):
     """Real group CV whose constructor signature cannot be inspected."""
 
@@ -1596,6 +1601,15 @@ class Test_CrossSess(TestWithinSess):
 
 
 class TestUtilEvaluation:
+    def test_get_nchan(self):
+        from moabb.evaluations.utils import _get_nchan
+
+        assert _get_nchan(np.zeros((4, 3, 10))) == 3
+        # Trials of different lengths, as given by CrossSystemEvaluation.
+        trials = np.empty(2, dtype=object)
+        trials[0], trials[1] = np.zeros((3, 10)), np.zeros((3, 20))
+        assert _get_nchan(trials) == 3
+
     def test_save_model_cv(self):
         model = Dummy()
         save_path = "test_save_path"
@@ -1997,6 +2011,52 @@ class TestParallelProcess:
         results = evaluation.process(pipelines)
         # 2 subjects × 2 sessions = 4 results
         assert len(results) == 4
+
+    def test_cross_system_process_structure(self, tmp_path):
+        """CrossSystem process() returns one result per target subject/session."""
+        systems = [
+            FakeDataset(
+                ["left_hand", "right_hand"], channels=channels, n_subjects=2, seed=seed
+            )
+            for channels, seed in ((("C3", "Cz", "C4"), 1), (("Cz", "C4", "Pz"), 2))
+        ]
+        evaluation = ev.CrossSystemEvaluation(
+            paradigm=FakeImageryParadigm(),
+            datasets=systems,
+            overwrite=True,
+            hdf5_path=str(tmp_path / "parallel_test"),
+        )
+        # Trials keep the channels of their system, so the pipeline must not
+        # depend on them.
+        results = evaluation.process(
+            {"V": make_pipeline(FunctionTransformer(_trial_variances), LDA())}
+        )
+        # 2 systems as targets x 2 subjects x 2 sessions = 8 results
+        assert len(results) == 8
+        assert set(results["dataset"]) == {system.code for system in systems}
+
+    def test_process_keeps_rows_of_each_dataset_once(self, tmp_path):
+        """Datasets sharing a pipeline digest do not duplicate their results."""
+        # Same parameters except the channels: same process pipeline digest.
+        datasets = [
+            FakeDataset(
+                ["left_hand", "right_hand"], channels=channels, n_subjects=2, seed=3
+            )
+            for channels in (("C3", "Cz", "C4"), ("C3", "Cz", "C4", "Pz"))
+        ]
+        evaluation = ev.CrossSubjectEvaluation(
+            paradigm=FakeImageryParadigm(),
+            datasets=datasets,
+            overwrite=True,
+            hdf5_path=str(tmp_path / "parallel_test"),
+        )
+        results = evaluation.process(
+            {"C": make_pipeline(Covariances("oas"), CSP(2), LDA())}
+        )
+        # 2 datasets x 2 subjects x 2 sessions = 8 results, each once
+        keys = ["dataset", "subject", "session", "pipeline"]
+        assert len(results) == 8
+        assert not results.duplicated(keys).any()
 
     def test_cross_subject_multisubject_fold_preserves_provenance(self, tmp_path):
         """A fold holding out multiple subjects is scored per subject/session."""
@@ -3005,6 +3065,69 @@ def test_cross_subject_cv_class_with_reserved_metadata_columns_saves(tmp_path):
 
     assert set(results["subject"]) == {"2"}
     assert set(results["session"]) == {"1"}
+
+
+# ---------------------------------------------------------------------------
+# Evaluation-specific fit metadata routed by _evaluate_fold.
+# ---------------------------------------------------------------------------
+
+_EXTRA_CAPTURE = []
+
+
+class _ExtraRecorder(sklearn.base.TransformerMixin, sklearn.base.BaseEstimator):
+    """Records the evaluation-specific metadata it is routed."""
+
+    def fit(self, X, y=None, systems=None):
+        _EXTRA_CAPTURE.append(systems)
+        return self
+
+    def transform(self, X):
+        return X
+
+
+@pytest.mark.parametrize("requested", [True, False])
+def test_evaluate_fold_routes_extra_fit_params(requested):
+    """extra_fit_params reach only the steps requesting them, without a
+    transfer split, and are ignored by the other pipelines."""
+    from sklearn import config_context
+
+    from moabb.evaluations.base import _evaluate_fold
+
+    _EXTRA_CAPTURE.clear()
+    with config_context(enable_metadata_routing=True):
+        step = _ExtraRecorder().set_fit_request(systems=requested)
+    pipe = make_pipeline(step, Covariances("oas"), CSP(2), LDA())
+
+    evaluation = ev.CrossSessionEvaluation(
+        paradigm=FakeImageryParadigm(), datasets=[dataset], overwrite=True
+    )
+    X, y, metadata = FakeImageryParadigm().get_data(dataset, subjects=[1])
+    train = np.flatnonzero(metadata["session"] == metadata["session"].iloc[0])
+    test = np.flatnonzero(metadata["session"] != metadata["session"].iloc[0])
+    systems = np.array(["system"] * len(y))
+
+    results = _evaluate_fold(
+        X,
+        y,
+        metadata,
+        evaluation._build_eval_config(None),
+        dataset,
+        "P",
+        pipe,
+        train,
+        test,
+        1,
+        metadata["session"].iloc[-1],
+        0,
+        extra_fit_params={"systems": systems[train]},
+    )
+
+    assert len(results) == 1
+    (routed,) = _EXTRA_CAPTURE
+    if requested:
+        np.testing.assert_array_equal(routed, systems[train])
+    else:
+        assert routed is None
 
 
 def test_saved_fold_models_can_be_unpickled(tmp_path):

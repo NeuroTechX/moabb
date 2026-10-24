@@ -535,6 +535,7 @@ accuracy, across-subject accuracy, or other transfer learning settings.
     WithinSessionEvaluation
     CrossSessionEvaluation
     CrossSubjectEvaluation
+    CrossSystemEvaluation
 
 .. autosummary::
     :toctree: generated/
