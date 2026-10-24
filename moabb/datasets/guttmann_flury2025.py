@@ -219,6 +219,13 @@ def _data_path_for_paradigm(
     basepath = Path(path) / "MNE-guttmannflury2025-data"
     subj_dir = basepath / paradigm / f"S{subject:02d}"
 
+    # Some deposits nest the subject once more (``S05/S05/Sess01/...``,
+    # from extracting ``S05.zip`` into ``S05/``); a seeded store then holds
+    # that nested tree instead of the flat one checked below.
+    nested_dir = subj_dir / f"S{subject:02d}"
+    if not force_update and nested_dir.is_dir() and any(nested_dir.rglob("*.bdf")):
+        return str(nested_dir)
+
     # Check if BDF files already exist for this subject.
     n_sess = _SESSIONS_PER_SUBJECT.get(subject, 1)
     all_exist = True
@@ -730,6 +737,7 @@ class GuttmannFlury2025_SSVEP(BaseDataset):
     """
 
     nemar_id = "nm000310"
+    nemar_seed_cache = True
     METADATA = DatasetMetadata(
         acquisition=_ACQUISITION,
         participants=_PARTICIPANTS,

@@ -207,6 +207,19 @@ class MOVING2024(BaseDataset):
         if subject not in self.subject_list:
             raise ValueError(f"Invalid subject number {subject}. Must be in 1-11.")
 
+        # The NEMAR deposit (nm000293) keeps the extracted ``edf/`` directory,
+        # not the RAR: take the subject's EDF from the local store (or an
+        # earlier extraction) before downloading the archive.
+        if not force_update:
+            extract_dir = (
+                dl.data_dl_destination(MOVING2024_URL, self.code, path=path).parent
+                / "extracted"
+            )
+            dl.fill_tree_from_store(extract_dir, "edf")
+            matches = self._find_subject_file(extract_dir, subject)
+            if matches:
+                return [str(matches[0])]
+
         rar_path = Path(
             dl.data_dl(MOVING2024_URL, self.code, path, force_update, verbose)
         )

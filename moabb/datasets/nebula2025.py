@@ -136,6 +136,7 @@ class NeBULA2025(BaseDataset):
     """
 
     nemar_id = "nm000322"
+    nemar_seed_cache = True
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(

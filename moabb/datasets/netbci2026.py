@@ -219,6 +219,7 @@ class NETBCI2026(BaseBIDSDataset):
     """
 
     nemar_id = "nm000305"
+    nemar_seed_cache = True
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(

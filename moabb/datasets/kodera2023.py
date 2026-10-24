@@ -296,6 +296,7 @@ class Kodera2023(BaseDataset):
     """
 
     nemar_id = "nm000295"
+    nemar_seed_cache = True
 
     METADATA = _make_metadata(None)
 

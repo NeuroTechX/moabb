@@ -109,6 +109,7 @@ class Yang2025(BaseDataset):
     """
 
     nemar_id = "nm000348"
+    nemar_seed_cache = True
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
@@ -257,16 +258,21 @@ class Yang2025(BaseDataset):
             self._ANNOT_MAP_3C if self.paradigm_type == "3C" else self._ANNOT_MAP_2C
         )
 
-        # Find the BIDS root (contains "sourcedata" folder)
-        bids_root = None
+        # Find the BIDS root (contains "sourcedata" folder). A seeded NEMAR
+        # store mirrors the contents of that "sourcedata" folder directly
+        # (``2C dataset/...``), without the extra level, so accept both.
+        source_dir = None
         for candidate in [base, *base.iterdir()]:
-            if candidate.is_dir() and (candidate / "sourcedata").exists():
-                bids_root = candidate
+            if not candidate.is_dir():
+                continue
+            for root in (candidate / "sourcedata", candidate):
+                if (root / f"{self.paradigm_type} dataset").is_dir():
+                    source_dir = root / f"{self.paradigm_type} dataset" / subj_str
+                    break
+            if source_dir is not None:
                 break
-        if bids_root is None:
+        if source_dir is None:
             raise FileNotFoundError(f"No BIDS root with sourcedata in {base}")
-
-        source_dir = bids_root / "sourcedata" / f"{self.paradigm_type} dataset" / subj_str
 
         sessions = {}
         for sess_idx in range(1, 4):

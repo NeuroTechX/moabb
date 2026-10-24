@@ -357,20 +357,39 @@ class Chang2025(BaseDataset):
         if target_zip is None:
             raise ValueError(f"No download ZIP found for subject {subject}")
 
+        # The NEMAR deposit keeps the extracted subjects; take the subject
+        # tree from the store before downloading the ZIP that contains it.
+        if not force_update and dl.fill_tree_from_store(basepath, orig_id):
+            return str(basepath)
+
         zip_name, file_id = target_zip
         url = f"{_FIGSHARE_BASE}{file_id}"
 
         log.info("Downloading Chang2025 %s for subject %d ...", zip_name, subject)
+        # The NEMAR deposit nests the file under MNE-chang2025-data/; probe
+        # that store path so the lookup matches instead of downloading.
         local_zip = dl.data_dl(
             url,
             "Chang2025",
-            path=str(basepath),
+            path=str(basepath.parent),
             force_update=force_update,
             verbose=verbose,
+            fname=f"MNE-chang2025-data/files/{file_id}",
         )
 
-        # Extract the ZIP.
+        # Extract the ZIP. data_dl returns the destination it filled (from
+        # the store or the network); fall back to it if the returned path
+        # does not name the file (pooch may return the containing folder).
         local_zip_path = Path(local_zip)
+        if not local_zip_path.is_file():
+            for cand in (
+                local_zip_path / f"MNE-chang2025-data/files/{file_id}",
+                local_zip_path / "files" / str(file_id),
+                local_zip_path / str(file_id),
+            ):
+                if cand.is_file():
+                    local_zip_path = cand
+                    break
         if local_zip_path.exists() and not subj_dir.exists():
             log.info("Extracting %s ...", local_zip_path.name)
             with zipfile.ZipFile(str(local_zip_path), "r") as zf:

@@ -331,6 +331,7 @@ class MAMEM1(BaseMAMEM):
     """
 
     nemar_id = "nm000119"
+    nemar_seed_cache = True
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,
@@ -833,6 +834,7 @@ class MAMEM2(BaseMAMEM):
     """
 
     nemar_id = "nm000120"
+    nemar_seed_cache = True
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=250.0,
@@ -1336,6 +1338,7 @@ class MAMEM3(BaseMAMEM):
     """
 
     nemar_id = "nm000121"
+    nemar_seed_cache = True
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=128.0,

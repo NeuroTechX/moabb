@@ -440,7 +440,7 @@ class TestMetadataCatalog:
     def test_wang2016_ssvep_metadata(self):
         """Test Wang2016 SSVEP metadata."""
         metadata = get_dataset_metadata("Wang2016")
-        assert metadata.participants.n_subjects == 34
+        assert metadata.participants.n_subjects == 35
         assert metadata.experiment.paradigm == "ssvep"
         assert metadata.experiment.n_classes == 40
         assert metadata.acquisition.n_channels == 64
