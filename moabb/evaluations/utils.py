@@ -569,13 +569,14 @@ def _pipeline_requires_epochs(pipeline):
 
 
 def _get_nchan(X):
-    """Extract number of channels from data (Epochs, ndarray or object ndarray)."""
+    """Extract number of channels from data (Epochs or ndarray)."""
     from mne.epochs import BaseEpochs
 
     if isinstance(X, BaseEpochs):
         return X.info["nchan"]
-    # An object array holds one (n_channels, n_times) array per trial.
-    return X[0].shape[0] if X.dtype == object else X.shape[1]
+    if X.dtype == object:  # nested trials of different shapes: the largest
+        return max(trial.shape[0] for trial in X)
+    return X.shape[1]
 
 
 class Emissions:

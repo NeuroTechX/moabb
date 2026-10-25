@@ -442,8 +442,18 @@ class BaseEvaluation(ABC):
         What defines the cross-validation folds, forwarded to the evaluation's
         splitter as its ``groups`` argument: a metadata column name, a list of
         column names combined into a compound key, or a callable
-        ``metadata -> array``. When ``None`` (the default), the splitter's own
-        default grouping applies (e.g. ``"subject"`` / ``"session"`` / labels).
+        ``metadata -> array``. The metadata of
+        :meth:`~moabb.paradigms.base.BaseParadigm.get_data` has the columns
+        ``"subject"``, ``"session"``, ``"run"``, ``"dataset"`` (the code of the
+        dataset each trial comes from, also inside a
+        :class:`~moabb.datasets.compound_dataset.CompoundDataset`) and
+        ``"device"`` (the recording device, see
+        :func:`~moabb.datasets.metadata.devices.canonical_device`). With
+        ``CrossSubjectEvaluation``, ``cv_class=LeaveOneGroupOut`` and
+        ``groups="dataset"`` holds out one dataset at a time, ``groups="device"``
+        one device at a time. A dataset is not a device: one dataset can use
+        several devices and several datasets can share one. When ``None`` (the default), the splitter's own default grouping
+        applies (e.g. ``"subject"`` / ``"session"`` / labels).
         Defaults to ``None``.
     save_model : bool
         Save model after training, for each fold of cross-validation if needed.
@@ -673,13 +683,28 @@ class BaseEvaluation(ABC):
             _pipeline_requires_epochs(clf) for clf in run_pipes.values()
         )
         return_epochs = True if requires_epochs else self.return_epochs
+        if requires_epochs:
+            process_pipelines = None
+        else:
+            # A filter-bank paradigm builds one processing pipeline per band and
+            # ``get_data`` stacks their outputs on a last axis. ``process_pipeline``
+            # is only the first of them (it keys the results), so passing it alone
+            # trained and scored filter-bank pipelines on the first band only.
+            process_pipelines = self.paradigm.make_process_pipelines(
+                dataset,
+                return_epochs=return_epochs,
+                return_raws=self.return_raws,
+                postprocess_pipeline=postprocess_pipeline,
+            )
+            if len(process_pipelines) <= 1:
+                process_pipelines = [process_pipeline]
         kwargs = {
             "dataset": dataset,
             "return_epochs": return_epochs,
             "return_raws": self.return_raws,
             "cache_config": self.cache_config,
             "postprocess_pipeline": postprocess_pipeline,
-            "process_pipelines": None if requires_epochs else [process_pipeline],
+            "process_pipelines": process_pipelines,
         }
         if subjects is not None:
             kwargs["subjects"] = subjects

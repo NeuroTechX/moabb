@@ -69,6 +69,31 @@ def _cut_to_shortest(X, sfreq):
     ]
 
 
+def _stack_trials(X):
+    """Stack the trial arrays of several recordings.
+
+    Recordings with the same channels and number of samples give one regular
+    array. Otherwise (e.g. datasets with different montages or sampling rates
+    pooled in a :class:`~moabb.datasets.compound_dataset.CompoundDataset`) the
+    result is a nested object array of shape ``(n_trials,)`` whose elements
+    are the ``(n_channels, n_times)`` arrays of each trial, as recorded.
+    """
+    if len({x.shape[1:] for x in X}) == 1:
+        return np.concatenate(X, axis=0)
+    shapes = sorted({x.shape[1:] for x in X})
+    log.warning(
+        "Recordings have different trial shapes %s: returning an object array "
+        "of shape (n_trials,) with one array per trial. Pipelines must accept "
+        "trials of different shapes.",
+        shapes,
+    )
+    trials = np.empty(sum(len(x) for x in X), dtype=object)
+    # ponytail: element-wise fill, numpy would broadcast same-shaped trials
+    for i, trial in enumerate(t for x in X for t in x):
+        trials[i] = trial
+    return trials
+
+
 def _normalize_scorer(scorer):
     """Normalize scorer, converting list-style scorers to a dict.
 
@@ -620,6 +645,8 @@ class BaseProcessing(metaclass=MoabbMetaClass):
                     met["subject"] = subject
                     met["session"] = session
                     met["run"] = run
+                    met["dataset"] = dataset._source_code(subject)
+                    met["device"] = dataset._device(subject, session)
 
                     metadata.append(met)
 
@@ -657,13 +684,19 @@ class BaseProcessing(metaclass=MoabbMetaClass):
         ):
             X = _cut_to_shortest(X, self.resample)
         if return_epochs:
+            if len({(tuple(ep.ch_names), ep.info["sfreq"]) for ep in X}) > 1:
+                raise ValueError(
+                    "Recordings have different channels or sampling rates, which "
+                    "mne.Epochs cannot hold together; use return_epochs=False to get "
+                    "one array per trial."
+                )
             for ep in X:
                 ep.set_annotations(None)
             X = mne.concatenate_epochs(X)
         elif return_raws:
             pass
         else:
-            X = np.concatenate(X, axis=0)
+            X = _stack_trials(X)
         return X, labels, metadata
 
     def _get_raw_pipelines(self):

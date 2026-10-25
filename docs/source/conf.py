@@ -45,10 +45,18 @@ year = datetime.now().year
 copyright = f"2018-{year} MOABB contributors"
 author = "Alexandre Barachant, Vinay Jayaram, Sylvain Chevallier"
 
+# "stable" for release builds (v* tags, deployed to /docs/), "dev" otherwise
+# (develop, deployed to /dev/); set by the Docs workflow.
+docs_version = (os.environ.get("MOABB_DOCS_VERSION") or "dev").strip().lower()
+if docs_version not in ("dev", "stable"):
+    raise ValueError(
+        f"MOABB_DOCS_VERSION must be 'dev' or 'stable', got {docs_version!r}"
+    )
+
 # The short X.Y version
 version = moabb.__version__
 # The full version, including alpha/beta/rc tags
-release = f"{moabb.__version__}-dev"
+release = version if docs_version == "stable" else f"{moabb.__version__}-dev"
 
 # Control the page title suffix in <title> tags for SEO
 html_title = "MOABB Documentation"
@@ -246,7 +254,11 @@ pygments_style = "sphinx"
 
 
 html_theme = "pydata_sphinx_theme"
-switcher_version_match = "dev" if release.endswith("dev0") else version
+# ``version`` key of the entry in _static/versions.json that this build is.
+switcher_version_match = docs_version
+# Every build reads the switcher list from the dev deployment, so adding an
+# entry only needs a develop push.
+switcher_json_url = "https://moabb.neurotechx.com/dev/_static/versions.json"
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
@@ -271,7 +283,14 @@ html_theme_options = {
     "navigation_depth": -1,
     "show_toc_level": 1,
     "nosidebar": True,
-    "navbar_end": ["theme-switcher", "navbar-icon-links"],
+    "navbar_end": ["version-switcher", "theme-switcher", "navbar-icon-links"],
+    "switcher": {
+        "json_url": switcher_json_url,
+        "version_match": switcher_version_match,
+    },
+    # Do not fetch json_url at build time: offline/PR builds and the first
+    # dev deployment (before versions.json is online) would only warn.
+    "check_switcher": False,
     "announcement": (
         "<strong>Using MOABB in academic work?</strong> "
         "<a class='moabb-announcement-cta' href='cite.html'>Cite MOABB</a> "

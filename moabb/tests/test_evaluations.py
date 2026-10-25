@@ -3130,6 +3130,48 @@ def test_evaluate_fold_routes_extra_fit_params(requested):
         assert routed is None
 
 
+class _EveryBand(sklearn.base.BaseEstimator, sklearn.base.TransformerMixin):
+    """Raise unless the input holds every band of the filter-bank paradigm."""
+
+    def __init__(self, n_bands=1):
+        self.n_bands = n_bands
+
+    def _check(self, X):
+        if X.ndim != 4 or X.shape[-1] != self.n_bands:
+            raise ValueError(
+                f"expected {self.n_bands} filter bands on the last axis, got X of shape {X.shape}"
+            )
+
+    def fit(self, X, y=None):
+        self._check(X)
+        return self
+
+    def transform(self, X):
+        self._check(X)
+        return X.reshape(len(X), -1)
+
+
+@pytest.mark.parametrize(
+    "evaluation_class",
+    [ev.WithinSessionEvaluation, ev.CrossSessionEvaluation, ev.CrossSubjectEvaluation],
+)
+def test_filterbank_paradigm_reaches_pipeline_with_every_band(evaluation_class, tmp_path):
+    # Regression: the evaluations passed only the first band's processing
+    # pipeline to ``get_data``, so filter-bank pipelines saw a single band.
+    from moabb.paradigms import FilterBankLeftRightImagery
+
+    paradigm = FilterBankLeftRightImagery()
+    n_bands = len(paradigm.filters)
+    data = FakeDataset(["left_hand", "right_hand"], n_subjects=2, n_sessions=2, seed=7)
+    pipeline = make_pipeline(_EveryBand(n_bands=n_bands), LDA())
+    evaluation = evaluation_class(
+        paradigm=paradigm, datasets=[data], hdf5_path=str(tmp_path), overwrite=True
+    )
+    results = evaluation.process({"every-band": pipeline})
+    assert len(results) > 0
+    assert np.isfinite(results["score"]).all()
+
+
 def test_saved_fold_models_can_be_unpickled(tmp_path):
     # Regression: _ensure_fitted marked each fitted step that lacks
     # __sklearn_is_fitted__ with a method bound to a local function, which
@@ -3152,3 +3194,103 @@ def test_saved_fold_models_can_be_unpickled(tmp_path):
             model = pickle.load(file)
         check_is_fitted(model)
         assert model[-1].__sklearn_is_fitted__()
+
+
+def test_cross_subject_leave_one_dataset_out(tmp_path):
+    from moabb.datasets.compound_dataset import CompoundDataset
+
+    a, b = (
+        FakeDataset(["left_hand", "right_hand"], n_subjects=2, n_sessions=1, seed=s)
+        for s in (1, 2)
+    )
+    b.code = "FakeDatasetB"
+    pool = CompoundDataset(
+        [(d, s, None, None) for d in (a, b) for s in d.subject_list],
+        code="CompoundDatasetAB",
+        interval=a.interval,
+    )
+    evaluation = ev.CrossSubjectEvaluation(
+        paradigm=FakeImageryParadigm(),
+        datasets=[pool],
+        cv_class=LeaveOneGroupOut,
+        groups="dataset",
+        hdf5_path=str(tmp_path),
+        overwrite=True,
+    )
+    results = evaluation.process(
+        {"CSP+LDA": make_pipeline(Covariances("oas"), CSP(2), LDA())}
+    )
+    # Each subject is scored once, by the model trained on the other dataset only.
+    assert sorted(results["subject"].astype(int)) == [1, 2, 3, 4]
+    # Both folds train on two subjects of one dataset: half of the trials.
+    _, y, _ = FakeImageryParadigm().get_data(pool)
+    assert set(results["samples"]) == {len(y) / 2}
+
+
+def test_cross_subject_on_nested_trials_of_different_shapes(tmp_path):
+    # Datasets with different montages and rates pooled in a CompoundDataset
+    # give nested trials; leave-one-dataset-out runs on them unchanged.
+    from moabb.datasets.compound_dataset import CompoundDataset
+    from moabb.paradigms import LeftRightImagery
+
+    systems = [
+        FakeDataset(
+            ["left_hand", "right_hand"], channels=ch, n_subjects=2, sfreq=sf, seed=i
+        )
+        for i, (ch, sf) in enumerate(
+            ((("C3", "Cz", "C4", "Pz"), 128), (("C3", "C4"), 256))
+        )
+    ]
+    pool = CompoundDataset(
+        [(d, s, None, None) for d in systems for s in d.subject_list],
+        code="CompoundDatasetNested",
+        interval=systems[0].interval,
+    )
+    origin = np.array([d.code for d, *_ in pool.subjects_list])
+    evaluation = ev.CrossSubjectEvaluation(
+        paradigm=LeftRightImagery(),
+        datasets=[pool],
+        cv_class=LeaveOneGroupOut,
+        groups=lambda m: origin[m["subject"].astype(int).to_numpy() - 1],
+        hdf5_path=str(tmp_path),
+        overwrite=True,
+    )
+    log_var = FunctionTransformer(lambda X: np.array([[np.log(np.var(t))] for t in X]))
+    results = evaluation.process({"var": make_pipeline(log_var, LDA())})
+
+    # 2 systems x 2 subjects x 2 sessions, each system held out once
+    assert len(results) == 8 and np.isfinite(results["score"]).all()
+    assert set(results["channels"]) == {4}
+
+
+def test_cross_subject_leave_one_device_out(tmp_path):
+    # A device can span datasets: Amp X records datasets A and B, Amp Y C.
+    from moabb.datasets.compound_dataset import CompoundDataset
+
+    a, b, c = (
+        FakeDataset(["left_hand", "right_hand"], n_subjects=2, n_sessions=1, seed=s)
+        for s in (1, 2, 3)
+    )
+    b.code, c.code = "FakeDatasetB", "FakeDatasetC"
+    a._device = b._device = lambda subject, session: "Amp X"
+    c._device = lambda subject, session: "Amp Y"
+    pool = CompoundDataset(
+        [(d, s, None, None) for d in (a, b, c) for s in d.subject_list],
+        code="CompoundDatasetABC",
+        interval=a.interval,
+    )
+    evaluation = ev.CrossSubjectEvaluation(
+        paradigm=FakeImageryParadigm(),
+        datasets=[pool],
+        cv_class=LeaveOneGroupOut,
+        groups="device",
+        hdf5_path=str(tmp_path),
+        overwrite=True,
+    )
+    results = evaluation.process(
+        {"CSP+LDA": make_pipeline(Covariances("oas"), CSP(2), LDA())}
+    ).sort_values("subject")
+    _, y, _ = FakeImageryParadigm().get_data(pool)
+    per_subject = len(y) / 6
+    # Amp X subjects (1-4) train on Amp Y's two subjects, and the reverse.
+    assert list(results["samples"]) == [2 * per_subject] * 4 + [4 * per_subject] * 2
