@@ -52,12 +52,9 @@ def test_independent_recordings_can_reuse_sample_coordinates():
         assert not _has_overlap(train, test, groups)
 
 
-
 def test_tuple_recording_ids_are_atomic_with_reused_run_labels():
     # Subject/session/run is naturally a tuple, not an array dimension.
-    labels = [(1, "session-0", "run-0")] * 8 + [
-        (2, "session-0", "run-0")
-    ] * 8
+    labels = [(1, "session-0", "run-0")] * 8 + [(2, "session-0", "run-0")] * 8
     groups = _groups(list(np.arange(8) * 800) * 2, 500, labels)
     folds = list(PurgedEpochKFold(4).split(np.zeros(16), groups=groups))
     assert len(folds) == 4
