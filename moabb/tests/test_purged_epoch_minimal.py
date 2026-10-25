@@ -39,16 +39,13 @@ def test_complete_chronological_partition_with_exact_purge():
 
 def test_half_open_touching_boundaries_are_not_purged():
     actual = PurgedEpochKFold._overlap_mask(
-        np.array([0, 10, 20]), np.array([10, 20, 30]),
-        np.array([10]), np.array([20]),
+        np.array([0, 10, 20]), np.array([10, 20, 30]), np.array([10]), np.array([20])
     )
     assert actual.tolist() == [False, True, False]
 
 
 def test_independent_recordings_can_reuse_sample_coordinates():
-    groups = _groups(
-        list(np.arange(8) * 800) * 2, 500, ["A"] * 8 + ["B"] * 8
-    )
+    groups = _groups(list(np.arange(8) * 800) * 2, 500, ["A"] * 8 + ["B"] * 8)
     for train, test in PurgedEpochKFold(4).split(np.zeros(16), groups=groups):
         assert len(test) == 4
         assert len(train) == 12
@@ -116,9 +113,7 @@ def test_prefix_max_interval_search_equals_independent_dense_oracle():
 def test_large_cohort_has_no_quadratic_overlap_matrix():
     n = 30000
     starts = np.arange(n, dtype=np.int64) * 4
-    actual = PurgedEpochKFold._overlap_mask(
-        starts + 1, starts + 3, starts, starts + 2
-    )
+    actual = PurgedEpochKFold._overlap_mask(starts + 1, starts + 3, starts, starts + 2)
     assert actual.shape == (n,)
     assert actual.all()
 

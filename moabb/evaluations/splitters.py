@@ -1420,9 +1420,11 @@ class PurgedEpochKFold(GroupsConsumerMixin, BaseCrossValidator):
     """
 
     def __init__(self, n_splits=5):
-        if isinstance(n_splits, (bool, np.bool_)) or not isinstance(
-            n_splits, (int, np.integer)
-        ) or n_splits < 2:
+        if (
+            isinstance(n_splits, (bool, np.bool_))
+            or not isinstance(n_splits, (int, np.integer))
+            or n_splits < 2
+        ):
             raise ValueError("n_splits must be an integer >= 2.")
         self.n_splits = int(n_splits)
 
@@ -1505,18 +1507,23 @@ class PurgedEpochKFold(GroupsConsumerMixin, BaseCrossValidator):
                 local_train = np.flatnonzero((runs == run) & ~testing)
                 train_start = starts[local_train]
                 test_start = starts[local_test]
-                purged[local_train[self._overlap_mask(
-                    train_start, train_start + lengths[local_train],
-                    test_start, test_start + lengths[local_test],
-                )]] = True
+                purged[
+                    local_train[
+                        self._overlap_mask(
+                            train_start,
+                            train_start + lengths[local_train],
+                            test_start,
+                            test_start + lengths[local_test],
+                        )
+                    ]
+                ] = True
             train = np.flatnonzero(~testing & ~purged)
             if not len(train) or not len(test):
                 raise ValueError("Purging removed an entire train or test fold.")
             if y is not None:
                 required = np.unique(y)
-                if (
-                    len(np.unique(y[train])) != len(required)
-                    or len(np.unique(y[test])) != len(required)
-                ):
+                if len(np.unique(y[train])) != len(required) or len(
+                    np.unique(y[test])
+                ) != len(required):
                     raise ValueError("A purged fold lacks a class in train or test.")
             yield train, test
