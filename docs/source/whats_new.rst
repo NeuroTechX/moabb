@@ -1220,10 +1220,10 @@ API changes
 - None
 
 .. _Ethan Davis: https://github.com/davisethan
-.. _LiQing: https://github.com/qinxwew
+.. _LiQing: https://github.com/NeuroTechX/moabb/pulls?q=author%3Aqinxwew
 .. _Zheyu Yao: https://github.com/zyao197
 .. _Martin Wimpff: https://github.com/martinwimpff
-.. _LiQing: https://github.com/qinxwew
+
 .. _Reinmar Kobler: https://github.com/rkobler
 .. _Gabriel Schwartz: https://github.com/Kaos9001
 .. _Sara Sedlar: https://github.com/Sara04
