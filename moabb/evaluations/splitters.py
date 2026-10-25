@@ -1445,8 +1445,18 @@ class PurgedEpochKFold(GroupsConsumerMixin, BaseCrossValidator):
         # a NumPy object array against a tuple-valued ID broadcasts the tuple
         # instead of comparing each complete recording identity.
         identities = values[:, 0].tolist()
-        if any(value is None for value in identities):
-            raise ValueError("recording_id must be present for every epoch.")
+
+        def missing_identity(value):
+            if value is None:
+                return True
+            if isinstance(value, (float, np.floating)):
+                return bool(np.isnan(value))
+            if isinstance(value, tuple):
+                return any(missing_identity(part) for part in value)
+            return False
+
+        if any(missing_identity(value) for value in identities):
+            raise ValueError("recording_id must not be missing.")
         recording_codes = {}
         try:
             runs = np.fromiter(
