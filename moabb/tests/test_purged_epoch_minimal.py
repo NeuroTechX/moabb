@@ -64,6 +64,19 @@ def test_tuple_recording_ids_are_atomic_with_reused_run_labels():
         assert not _has_overlap(train, test, groups)
 
 
+def test_missing_nan_recording_ids_fail_before_grouping():
+    starts = np.arange(8) * 200
+    for missing_ids in (
+        [np.nan] * 8,
+        [float("nan") for _ in range(8)],
+        [("subject", np.float64("nan"), "run")] * 8,
+        [None] * 8,
+    ):
+        groups = _groups(starts, 100, missing_ids)
+        with pytest.raises(ValueError, match="recording_id must not be missing"):
+            list(PurgedEpochKFold(2).split(np.zeros(8), groups=groups))
+
+
 def test_unhashable_recording_id_fails_with_clear_error():
     groups = _groups(np.arange(8) * 200, 100)
     groups[0, 0] = ["subject", "run"]
