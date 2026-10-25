@@ -1450,8 +1450,10 @@ class PurgedEpochKFold(GroupsConsumerMixin, BaseCrossValidator):
         recording_codes = {}
         try:
             runs = np.fromiter(
-                (recording_codes.setdefault(value, len(recording_codes))
-                 for value in identities),
+                (
+                    recording_codes.setdefault(value, len(recording_codes))
+                    for value in identities
+                ),
                 dtype=np.intp,
                 count=n_samples,
             )
