@@ -773,13 +773,13 @@ Additionally, we use the <cite>get_data</cite> method to download, preprocess, e
 </span></pre></div></div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>X shape (trials, channels, timepoints): (864, 22, 1001)
 y shape (trials,): (864,)
-meta shape (trials, info columns): (864, 3)
-   subject session run
-0        1  0train   0
-1        1  0train   0
-2        1  0train   0
-3        1  0train   0
-4        1  0train   0
+meta shape (trials, info columns): (864, 5)
+   subject session run       dataset                   device
+0        1  0train   0  BNCI2014-001  Brain Products BrainAmp
+1        1  0train   0  BNCI2014-001  Brain Products BrainAmp
+2        1  0train   0  BNCI2014-001  Brain Products BrainAmp
+3        1  0train   0  BNCI2014-001  Brain Products BrainAmp
+4        1  0train   0  BNCI2014-001  Brain Products BrainAmp
 </pre></div>
 </div>
 </section>
@@ -2186,7 +2186,8 @@ but here we print them to focus on the splitting logic itself.</p>
 <img src="../../_images/sphx_glr_plot_within_session_splitter_003.png" srcset="../../_images/sphx_glr_plot_within_session_splitter_003.png" alt="Train-Test Split by Subject" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Axes: title={'center': 'Train-Test Split by Subject'}, xlabel='Number of samples', ylabel='Subject'&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 12.935 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 13.031 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  870 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-how-to-benchmark-plot-within-session-splitter-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/76a7e21707cc400783ec53b8312a3b30/plot_within_session_splitter.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_within_session_splitter.ipynb</span></code></a></p>

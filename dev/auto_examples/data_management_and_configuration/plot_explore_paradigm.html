@@ -722,10 +722,6 @@ coefficients for continuous paradigms.</p>
 </span><span class="w">
 </span><span class="nb">print</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="vm">__doc__</span></a><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/optuna/integration/sklearn.py:14: FutureWarning: `optuna.integration.sklearn` has been deprecated in v4.9.0. This feature will be removed in v6.0.0. See https://github.com/optuna/optuna/releases/tag/v4.9.0. Use `optuna_integration.sklearn` instead.
-  optuna_warn(f"{msg} Use `optuna_integration.sklearn` instead.", FutureWarning)
-</pre></div>
-</div>
 <section id="motorimagery">
 <h2>MotorImagery<a class="headerlink" href="#motorimagery" title="Link to this heading">#</a></h2>
 <p>First, let’s take an example of the MotorImagery paradigm.</p>
@@ -733,8 +729,7 @@ coefficients for continuous paradigms.</p>
 </span><span class="w">
 </span><span class="nb">print</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">paradigm</span><span class="o">.</span><span class="vm">__doc__</span></a><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Choosing from all possible events
-N-class motor imagery.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>N-class motor imagery.
 
     By default, metric is 'roc-auc' if 2 classes and 'accuracy' if more
 
@@ -901,30 +896,30 @@ may or may not contain multiple runs.</p></li>
 </ul>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span class="nb">print</span><span class="p">(</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-method reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.head.html#pandas.DataFrame.head" title="pandas.DataFrame.head"><span class="n">metadata</span><span class="o">.</span><span class="n">head</span></a><span class="p">(</span><span class="p">)</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>   subject session run
-0        1  0train   0
-1        1  0train   0
-2        1  0train   0
-3        1  0train   0
-4        1  0train   0
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>   subject session run       dataset                   device
+0        1  0train   0  BNCI2014-001  Brain Products BrainAmp
+1        1  0train   0  BNCI2014-001  Brain Products BrainAmp
+2        1  0train   0  BNCI2014-001  Brain Products BrainAmp
+3        1  0train   0  BNCI2014-001  Brain Products BrainAmp
+4        1  0train   0  BNCI2014-001  Brain Products BrainAmp
 </pre></div>
 </div>
 <p>For this data, we have one subject, 2 sessions (2 different recording days)
 and 6 runs per session.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span class="nb">print</span><span class="p">(</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-method reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.describe.html#pandas.DataFrame.describe" title="pandas.DataFrame.describe"><span class="n">metadata</span><span class="o">.</span><span class="n">describe</span></a><span class="p">(</span><span class="n">include</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">all</span><span class="s2">&quot;</span><span class="p">)</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>        subject session  run
-count     576.0     576  576
-unique      NaN       2    6
-top         NaN  0train    0
-freq        NaN     288   96
-mean        1.0     NaN  NaN
-std         0.0     NaN  NaN
-min         1.0     NaN  NaN
-25%         1.0     NaN  NaN
-50%         1.0     NaN  NaN
-75%         1.0     NaN  NaN
-max         1.0     NaN  NaN
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>        subject session  run       dataset                   device
+count     576.0     576  576           576                      576
+unique      NaN       2    6             1                        1
+top         NaN  0train    0  BNCI2014-001  Brain Products BrainAmp
+freq        NaN     288   96           576                      576
+mean        1.0     NaN  NaN           NaN                      NaN
+std         0.0     NaN  NaN           NaN                      NaN
+min         1.0     NaN  NaN           NaN                      NaN
+25%         1.0     NaN  NaN           NaN                      NaN
+50%         1.0     NaN  NaN           NaN                      NaN
+75%         1.0     NaN  NaN           NaN                      NaN
+max         1.0     NaN  NaN           NaN                      NaN
 </pre></div>
 </div>
 <p>Paradigm objects can also return the list of all dataset compatible. Here
@@ -945,8 +940,7 @@ before concatenating the output.</p>
 </span><span class="w">
 </span><span class="nb">print</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">paradigm</span><span class="o">.</span><span class="vm">__doc__</span></a><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Choosing from all possible events
-Filter bank n-class motor imagery.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Filter bank n-class motor imagery.
 
     By default, metric is 'roc-auc' if 2 classes and 'accuracy' if more
 
@@ -1051,7 +1045,8 @@ corresponding to left- and right-hand motor imagination.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>['left_hand' 'right_hand']
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 19.833 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 14.884 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  1111 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-data-management-and-configuration-plot-explore-paradigm-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/f8c9f4692c841c569c6639f1d3e66bf0/plot_explore_paradigm.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_explore_paradigm.ipynb</span></code></a></p>
