@@ -434,8 +434,18 @@ class BaseEvaluation(ABC):
         What defines the cross-validation folds, forwarded to the evaluation's
         splitter as its ``groups`` argument: a metadata column name, a list of
         column names combined into a compound key, or a callable
-        ``metadata -> array``. When ``None`` (the default), the splitter's own
-        default grouping applies (e.g. ``"subject"`` / ``"session"`` / labels).
+        ``metadata -> array``. The metadata of
+        :meth:`~moabb.paradigms.base.BaseParadigm.get_data` has the columns
+        ``"subject"``, ``"session"``, ``"run"``, ``"dataset"`` (the code of the
+        dataset each trial comes from, also inside a
+        :class:`~moabb.datasets.compound_dataset.CompoundDataset`) and
+        ``"device"`` (the recording device, see
+        :func:`~moabb.datasets.metadata.devices.canonical_device`). With
+        ``CrossSubjectEvaluation``, ``cv_class=LeaveOneGroupOut`` and
+        ``groups="dataset"`` holds out one dataset at a time, ``groups="device"``
+        one device at a time. A dataset is not a device: one dataset can use
+        several devices and several datasets can share one. When ``None`` (the default), the splitter's own default grouping
+        applies (e.g. ``"subject"`` / ``"session"`` / labels).
         Defaults to ``None``.
     save_model : bool
         Save model after training, for each fold of cross-validation if needed.
