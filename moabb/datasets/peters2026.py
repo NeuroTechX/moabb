@@ -612,6 +612,10 @@ class Peters2026(OpenNeuroMirrorMixin, BaseBIDSDataset):
         )
         return raw
 
+    def _device(self, subject, session):
+        # Sessions are visits ("0" = visit 1); the cap changed between visits.
+        return f"Wearable Sensing {_cap(subject, int(session) + 1)}"
+
     def _get_single_subject_data(self, subject):
         """Return ``{session: {run: raw}}`` for the selected visits."""
         bids_paths = self.bids_paths(subject)

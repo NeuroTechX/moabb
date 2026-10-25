@@ -1529,7 +1529,9 @@ class TestMetadata:
         assert (raw_metadata == epo2.metadata).all().all()
         assert (metadata2 == epo2.metadata).all().all()
 
-        assert (metadata1.columns == ["subject", "session", "run"]).all()
+        assert (
+            metadata1.columns == ["subject", "session", "run", "dataset", "device"]
+        ).all()
 
         assert "value" in metadata2.columns
         assert "value" in metadata3.columns
@@ -1621,6 +1623,30 @@ class TestMetadata:
         assert all("value" in e and "custom_col" in e for e in non_empty)
 
 
+def test_metadata_has_the_dataset_of_each_trial():
+    from moabb.datasets.compound_dataset import CompoundDataset
+
+    a, b = (
+        FakeDataset(["left_hand", "right_hand"], n_subjects=1, n_sessions=1, seed=s)
+        for s in (1, 2)
+    )
+    b.code = "FakeDatasetB"
+    paradigm = LeftRightImagery()
+    _, _, metadata = paradigm.get_data(a)
+    assert set(metadata["dataset"]) == {a.code}
+
+    pool = CompoundDataset(
+        [(a, 1, None, None), (b, 1, None, None)],
+        code="CompoundDatasetAB",
+        interval=a.interval,
+    )
+    _, _, metadata = paradigm.get_data(pool)
+    assert metadata.groupby("subject")["dataset"].unique().map(tuple).to_dict() == {
+        1: (a.code,),
+        2: (b.code,),
+    }
+
+
 def _two_systems():
     """A pool of two recordings setups with different montages and rates."""
     from moabb.datasets.compound_dataset import CompoundDataset
@@ -1662,3 +1688,53 @@ def test_recordings_of_different_shapes_give_nested_trials():
 def test_epochs_of_different_shapes_raise_clearly():
     with pytest.raises(ValueError, match="return_epochs=False"):
         LeftRightImagery().get_data(_two_systems(), return_epochs=True)
+
+
+@pytest.mark.parametrize(
+    "hardware, device",
+    [
+        ("g.USBamp (g.tec, Schiedlberg, Austria)", "g.tec g.USBamp"),
+        ("g.tec g.USBamp (serial UB-2016.05.01)", "g.tec g.USBamp"),
+        ("BrainProducts BrainAmp MR plus", "Brain Products BrainAmp"),
+        ("Brain Products actiCHamp (128-channel actiCAP)", "Brain Products actiCHamp"),
+        ("g.tec medical engineering GmbH", "g.tec (model not given)"),
+        ("Magstim EGI GES400", "EGI Geodesic Net Amps"),
+        ("Deymed TruScan 32", "Deymed TruScan 32"),
+        (None, "unknown"),
+    ],
+)
+def test_canonical_device(hardware, device):
+    from moabb.datasets.metadata.devices import canonical_device
+
+    assert canonical_device(hardware) == device
+
+
+def test_metadata_has_the_device_of_each_session():
+    from moabb.datasets.compound_dataset import CompoundDataset
+
+    a, b = (
+        FakeDataset(["left_hand", "right_hand"], n_subjects=1, n_sessions=2, seed=s)
+        for s in (1, 2)
+    )
+    b.code = "FakeDatasetB"
+    paradigm = LeftRightImagery()
+    _, _, metadata = paradigm.get_data(a)
+    assert set(metadata["device"]) == {"unknown"}  # FakeDataset gives no hardware
+
+    # One dataset can switch device between sessions, and devices are shared
+    # across datasets: the column follows the device, not the dataset.
+    a._device = lambda subject, session: "Amp X" if session == "0" else "Amp Y"
+    b._device = lambda subject, session: "Amp X"
+    pool = CompoundDataset(
+        [(a, 1, None, None), (b, 1, None, None)],
+        code="CompoundDatasetAB",
+        interval=a.interval,
+    )
+    _, _, metadata = paradigm.get_data(pool)
+    pairs = set(zip(metadata["dataset"], metadata["session"], metadata["device"]))
+    assert pairs == {
+        (a.code, "0", "Amp X"),
+        (a.code, "1", "Amp Y"),
+        (b.code, "0", "Amp X"),
+        (b.code, "1", "Amp X"),
+    }
