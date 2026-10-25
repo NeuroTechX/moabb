@@ -6,10 +6,7 @@ Data DOI: 10.6084/m9.figshare.28955456.v4
 """
 
 import hashlib
-import json
 import logging
-import re
-import warnings
 from pathlib import Path
 
 import numpy as np
@@ -35,18 +32,6 @@ from .utils import build_raw_from_epochs
 
 log = logging.getLogger(__name__)
 
-# Figshare article and the version whose record gives every file's folder.
-_FIGSHARE_ARTICLE = 28955456
-_FIGSHARE_VERSION = 4
-_RECORD_URL = (
-    f"https://api.figshare.com/v2/articles/{_FIGSHARE_ARTICLE}"
-    f"/versions/{_FIGSHARE_VERSION}"
-)
-# Cache name of that record, next to the epoch files.
-_RECORD_NAME = f"figshare_article_{_FIGSHARE_ARTICLE}_v{_FIGSHARE_VERSION}.json"
-
-# An EEG epoch file in the depositor's layout: group, folder subject N, session k.
-_EPOCH_PATH = re.compile(r"epo_data/(Normals|Patients)/EEG/subject(\d+)/(\d)_epo\.mat")
 _N_HEALTHY = 17  # Normals/subject1..17 are subjects 1-17; Patients/subjectN is 17 + N.
 
 # Event codes (from the paper and MakeDatasetFromRaw.m).
@@ -67,8 +52,9 @@ _SFREQ = 256.0
 # The 98 EEG epoch files of figshare version 4, as the record's
 # ``folder_structure`` places them: (figshare file id, group, folder subject N,
 # session k, size in bytes, MD5), i.e. ``epo_data/<group>/EEG/subject<N>/<k>_epo.mat``.
-# Used when the record cannot be fetched; ``_epoch_files_from_record`` derives
-# the same rows from the record.
+# Taken once from the record (``GET /v2/articles/28955456/versions/4``) and
+# checked against the article ZIP; every download is checked against its size
+# and MD5, so the record is not fetched at load time.
 # fmt: off
 _EPOCH_FILES = (
     (54452621, "Normals", 1, 1, 41201769, "d108949494c5c5e51f43c1f3a7510681"),
@@ -173,40 +159,6 @@ _EPOCH_FILES = (
 # fmt: on
 
 
-def _epoch_files_from_record(record):
-    """Rows of ``_EPOCH_FILES`` derived from a figshare article record.
-
-    A file's participant is its depositor folder, given by the record's
-    ``folder_structure`` (figshare file id -> folder); its session is the
-    ``<k>`` of its name. Files outside ``epo_data/*/EEG/subject<N>/`` (fNIRS,
-    raw recordings, code) are skipped.
-    """
-    folders = record["folder_structure"]
-    rows = []
-    for entry in record["files"]:
-        path = f"{folders.get(str(entry['id']), '')}/{entry['name']}"
-        match = _EPOCH_PATH.fullmatch(path)
-        if match is None:
-            continue
-        group, folder_subject, session = match.groups()
-        rows.append(
-            (
-                entry["id"],
-                group,
-                int(folder_subject),
-                int(session),
-                entry["size"],
-                entry["computed_md5"],
-            )
-        )
-    return tuple(sorted(rows, key=lambda row: (row[1], row[2], row[3])))
-
-
-def _is_record(obj):
-    """Whether ``obj`` looks like a figshare article record with folders."""
-    return isinstance(obj, dict) and "folder_structure" in obj and "files" in obj
-
-
 def _subject(group, folder_subject):
     """MOABB subject of the depositor folder ``<group>/EEG/subject<N>``."""
     return folder_subject if group == "Normals" else _N_HEALTHY + folder_subject
@@ -255,10 +207,8 @@ class HefmiIch2025(BaseDataset):
     are ``Normals/EEG/subject1`` to ``subject17`` (healthy controls),
     subjects 18-37 are ``Patients/EEG/subject1`` to ``subject20`` (ICH
     patients, subject = 17 + N), and session ``str(k - 1)`` is the file
-    ``<k>_epo.mat``. The loader reads this mapping from the record (fetched
-    once, cached next to the data) and ships a copy of it, with the size and
-    MD5 of every file, which it uses when the record cannot be fetched. Each
-    file is checked against its size and MD5 before it is read, and is stored
+    ``<k>_epo.mat``. The loader ships this mapping with the size and MD5 of
+    every file (version 4 of the record does not change). Each file is checked against its size and MD5 before it is read, and is stored
     under the depositor's path. The files' own MAT headers agree with the
     folders: their creation times form 37 contiguous blocks, one per folder,
     with the sessions in order a few seconds apart.
@@ -472,68 +422,6 @@ class HefmiIch2025(BaseDataset):
             onset_sample=int(12 * fs),
         )
 
-    @staticmethod
-    def _figshare_record(basepath):
-        """Return the figshare record of the article version, or None.
-
-        Read from the cache, else from the active NEMAR store, else from the
-        figshare API (then cached under the same name).
-        """
-        cache_path = basepath / _RECORD_NAME
-        if dl.fill_from_store(basepath, [cache_path]):
-            try:
-                with open(cache_path) as f:
-                    record = json.load(f)
-                if not _is_record(record):
-                    raise ValueError("not a figshare article record")
-                return record
-            except (OSError, ValueError) as e:
-                log.warning("Refetching unreadable %s: %s", cache_path, e)
-                cache_path.unlink(missing_ok=True)
-
-        log.info("Fetching the HEFMI-ICH figshare record (%s)...", _RECORD_URL)
-        try:
-            record = dl.fs_issue_request(
-                "GET", _RECORD_URL, headers={"Content-Type": "application/json"}
-            )
-        except Exception as e:
-            log.warning("Could not fetch the figshare record: %s", e)
-            return None
-        if not _is_record(record):
-            log.warning("The figshare API answer is not an article record.")
-            return None
-        try:
-            basepath.mkdir(parents=True, exist_ok=True)
-            with open(cache_path, "w") as f:
-                json.dump(record, f)
-        except OSError:
-            pass
-        return record
-
-    @classmethod
-    def _epoch_files(cls, basepath):
-        """The EEG epoch files, from the figshare record or the shipped copy."""
-        record = cls._figshare_record(basepath)
-        if record is None:
-            log.info("Using the HEFMI-ICH file map shipped with MOABB.")
-            return _EPOCH_FILES
-        try:
-            rows = _epoch_files_from_record(record)
-        except (KeyError, TypeError, AttributeError) as e:
-            log.warning("Unreadable figshare record (%s); using the shipped map.", e)
-            return _EPOCH_FILES
-        if rows != _EPOCH_FILES:
-            warnings.warn(
-                f"The figshare record of article {_FIGSHARE_ARTICLE} version "
-                f"{_FIGSHARE_VERSION} no longer matches the file map shipped with "
-                "MOABB (EEG epoch files, their folders, sizes or MD5s differ); "
-                "using the shipped map, which this loader was validated against.",
-                RuntimeWarning,
-                stacklevel=2,
-            )
-            return _EPOCH_FILES
-        return rows
-
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
@@ -550,11 +438,7 @@ class HefmiIch2025(BaseDataset):
         basepath = root / "MNE-hefmiich2025-data"
         basepath.mkdir(parents=True, exist_ok=True)
 
-        rows = [
-            row
-            for row in self._epoch_files(basepath)
-            if _subject(row[1], row[2]) == subject
-        ]
+        rows = [row for row in _EPOCH_FILES if _subject(row[1], row[2]) == subject]
         if not rows:
             raise FileNotFoundError(f"No EEG epoch files found for subject {subject}")
 
