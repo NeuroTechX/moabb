@@ -52,6 +52,28 @@ def test_independent_recordings_can_reuse_sample_coordinates():
         assert not _has_overlap(train, test, groups)
 
 
+
+def test_tuple_recording_ids_are_atomic_with_reused_run_labels():
+    # Subject/session/run is naturally a tuple, not an array dimension.
+    labels = [(1, "session-0", "run-0")] * 8 + [
+        (2, "session-0", "run-0")
+    ] * 8
+    groups = _groups(list(np.arange(8) * 800) * 2, 500, labels)
+    folds = list(PurgedEpochKFold(4).split(np.zeros(16), groups=groups))
+    assert len(folds) == 4
+    for train, test in folds:
+        assert len(train) == 12
+        assert len(test) == 4
+        assert not _has_overlap(train, test, groups)
+
+
+def test_unhashable_recording_id_fails_with_clear_error():
+    groups = _groups(np.arange(8) * 200, 100)
+    groups[0, 0] = ["subject", "run"]
+    with pytest.raises(ValueError, match="hashable"):
+        list(PurgedEpochKFold(2).split(np.zeros(8), groups=groups))
+
+
 def test_chronology_is_not_assumed_from_dataframe_row_order():
     starts = np.random.default_rng(1).permutation(np.arange(20) * 500)
     groups = _groups(starts, 400)
