@@ -46,6 +46,9 @@ class FakeDataset(BaseDataset):
         If True, pass events through stim channel.
     annotations: bool
         If True, pass events through Annotations.
+    device: str, default "unknown"
+        Recording device reported in the ``device`` metadata column, e.g. to
+        simulate datasets recorded with different devices.
     """
 
     def __init__(
@@ -67,8 +70,10 @@ class FakeDataset(BaseDataset):
         sessions=None,
         *,
         return_all_modalities=False,
+        device="unknown",
         **kwargs,
     ):
+        self.device = device
         deprecated_renames = {
             "EventList": "event_list",
             "NSessions": "n_sessions",
@@ -141,6 +146,9 @@ class FakeDataset(BaseDataset):
             # "Setting non-standard config type" warnings.
             # MNE's get_config() checks environment variables first.
             os.environ[key] = temp_dir
+
+    def _device(self, subject, session):
+        return self.device
 
     def _get_single_subject_data(self, subject):
         if self.seed is not None:

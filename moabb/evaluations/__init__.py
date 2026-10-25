@@ -7,7 +7,6 @@ accuracy, across-subject accuracy, or other transfer learning settings."""
 from .evaluations import (
     CrossSessionEvaluation,
     CrossSubjectEvaluation,
-    CrossSystemEvaluation,
     WithinSessionEvaluation,
     WithinSubjectEvaluation,
 )

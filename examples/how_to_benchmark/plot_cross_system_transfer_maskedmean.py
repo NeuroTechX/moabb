@@ -9,6 +9,14 @@ an EEG device with its own montage and sampling rate. The source systems do
 not necessarily share the same channels, neither with one another nor with the
 target system, and they usually record different subjects.
 
+MOABB needs no dedicated evaluation for this. The datasets are pooled in a
+:class:`~moabb.datasets.compound_dataset.CompoundDataset`, the paradigm keeps
+each trial with the channels and sampling rate of its device, and
+:class:`~moabb.evaluations.CrossSubjectEvaluation` holds out one device at a
+time with ``cv_class=LeaveOneGroupOut, groups="device"``. The ``device``
+column of the metadata is the recording device, not the dataset: one dataset
+can use several devices, and several datasets can share one.
+
 This tutorial introduces the Minimum Distance to Mean (MDM) [1]_ classifier
 used with the Riemannian masked mean [2]_, which averages covariance matrices
 that are only partially observed. We will:
@@ -35,10 +43,12 @@ from pyriemann.geometry.distance import distance_riemann
 from pyriemann.geometry.mean import maskedmean_riemann
 from sklearn import config_context
 from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.model_selection import LeaveOneGroupOut
 from sklearn.pipeline import make_pipeline
 
+from moabb.datasets.compound_dataset import CompoundDataset
 from moabb.datasets.fake import FakeDataset
-from moabb.evaluations import CrossSystemEvaluation
+from moabb.evaluations import CrossSubjectEvaluation
 from moabb.paradigms import LeftRightImagery
 
 
@@ -52,11 +62,13 @@ from moabb.paradigms import LeftRightImagery
 # Source 1 only, and C4 and P4 by Source 2 only. The three systems also have
 # different sampling rates.
 #
-# :class:`~moabb.evaluations.CrossSystemEvaluation` treats each dataset as a
-# system: the pipeline is trained on all trials of the source systems and
-# scored on each subject/session of the target system. It gives every trial as
-# recorded, with the channels and the sampling rate of its system: handling
-# heterogeneous systems is the job of the pipeline.
+# Each simulated dataset is recorded with its own device, given by
+# ``device=``; with real datasets the ``device`` column comes from their
+# ``METADATA``. When the held-out device is the target, the pipeline is trained
+# on all trials of the other devices and scored on each subject/session of the
+# target device. Every trial is given as recorded, with the channels and the
+# sampling rate of its device: handling heterogeneous systems is the job of the
+# pipeline.
 
 systems = {
     "Source 1": {"channels": ("F3", "Fz", "F4", "Cz", "C4", "P3", "Pz"), "sfreq": 128},
@@ -74,6 +86,7 @@ datasets = {
         n_subjects=n_subjects,
         n_sessions=n_sessions,
         seed=seed,
+        device=name,
     )
     for (name, system), n_subjects, n_sessions, seed in zip(
         systems.items(), (3, 2, 3), (2, 3, 2), (42, 43, 44)
@@ -151,41 +164,43 @@ plt.show()
 # from the channel union, the mask of a system is 1 on the channels it records
 # and 0 on the other channels of the union.
 
-montages = {datasets[name].code: system["channels"] for name, system in systems.items()}
-system_masks = {code: np.isin(union, channels) for code, channels in montages.items()}
-target = datasets["Target"].code
+montages = {name: system["channels"] for name, system in systems.items()}
+system_masks = {name: np.isin(union, channels) for name, channels in montages.items()}
+target = "Target"
 
 ###############################################################################
 # To place each training trial on the channel union, the first step of the
-# pipelines needs the montage of its system: it requests the ``systems`` fit
-# metadata, routed by MOABB through scikit-learn's metadata routing. At
-# prediction, all trials come from the target system.
+# pipelines needs the device of each trial: it requests the ``device`` metadata
+# column, which MOABB routes to the steps asking for it through
+# scikit-learn's metadata routing (``set_fit_request(device=True)``; any
+# metadata column can be requested this way). At prediction, all trials come
+# from the held-out device: the one missing from the training devices.
 
 
 class ChannelUnion(TransformerMixin, BaseEstimator):
     """Zero-fill the trials of each system on the channel union.
 
-    ``montages`` maps each system to its channel names, and ``target`` is the
-    target system, whose montage is applied at prediction.
+    ``montages`` maps each device to its channel names. The montage applied at
+    prediction is the one of the held-out device.
     """
 
-    def __init__(self, montages=None, target=None):
+    def __init__(self, montages=None):
         self.montages = montages
-        self.target = target
 
-    def fit(self, X, y=None, *, systems=None):
+    def fit(self, X, y=None, *, device=None):
+        if device is None:
+            raise ValueError("ChannelUnion needs the `device` metadata.")
         self.channels_ = list(
             dict.fromkeys(ch for channels in self.montages.values() for ch in channels)
         )
+        self.target_ = held_out(self.montages, device)
         return self
 
-    def fit_transform(self, X, y=None, *, systems=None):
-        if systems is None:
-            raise ValueError("ChannelUnion needs `systems` metadata.")
-        return self.fit(X, y)._stack(X, systems)
+    def fit_transform(self, X, y=None, *, device=None):
+        return self.fit(X, y, device=device)._stack(X, device)
 
     def transform(self, X):
-        return self._stack(X, [self.target] * len(X))
+        return self._stack(X, [self.target_] * len(X))
 
     def _stack(self, X, systems):
         X_union = np.empty(len(X), dtype=object)
@@ -195,9 +210,15 @@ class ChannelUnion(TransformerMixin, BaseEstimator):
         return X_union
 
 
+def held_out(devices, training_devices):
+    """The device missing from the training devices."""
+    (device,) = set(devices) - set(training_devices)
+    return device
+
+
 def channel_union():
     with config_context(enable_metadata_routing=True):
-        return ChannelUnion(montages, target).set_fit_request(systems=True)
+        return ChannelUnion(montages).set_fit_request(device=True)
 
 
 ###############################################################################
@@ -254,9 +275,9 @@ class TrialCovariances(Covariances):
 #
 #    \hat{k} = \arg\min_k d_R \left( M_t^\top C M_t, M_t^\top G_k M_t \right).
 #
-# The classifier receives the masks of the systems and the target system as
-# parameters. To know the system of each training trial, it also requests the
-# ``systems`` fit metadata.
+# The classifier receives the masks of the devices as a parameter. To know the
+# device of each training trial, and so the held-out device, it also requests
+# the ``device`` metadata.
 #
 # The covariance matrices are estimated with the sample covariance matrix:
 # a masked block of the covariance of zero-filled data is then exactly the
@@ -267,25 +288,25 @@ class TrialCovariances(Covariances):
 class MDMM(MDM):
     """Minimum distance to masked Riemannian mean.
 
-    ``masks`` maps each system to its boolean mask on the channel union, and
-    ``target`` is the target system, whose mask is applied at prediction.
+    ``masks`` maps each device to its boolean mask on the channel union. The
+    mask applied at prediction is the one of the held-out device.
     """
 
-    def __init__(self, masks=None, target=None, metric="riemann", n_jobs=1):
+    def __init__(self, masks=None, metric="riemann", n_jobs=1):
         super().__init__(metric=metric, n_jobs=n_jobs)
         self.masks = masks
-        self.target = target
 
     def _mask(self, system):
         """Semi-orthogonal mask matrix of a system."""
         return np.eye(len(self.masks[system]))[:, self.masks[system]]
 
-    def fit(self, X, y, *, systems=None):
-        if systems is None:
-            raise ValueError("MDMM needs `systems` metadata.")
+    def fit(self, X, y, *, device=None):
+        if device is None:
+            raise ValueError("MDMM needs the `device` metadata.")
         X, y = np.asarray(X), np.asarray(y)
         self.classes_ = np.unique(y)
-        masks = [self._mask(system) for system in systems]
+        self.target_ = held_out(self.masks, device)
+        masks = [self._mask(d) for d in device]
         self.covmeans_ = np.stack(
             [
                 maskedmean_riemann(X[y == c], [m for m, yi in zip(masks, y) if yi == c])
@@ -295,7 +316,7 @@ class MDMM(MDM):
         return self
 
     def _predict_distances(self, X):
-        mask = self._mask(self.target)
+        mask = self._mask(self.target_)
         maskedX = mask.T @ np.asarray(X) @ mask
         return np.stack(
             [distance_riemann(maskedX, mask.T @ G @ mask) for G in self.covmeans_], axis=1
@@ -336,7 +357,7 @@ class ChannelSelector(TransformerMixin, BaseEstimator):
 common = np.flatnonzero(np.all(list(system_masks.values()), axis=0))
 
 with config_context(enable_metadata_routing=True):
-    mdmm = MDMM(masks=system_masks, target=target).set_fit_request(systems=True)
+    mdmm = MDMM(masks=system_masks).set_fit_request(device=True)
 
 pipelines = {
     "Zero-filled MDM": make_pipeline(channel_union(), TrialCovariances("oas"), MDM()),
@@ -363,9 +384,7 @@ pipelines = {
 #   channels recorded by the target system. It never uses zero-filled values.
 
 ZERO_FILLED = "#F2CF5B"
-source_masks = np.array(
-    [system_masks[datasets[name].code] for name in ("Source 1", "Source 2")]
-)
+source_masks = np.array([system_masks[name] for name in ("Source 1", "Source 2")])
 target_mask = system_masks[target]
 
 
@@ -419,27 +438,38 @@ plt.show()
 # instances, which keep the tutorial fast and download-free. Their scores have
 # no scientific meaning; they are used to expose the complete evaluation path.
 #
-# The three systems share the same epoch duration of 3 seconds.
-# ``target_datasets`` sets the target system, the other systems being the
-# sources; by default, each system is used as target in turn. ``cs_mode`` sets
-# the target data available during training: by default, the pipeline sees no
-# target trial.
+# The three systems share the same epoch duration of 3 seconds. Their subjects
+# are pooled in one :class:`~moabb.datasets.compound_dataset.CompoundDataset`,
+# and ``groups="device"`` holds out one device at a time: each device is the
+# target in turn, the pipeline seeing no trial of it during training.
 
 paradigm = LeftRightImagery()
+pool = CompoundDataset(
+    [
+        (ds, subject, None, None)
+        for ds in datasets.values()
+        for subject in ds.subject_list
+    ],
+    code="CompoundDatasetCrossSystem",
+    interval=datasets["Target"].interval,
+)
 
-evaluation = CrossSystemEvaluation(
+evaluation = CrossSubjectEvaluation(
     paradigm=paradigm,
-    datasets=list(datasets.values()),
-    target_datasets=[datasets["Target"]],
+    datasets=[pool],
+    cv_class=LeaveOneGroupOut,
+    groups="device",
     overwrite=True,
     suffix="cross_system_maskedmean",
 )
 results = evaluation.process(pipelines)
+# The device of each pooled subject, to read the results per held-out device.
+device_of = {i + 1: ds.device for i, (ds, *_) in enumerate(pool.subjects_list)}
+results["device"] = results["subject"].astype(int).map(device_of)
 
 print(
-    results.groupby("pipeline")["score"]
+    results.groupby(["device", "pipeline"])["score"]
     .agg(["mean", "std", "count"])
-    .sort_values("mean", ascending=False)
     .round(3)
 )
 
@@ -456,7 +486,10 @@ print(
 # study would repeat the benchmark over real datasets recorded with different
 # devices, and use MOABB's statistical-analysis utilities.
 
-paired = results.pivot(index=["subject", "session"], columns="pipeline", values="score")
+target_results = results[results["device"] == target]
+paired = target_results.pivot(
+    index=["subject", "session"], columns="pipeline", values="score"
+)
 order = list(pipelines)
 scores = paired[order].dropna().to_numpy()
 colors = ["#4C78A8", "#F58518", "#54A24B"]
@@ -511,18 +544,14 @@ for name in ("Source 1", "Source 2"):
     epochs, y, _ = paradigm.get_data(datasets[name], return_epochs=True)
     trials += list(epochs.get_data() * datasets[name].unit_factor)
     labels += list(y)
-    trial_systems += [datasets[name].code] * len(y)
+    trial_systems += [name] * len(y)
 X = np.empty(len(trials), dtype=object)
 for i, trial in enumerate(trials):
     X[i] = trial
 
-X_union = ChannelUnion(montages, target).fit_transform(X, systems=trial_systems)
+X_union = ChannelUnion(montages).fit_transform(X, device=trial_systems)
 covs = TrialCovariances("scm").transform(X_union)
-centroids = (
-    MDMM(masks=system_masks, target=target)
-    .fit(covs, labels, systems=trial_systems)
-    .covmeans_
-)
+centroids = MDMM(masks=system_masks).fit(covs, labels, device=trial_systems).covmeans_
 
 fig = plt.figure(figsize=(10, 9))
 grid = fig.add_gridspec(2, 6, height_ratios=(1.1, 1), hspace=0.45, wspace=0.9)
@@ -540,7 +569,7 @@ for col, (klass, centroid) in enumerate(zip(np.unique(labels), centroids)):
 fig.colorbar(image, ax=fig.axes, location="right", shrink=0.8, label="Covariance")
 
 for col, name in enumerate(systems):
-    mask = system_masks[datasets[name].code]
+    mask = system_masks[name]
     ax = fig.add_subplot(grid[0, 2 * col : 2 * col + 2])
     ax.imshow(
         np.eye(len(union))[:, mask],
