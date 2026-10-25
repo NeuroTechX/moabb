@@ -1441,9 +1441,22 @@ class PurgedEpochKFold(GroupsConsumerMixin, BaseCrossValidator):
                 "groups must be an (n_epochs, 3) array of "
                 "(recording_id, event_sample, epoch_n_samples)."
             )
-        runs = values[:, 0]
-        if any(value is None for value in runs):
+        # Normalize hashable recording identities to integer codes. Comparing
+        # a NumPy object array against a tuple-valued ID broadcasts the tuple
+        # instead of comparing each complete recording identity.
+        identities = values[:, 0].tolist()
+        if any(value is None for value in identities):
             raise ValueError("recording_id must be present for every epoch.")
+        recording_codes = {}
+        try:
+            runs = np.fromiter(
+                (recording_codes.setdefault(value, len(recording_codes))
+                 for value in identities),
+                dtype=np.intp,
+                count=n_samples,
+            )
+        except TypeError as error:
+            raise ValueError("recording_id must be hashable.") from error
         limits = np.iinfo(np.int64)
         parsed = []
         for column in (values[:, 1], values[:, 2]):
