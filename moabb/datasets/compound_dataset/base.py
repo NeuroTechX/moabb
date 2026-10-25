@@ -101,6 +101,10 @@ class CompoundDataset(BaseDataset):
     def _source_code(self, shopped_subject):
         return self.subjects_list[shopped_subject - 1][0].code
 
+    def _device(self, shopped_subject, session):
+        dataset, subject, _, _ = self.subjects_list[shopped_subject - 1]
+        return dataset._device(subject, session)
+
     def _with_data_origin(self, data: dict, shopped_subject):
         data_origin = self.subjects_list[shopped_subject - 1]
 

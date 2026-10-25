@@ -1614,6 +1614,17 @@ class BaseDataset(metaclass=MetaclassDataset):
         """Code of the dataset ``subject`` comes from, the ``dataset`` metadata column."""
         return self.code
 
+    def _device(self, subject, session):
+        """Recording device of a session, the ``device`` metadata column.
+
+        The canonical name of ``METADATA.acquisition.hardware``; datasets that
+        recorded sessions with different devices override it.
+        """
+        from moabb.datasets.metadata.devices import canonical_device
+
+        acquisition = getattr(getattr(self, "METADATA", None), "acquisition", None)
+        return canonical_device(getattr(acquisition, "hardware", None))
+
     @abc.abstractmethod
     def _get_single_subject_data(self, subject):
         """Return the data of a single subject.

@@ -973,7 +973,8 @@ class CrossDatasetSplitter(BaseCrossValidator):
     fill that column with each trial's dataset code (for a
     :class:`~moabb.datasets.compound_dataset.CompoundDataset`, the dataset the
     subject comes from). Within an evaluation, use
-    ``CrossSubjectEvaluation(cv_class=LeaveOneGroupOut, groups="dataset")``.
+    ``CrossSubjectEvaluation(cv_class=LeaveOneGroupOut, groups="dataset")``,
+    or ``groups="device"`` to hold out recording devices instead.
 
     Parameters
     ----------

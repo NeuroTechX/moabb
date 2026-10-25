@@ -3138,3 +3138,36 @@ def test_cross_subject_on_nested_trials_of_different_shapes(tmp_path):
     # 2 systems x 2 subjects x 2 sessions, each system held out once
     assert len(results) == 8 and np.isfinite(results["score"]).all()
     assert set(results["channels"]) == {4}
+
+
+def test_cross_subject_leave_one_device_out(tmp_path):
+    # A device can span datasets: Amp X records datasets A and B, Amp Y C.
+    from moabb.datasets.compound_dataset import CompoundDataset
+
+    a, b, c = (
+        FakeDataset(["left_hand", "right_hand"], n_subjects=2, n_sessions=1, seed=s)
+        for s in (1, 2, 3)
+    )
+    b.code, c.code = "FakeDatasetB", "FakeDatasetC"
+    a._device = b._device = lambda subject, session: "Amp X"
+    c._device = lambda subject, session: "Amp Y"
+    pool = CompoundDataset(
+        [(d, s, None, None) for d in (a, b, c) for s in d.subject_list],
+        code="CompoundDatasetABC",
+        interval=a.interval,
+    )
+    evaluation = ev.CrossSubjectEvaluation(
+        paradigm=FakeImageryParadigm(),
+        datasets=[pool],
+        cv_class=LeaveOneGroupOut,
+        groups="device",
+        hdf5_path=str(tmp_path),
+        overwrite=True,
+    )
+    results = evaluation.process(
+        {"CSP+LDA": make_pipeline(Covariances("oas"), CSP(2), LDA())}
+    ).sort_values("subject")
+    _, y, _ = FakeImageryParadigm().get_data(pool)
+    per_subject = len(y) / 6
+    # Amp X subjects (1-4) train on Amp Y's two subjects, and the reverse.
+    assert list(results["samples"]) == [2 * per_subject] * 4 + [4 * per_subject] * 2
