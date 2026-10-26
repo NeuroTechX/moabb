@@ -1,25 +1,20 @@
 """Files a NEMAR deposit keeps under another name than the URL (offline).
 
 AguileraRodriguez2025's deposit (nm000174) keeps Mendeley's extension-less
-``<uuid>/file_downloaded`` as ``file_downloaded.edf``/``.xdf``; HefmiIch2025's
-deposit (nm000347) keeps the figshare file list and the epoch files under the
-loader's local names.
+``<uuid>/file_downloaded`` as ``file_downloaded.edf``/``.xdf``.
 """
 
-import json
 import os
 import socket
 
 import pytest
 
 import moabb.datasets.download as dl
-from moabb.datasets import hefmi_ich2025
 from moabb.datasets.aguilera_rodriguez2025 import (
     _SUBJECT_URLS,
     _SUBJECT_URLS_GAMIFIED,
     AguileraRodriguez2025,
 )
-from moabb.datasets.hefmi_ich2025 import HefmiIch2025
 
 
 MENDELEY = "https://data.mendeley.com/public-files/datasets/57g8z63tmy/files"
@@ -102,52 +97,3 @@ def test_aguilera_rodriguez2025_reads_the_deposit_names(mne_data, tmp_path, monk
 
     assert [os.path.splitext(p)[1] for p in returned] == [".edf", ".xdf"]
     assert [os.stat(p).st_ino for p in returned] == [p.stat().st_ino for p in stored]
-
-
-def test_hefmi_ich2025_reads_filelist_and_epochs_from_the_store(
-    mne_data, tmp_path, monkeypatch
-):
-    store = tmp_path / "store"
-    store.mkdir()
-    filelist = [
-        {"id": 11, "name": "1_epo.mat", "size": 41_000_000},
-        {"id": 12, "name": "2_epo.mat", "size": 42_000_000},
-        {"id": 13, "name": "1_epo.mat", "size": 28_000_000},  # fNIRS
-        {"id": 21, "name": "1_epo.mat", "size": 41_500_000},
-    ]
-    (store / "figshare_filelist_28955456.json").write_text(json.dumps(filelist))
-    for name in ("sub01_1_epo.mat", "sub01_2_epo.mat"):
-        (store / name).write_text(name)
-    monkeypatch.setattr(hefmi_ich2025, "_MANIFEST", None)
-    monkeypatch.setattr(socket.socket, "connect", _forbid_connect)
-
-    def _no_filelist(*args, **kwargs):
-        raise AssertionError("figshare API called")
-
-    monkeypatch.setattr(dl, "fs_get_file_list", _no_filelist)
-
-    with dl.active_sourcedata_store(store):
-        returned = HefmiIch2025().data_path(1)
-
-    base = mne_data / "MNE-hefmiich2025-data"
-    assert returned == [str(base / "sub01_1_epo.mat"), str(base / "sub01_2_epo.mat")]
-    for path in returned:
-        assert os.stat(path).st_ino == (store / os.path.basename(path)).stat().st_ino
-    assert hefmi_ich2025._MANIFEST[2] == [(21, "sub02_1_epo.mat")]
-
-
-def test_hefmi_ich2025_caches_the_api_filelist(mne_data, monkeypatch):
-    filelist = [{"id": 11, "name": "1_epo.mat", "size": 41_000_000}]
-    calls = []
-
-    def fake_filelist(article_id, version=None):
-        calls.append(article_id)
-        return filelist
-
-    monkeypatch.setattr(dl, "fs_get_file_list", fake_filelist)
-    base = mne_data / "MNE-hefmiich2025-data"
-
-    assert HefmiIch2025._figshare_filelist(base) == filelist
-    assert HefmiIch2025._figshare_filelist(base) == filelist
-    assert calls == [28955456]
-    assert json.loads((base / "figshare_filelist_28955456.json").read_text()) == filelist

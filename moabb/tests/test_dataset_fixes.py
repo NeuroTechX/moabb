@@ -14,7 +14,6 @@ from moabb.datasets import schirrmeister2017
 from moabb.datasets.bnci.bnci_2020 import _convert_attention_shift
 from moabb.datasets.braininvaders import BI2015b
 from moabb.datasets.fake import FakeDataset
-from moabb.datasets.hefmi_ich2025 import HefmiIch2025
 from moabb.datasets.kaneshiro2015 import Kaneshiro2015
 from moabb.datasets.kojima2024a import Kojima2024A
 from moabb.datasets.lenaig2026 import Lenaig2026
@@ -196,27 +195,6 @@ def test_yang2025_recognizes_extracted_bdf_files(tmp_path: Path, monkeypatch):
     )
 
     assert Yang2025().data_path(1) == str(tmp_path / "MNE-yang2025-data")
-
-
-def test_hefmi_ich_data_path_downloads_subject_files(tmp_path: Path, monkeypatch):
-    dataset = HefmiIch2025()
-    monkeypatch.setattr(
-        "moabb.datasets.hefmi_ich2025.dl.get_dataset_path", lambda *args: tmp_path
-    )
-    monkeypatch.setattr(
-        "moabb.datasets.hefmi_ich2025._MANIFEST", {1: [(42, "sub01_1_epo.mat")]}
-    )
-
-    def fake_download(url, sign, root, force_update, verbose, fname=None):
-        downloaded = tmp_path / "MNE-hefmiich2025-data" / "42"
-        downloaded.write_bytes(b"data")
-        return downloaded
-
-    monkeypatch.setattr("moabb.datasets.hefmi_ich2025.dl.data_dl", fake_download)
-
-    assert dataset.data_path(1) == [
-        str(tmp_path / "MNE-hefmiich2025-data" / "sub01_1_epo.mat")
-    ]
 
 
 def test_bi2015b_data_path_returns_existing_mat_paths(tmp_path: Path, monkeypatch):
