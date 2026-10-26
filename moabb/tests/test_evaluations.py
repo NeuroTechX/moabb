@@ -1596,6 +1596,15 @@ class Test_CrossSess(TestWithinSess):
 
 
 class TestUtilEvaluation:
+    def test_get_nchan(self):
+        from moabb.evaluations.utils import _get_nchan
+
+        assert _get_nchan(np.zeros((4, 3, 10))) == 3
+        # Trials of different lengths, as given for recordings of different rates.
+        trials = np.empty(2, dtype=object)
+        trials[0], trials[1] = np.zeros((3, 10)), np.zeros((3, 20))
+        assert _get_nchan(trials) == 3
+
     def test_save_model_cv(self):
         model = Dummy()
         save_path = "test_save_path"
@@ -1997,6 +2006,29 @@ class TestParallelProcess:
         results = evaluation.process(pipelines)
         # 2 subjects × 2 sessions = 4 results
         assert len(results) == 4
+
+    def test_process_keeps_rows_of_each_dataset_once(self, tmp_path):
+        """Datasets sharing a pipeline digest do not duplicate their results."""
+        # Same parameters except the channels: same process pipeline digest.
+        datasets = [
+            FakeDataset(
+                ["left_hand", "right_hand"], channels=channels, n_subjects=2, seed=3
+            )
+            for channels in (("C3", "Cz", "C4"), ("C3", "Cz", "C4", "Pz"))
+        ]
+        evaluation = ev.CrossSubjectEvaluation(
+            paradigm=FakeImageryParadigm(),
+            datasets=datasets,
+            overwrite=True,
+            hdf5_path=str(tmp_path / "parallel_test"),
+        )
+        results = evaluation.process(
+            {"C": make_pipeline(Covariances("oas"), CSP(2), LDA())}
+        )
+        # 2 datasets x 2 subjects x 2 sessions = 8 results, each once
+        keys = ["dataset", "subject", "session", "pipeline"]
+        assert len(results) == 8
+        assert not results.duplicated(keys).any()
 
     def test_cross_subject_multisubject_fold_preserves_provenance(self, tmp_path):
         """A fold holding out multiple subjects is scored per subject/session."""
@@ -3007,6 +3039,68 @@ def test_cross_subject_cv_class_with_reserved_metadata_columns_saves(tmp_path):
     assert set(results["session"]) == {"1"}
 
 
+# ---------------------------------------------------------------------------
+# Metadata columns routed as fit metadata by _evaluate_fold.
+# ---------------------------------------------------------------------------
+
+_EXTRA_CAPTURE = []
+
+
+class _ExtraRecorder(sklearn.base.TransformerMixin, sklearn.base.BaseEstimator):
+    """Records the ``device`` metadata it is routed."""
+
+    def fit(self, X, y=None, device=None):
+        _EXTRA_CAPTURE.append(device)
+        return self
+
+    def transform(self, X):
+        return X
+
+
+@pytest.mark.parametrize("requested", [True, False])
+def test_evaluate_fold_routes_requested_metadata_columns(requested):
+    """A metadata column reaches only the steps requesting it, without a
+    transfer split, and is ignored by the other pipelines."""
+    from sklearn import config_context
+
+    from moabb.evaluations.base import _evaluate_fold
+
+    _EXTRA_CAPTURE.clear()
+    with config_context(enable_metadata_routing=True):
+        step = _ExtraRecorder().set_fit_request(device=requested)
+    pipe = make_pipeline(step, Covariances("oas"), CSP(2), LDA())
+
+    evaluation = ev.CrossSessionEvaluation(
+        paradigm=FakeImageryParadigm(), datasets=[dataset], overwrite=True
+    )
+    X, y, metadata = FakeImageryParadigm().get_data(dataset, subjects=[1])
+    train = np.flatnonzero(metadata["session"] == metadata["session"].iloc[0])
+    test = np.flatnonzero(metadata["session"] != metadata["session"].iloc[0])
+    metadata["device"] = np.where(np.arange(len(y)) % 2, "Amp X", "Amp Y")
+
+    results = _evaluate_fold(
+        X,
+        y,
+        metadata,
+        evaluation._build_eval_config(None),
+        dataset,
+        "P",
+        pipe,
+        train,
+        test,
+        1,
+        metadata["session"].iloc[-1],
+        0,
+    )
+
+    assert len(results) == 1
+    (routed,) = _EXTRA_CAPTURE
+    if requested:
+        np.testing.assert_array_equal(routed, metadata["device"].to_numpy()[train])
+    else:
+        assert routed is None
+
+
 class _EveryBand(sklearn.base.BaseEstimator, sklearn.base.TransformerMixin):
     """Raise unless the input holds every band of the filter-bank paradigm."""
 
@@ -3171,3 +3265,40 @@ def test_cross_subject_leave_one_device_out(tmp_path):
     per_subject = len(y) / 6
     # Amp X subjects (1-4) train on Amp Y's two subjects, and the reverse.
     assert list(results["samples"]) == [2 * per_subject] * 4 + [4 * per_subject] * 2
+
+
+def test_leave_one_device_out_routes_the_training_devices(tmp_path):
+    from sklearn import config_context
+
+    from moabb.datasets.compound_dataset import CompoundDataset
+
+    a, b, c = (
+        FakeDataset(
+            ["left_hand", "right_hand"], n_subjects=1, n_sessions=1, seed=s, device=d
+        )
+        for s, d in ((1, "Amp X"), (2, "Amp X"), (3, "Amp Y"))
+    )
+    b.code, c.code = "FakeDatasetB", "FakeDatasetC"
+    pool = CompoundDataset(
+        [(d, 1, None, None) for d in (a, b, c)],
+        code="CompoundDatasetABC",
+        interval=a.interval,
+    )
+    _EXTRA_CAPTURE.clear()
+    with config_context(enable_metadata_routing=True):
+        step = _ExtraRecorder().set_fit_request(device=True)
+    evaluation = ev.CrossSubjectEvaluation(
+        paradigm=FakeImageryParadigm(),
+        datasets=[pool],
+        cv_class=LeaveOneGroupOut,
+        groups="device",
+        hdf5_path=str(tmp_path),
+        overwrite=True,
+    )
+    results = evaluation.process(
+        {"P": make_pipeline(step, Covariances("oas"), CSP(2), LDA())}
+    )
+    assert len(results) == 3
+    # One fold per device; each model only saw the other device.
+    seen = sorted(tuple(sorted(set(devices))) for devices in _EXTRA_CAPTURE)
+    assert seen == [("Amp X",), ("Amp Y",)]

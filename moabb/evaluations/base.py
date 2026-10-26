@@ -253,7 +253,10 @@ def _evaluate_fold(
         if calibration_labeled:
             y_calib = y[calib_idx] if mne_labels else le.transform(y[calib_idx])
 
-    fit_params = {}
+    # Any metadata column (``device``, ``dataset``, ``subject``...) of the
+    # training trials can be requested as fit metadata, e.g.
+    # ``step.set_fit_request(device=True)``; only requested keys are passed.
+    fit_params = {col: metadata[col].to_numpy()[train_idx] for col in metadata.columns}
     if split_metadata is not None and "calibration_size" in split_metadata:
         fit_params["subjects"] = metadata["subject"].to_numpy()[train_idx]
         if X_calib is not None:
@@ -262,6 +265,7 @@ def _evaluate_fold(
             else:
                 fit_params["X_target_labeled"] = X_calib
                 fit_params["y_target_labeled"] = y_calib
+    if fit_params:
         with config_context(enable_metadata_routing=True):
             requested = get_routing_for_object(cvclf).consumes("fit", set(fit_params))
         fit_params = {
@@ -1422,11 +1426,11 @@ class BaseEvaluation(ABC):
                     self._log_result(res)
                 self._push_results_batch(batch, pipelines, process_pipeline)
 
-            res_per_db.append(
-                self.results.to_dataframe(
-                    pipelines=pipelines, process_pipeline=process_pipeline
-                )
+            # Datasets sharing a pipeline digest share their results group.
+            df = self.results.to_dataframe(
+                pipelines=pipelines, process_pipeline=process_pipeline
             )
+            res_per_db.append(df[df["dataset"] == dataset.code])
 
         return pd.concat(res_per_db, ignore_index=True)
 
