@@ -72,6 +72,9 @@ NEMAR_ID_EXEMPT = {
     "MartinezPeon2025",  # nm000332 (CC BY-NC-SA 4.0: authors' permission)
     "MIBMPI2024",  # nm000331 (licence/consent evidence requested by NEMAR)
     "MIND2026",  # nm000337 (acquisition timestamps to coarsen)
+    # The deposit (nm000347) files the epochs under the subjects of the former
+    # upload-order grouping; declare it again once it follows the folders.
+    "HefmiIch2025",
     # No NEMAR deposit yet; BIDS deposits prepared, not uploaded.
     "Yagan2023",  # Mendeley Data vyczny2r4w
     "Wang2026Handwriting",  # figshare 29987758
