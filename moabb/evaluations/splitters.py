@@ -1408,3 +1408,152 @@ class LearningCurveSplitter(GroupsConsumerMixin, BaseCrossValidator):
             Only valid during or after iteration.
         """
         return {"permutation": self._current_perm, "data_size": self._current_data_size}
+
+
+class PurgedEpochKFold(GroupsConsumerMixin, BaseCrossValidator):
+    """Contiguous within-recording CV without overlapping raw epoch windows.
+
+    Pass groups with three columns: (recording_id, event_sample,
+    epoch_n_samples). Recording IDs must distinguish reused run names across
+    subjects and sessions. Sample starts and lengths must be exact integers;
+    windows are half-open [start, start + length).
+
+    This prevents direct overlap of declared raw epoch extraction windows,
+    *not* leakage through preprocessing of the continuous signal: an IIR
+    filter applied before epoching can couple non-overlapping windows.
+    No automatic paradigm/evaluation integration is performed.
+    """
+
+    def __init__(self, n_splits=5):
+        if (
+            isinstance(n_splits, (bool, np.bool_))
+            or not isinstance(n_splits, (int, np.integer))
+            or n_splits < 2
+        ):
+            raise ValueError("n_splits must be an integer >= 2.")
+        self.n_splits = int(n_splits)
+
+    def get_n_splits(self, X=None, y=None, groups=None):
+        return self.n_splits
+
+    @staticmethod
+    def _parse_groups(groups, n_samples):
+        if groups is None:
+            raise ValueError("PurgedEpochKFold requires explicit epoch timing groups.")
+        values = np.asarray(groups, dtype=object)
+        if values.shape != (n_samples, 3):
+            raise ValueError(
+                "groups must be an (n_epochs, 3) array of "
+                "(recording_id, event_sample, epoch_n_samples)."
+            )
+        # Normalize hashable recording identities to integer codes. Comparing
+        # a NumPy object array against a tuple-valued ID broadcasts the tuple
+        # instead of comparing each complete recording identity.
+        identities = values[:, 0].tolist()
+
+        def missing_identity(value):
+            if value is None:
+                return True
+            if isinstance(value, (float, np.floating)):
+                return bool(np.isnan(value))
+            if isinstance(value, tuple):
+                return any(missing_identity(part) for part in value)
+            return False
+
+        if any(missing_identity(value) for value in identities):
+            raise ValueError("recording_id must not be missing.")
+        recording_codes = {}
+        try:
+            runs = np.fromiter(
+                (
+                    recording_codes.setdefault(value, len(recording_codes))
+                    for value in identities
+                ),
+                dtype=np.intp,
+                count=n_samples,
+            )
+        except TypeError as error:
+            raise ValueError("recording_id must be hashable.") from error
+        limits = np.iinfo(np.int64)
+        parsed = []
+        for column in (values[:, 1], values[:, 2]):
+            ints = []
+            for raw in column:
+                if isinstance(raw, (bool, np.bool_)) or not isinstance(
+                    raw, (int, np.integer)
+                ):
+                    raise ValueError("Epoch sample coordinates must be integers.")
+                value = int(raw)
+                if not limits.min <= value <= limits.max:
+                    raise ValueError("Epoch sample coordinate exceeds int64 range.")
+                ints.append(value)
+            parsed.append(np.asarray(ints, dtype=np.int64))
+        starts, lengths = parsed
+        if np.any(lengths <= 0):
+            raise ValueError("epoch_n_samples must be strictly positive.")
+        if np.any(starts > limits.max - lengths):
+            raise ValueError("Epoch interval stop exceeds int64 range.")
+        return runs, starts, lengths
+
+    @staticmethod
+    def _overlap_mask(train_start, train_stop, test_start, test_stop):
+        """Exact half-open intersection in O((N+M) log M), linear memory."""
+        if not len(train_start) or not len(test_start):
+            return np.zeros(len(train_start), dtype=bool)
+        order = np.argsort(test_start, kind="stable")
+        sorted_starts = test_start[order]
+        max_stop = np.maximum.accumulate(test_stop[order])
+        before = np.searchsorted(sorted_starts, train_stop, side="left")
+        overlaps = before > 0
+        overlaps[overlaps] = max_stop[before[overlaps] - 1] > train_start[overlaps]
+        return overlaps
+
+    def split(self, X, y=None, groups=None):
+        n_samples = len(X)
+        if n_samples < self.n_splits:
+            raise ValueError("Not enough epochs for requested folds.")
+        runs, starts, lengths = self._parse_groups(groups, n_samples)
+        y = None if y is None else np.asarray(y)
+        if y is not None and len(y) != n_samples:
+            raise ValueError("y must contain one label per epoch.")
+
+        # Chronological blocks within each recording. No class-balanced DP:
+        # fail closed if a contiguous fold cannot support every class.
+        run_blocks = []
+        for run in dict.fromkeys(runs.tolist()):
+            indices = np.flatnonzero(runs == run)
+            if len(indices) < self.n_splits:
+                raise ValueError("Each recording needs at least n_splits epochs.")
+            chronological = indices[np.lexsort((indices, starts[indices]))]
+            run_blocks.append((run, np.array_split(chronological, self.n_splits)))
+
+        for fold in range(self.n_splits):
+            test = np.sort(np.concatenate([blocks[fold] for _, blocks in run_blocks]))
+            testing = np.zeros(n_samples, dtype=bool)
+            testing[test] = True
+            purged = np.zeros(n_samples, dtype=bool)
+            for run, _ in run_blocks:
+                local_test = test[runs[test] == run]
+                local_train = np.flatnonzero((runs == run) & ~testing)
+                train_start = starts[local_train]
+                test_start = starts[local_test]
+                purged[
+                    local_train[
+                        self._overlap_mask(
+                            train_start,
+                            train_start + lengths[local_train],
+                            test_start,
+                            test_start + lengths[local_test],
+                        )
+                    ]
+                ] = True
+            train = np.flatnonzero(~testing & ~purged)
+            if not len(train) or not len(test):
+                raise ValueError("Purging removed an entire train or test fold.")
+            if y is not None:
+                required = np.unique(y)
+                if len(np.unique(y[train])) != len(required) or len(
+                    np.unique(y[test])
+                ) != len(required):
+                    raise ValueError("A purged fold lacks a class in train or test.")
+            yield train, test
