@@ -1003,10 +1003,10 @@
 <h1>moabb.datasets.HefmiIch2025<a class="headerlink" href="#moabb-datasets-hefmiich2025" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="moabb.datasets.HefmiIch2025">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">HefmiIch2025</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_all_modalities</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/hefmi_ich2025.py#L64-L423"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.HefmiIch2025" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">HefmiIch2025</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_all_modalities</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/hefmi_ich2025.py#L179-L465"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.HefmiIch2025" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDataset</span></code></a></p>
 <div class="ds-card" role="region" aria-label="HefmiIch2025 dataset overview">
-  <a class="ds-card-source" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/hefmi_ich2025.py#L64-L423" target="_blank" rel="noopener">[source]</a>
+  <a class="ds-card-source" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/hefmi_ich2025.py#L179-L465" target="_blank" rel="noopener">[source]</a>
   <div class="ds-card-head">
     <p class="ds-card-kicker">Dataset Snapshot</p>
     <p class="ds-card-title">HefmiIch2025</p>
@@ -1032,7 +1032,10 @@
       <a class="ds-btn" href="../dataset_summary.html#motor-imagery">Compare Similar</a>
       <a class="ds-btn" href="https://github.com/NeuroTechX/moabb/issues/new?title=%5BDataset%5D%20Issue%20with%20HefmiIch2025&amp;body=%23%23%20Dataset%0A%0A-%20%2A%2ADataset%20ID%3A%2A%2A%20HefmiIch2025%0A%0A%23%23%20Issue%20Description%0A%0APlease%20describe%20the%20issue%20you%20encountered%20with%20this%20dataset%3A%0A%0A%23%23%20Steps%20to%20Reproduce%0A%0A1.%20%0A2.%20%0A3.%20%0A%0A%23%23%20Expected%20Behavior%0A%0A%0A%23%23%20Additional%20Context%0A%0A&amp;labels=dataset" target="_blank" rel="noopener">Report Issue</a>
   </div>
-  <div class="ds-overview-teaser"><p class="ds-overview-title">Overview</p><p class="ds-overview-text">Hybrid EEG-fNIRS MI dataset for ICH from Shi et al 2025.</p><p class="ds-overview-text">Dataset from the article <em>HEFMI-ICH: a hybrid EEG-fNIRS motor imagery dataset for brain-computer interface in intracerebral hemorrhage</em></p><p class="ds-overview-text">It contains EEG data from 37 subjects (17 healthy controls + 20 ICH patients) recorded with 32-channel EEG at 256 Hz. The motor imagery task involves left and right hand grasping.</p><p class="ds-overview-text">Each session has 30 trials (15 left, 15 right). Trial structure: 2 s cue + 10 s MI + 15 s rest. Sessions vary from 1 to 6 per subject.</p><p class="ds-overview-text">The data is pre-epoched in .mat format on Figshare. Only the EEG portion is loaded (fNIRS is excluded).</p><p class="ds-overview-text">Licence: the paper states &quot;This dataset is licensed under the Creative Commons Attribution (CC-BY) terms&quot; and the figshare record is CC BY 4.0 (the article itself is CC BY-NC-ND 4.0). Note that the figshare description also says the data &quot;can only be used for research and learning purposes, and commercial applications are prohibited&quot;.</p><div class="ds-overview-full"><p>:param group: Which subject group to load: <code>&quot;all&quot;</code> (default, subjects 1-37), <code>&quot;healthy&quot;</code> (subjects 1-17), or <code>&quot;patient&quot;</code> (subjects 18-37). :type group: str</p></div><div class="ds-overview-actions"><button class="ds-overview-toggle" type="button" aria-expanded="false" aria-controls="ds-overview-hefmiich2025" onclick="var el=this.closest('.ds-overview-teaser');el.classList.toggle('ds-expanded');var exp=el.classList.contains('ds-expanded');this.setAttribute('aria-expanded',exp?'true':'false');this.textContent=exp?'Show less ▴':'Show more ▾';">Show more ▾</button><a class="ds-overview-tab-link" href="#ds-overview-hefmiich2025" onclick="event.preventDefault();var tab=document.querySelector('.ds-doc-tabs .sd-tab-label');if(tab){tab.click();}var target=document.getElementById('ds-overview-hefmiich2025');if(target){target.scrollIntoView({behavior:'smooth',block:'start'});}">Open in Overview tab →</a></div></div>
+  <div class="ds-overview-teaser"><p class="ds-overview-title">Overview</p><p class="ds-overview-text">Hybrid EEG-fNIRS MI dataset for ICH from Shi et al 2025.</p><p class="ds-overview-text">Dataset from the article <em>HEFMI-ICH: a hybrid EEG-fNIRS motor imagery dataset for brain-computer interface in intracerebral hemorrhage</em></p><p class="ds-overview-text">It contains EEG data from 37 subjects (17 healthy controls + 20 ICH patients) recorded with 32-channel EEG at 256 Hz. The motor imagery task involves left and right hand grasping.</p><p class="ds-overview-text">Each session has 30 trials (15 left, 15 right). Trial structure: 2 s cue + 10 s MI + 15 s rest. Subjects have 1 to 3 sessions, 98 in total (2,940 trials): 3 sessions for 25 subjects, 2 for subjects 1, 23, 24, 26, 28 and 32-37, and 1 for subject 25. The sessions of a subject are consecutive runs of one visit, not separate days: the raw recordings of every subject with several sessions start on the same day, 15-18 min apart.</p><div class="ds-overview-full"><p>The data is pre-epoched in .mat format on Figshare. Only the EEG portion is loaded (fNIRS is excluded).</p>
+<p><strong>Subjects and sessions.</strong> The figshare file names carry no subject (<code>1_epo.mat</code>, <code>2_epo.mat</code>, <code>3_epo.mat</code>). The depositor&#x27;s folder of every file is given by the <code>folder_structure</code> of the article record (version 4, https://api.figshare.com/v2/articles/28955456/versions/4), which is also the folder layout of the article&#x27;s ZIP: <code>epo_data/{Normals,Patients}/EEG/subject&lt;N&gt;/&lt;k&gt;_epo.mat</code>. Subjects 1-17 are <code>Normals/EEG/subject1</code> to <code>subject17</code> (healthy controls), subjects 18-37 are <code>Patients/EEG/subject1</code> to <code>subject20</code> (ICH patients, subject = 17 + N), and session <code>str(k - 1)</code> is the file <code>&lt;k&gt;_epo.mat</code>. The loader ships this mapping with the size and MD5 of every file (version 4 of the record does not change). Each file is checked against its size and MD5 before it is read, and is stored under the depositor&#x27;s path. The files&#x27; own MAT headers agree with the folders: their creation times form 37 contiguous blocks, one per folder, with the sessions in order a few seconds apart.</p>
+<p>Licence: the paper states &quot;This dataset is licensed under the Creative Commons Attribution (CC-BY) terms&quot; and the figshare record is CC BY 4.0 (the article itself is CC BY-NC-ND 4.0). Note that the figshare description also says the data &quot;can only be used for research and learning purposes, and commercial applications are prohibited&quot;.</p>
+<p>:param group: Which subject group to load: <code>&quot;all&quot;</code> (default, subjects 1-37), <code>&quot;healthy&quot;</code> (subjects 1-17), or <code>&quot;patient&quot;</code> (subjects 18-37). :type group: str</p></div><div class="ds-overview-actions"><button class="ds-overview-toggle" type="button" aria-expanded="false" aria-controls="ds-overview-hefmiich2025" onclick="var el=this.closest('.ds-overview-teaser');el.classList.toggle('ds-expanded');var exp=el.classList.contains('ds-expanded');this.setAttribute('aria-expanded',exp?'true':'false');this.textContent=exp?'Show less ▴':'Show more ▾';">Show more ▾</button><a class="ds-overview-tab-link" href="#ds-overview-hefmiich2025" onclick="event.preventDefault();var tab=document.querySelector('.ds-doc-tabs .sd-tab-label');if(tab){tab.click();}var target=document.getElementById('ds-overview-hefmiich2025');if(target){target.scrollIntoView({behavior:'smooth',block:'start'});}">Open in Overview tab →</a></div></div>
   <div id="ds-quickstart-hefmiich2025" class="ds-quickstart" role="region" aria-labelledby="ds-quickstart-btn-hefmiich2025" aria-hidden="true" hidden>
   <div class="ds-quickstart-code"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">HefmiIch2025</span>
 
@@ -1046,7 +1049,7 @@
   <div class="ds-citation-impact"><p class="ds-citation-title">Citation &amp; Impact</p><ul><li><span>Paper DOI</span><a href="https://doi.org/10.1038%2Fs41597-025-06100-7" target="_blank" rel="noopener">10.1038/s41597-025-06100-7</a></li>
       <li><span>Citations</span><strong class="ds-citation-count" data-doi="10.1038/s41597-025-06100-7">Loading…</strong></li>
       <li><span>Public API</span><span class="ds-citation-links"><a href="https://api.crossref.org/works/10.1038/s41597-025-06100-7" target="_blank" rel="noopener">Crossref</a>&nbsp;|&nbsp;<a href="https://api.openalex.org/works/https%3A%2F%2Fdoi.org%2F10.1038%2Fs41597-025-06100-7" target="_blank" rel="noopener">OpenAlex</a></span></li>
-      <li class="ds-pv-row"><span>Page Views</span><div class="ds-pv-detail"><div class="ds-pv-body"><div class="ds-pv-metrics">30d: <strong>0</strong> <span class="ds-provenance-sep">·</span> all-time: <strong>26</strong></div><div class="ds-pv-rank">#82 of 152 · Top 54% most viewed</div><div class="ds-pv-updated">Updated: 2026-10-25 UTC</div></div><div class="ds-pv-spark" aria-label="Page views trend (last 12 weeks)"><svg class="ds-views-spark" viewBox="0 0 110 28" role="img" aria-label="Weekly page views over the last 12 weeks"><path class="ds-views-spark-area" d="M 2.00 26.00 L 2.00 26.00 L 11.64 26.00 L 21.27 26.00 L 30.91 26.00 L 40.55 26.00 L 50.18 26.00 L 59.82 26.00 L 69.45 26.00 L 79.09 26.00 L 88.73 26.00 L 98.36 26.00 L 108.00 26.00 L 108.00 26.00 Z"></path><polyline class="ds-views-spark-line" points="2.00,26.00 11.64,26.00 21.27,26.00 30.91,26.00 40.55,26.00 50.18,26.00 59.82,26.00 69.45,26.00 79.09,26.00 88.73,26.00 98.36,26.00 108.00,26.00"></polyline></svg></div></div></li></ul>
+      <li class="ds-pv-row"><span>Page Views</span><div class="ds-pv-detail"><div class="ds-pv-body"><div class="ds-pv-metrics">30d: <strong>0</strong> <span class="ds-provenance-sep">·</span> all-time: <strong>26</strong></div><div class="ds-pv-rank">#82 of 152 · Top 54% most viewed</div><div class="ds-pv-updated">Updated: 2026-10-26 UTC</div></div><div class="ds-pv-spark" aria-label="Page views trend (last 12 weeks)"><svg class="ds-views-spark" viewBox="0 0 110 28" role="img" aria-label="Weekly page views over the last 12 weeks"><path class="ds-views-spark-area" d="M 2.00 26.00 L 2.00 26.00 L 11.64 26.00 L 21.27 26.00 L 30.91 26.00 L 40.55 26.00 L 50.18 26.00 L 59.82 26.00 L 69.45 26.00 L 79.09 26.00 L 88.73 26.00 L 98.36 26.00 L 108.00 26.00 L 108.00 26.00 Z"></path><polyline class="ds-views-spark-line" points="2.00,26.00 11.64,26.00 21.27,26.00 30.91,26.00 40.55,26.00 50.18,26.00 59.82,26.00 69.45,26.00 79.09,26.00 88.73,26.00 98.36,26.00 108.00,26.00"></polyline></svg></div></div></li></ul>
 <script>
 (function () {
   if (window.__moabbCitationCountsInit) return;
@@ -1157,10 +1160,36 @@ hemorrhage</em> <a class="reference internal" href="#r5281bfba3ee6-1" id="id1">[
 20 ICH patients) recorded with 32-channel EEG at 256 Hz.
 The motor imagery task involves left and right hand grasping.</p>
 <p>Each session has 30 trials (15 left, 15 right). Trial structure:
-2 s cue + 10 s MI + 15 s rest. Sessions vary from 1 to 6 per
-subject.</p>
+2 s cue + 10 s MI + 15 s rest. Subjects have 1 to 3 sessions, 98 in
+total (2,940 trials): 3 sessions for 25 subjects, 2 for subjects 1, 23,
+24, 26, 28 and 32-37, and 1 for subject 25. The sessions of a subject are
+consecutive runs of one visit, not separate days: the raw recordings of
+every subject with several sessions start on the same day, 15-18 min
+apart.</p>
 <p>The data is pre-epoched in .mat format on Figshare.
 Only the EEG portion is loaded (fNIRS is excluded).</p>
+<p><strong>Subjects and sessions.</strong> The figshare file names carry no subject
+(<code class="docutils literal notranslate"><span class="pre">1_epo.mat</span></code>, <code class="docutils literal notranslate"><span class="pre">2_epo.mat</span></code>, <code class="docutils literal notranslate"><span class="pre">3_epo.mat</span></code>). The depositor’s folder of
+every file is given by the <code class="docutils literal notranslate"><span class="pre">folder_structure</span></code> of the article record
+(version 4, <a class="reference external" href="https://api.figshare.com/v2/articles/28955456/versions/4">https://api.figshare.com/v2/articles/28955456/versions/4</a>),
+which is also the folder layout of the article’s ZIP:
+<code class="docutils literal notranslate"><span class="pre">epo_data/{Normals,Patients}/EEG/subject&lt;N&gt;/&lt;k&gt;_epo.mat</span></code>. Subjects 1-17
+are <code class="docutils literal notranslate"><span class="pre">Normals/EEG/subject1</span></code> to <code class="docutils literal notranslate"><span class="pre">subject17</span></code> (healthy controls),
+subjects 18-37 are <code class="docutils literal notranslate"><span class="pre">Patients/EEG/subject1</span></code> to <code class="docutils literal notranslate"><span class="pre">subject20</span></code> (ICH
+patients, subject = 17 + N), and session <code class="docutils literal notranslate"><span class="pre">str(k</span> <span class="pre">-</span> <span class="pre">1)</span></code> is the file
+<code class="docutils literal notranslate"><span class="pre">&lt;k&gt;_epo.mat</span></code>. The loader ships this mapping with the size and MD5 of
+every file (version 4 of the record does not change). Each file is checked against its size and MD5 before it is read, and is stored
+under the depositor’s path. The files’ own MAT headers agree with the
+folders: their creation times form 37 contiguous blocks, one per folder,
+with the sessions in order a few seconds apart.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Earlier versions of this loader grouped the files by figshare upload
+order and started a new subject at every <code class="docutils literal notranslate"><span class="pre">1_epo.mat</span></code>: 23 of their
+37 subjects mixed sessions of two to four people, and subjects had up
+to 6 sessions. Delete cached epochs and saved results computed with
+them; they do not describe these subjects.</p>
+</div>
 <p>Licence: the paper states “This dataset is licensed under the Creative
 Commons Attribution (CC-BY) terms” and the figshare record is CC BY 4.0
 (the article itself is CC BY-NC-ND 4.0). Note that the figshare
@@ -1223,13 +1252,13 @@ Metadata</label><div class="sd-tab-content docutils">
 <td><p>256 Hz</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>#Sessions</strong></p></td>
-<td><p>3</p></td>
+<td><p>3 (1-3)</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>#Runs</strong></p></td>
 <td><p>1</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>Total_trials</strong></p></td>
-<td><p>3330</p></td>
+<td><p>2940</p></td>
 </tr>
 </tbody>
 </table>
@@ -1269,7 +1298,7 @@ Metadata</label><div class="sd-tab-content docutils">
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.HefmiIch2025.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_all_modalities</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/hefmi_ich2025.py#L199-L226"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.HefmiIch2025.__init__" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_all_modalities</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/hefmi_ich2025.py#L346-L373"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.HefmiIch2025.__init__" title="Link to this definition">#</a></dt>
 <dd><p>Initialize function for the BaseDataset.</p>
 </dd></dl>
 
@@ -1332,33 +1361,11 @@ path.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.HefmiIch2025.data_path">
-<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/hefmi_ich2025.py#L394-L423"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.HefmiIch2025.data_path" title="Link to this definition">#</a></dt>
-<dd><p>Get path to local copy of a subject data.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>subject</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a>) – Number of subject to use</p></li>
-<li><p><strong>path</strong> (<em>None</em><em> | </em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>) – Location of where to look for the data storing location.
-If None, the environment variable or config parameter
-<code class="docutils literal notranslate"><span class="pre">MNE_DATASETS_(dataset)_PATH</span></code> is used. If it doesn’t exist, the
-“~/mne_data” directory is used. If the dataset
-is not found under the given path, the data
-will be automatically downloaded to the specified folder.</p></li>
-<li><p><strong>force_update</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><em>bool</em></a>) – Force update of the dataset even if a local copy exists.</p></li>
-<li><p><strong>update_path</strong> (bool | None <strong>Deprecated</strong>) – If True, set the MNE_DATASETS_(dataset)_PATH in mne-python
-config to the given path. If None, the user is prompted.</p></li>
-<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><em>bool</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a><em>, or </em><em>None</em>) – If not None, override default verbose level
-(see <a class="reference external" href="https://mne.tools/stable/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>path</strong> – Local path to the given data file. This path is contained inside a
-list of length one, for compatibility.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)">list</a> of <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)">str</a></p>
-</dd>
-</dl>
+<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/hefmi_ich2025.py#L425-L465"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.HefmiIch2025.data_path" title="Link to this definition">#</a></dt>
+<dd><p>Return the subject’s epoch files, in session order.</p>
+<p>Each file is downloaded from figshare by its file id into the
+depositor’s layout (<code class="docutils literal notranslate"><span class="pre">epo_data/&lt;group&gt;/EEG/subject&lt;N&gt;/&lt;k&gt;_epo.mat</span></code>
+below <code class="docutils literal notranslate"><span class="pre">MNE-hefmiich2025-data</span></code>) and checked against its size and MD5.</p>
 </dd></dl>
 
 <dl class="py method">
