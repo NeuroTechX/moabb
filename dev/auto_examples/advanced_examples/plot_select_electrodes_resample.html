@@ -596,6 +596,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_benchmark_grid_search.html">Benchmarking with MOABB with Grid Search</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_cross_subject_transfer_rpa.html">Cross-subject transfer with Riemannian alignment</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_cross_subject_transfer_sp_mdm.html">Trialwise cross-subject subject-prototype classification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_cross_system_transfer_maskedmean.html">Cross-system transfer with minimum distance to masked mean</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_within_session_splitter.html">Tutorial: Within-Session Splitting on Real MI Dataset</a></li>
 </ul>
 </details></li>
@@ -745,11 +746,11 @@ a sampling rate of 200 Hz.</p>
 </span><span class="nb">print</span><span class="p">(</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-method reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.head.html#pandas.DataFrame.head" title="pandas.DataFrame.head"><span class="n">results</span><span class="o">.</span><span class="n">head</span></a><span class="p">(</span><span class="p">)</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>      score      time  samples  ...   dataset pipeline codecarbon_task_name
-0  0.918000  0.014616    100.0  ...  Zhou2016  csp+lda
-1  0.845581  0.013837    119.0  ...  Zhou2016  csp+lda
-2  0.944000  0.012141    100.0  ...  Zhou2016  csp+lda
-3  0.934000  0.012458    100.0  ...  Zhou2016  csp+lda
-4  0.904000  0.013297    100.0  ...  Zhou2016  csp+lda
+0  0.834568  0.012783     90.0  ...  Zhou2016  csp+lda
+1  0.930000  0.012787    100.0  ...  Zhou2016  csp+lda
+2  0.922000  0.012749    100.0  ...  Zhou2016  csp+lda
+3  0.950000  0.013178    100.0  ...  Zhou2016  csp+lda
+4  0.902000  0.013094    100.0  ...  Zhou2016  csp+lda
 
 [5 rows x 13 columns]
 </pre></div>
@@ -769,11 +770,11 @@ as well as the list of datasets with valid channels.</p>
 </span><span class="nb">print</span><span class="p">(</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-method reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.head.html#pandas.DataFrame.head" title="pandas.DataFrame.head"><span class="n">results</span><span class="o">.</span><span class="n">head</span></a><span class="p">(</span><span class="p">)</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>      score      time  samples  ...   dataset pipeline codecarbon_task_name
-0  0.920000  0.014893    100.0  ...  Zhou2016  csp+lda
-1  0.834568  0.014858     90.0  ...  Zhou2016  csp+lda
-2  0.928000  0.014645    100.0  ...  Zhou2016  csp+lda
-3  0.846338  0.017134    119.0  ...  Zhou2016  csp+lda
-4  0.886000  0.013305    100.0  ...  Zhou2016  csp+lda
+0  0.814815  0.012626     90.0  ...  Zhou2016  csp+lda
+1  0.908000  0.012923    100.0  ...  Zhou2016  csp+lda
+2  0.922000  0.013683    100.0  ...  Zhou2016  csp+lda
+3  0.942000  0.012974    100.0  ...  Zhou2016  csp+lda
+4  0.855177  0.016365    119.0  ...  Zhou2016  csp+lda
 
 [5 rows x 13 columns]
 </pre></div>
@@ -788,7 +789,8 @@ regression computed in the tangent space of the covariance matrices.</p>
 </span><a class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure"><span class="n">fig</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-moabb-analysis-plotting sphx-glr-backref-type-py-function reference internal" href="../../generated/moabb.analysis.plotting.paired_plot.html#moabb.analysis.plotting.paired_plot" title="moabb.analysis.plotting.paired_plot"><span class="n">moabb_plt</span><span class="o">.</span><span class="n">paired_plot</span></a><span class="p">(</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">results</span></a><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">csp+lda</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">ts+lr</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">chance_level</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">chance_levels</span></a><span class="p">)</span><span class="w">
 </span><a class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">(</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" srcset="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" alt="plot select electrodes resample" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 37.809 seconds)</p>
+<img src="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" srcset="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" alt="plot select electrodes resample" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 32.491 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  959 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-select-electrodes-resample-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/657e87726c4d308a5b176dbb4277773e/plot_select_electrodes_resample.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_select_electrodes_resample.ipynb</span></code></a></p>

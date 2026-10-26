@@ -596,6 +596,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_benchmark_grid_search.html">Benchmarking with MOABB with Grid Search</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_cross_subject_transfer_rpa.html">Cross-subject transfer with Riemannian alignment</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_cross_subject_transfer_sp_mdm.html">Trialwise cross-subject subject-prototype classification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_cross_system_transfer_maskedmean.html">Cross-system transfer with minimum distance to masked mean</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_within_session_splitter.html">Tutorial: Within-Session Splitting on Real MI Dataset</a></li>
 </ul>
 </details></li>
@@ -813,6 +814,28 @@ select electrodes based on the covariance information</p>
 </span><span class="w">
 </span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">results</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-moabb-evaluations-base sphx-glr-backref-type-py-method reference internal" href="../../generated/moabb.evaluations.base.BaseEvaluation.html#moabb.evaluations.base.BaseEvaluation.process" title="moabb.evaluations.base.BaseEvaluation.process"><span class="n">evaluation</span><span class="o">.</span><span class="n">process</span></a><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">pipelines</span></a><span class="p">)</span><span class="w">
 </span></pre></div></div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>This is nemar-py 0.3.3.
+Preparing to download nm000343 from https://data.nemar.org/
+Retrieving 21 of 492 manifest files (16 concurrent downloads).
+
+S3:   0%|          | 0.00/193M [00:00&lt;?, ?B/s]
+S3:   1%|          | 1.00M/193M [00:00&lt;01:04, 3.10MB/s]
+S3:   4%|▎         | 7.00M/193M [00:00&lt;00:09, 20.3MB/s]
+S3:  12%|█▏        | 23.4M/193M [00:00&lt;00:02, 63.4MB/s]
+S3:  34%|███▍      | 65.1M/193M [00:00&lt;00:00, 171MB/s]
+S3:  60%|██████    | 116M/193M [00:00&lt;00:00, 277MB/s]
+S3:  80%|████████  | 155M/193M [00:00&lt;00:00, 304MB/s]
+S3:  98%|█████████▊| 188M/193M [00:01&lt;00:00, 291MB/s]
+S3: 100%|██████████| 193M/193M [00:01&lt;00:00, 188MB/s]
+
+Overall:   0%|          | 0.00/7.26k [00:00&lt;?, ?B/s]
+Overall:  14%|█▍        | 1.02k/7.26k [00:01&lt;00:07, 879B/s]
+Overall:  30%|██▉       | 2.17k/7.26k [00:01&lt;00:02, 1.77kB/s]
+Overall:  45%|████▌     | 3.29k/7.26k [00:01&lt;00:01, 2.21kB/s]
+Overall:  47%|████▋     | 3.40k/7.26k [00:01&lt;00:02, 1.93kB/s]
+Finished downloading nm000343 v1.1.0.
+</pre></div>
+</div>
 <p>Here, with the ElSel+Cov+TS+LDA pipeline, we reduce the computation time
 in approximately 8 times to the Cov+ElSel+TS+LDA pipeline.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">Averaging the session performance:</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
@@ -821,9 +844,9 @@ in approximately 8 times to the Cov+ElSel+TS+LDA pipeline.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Averaging the session performance:
                      score      time
 pipeline
-Cov+ElSel+TS+LDA  0.840030  1.120775
-ElSel+Cov+TS+LDA  0.752849  0.145726
-Xdawn+Cov+TS+LDA  0.666693  0.135610
+Cov+ElSel+TS+LDA  0.840030  1.331918
+ElSel+Cov+TS+LDA  0.752849  0.214053
+Xdawn+Cov+TS+LDA  0.666693  0.179015
 </pre></div>
 </div>
 </section>
@@ -859,7 +882,8 @@ Xdawn+Cov+TS+LDA  0.666693  0.135610
 <li><p>Electrode selection strategy based on covariance matrices demonstrates less variability and typically yields better performance.</p></li>
 <li><p>However, this strategy is more time-consuming compared to the simpler electrode selection based on time epoch data.</p></li>
 </ul>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.153 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 20.050 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  934 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-hinss2021-classification-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/5abf5216139378fc86b18e340a1f77b5/plot_hinss2021_classification.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_hinss2021_classification.ipynb</span></code></a></p>

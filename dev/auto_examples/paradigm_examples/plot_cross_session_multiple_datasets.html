@@ -596,6 +596,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_benchmark_grid_search.html">Benchmarking with MOABB with Grid Search</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_cross_subject_transfer_rpa.html">Cross-subject transfer with Riemannian alignment</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_cross_subject_transfer_sp_mdm.html">Trialwise cross-subject subject-prototype classification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_cross_system_transfer_maskedmean.html">Cross-system transfer with minimum distance to masked mean</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_within_session_splitter.html">Tutorial: Within-Session Splitting on Real MI Dataset</a></li>
 </ul>
 </details></li>
@@ -780,11 +781,11 @@ each subject / session of the dataset, and for each pipeline.</p>
 </span><span class="nb">print</span><span class="p">(</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-method reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.head.html#pandas.DataFrame.head" title="pandas.DataFrame.head"><span class="n">results</span><span class="o">.</span><span class="n">head</span></a><span class="p">(</span><span class="p">)</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>     score      time  ... pipeline                  codecarbon_task_name
-0  0.85113  0.212048  ...  CSP+LDA  6131ef42-a438-458a-bb7a-54786cce411a
-1  0.93640  0.202862  ...  CSP+LDA  98e52c5c-47e0-4c9f-a1f1-b38ea97ec7b0
-2  0.93960  0.202028  ...  CSP+LDA  cd8f1451-dfe9-4b0c-9157-bee148a4f0d0
-3  0.90800  0.156730  ...  CSP+LDA  4b90128c-9ce2-4f81-953f-708d6f3629d8
-4  0.77037  0.182858  ...  CSP+LDA  f6914d69-5584-4faf-b7ef-e269ff235a72
+0  0.85113  0.242733  ...  CSP+LDA  00482f6a-dc55-4729-bbec-2ad44e9b0784
+1  0.93640  0.284830  ...  CSP+LDA  e8815e27-cf68-49bb-9ce7-0bda87dad95f
+2  0.93960  0.293048  ...  CSP+LDA  09cd5cdd-a384-449d-9280-bd7d6636132a
+3  0.90800  0.184250  ...  CSP+LDA  635ccdff-ada5-43bc-aa29-2f784ff9ccaa
+4  0.77037  0.221468  ...  CSP+LDA  7bb09303-6ee4-40ae-91eb-744e5d8ad4cd
 
 [5 rows x 13 columns]
 </pre></div>
@@ -804,7 +805,8 @@ each subject / session of the dataset, and for each pipeline.</p>
 </span><span class="p">)</span><span class="w">
 </span><a class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">(</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" srcset="../../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" alt="dataset = Zhou2016, dataset = BNCI2014-001" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 10.053 seconds)</p>
+<img src="../../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" srcset="../../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" alt="dataset = Zhou2016, dataset = BNCI2014-001" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 9.016 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  826 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-paradigm-examples-plot-cross-session-multiple-datasets-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/a236a554370961344b575283a1efbb02/plot_cross_session_multiple_datasets.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_cross_session_multiple_datasets.ipynb</span></code></a></p>
