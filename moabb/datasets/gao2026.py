@@ -285,12 +285,11 @@ class Gao2026(BaseDataset):
                     log.warning("Missing BDF file: %s", bdf_file)
                     continue
 
+                # The BDF header scale is correct as released: each file's
+                # physical range is set to its own largest sample, so stored
+                # values stay within +/-32768 and MNE's header calibration
+                # gives microvolt-level EEG. Do not rescale.
                 raw = mne.io.read_raw_bdf(str(bdf_file), preload=True, verbose=False)
-
-                # Neuracle BDF header has 16-bit digital min/max (-32768/32767)
-                # for 24-bit BDF data, making amplitudes 256x too large.
-                eeg_picks = mne.pick_types(raw.info, eeg=True)
-                raw._data[eeg_picks] /= 256
 
                 # Pick only EEG channels (drop Status).
                 raw.pick(["eeg"])
