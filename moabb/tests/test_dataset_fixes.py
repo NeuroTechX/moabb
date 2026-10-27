@@ -14,6 +14,7 @@ from moabb.datasets import schirrmeister2017
 from moabb.datasets.bnci.bnci_2020 import _convert_attention_shift
 from moabb.datasets.braininvaders import BI2015b
 from moabb.datasets.fake import FakeDataset
+from moabb.datasets.gao2026 import Gao2026
 from moabb.datasets.kaneshiro2015 import Kaneshiro2015
 from moabb.datasets.kojima2024a import Kojima2024A
 from moabb.datasets.lenaig2026 import Lenaig2026
@@ -482,3 +483,60 @@ def test_rozado2015_picks_scalp_channels_by_label_in_microvolts(monkeypatch):
     channels[labels.index("Cz")]["label"] = ["A32"]
     with pytest.raises(ValueError, match="lacks channels"):
         Rozado2015()._load_xdf_run("experiment.xdf")
+
+
+def _write_bdf(path, data_uv, status, sfreq, labels):
+    """Write a 24-bit BDF the way the Gao2026 files are stored.
+
+    The digital range is the 16-bit one (-32768..32767) and the physical
+    range is set to the largest absolute sample of the file, so the stored
+    counts fill the 16-bit range and the header scale is the true one.
+    """
+    n_sig, n_samp = data_uv.shape[0] + 1, data_uv.shape[1]
+    n_rec = n_samp // int(sfreq)
+    peak = float(np.abs(data_uv).max())
+    counts = np.round(data_uv / peak * 32767).astype(np.int64)
+    sigs = np.vstack([counts, status.astype(np.int64)])
+
+    def field(values, width):
+        return b"".join(str(v).ljust(width)[:width].encode("latin1") for v in values)
+
+    names = list(labels) + ["Status"]
+    head = b"\xffBIOSEMI" + b" " * 80 + b" " * 80 + b"01.01.25" + b"00.00.00"
+    head += field([256 * (n_sig + 1)], 8) + b"24BIT".ljust(44) + field([n_rec], 8)
+    head += field([1], 8) + field([n_sig], 4)
+    head += field(names, 16) + field([""] * n_sig, 80) + field(["uV"] * n_sig, 8)
+    head += field([-peak] * n_sig, 8) + field([peak] * n_sig, 8)
+    head += field([-32768] * n_sig, 8) + field([32767] * n_sig, 8)
+    head += field([""] * n_sig, 80) + field([int(sfreq)] * n_sig, 8)
+    head += field([""] * n_sig, 32)
+    spr = int(sfreq)
+    rec = sigs[:, : n_rec * spr].reshape(n_sig, n_rec, spr).transpose(1, 0, 2)
+    raw = (
+        (rec.astype("<i4") & 0xFFFFFF).astype("<u4").view(np.uint8).reshape(-1, 4)[:, :3]
+    )
+    path.write_bytes(head + raw.tobytes())
+
+
+def test_gao2026_keeps_bdf_header_amplitude_scale(tmp_path: Path, monkeypatch):
+    """Gao2026 must return the amplitudes stored in the BDF, not 1/256 of them."""
+    sfreq, n_samp = 1000.0, 4000
+    labels = ["Fpz", "Fp1", "Fp2", "Oz"]
+    rng = np.random.default_rng(0)
+    data_uv = 20.0 * rng.standard_normal((len(labels), n_samp))  # EEG-sized, in uV
+    status = np.zeros(n_samp)
+    status[[500, 1500, 2500]] = [1, 2, 3]  # dog, bird, fish
+    eeg_dir = tmp_path / "MNE-gao2026-data" / "sub-01" / "ses-01" / "eeg"
+    eeg_dir.mkdir(parents=True)
+    _write_bdf(eeg_dir / "sub-01_ses-01_task-AVI_eeg.bdf", data_uv, status, sfreq, labels)
+    monkeypatch.setattr(
+        "moabb.datasets.gao2026.dl.get_dataset_path", lambda *args: tmp_path
+    )
+
+    raw = Gao2026()._get_single_subject_data(1)["0"]["0"]
+
+    step_uv = 2 * np.abs(data_uv).max() / 65535
+    np.testing.assert_allclose(
+        raw.get_data(picks=labels) * 1e6, data_uv, rtol=1e-3, atol=step_uv
+    )
+    assert len(raw.annotations) == 3
