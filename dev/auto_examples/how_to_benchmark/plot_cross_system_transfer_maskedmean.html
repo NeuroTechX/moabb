@@ -1120,7 +1120,19 @@ target in turn, the pipeline seeing no trial of it during training.</p>
 </span>    <span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="w">
 </span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>                            mean    std  count
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/moabb/moabb/moabb/analysis/results.py:189: H5pyDeprecationWarning: Creating a dataset without passing data or dtype is deprecated. Pass an explicit dtype. Using dtype='f4' will keep the current default behaviour.
+  dset.create_dataset(
+/home/runner/work/moabb/moabb/moabb/analysis/results.py:189: H5pyDeprecationWarning: Creating a dataset without passing data or dtype is deprecated. Pass an explicit dtype. Using dtype='f4' will keep the current default behaviour.
+  dset.create_dataset(
+/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/pyriemann/geometry/base.py:105: UserWarning: Convergence not reached
+  return func(X, *args, **kwargs)
+/home/runner/work/moabb/moabb/moabb/analysis/results.py:189: H5pyDeprecationWarning: Creating a dataset without passing data or dtype is deprecated. Pass an explicit dtype. Using dtype='f4' will keep the current default behaviour.
+  dset.create_dataset(
+/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/pyriemann/geometry/base.py:105: UserWarning: Convergence not reached
+  return func(X, *args, **kwargs)
+/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/pyriemann/geometry/base.py:105: UserWarning: Convergence not reached
+  return func(X, *args, **kwargs)
+                            mean    std  count
 device   pipeline
 Source 1 Intersection MDM  0.503  0.015      6
          Masked-mean MDM   0.504  0.022      6
@@ -1244,7 +1256,11 @@ classified on its own channels.</p>
 </span>    <a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.tick_params.html#matplotlib.axes.Axes.tick_params" title="matplotlib.axes.Axes.tick_params"><span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span></a><span class="p">(</span><span class="n">which</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">minor</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="w">
 </span><a class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">(</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../../_images/sphx_glr_plot_cross_system_transfer_maskedmean_004.png" srcset="../../_images/sphx_glr_plot_cross_system_transfer_maskedmean_004.png" alt="Centroid of class left_hand, Centroid of class right_hand, Source 1: mask $M_s$ (9 x 7), Source 2: mask $M_s$ (9 x 7), Target: mask $M_s$ (9 x 6)" class = "sphx-glr-single-img"/></section>
+<img src="../../_images/sphx_glr_plot_cross_system_transfer_maskedmean_004.png" srcset="../../_images/sphx_glr_plot_cross_system_transfer_maskedmean_004.png" alt="Centroid of class left_hand, Centroid of class right_hand, Source 1: mask $M_s$ (9 x 7), Source 2: mask $M_s$ (9 x 7), Target: mask $M_s$ (9 x 6)" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/pyriemann/geometry/base.py:105: UserWarning: Convergence not reached
+  return func(X, *args, **kwargs)
+</pre></div>
+</div>
+</section>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
 <aside class="footnote-list brackets">
@@ -1264,8 +1280,7 @@ covariance matrices. <em>Asian Conference on Machine Learning (ACML)</em>,
 417-432. <a class="reference external" href="https://hal.archives-ouvertes.fr/hal-02984423">https://hal.archives-ouvertes.fr/hal-02984423</a></p>
 </aside>
 </aside>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 45.139 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  709 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 44.705 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-how-to-benchmark-plot-cross-system-transfer-maskedmean-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/52935418f560cb7a3d77baa66ace629a/plot_cross_system_transfer_maskedmean.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_cross_system_transfer_maskedmean.ipynb</span></code></a></p>
