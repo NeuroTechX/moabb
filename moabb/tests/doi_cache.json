@@ -2072,6 +2072,17 @@
         "title": "A Multi-Session EEG Dataset of Longitudinal Motor Imagery BCI Training with Transcutaneous Spinal Stimulation in Able-Bodied and Spinal Cord Injury Participants",
         "year": 2025
     },
+    "10.5281/zenodo.17940098": {
+        "authors": [
+            "Niklas Kueper",
+            "Su Kyoung Kim",
+            "Kartik Chari",
+            "Elsa Andrea Kirchner"
+        ],
+        "doi": "10.5281/zenodo.17940098",
+        "title": "EEG dataset of unilateral and bilateral movement executions (data, version 2)",
+        "year": 2025
+    },
     "10.5281/zenodo.18087806": {
         "authors": [
             "Isabel W. Tscherniak",
