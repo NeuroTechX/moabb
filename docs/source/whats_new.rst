@@ -284,6 +284,7 @@ Code health
 ~~~~~~~~~~~
 - Share loader code across the new dataset PRs instead of private copies: :func:`~moabb.datasets.utils.download_and_extract_subject_zip` gains ``fname`` and ``redownload_corrupted`` (one warned re-download of a corrupted archive), :func:`~moabb.datasets.utils.rename_stimulus_codes` maps BrainVision ``Stimulus/S <n>`` markers to class labels, ``SetRawAnnotations`` keeps ``EDGE boundary`` markers, and the OpenNeuro raw-mirror mixin (``moabb.datasets._openneuro_mirror``) lives here once (:gh:`1200` by `Bruno Aristimunha`_).
 - Modernise the BIDS layer on ``mne-bids>=0.20`` and drop MOABB workarounds it made obsolete: use :func:`mne_bids.find_matching_paths` with ``ignore_json=True`` and the public :meth:`mne_bids.BIDSPath.find_matching_sidecar` instead of a private helper, let :func:`mne_bids.write_raw_bids` serialise annotation extras into ``events.tsv`` and skip its README (``readme=False``) instead of patching both after writing, rely on mne-bids for the standard ``participants.json`` column descriptions, remove an obsolete EDF-conversion warning filter, and locate Thapa2025 files with ``find_matching_paths`` instead of probing every session/run pair (by `Bruno Aristimunha`_).
+- Cap the Optuna search budget in the grid-search tests (``time_out=1``), which had doubled the ``Test`` workflow from about 23 to 47 minutes; the tests still exercise the Optuna path (:gh:`1321` proposed and measured by `Apoorva Garg`_, applied by `Bruno Aristimunha`_)
 
 Version 1.7.1  (Stable - PyPi)
 -------------------------------
@@ -1309,3 +1310,4 @@ API changes
 
 .. _Rızgar Ozan: https://github.com/RizgarOzan
 .. _Adam Rolander: https://github.com/AdamRolander
+.. _Apoorva Garg: https://github.com/agarg21
