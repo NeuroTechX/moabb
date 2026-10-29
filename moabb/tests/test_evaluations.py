@@ -504,7 +504,10 @@ class TestWithinSess:
         param_grid = {"C": {"csp__metric": ["euclid", "riemann"]}}
         process_pipeline = self.eval.paradigm.make_process_pipelines(dataset)[0]
 
+        # Cap the search budget: the tests check the Optuna path, not its
+        # convergence, and an uncapped search doubles the CI time.
         self.eval.optuna = True
+        self.eval.time_out = 1
 
         results = list(
             self.eval.evaluate(
@@ -516,6 +519,7 @@ class TestWithinSess:
         )
 
         self.eval.optuna = False
+        self.eval.time_out = 60 * 15
 
         # We should get 4 results, 2 sessions 2 subjects
         assert len(results) == 4
@@ -539,6 +543,8 @@ class TestWithinSess:
             datasets=[dataset],
             hdf5_path=str(tmp_path),
             optuna=optuna,
+            # Optuna stops after the trial in flight; only used when optuna=True.
+            time_out=1 if optuna else 60 * 15,
         )
         param_grid = {"C": {"csp__metric": ["euclid", "riemann"]}}
         process_pipeline = evaluation.paradigm.make_process_pipelines(dataset)[0]
