@@ -221,11 +221,11 @@ class Kojima2024A(BaseDataset):
         experiment=ExperimentMetadata(
             paradigm="p300",
             task_type="auditory selective attention",
-            events={"S1": 1, "D1": 2, "S2": 3, "D2": 4, "S3": 5, "D3": 6},
-            n_classes=3,
-            class_labels=["Stream 1", "Stream 2", "Stream 3"],
+            events={"Target": 1, "NonTarget": 0},
+            n_classes=2,
+            class_labels=["Target", "NonTarget"],
             trials_per_class=None,
-            trial_duration=None,
+            trial_duration=1.7,
             tasks=["attend to Stream 1", "attend to Stream 2", "attend to Stream 3"],
             study_design="within-subject",
             study_domain="auditory BCI",
@@ -263,9 +263,9 @@ class Kojima2024A(BaseDataset):
             investigators=["Simon Kojima", "Shin'ichiro Kanoh"],
             institution="Shibaura Institute of Technology",
             country="JP",
-            repository="Harvard Dataverse",
+            repository="Harvard dataverse",
             data_url="https://doi.org/10.7910/DVN/MQOVEY",
-            license="Creative Commons Attribution License",
+            license="CC0-1.0",
             publication_year=2024,
             senior_author="Shin'ichiro Kanoh",
             contact_info=["nb21106@shibaura-it.ac.jp"],
@@ -367,7 +367,6 @@ class Kojima2024A(BaseDataset):
     )
 
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
-
         self.n_channels = 64
 
         super().__init__(
@@ -384,7 +383,6 @@ class Kojima2024A(BaseDataset):
         )
 
     def _get_files_list(self, subject, manifest):
-
         subject_id = self.convert_subject_to_subject_id(subject)
 
         manifest_files = manifest["datasetVersion"]["files"]

@@ -162,6 +162,7 @@ class Rozado2015(BaseDataset):
             class_labels=["left_hand", "rest"],
         ),
         documentation=DocumentationMetadata(
+            ethics_approval=["CSIRO Human Research Ethics Committee"],
             doi="10.1371/journal.pone.0121262",
             investigators=["David Rozado", "Andreas Duenser", "Ben Howell"],
             senior_author="David Rozado",

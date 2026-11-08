@@ -91,7 +91,7 @@ class Kalunga2016(BaseDataset):
             events={"13": 2, "17": 4, "21": 3, "rest": 1},
             paradigm="ssvep",
             n_classes=4,
-            class_labels=["13hz", "17hz", "21hz", "rest"],
+            class_labels=["13", "17", "21", "rest"],
             trial_duration=6.0,
             study_design="SSVEP",
             stimulus_type="flickering",

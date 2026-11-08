@@ -157,6 +157,12 @@ class Wairagkar2018(BaseDataset):
             ),
         ),
         documentation=DocumentationMetadata(
+            funding=[
+                "University of Reading International Research Studentship (GS14-46)"
+            ],
+            ethics_approval=[
+                "Ethics Committee of the School of Systems Engineering, University of Reading, UK"
+            ],
             doi="10.1371/journal.pone.0193722",
             investigators=[
                 "Maitreyee Wairagkar",

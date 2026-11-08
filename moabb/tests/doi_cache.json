@@ -1572,10 +1572,10 @@
     },
     "10.3217/978-3-85125-378-8-61": {
         "authors": [
-            "",
-            "",
-            "",
-            ""
+            "David Steyrl",
+            "Reinhold Scherer",
+            "J\u00f6rg F\u00f6rstner",
+            "Gernot R. M\u00fcller-Putz"
         ],
         "doi": "10.3217/978-3-85125-378-8-61",
         "title": "Motor Imagery Brain-Computer Interfaces: Random Forests Vs Regularized Lda - Non-Linear Beats Linear",
@@ -1670,6 +1670,24 @@
         "doi": "10.3389/fnhum.2023.1288438",
         "title": "Influence of spatial frequency in visual stimuli for cVEP-based BCIs: evaluation of performance and user experience",
         "year": 2023
+    },
+    "10.3389/fnhum.2024.1320457": {
+        "authors": [
+            "Jongmin Lee",
+            "Minju Kim",
+            "Dojin Heo",
+            "Jongsu Kim",
+            "Min-Ki Kim",
+            "Taejun Lee",
+            "Jongwoo Park",
+            "HyunYoung Kim",
+            "Minho Hwang",
+            "Laehyun Kim",
+            "Sung-Phil Kim"
+        ],
+        "doi": "10.3389/fnhum.2024.1320457",
+        "title": "A comprehensive dataset for home appliance control using ERP-based BCIs with the application of inter-subject transfer learning",
+        "year": 2024
     },
     "10.3389/fnhum.2024.1461960": {
         "authors": [
@@ -1973,6 +1991,23 @@
         ],
         "doi": "10.48550/arXiv.2511.23384",
         "title": "Improving motor imagery decoding methods for an EEG-based mobile brain-computer interface in the context of the 2024 Cybathlon",
+        "year": 2026
+    },
+    "10.48550/arXiv.2602.04299": {
+        "authors": [
+            "Lufeng Feng",
+            "Baomin Xu",
+            "Haoran Zhang",
+            "Bihai Lin",
+            "Zuxuan Deng",
+            "Sidi Tao",
+            "Chenyu Liu",
+            "Shifan Jia",
+            "Li Duan",
+            "Ziyu Jia"
+        ],
+        "doi": "10.48550/arXiv.2602.04299",
+        "title": "A Multimodal fNIRS-EEG Dataset for Unilateral Limb Motor Imagery",
         "year": 2026
     },
     "10.48550/arXiv.2604.16554": {
@@ -2828,6 +2863,6 @@
         "title": "Multi-channel EEG recording during motor imagery of different joints from the same limb (dataset)"
     },
     "_metadata": {
-        "total": 238
+        "total": 240
     }
 }

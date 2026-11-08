@@ -107,6 +107,7 @@ class Farabbi2020(BaseDataset):
             instructions="Imagine left- or right-hand movement following the cue to steer the robot arm toward the target object.",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Athanasios Vourvopoulos",
             doi="10.5281/zenodo.5882500",
             description="Motor-imagery EEG from 12 healthy naive subjects performing cued left/right-hand imagery to control a Baxter robot arm, across three sessions with first- and third-person visual feedback conditions.",
             investigators=[

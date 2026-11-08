@@ -150,7 +150,8 @@ def _make_metadata(experiment):
             montage="standard_1020",
             hardware="actiCHamp (Brain Products)",
             sensor_type="active",
-            reference="linked mastoids",
+            reference="left mastoid",
+            ground="right mastoid",
             sensors=list(config["ch_names"]),
             line_freq=60.0,
         ),
@@ -191,11 +192,20 @@ def _make_metadata(experiment):
                 "Laehyun Kim",
                 "Sung-Phil Kim",
             ],
+            senior_author="Sung-Phil Kim",
             institution="Ulsan National Institute of Science and Technology",
             country="KR",
             publication_year=2024,
+            repository="GitHub",
             data_url="https://github.com/jml226/Home-Appliance-Control-Dataset",
             license="CC-BY-4.0",
+            ethics_approval=[
+                "Institutional Review Board at the Ulsan National Institutes of Science and Technology (IRB: UNISTIRB-18-08-A)"
+            ],
+            funding=[
+                "Alchemist Project (grant number 20012355, Fully implantable closed loop Brain to X for voice communication) funded by MOTIE, Korea",
+                "Institute of Information & Communications Technology Planning & Evaluation (IITP) grant (No. 2017-0-00432)",
+            ],
         ),
         sessions_per_subject=1,
         tags=Tags(pathology=["Healthy"], modality=["ERP"], type=["P300"]),
@@ -508,6 +518,7 @@ class Lee2024(BaseDataset):
 class Lee2024_TV(Lee2024):
     """Television control experiment (30 subjects, 4 classes, 31 EEG ch)."""
 
+    METADATA = _make_metadata("TV")
     nemar_id = "nm000213"
     __init__ = partialmethod(Lee2024.__init__, "TV")
 
@@ -515,6 +526,7 @@ class Lee2024_TV(Lee2024):
 class Lee2024_DL(Lee2024):
     """Door lock control experiment (15 subjects, 4 classes, 31 EEG ch)."""
 
+    METADATA = _make_metadata("DL")
     nemar_id = "nm000208"
     __init__ = partialmethod(Lee2024.__init__, "DL")
 
@@ -522,6 +534,7 @@ class Lee2024_DL(Lee2024):
 class Lee2024_EL(Lee2024):
     """Electric light control experiment (15 subjects, 4 classes, 31 EEG ch)."""
 
+    METADATA = _make_metadata("EL")
     nemar_id = "nm000223"
     __init__ = partialmethod(Lee2024.__init__, "EL")
 
@@ -529,6 +542,7 @@ class Lee2024_EL(Lee2024):
 class Lee2024_BS(Lee2024):
     """Bluetooth speaker experiment (14 subjects, 6 classes, 31 EEG ch)."""
 
+    METADATA = _make_metadata("BS")
     nemar_id = "nm000204"
     __init__ = partialmethod(Lee2024.__init__, "BS")
 
@@ -536,5 +550,6 @@ class Lee2024_BS(Lee2024):
 class Lee2024_AC(Lee2024):
     """Air conditioner control experiment (10 subjects, 4 classes, 25 EEG ch)."""
 
+    METADATA = _make_metadata("AC")
     nemar_id = "nm000222"
     __init__ = partialmethod(Lee2024.__init__, "AC")

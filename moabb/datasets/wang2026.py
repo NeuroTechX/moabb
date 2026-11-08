@@ -160,7 +160,8 @@ _DOCUMENTATION = DocumentationMetadata(
     senior_author="Bin He",
     contact_info=["bhe1@andrew.cmu.edu"],
     associated_paper_doi=_PAPER_DOI,
-    funding=["NS124564", "NS131069", "NS127849", "NS096761"],
+    ethics_approval=["Institutional Review Board of Carnegie Mellon University"],
+    funding=["NS124564", "NS131069", "NS127849", "NS096761", "NIH T32 EB029365"],
     keywords=["motor imagery", "BCI", "joint learning", "tactile stimulation", "EEGNet"],
 )
 
@@ -169,6 +170,8 @@ _METADATA = DatasetMetadata(
     participants=ParticipantMetadata(
         n_subjects=39,
         health_status="healthy",
+        age_mean=23.8,
+        age_std=4.42,
         bci_experience="naive",
         species="homo sapiens",
     ),

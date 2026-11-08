@@ -142,6 +142,14 @@ class Chang2025(BaseDataset):
             mode="offline",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Xuan Liu",
+            funding=[
+                "National Natural Science Foundation of China (62366028, 62466032, W2421090)"
+            ],
+            ethics_approval=[
+                "Ethics Committee of Gansu Provincial Maternity and Child-care Hospital ((2023) GSFY Ethics [90])"
+            ],
+            repository="Figshare",
             doi="10.1038/s41597-025-06147-6",
             investigators=[
                 "Wenwen Chang",

@@ -183,6 +183,10 @@ class Kaya2018(BaseDataset):
             feedback_type="none",
         ),
         documentation=DocumentationMetadata(
+            funding=["TUBITAK ARDEB grant number 113E611", "Science Academy BAGEP Award"],
+            ethics_approval=[
+                "Ethics Committees of Toros University and Mersin University, Turkey"
+            ],
             doi="10.1038/sdata.2018.211",
             investigators=[
                 "Murat Kaya",

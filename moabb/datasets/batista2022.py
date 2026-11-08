@@ -153,6 +153,7 @@ class Batista2022(BaseDataset):
             ),
         ),
         documentation=DocumentationMetadata(
+            senior_author="Athanasios Vourvopoulos",
             doi="10.5281/zenodo.7664068",
             description=(
                 "Motor-imagery EEG plus PPG, respiration, ECG and accelerometry "

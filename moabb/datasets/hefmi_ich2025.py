@@ -254,13 +254,14 @@ class HefmiIch2025(BaseDataset):
             line_freq=50.0,
         ),
         participants=ParticipantMetadata(
+            age_mean=38.3,
             n_subjects=37,
             health_status="mixed (17 healthy, 20 ICH patients)",
             gender={"female": 8, "male": 29},
             age_min=20.0,
             age_max=65.0,
             species="human",
-            handedness="right-handed",
+            handedness={"right": 37},
             clinical_population="intracerebral hemorrhage (ICH)",
         ),
         experiment=ExperimentMetadata(
@@ -283,6 +284,16 @@ class HefmiIch2025(BaseDataset):
             mode="offline",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Zhouping Tang",
+            funding=[
+                "Major Program (JD) of Hubei Province (2023BAA005)",
+                "Fundamental Research Funds for the Central Universities (YCJJ20251401)",
+                "National Natural Science Foundation of China (92148206)",
+            ],
+            ethics_approval=[
+                "Ethics Committee of Tongji Hospital (Approval No. TJ-IRB202412123)"
+            ],
+            repository="Figshare",
             doi="10.1038/s41597-025-06100-7",
             investigators=[
                 "Jian Shi",

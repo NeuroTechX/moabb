@@ -251,6 +251,7 @@ class GrosseWentrup2009(BaseDataset):
             },
         ),
         documentation=DocumentationMetadata(
+            data_url="https://zenodo.org/records/1217449",
             doi="10.1109/TBME.2008.2009768",
             investigators=[
                 "Moritz Grosse-Wentrup",

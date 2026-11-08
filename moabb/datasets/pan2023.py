@@ -191,6 +191,7 @@ class Pan2023(_PanDataverse):
             events={"left_hand": 1, "right_hand": 2},
         ),
         documentation=DocumentationMetadata(
+            senior_author="Lincong Pan",
             doi="10.7910/DVN/251NOW",
             description="Cross-session motor imagery EEG dataset from 14 subjects "
             "performing cued left- vs right-hand motor imagery across two sessions.",

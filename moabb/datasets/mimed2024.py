@@ -106,6 +106,7 @@ class MIMED2024(BaseDataset):
             species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
+            trial_duration=4.0,
             paradigm="imagery",
             n_classes=3,
             class_labels=["left_hand", "right_hand", "trunk"],
@@ -114,6 +115,11 @@ class MIMED2024(BaseDataset):
             mode="offline",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Ni Nyoman Mestri Agustini",
+            funding=["Universitas Pendidikan Ganesha Funding No: 1175/UN48.16/LT/2023"],
+            ethics_approval=[
+                "Ethics Committee, Universitas Pendidikan Ganesha (038/UN48.16/LT/2023)"
+            ],
             doi="10.1016/j.dib.2024.110833",
             related_paper_dois=["10.17632/zs25xxjkm9.3"],
             description=(

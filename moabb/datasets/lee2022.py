@@ -96,12 +96,14 @@ class Lee2022(OpenNeuroMirrorMixin, BaseDataset):
             line_freq=60.0,
         ),
         participants=ParticipantMetadata(
+            age_std=13.5,
+            age_mean=70.7,
             n_subjects=7,
             health_status="orthopedic impairment",
             clinical_population="patients with orthopedic impairment",
             gender={"male": 3, "female": 4},
-            age_min=48.0,
-            age_max=83.0,
+            age_min=48,
+            age_max=83,
             ages=[75, 48, 78, 83, 77, 79, 55],
             sexes=["male", "female", "female", "female", "male", "male", "female"],
             handedness={"right": 6, "left": 1},
@@ -126,6 +128,8 @@ class Lee2022(OpenNeuroMirrorMixin, BaseDataset):
             mode="offline",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Dong-Joo Kim",
+            repository="OpenNeuro",
             doi="10.18112/openneuro.ds004022.v1.0.0",
             investigators=[
                 "Seho Lee",

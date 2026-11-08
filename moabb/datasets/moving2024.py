@@ -143,6 +143,7 @@ class MOVING2024(BaseDataset):
             n_subjects=11, health_status="healthy", species="homo sapiens"
         ),
         experiment=ExperimentMetadata(
+            events={"rest": 1, "open_close": 2, "wrist_rotation": 3, "finger_tapping": 4},
             paradigm="imagery",
             n_classes=4,
             class_labels=["rest", "open_close", "wrist_rotation", "finger_tapping"],
@@ -158,6 +159,7 @@ class MOVING2024(BaseDataset):
             mode="offline",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Giuseppe Placidi",
             doi="10.3390/s24165207",
             description=(
                 "Multi-modal dataset pairing 32-channel dry EEG with Virtual "

@@ -164,16 +164,17 @@ class Gueho2026(BaseDataset):
             software="OpenVIBE",
             line_freq=50,
             montage="standard_1020",
+            sensors=list(_CH_NAMES_EEG.values()),
             impedance_threshold_kohm=10,
         ),
         participants=ParticipantMetadata(
-            n_subjects=48, gender={"male": 24, "female": 24}, age_max=63, age_min=18
+            n_subjects=24, gender={"male": 24, "female": 24}, age_max=63, age_min=18
         ),
         experiment=ExperimentMetadata(
-            events=_EVENT_DICT,
+            events={"Sinus": 4, "Silence": 8},
             paradigm="ssvep",
             n_classes=2,
-            class_labels=["Stimulus", "Silence"],
+            class_labels=["Sinus", "Silence"],
             # 10 repetitions per condition (5 conditions: Sinus, BrownNoise,
             # Cicada, Cat, Silence) per the dataset description above; the
             # schema declares ``trials_per_class`` as Dict[str, int], not a
@@ -202,6 +203,7 @@ class Gueho2026(BaseDataset):
                 "Patrick Hénaff",
                 "Rozenn Nicol",
             ],
+            senior_author="Rozenn Nicol",
             publication_year=2026,
         ),
         # One session of two 10-minute runs per participant (Zenodo record);

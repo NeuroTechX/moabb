@@ -633,7 +633,7 @@ class MAMEM1(BaseMAMEM):
         experiment=ExperimentMetadata(
             paradigm="ssvep",
             n_classes=5,
-            class_labels=["6.66 Hz", "7.50 Hz", "8.57 Hz", "10.00 Hz", "12.00 Hz"],
+            class_labels=["6.66", "7.50", "8.57", "10.00", "12.00"],
             events={"6.66": 1, "7.50": 2, "8.57": 3, "10.00": 4, "12.00": 5},
             trial_duration=5.0,
             study_design="Subjects focus attention on a single violet box flickering at different frequencies (6.66, 7.50, 8.57, 10.00, 12.00 Hz) presented sequentially. Each frequency is presented for 5 seconds (trial) followed by 5 seconds rest, repeated 3 times per frequency, with 30 seconds rest between different frequencies.",
@@ -1126,7 +1126,7 @@ class MAMEM2(BaseMAMEM):
             events={"6.66": 1, "7.50": 2, "8.57": 3, "10.00": 4, "12.00": 5},
             paradigm="ssvep",
             n_classes=5,
-            class_labels=["6.66 Hz", "7.50 Hz", "8.57 Hz", "10.00 Hz", "12.00 Hz"],
+            class_labels=["6.66", "7.50", "8.57", "10.00", "12.00"],
             trial_duration=5.0,
             study_design="Subjects focus attention on visual stimuli flickering at different frequencies (6.66, 7.50, 8.57, 10.00, 12.00 Hz) to select commands. Each stimulus presented for 5 seconds followed by 5 seconds rest.",
             stimulus_type="flickering box",
@@ -1143,6 +1143,7 @@ class MAMEM2(BaseMAMEM):
             },
         ),
         documentation=DocumentationMetadata(
+            senior_author="Ioannis Kompatsiaris",
             doi="10.48550/arXiv.1602.00904",
             repository="GitHub",
             data_url="https://figshare.com/articles/dataset/3153409",
@@ -1379,7 +1380,7 @@ class MAMEM3(BaseMAMEM):
             },
             paradigm="ssvep",
             n_classes=5,
-            class_labels=["6.66 Hz", "7.50 Hz", "8.57 Hz", "10.00 Hz", "12.00 Hz"],
+            class_labels=["6.66", "7.50", "8.57", "10.00", "12.00"],
             trial_duration=5.0,
             study_design="Five magenta boxes flickering simultaneously at 6.66, 7.50, 8.57, 10.00 and 12.00 Hz; a yellow arrow marks the box to attend. Each 5-second flickering window is followed by 5 seconds of rest (see the class docstring, transcribed from DataAcquisitionDetails-Experiment3.pdf).",
             stimulus_type="visual",
@@ -1391,6 +1392,9 @@ class MAMEM3(BaseMAMEM):
             has_training_test_split=False,
         ),
         documentation=DocumentationMetadata(
+            ethics_approval=[
+                "Ethics Committee of the Centre for Research and Technology Hellas (3/7/2015)"
+            ],
             doi="10.6084/m9.figshare.3413851.v3",
             description="MAMEM EEG SSVEP Dataset III (14 channels, 11 subjects, 5 frequencies presented simultaneously). EEG signals with 14 channels captured from 11 subjects executing a SSVEP-based experimental protocol; the Emotiv EPOC, using 14 wireless channels, has been used for capturing the signals.",
             investigators=["Spiros Nikolopoulos"],

@@ -294,6 +294,10 @@ class Speier2017(BaseDataset):
             mode="online",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Nader Pouratian",
+            funding=["National Institute of Biomedical Imaging and Bioengineering"],
+            ethics_approval=["UCLA Institutional Review Board (IRB#11-002062)"],
+            repository="Harvard Dataverse",
             doi=_DOI,
             investigators=[
                 "William Speier",

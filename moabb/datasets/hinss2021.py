@@ -78,6 +78,7 @@ class Hinss2021(BaseDataset):
     nemar_id = "nm000343"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
+            ground="Fpz",
             sampling_rate=_SFREQ,
             channel_types={"eeg": 61},
             montage="standard_1020",
@@ -160,10 +161,11 @@ class Hinss2021(BaseDataset):
             handedness=None,
         ),
         experiment=ExperimentMetadata(
+            trial_duration=1.996,
             events={"rs": 1, "easy": 2, "medium": 3, "diff": 4},
             paradigm="rstate",
             n_classes=4,
-            class_labels=["rest", "easy", "medium", "difficult"],
+            class_labels=["rs", "easy", "medium", "diff"],
             study_design="Passive BCI neuroergonomics dataset with resting state and 3 difficulty levels of MATB-II task (easy, medium, difficult). The MOABB loader provides resting state and MATB conditions only.",
             feedback_type="none",
             stimulus_type="visual display",

@@ -101,7 +101,7 @@ class MIBMPI2024(BaseDataset):
             sensor_type="saline",
             electrode_type="passive",
             reference="average (channel mean subtracted); CMS/DRL at P9/P10",
-            ground=None,
+            ground="DRL (P10)",
             software="Emotiv Pro 2.5.1.227",
             filters=(
                 "Emotiv EPOC Flex 0.2-45 Hz bandwidth, 5th-order Sinc and 50/60 Hz "
@@ -141,6 +141,10 @@ class MIBMPI2024(BaseDataset):
             ),
         ),
         documentation=DocumentationMetadata(
+            senior_author="Cemal Kose",
+            funding=[
+                "Turkish Scientific and Research Council (TUBITAK) project number 119E397"
+            ],
             doi=_DOI,
             description=(
                 "Motor-imagery EEG from 8 healthy subjects imagining two "

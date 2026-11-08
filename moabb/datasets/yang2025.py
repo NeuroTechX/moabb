@@ -141,8 +141,8 @@ class Yang2025(BaseDataset):
         experiment=ExperimentMetadata(
             events=dict(_EVENTS_2C),
             paradigm="imagery",
-            n_classes=3,
-            class_labels=["left_hand", "right_hand", "feet"],
+            n_classes=2,
+            class_labels=["left_hand", "right_hand"],
             trial_duration=7.5,
             study_design=(
                 "Multi-day MI-BCI: 2C (left/right hand, 51 subj) and "
@@ -157,6 +157,11 @@ class Yang2025(BaseDataset):
             mode="offline",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Xiaorong Gao",
+            ethics_approval=[
+                "Tsinghua University Medical Ethics Committee (approval number: 20190002)"
+            ],
+            repository="Figshare",
             doi="10.1038/s41597-025-04826-y",
             investigators=[
                 "Banghua Yang",

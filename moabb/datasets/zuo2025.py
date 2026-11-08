@@ -321,6 +321,12 @@ class Zuo2025(BaseDataset):
             feedback_type="none",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Chaoqun Ye",
+            funding=["China Postdoctoral Science Foundation"],
+            ethics_approval=[
+                "Ethics Committee of Air Force Medical Center (approval number: 2024-06-PJ01)"
+            ],
+            repository="Figshare",
             doi="10.1038/s41597-025-05767-2",
             investigators=[
                 "Chongwen Zuo",

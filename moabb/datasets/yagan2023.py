@@ -139,10 +139,11 @@ class Yagan2023(BaseDataset):
         ),
         participants=ParticipantMetadata(n_subjects=18, health_status="healthy"),
         experiment=ExperimentMetadata(
+            trial_duration=1.2,
             paradigm="p300",
             events={"Target": 2, "NonTarget": 1},
             n_classes=2,
-            class_labels=["target", "non-target"],
+            class_labels=["Target", "NonTarget"],
             stimulus_type="row-column speller",
             stimulus_modalities=["visual"],
             primary_modality="visual",

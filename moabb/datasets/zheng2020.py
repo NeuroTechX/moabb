@@ -141,6 +141,10 @@ class Zheng2020(BaseDataset):
             mode="offline",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Yijun Wang",
+            funding=["National Key R&D Program of China (grant 2017YFA0205903)"],
+            ethics_approval=["Ethics Committee of Tsinghua University"],
+            repository="Figshare",
             doi=_DOI,
             investigators=[
                 "Li Zheng",

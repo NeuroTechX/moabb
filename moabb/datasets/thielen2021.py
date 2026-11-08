@@ -158,8 +158,8 @@ class Thielen2021(BaseDataset):
         experiment=ExperimentMetadata(
             events={"1.0": 101, "0.0": 100},
             paradigm="cvep",
-            n_classes=20,
-            class_labels=None,
+            n_classes=2,
+            class_labels=["1.0", "0.0"],
             trial_duration=31.5,
             study_design="Code-modulated visual evoked potentials BCI task where participants fixated on target cells in a calculator grid (offline) or keyboard layout (online) while all cells flashed with unique pseudo-random Gold code modulated bit-sequences",
             feedback_type="none",

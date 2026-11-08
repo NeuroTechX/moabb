@@ -209,6 +209,8 @@ class BCIComp2020WalkingERP(BaseDataset):
     nemar_id = "nm000184"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
+            line_freq=60.0,
+            hardware="BrainAmp (Brain Products GmbH, Germany)",
             sampling_rate=_SFREQ,
             channel_types={
                 "eeg": len(_SCALP_CHANNELS) + len(_EAR_CHANNELS),
@@ -253,6 +255,8 @@ class BCIComp2020WalkingERP(BaseDataset):
             mode="offline",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Seong-Whan Lee",
+            ethics_approval=["Korea University Institutional Review Board"],
             doi="10.3389/fnhum.2022.898300",
             investigators=[
                 "Ji-Hoon Jeong",
