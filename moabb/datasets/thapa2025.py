@@ -167,6 +167,13 @@ class Thapa2025(BaseDataset):
             primary_modality="auditory",
             synchronicity="self-paced",
             mode="offline",
+            stimulus_presentation={
+                "audio_start_cue": "0 s (audio 'start' cue)",
+                "self_paced_execution": "0-12 s (freewill reach & grasp of chosen cup Tgt1-Tgt4)",
+                "audio_end_cue": "12 s (audio 'end' cue)",
+                "break_return_cup": "12-19 s (7 s break; return cup and rest)",
+                "epoch_window": "[0, 4] s locked to accelerometer movement onset",
+            },
         ),
         documentation=DocumentationMetadata(
             doi="10.1038/s41597-025-06039-9",
