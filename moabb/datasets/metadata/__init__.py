@@ -320,7 +320,20 @@ def _merge_with_dataset(metadata: DatasetMetadata, dataset) -> DatasetMetadata:
             "cvep": "cvep",
             "rstate": "resting_state",
         }
-        detected = detected_by_paradigm.get(experiment.paradigm, experiment.paradigm)
+        exec_only = bool(
+            getattr(dataset, "executed", False) and not getattr(dataset, "imagined", True)
+        )
+        if (
+            experiment.paradigm == "imagery"
+            and (
+                paradigm_specific.detected_paradigm == "motor_execution"
+                or "execution" in (experiment.task_type or "").lower()
+                or exec_only
+            )
+        ):
+            detected = "motor_execution"
+        else:
+            detected = detected_by_paradigm.get(experiment.paradigm, experiment.paradigm)
         paradigm_specific = replace(paradigm_specific, detected_paradigm=detected)
 
     return replace(

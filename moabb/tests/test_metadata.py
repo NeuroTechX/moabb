@@ -608,27 +608,26 @@ class TestMetadataCatalog:
     def test_detected_paradigm_matches_experiment(self):
         """Test that detected_paradigm agrees with experiment.paradigm."""
         expected_by_paradigm = {
-            "imagery": "motor_imagery",
-            "cognitive": "cognitive",
-            "p300": "p300",
-            "ssvep": "ssvep",
-            "cvep": "cvep",
-            "rstate": "resting_state",
+            "imagery": {"motor_imagery", "motor_execution"},
+            "cognitive": {"cognitive"},
+            "p300": {"p300"},
+            "ssvep": {"ssvep"},
+            "cvep": {"cvep"},
+            "rstate": {"resting_state"},
         }
         for name, metadata in DATASET_METADATA_CATALOG.items():
             if (
                 metadata.paradigm_specific
                 and metadata.paradigm_specific.detected_paradigm
             ):
-                assert (
-                    metadata.paradigm_specific.detected_paradigm
-                    == expected_by_paradigm.get(
-                        metadata.experiment.paradigm, metadata.experiment.paradigm
-                    )
-                ), (
+                allowed = expected_by_paradigm.get(
+                    metadata.experiment.paradigm, {metadata.experiment.paradigm}
+                )
+                assert metadata.paradigm_specific.detected_paradigm in allowed, (
                     f"{name}: detected_paradigm="
                     f"'{metadata.paradigm_specific.detected_paradigm}' "
-                    f"!= experiment.paradigm='{metadata.experiment.paradigm}'"
+                    f"not in {allowed} for experiment.paradigm="
+                    f"'{metadata.experiment.paradigm}'"
                 )
 
     def test_catalog_supports_get(self):

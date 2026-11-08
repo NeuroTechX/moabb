@@ -476,12 +476,41 @@ def _extract_p300_fallback(metadata, dataset: BaseDataset) -> StimulusTimeline:
     )
 
 
-# -- Motor Imagery --
+# -- Motor Imagery / Execution --
+
+
+def _is_motor_execution(metadata, dataset: BaseDataset | None = None) -> bool:
+    """Return True when an imagery-paradigm dataset records motor execution."""
+    if (
+        dataset is not None
+        and getattr(dataset, "executed", False)
+        and not getattr(dataset, "imagined", True)
+    ):
+        return True
+    if metadata is None:
+        return False
+    exp = getattr(metadata, "experiment", None)
+    if exp is not None and "execution" in (getattr(exp, "task_type", None) or "").lower():
+        return True
+    ps = _get_paradigm_specific(metadata)
+    if (
+        ps is not None
+        and "execution" in (getattr(ps, "detected_paradigm", None) or "").lower()
+    ):
+        return True
+    tags = getattr(metadata, "tags", None)
+    tag_types = [t.lower() for t in (getattr(tags, "type", None) or [])]
+    return any("execution" in t for t in tag_types) and not any(
+        "imagery" in t for t in tag_types
+    )
 
 
 def _extract_mi_timeline(metadata, dataset: BaseDataset) -> StimulusTimeline | None:
     ps = _get_paradigm_specific(metadata)
     sp = _get_stim_pres(metadata)
+    is_execution = _is_motor_execution(metadata, dataset)
+    task_label = "Motor Execution" if is_execution else "Motor Imagery"
+    cue_task_label = "Cue + ME" if is_execution else "Cue + MI"
 
     cross_onset_s = 0.0
     beep_s: float | None = None
@@ -531,10 +560,11 @@ def _extract_mi_timeline(metadata, dataset: BaseDataset) -> StimulusTimeline | N
     annotations: list[TimelineAnnotation] = []
 
     # Fixation cross — use explicit None check so 0.0 is honoured as a valid onset
+    default_fix = min(2.0, round(trial_dur_s * 0.25, 2)) if trial_dur_s <= 2.0 else 2.0
     fix_end = (
         beep_s
         if beep_s is not None
-        else (cue_onset_s if cue_onset_s is not None else 2.0)
+        else (cue_onset_s if cue_onset_s is not None else default_fix)
     )
     phases.append(
         TimelinePhase(
@@ -545,7 +575,7 @@ def _extract_mi_timeline(metadata, dataset: BaseDataset) -> StimulusTimeline | N
     if cue_onset_s is not None and cue_dur_s is None:
         cue_dur_s = (feedback_onset_s - cue_onset_s) if feedback_onset_s else 1.25
 
-    # Motor imagery / feedback
+    # Motor imagery / execution / feedback
     if feedback_onset_s is not None:
         if cue_onset_s is not None and cue_dur_s is not None:
             phases.append(
@@ -554,7 +584,7 @@ def _extract_mi_timeline(metadata, dataset: BaseDataset) -> StimulusTimeline | N
         if feedback_dur_s is None:
             feedback_dur_s = trial_dur_s - feedback_onset_s
         phases.append(
-            TimelinePhase("Motor Imagery", feedback_onset_s, feedback_dur_s, "imagery")
+            TimelinePhase(task_label, feedback_onset_s, feedback_dur_s, "imagery")
         )
     elif cue_onset_s is not None and cue_dur_s is not None:
         img_onset = cue_onset_s + cue_dur_s
@@ -567,13 +597,13 @@ def _extract_mi_timeline(metadata, dataset: BaseDataset) -> StimulusTimeline | N
             and cue_onset_s + imagery_dur_s <= trial_dur_s
         ):
             phases.append(
-                TimelinePhase("Cue + MI", cue_onset_s, cue_dur_s, "cue", "arrow_left")
+                TimelinePhase(cue_task_label, cue_onset_s, cue_dur_s, "cue", "arrow_left")
             )
             remaining_img_dur = imagery_dur_s - cue_dur_s
             if remaining_img_dur > 0:
                 phases.append(
                     TimelinePhase(
-                        "Motor Imagery",
+                        task_label,
                         cue_onset_s + cue_dur_s,
                         remaining_img_dur,
                         "imagery",
@@ -583,12 +613,12 @@ def _extract_mi_timeline(metadata, dataset: BaseDataset) -> StimulusTimeline | N
             phases.append(
                 TimelinePhase("Cue", cue_onset_s, cue_dur_s, "cue", "arrow_left")
             )
-            phases.append(TimelinePhase("Motor Imagery", img_onset, img_dur, "imagery"))
+            phases.append(TimelinePhase(task_label, img_onset, img_dur, "imagery"))
     else:
         # Simple: just event interval
         img_onset = fix_end
         phases.append(
-            TimelinePhase("Motor Imagery", img_onset, trial_dur_s - img_onset, "imagery")
+            TimelinePhase(task_label, img_onset, trial_dur_s - img_onset, "imagery")
         )
 
     # Rest at end if there's remaining time
