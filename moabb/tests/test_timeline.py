@@ -77,6 +77,17 @@ class TestExtractStimulusTimeline(unittest.TestCase):
             ("Motor Imagery", 3.25, 2.75),
         ]
 
+    def test_thapa2025_motor_execution_stimulus_protocol(self):
+        from moabb.analysis.timeline import extract_stimulus_timeline
+        from moabb.datasets import Thapa2025
+
+        result = extract_stimulus_timeline(Thapa2025())
+
+        assert result.total_duration_s == 12.0
+        labels = [p.label for p in result.phases]
+        assert "Motor Execution" in labels
+        assert "Motor Imagery" not in labels
+
 
 class TestPlotClassBalance(unittest.TestCase):
     """Tests for plot_class_balance."""

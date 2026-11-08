@@ -100,6 +100,7 @@ class Wu2020(BaseDataset):
         experiment=ExperimentMetadata(
             events=dict(_EVENTS),
             paradigm="imagery",
+            task_type="motor execution",
             n_classes=2,
             class_labels=["left_hand", "right_hand"],
             trial_duration=4.0,
@@ -132,9 +133,13 @@ class Wu2020(BaseDataset):
         ),
         sessions_per_subject=1,
         runs_per_session=1,
-        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Research"]),
+        tags=Tags(
+            pathology=["Healthy"],
+            modality=["Motor"],
+            type=["Motor Execution", "Research"],
+        ),
         paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="imagery", imagery_tasks=["left_hand", "right_hand"]
+            detected_paradigm="motor_execution", imagery_tasks=["left_hand", "right_hand"]
         ),
         data_structure=DataStructureMetadata(
             n_trials=1114,

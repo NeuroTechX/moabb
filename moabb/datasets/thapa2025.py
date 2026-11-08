@@ -198,9 +198,13 @@ class Thapa2025(BaseDataset):
         # 3 sessions: 5 subjects}, summing to 49 sessions (see docstring).
         sessions_per_subject=1,
         runs_per_session=5,
-        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Research"]),
+        tags=Tags(
+            pathology=["Healthy"],
+            modality=["Motor"],
+            type=["Motor Execution", "Research"],
+        ),
         paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="imagery", n_targets=4
+            detected_paradigm="motor_execution", n_targets=4
         ),
         data_structure=DataStructureMetadata(
             n_trials=6808, trials_context="6808 trials across 23 subjects and 49 sessions"
