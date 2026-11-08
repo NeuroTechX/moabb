@@ -10,10 +10,7 @@ import moabb
 
 def _run_python(code: str) -> str:
     res = subprocess.run(
-        [sys.executable, "-c", code],
-        capture_output=True,
-        text=True,
-        check=True,
+        [sys.executable, "-c", code], capture_output=True, text=True, check=True
     )
     return res.stdout.strip()
 

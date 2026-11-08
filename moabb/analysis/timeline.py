@@ -593,10 +593,7 @@ def _extract_mi_timeline(metadata, dataset: BaseDataset) -> StimulusTimeline | N
         return None
 
     # 1. Explicit stimulus_presentation timing (e.g. BNCI2014_001)
-    if any(
-        x is not None
-        for x in (cross_onset_s, beep_s, cue_onset_s, feedback_onset_s)
-    ):
+    if any(x is not None for x in (cross_onset_s, beep_s, cue_onset_s, feedback_onset_s)):
         phases: list[TimelinePhase] = []
         c_onset = cross_onset_s if cross_onset_s is not None else 0.0
         default_fix = (
@@ -608,9 +605,7 @@ def _extract_mi_timeline(metadata, dataset: BaseDataset) -> StimulusTimeline | N
             else (cue_onset_s if cue_onset_s is not None else default_fix)
         )
         phases.append(
-            TimelinePhase(
-                "Fixation +", c_onset, fix_end - c_onset, "fixation", "cross"
-            )
+            TimelinePhase("Fixation +", c_onset, fix_end - c_onset, "fixation", "cross")
         )
         if cue_onset_s is not None and cue_dur_s is None:
             cue_dur_s = (feedback_onset_s - cue_onset_s) if feedback_onset_s else 1.25
@@ -716,9 +711,7 @@ def _extract_mi_timeline(metadata, dataset: BaseDataset) -> StimulusTimeline | N
 
     if synch == "asynchronous":
         int_dur = (
-            float(interval[1] - interval[0])
-            if interval is not None
-            else trial_dur_s
+            float(interval[1] - interval[0]) if interval is not None else trial_dur_s
         )
         if trial_dur_s > int_dur + 0.1:
             phases = [
@@ -753,9 +746,8 @@ def _extract_mi_timeline(metadata, dataset: BaseDataset) -> StimulusTimeline | N
         )
 
     # 3. Auditory-only protocols (NEVER show visual Fixation + cross)
-    is_auditory_only = (
-        bool(modalities)
-        and all(m in ("auditory", "audio") for m in modalities)
+    is_auditory_only = bool(modalities) and all(
+        m in ("auditory", "audio") for m in modalities
     )
     if is_auditory_only:
         phases = []
@@ -820,10 +812,7 @@ def _extract_mi_timeline(metadata, dataset: BaseDataset) -> StimulusTimeline | N
                 )
                 phases.append(
                     TimelinePhase(
-                        task_label,
-                        int_start + cue_dur_s,
-                        int_dur - cue_dur_s,
-                        "imagery",
+                        task_label, int_start + cue_dur_s, int_dur - cue_dur_s, "imagery"
                     )
                 )
             elif cue_dur_s is not None and abs(cue_dur_s - int_dur) < 0.1:
@@ -850,34 +839,26 @@ def _extract_mi_timeline(metadata, dataset: BaseDataset) -> StimulusTimeline | N
             rem_after_cue_img = trial_dur_s - (cue_dur_s + eff_img_dur)
             if abs(cue_dur_s - eff_img_dur) < 0.1:
                 # Cue stays visible throughout the imagery window (e.g. GrosseWentrup2009, Zhou2016, NETBCI2026)
-                phases.append(
-                    TimelinePhase(cue_task_label, 0.0, eff_img_dur, "imagery")
-                )
-            elif has_fixation and rem_after_cue_img >= 2.0 and int_dur <= eff_img_dur + 0.1:
+                phases.append(TimelinePhase(cue_task_label, 0.0, eff_img_dur, "imagery"))
+            elif (
+                has_fixation and rem_after_cue_img >= 2.0 and int_dur <= eff_img_dur + 0.1
+            ):
                 fix_d = 2.0
                 phases.append(
                     TimelinePhase("Fixation +", 0.0, fix_d, "fixation", "cross")
                 )
+                phases.append(TimelinePhase("Cue", fix_d, cue_dur_s, "cue", "arrow_left"))
                 phases.append(
-                    TimelinePhase("Cue", fix_d, cue_dur_s, "cue", "arrow_left")
-                )
-                phases.append(
-                    TimelinePhase(
-                        task_label, fix_d + cue_dur_s, eff_img_dur, "imagery"
-                    )
+                    TimelinePhase(task_label, fix_d + cue_dur_s, eff_img_dur, "imagery")
                 )
             elif cue_dur_s + eff_img_dur <= trial_dur_s + 0.05:
-                phases.append(
-                    TimelinePhase("Cue", 0.0, cue_dur_s, "cue", "arrow_left")
-                )
+                phases.append(TimelinePhase("Cue", 0.0, cue_dur_s, "cue", "arrow_left"))
                 phases.append(
                     TimelinePhase(task_label, cue_dur_s, eff_img_dur, "imagery")
                 )
             else:
                 phases.append(
-                    TimelinePhase(
-                        cue_task_label, 0.0, cue_dur_s, "cue", "arrow_left"
-                    )
+                    TimelinePhase(cue_task_label, 0.0, cue_dur_s, "cue", "arrow_left")
                 )
                 phases.append(
                     TimelinePhase(
@@ -893,9 +874,7 @@ def _extract_mi_timeline(metadata, dataset: BaseDataset) -> StimulusTimeline | N
                 phases.append(
                     TimelinePhase("Fixation +", 0.0, fix_d, "fixation", "cross")
                 )
-                phases.append(
-                    TimelinePhase(task_label, fix_d, eff_img_dur, "imagery")
-                )
+                phases.append(TimelinePhase(task_label, fix_d, eff_img_dur, "imagery"))
             else:
                 phases.append(TimelinePhase(task_label, 0.0, eff_img_dur, "imagery"))
 
@@ -1144,11 +1123,11 @@ def _extract_cognitive_timeline(
             TimelinePhase("Fade-Out", fade_in + vis, fade_out, "fixation"),
             TimelinePhase("Handwriting", fade_in + vis + fade_out, write_d, "imagery"),
         ]
-        return _finalize_mi_timeline(
-            dataset, phases, total, paradigm="cognitive"
-        )
+        return _finalize_mi_timeline(dataset, phases, total, paradigm="cognitive")
 
-    task_type = (getattr(exp, "task_type", None) or "").replace("_", " ").title() if exp else ""
+    task_type = (
+        (getattr(exp, "task_type", None) or "").replace("_", " ").title() if exp else ""
+    )
     sdesign = (getattr(exp, "study_design", None) or "").lower() if exp else ""
     if not task_type:
         task_type = "Mental Arithmetic" if "arithmetic" in sdesign else "Cognitive Task"
@@ -1333,9 +1312,7 @@ def _render_scaled_phases(
         tick_positions.append((x, _format_time(p.onset_s)))
         x += w
     end_time = (
-        phases[-1].onset_s + phases[-1].duration_s
-        if phases[0].onset_s < 0
-        else total
+        phases[-1].onset_s + phases[-1].duration_s if phases[0].onset_s < 0 else total
     )
     tick_positions.append((x, _format_time(end_time)))
     total_x = x
