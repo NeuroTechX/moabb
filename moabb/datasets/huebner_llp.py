@@ -264,7 +264,7 @@ class Huebner2017(_BaseVisualMatrixSpellerDataset):
             events={"Target": 10002, "NonTarget": 10001},
             paradigm="p300",
             n_classes=2,
-            class_labels=["target", "non-target"],
+            class_labels=["Target", "NonTarget"],
             trial_duration=25.0,
             study_design="Visual ERP speller copy-spelling task using a 6x7 grid with learning from label proportions (LLP) classifier. Two sequences with different target/non-target ratios: sequence 1 (3 targets/8 stimuli), sequence 2 (2 targets/18 stimuli). Unsupervised calibrationless approach.",
             feedback_type="visual",
@@ -519,7 +519,7 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
         experiment=ExperimentMetadata(
             paradigm="p300",
             n_classes=2,
-            class_labels=["target", "non-target"],
+            class_labels=["Target", "NonTarget"],
             trial_duration=17.0,
             study_design="Visual ERP copy-spelling task using a modified 6x6 grid extended with 10 # symbols as visual blanks, using flexible highlighting scheme with two interleaved sequences to enable unsupervised learning methods (EM, LLP, MIX)",
             feedback_type="visual",
@@ -540,6 +540,7 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
             },
         ),
         documentation=DocumentationMetadata(
+            senior_author="Michael Tangermann",
             doi="10.1109/MCI.2018.2807039",
             repository="Zenodo",
             data_url="https://zenodo.org/record/5831879",

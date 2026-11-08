@@ -111,12 +111,14 @@ class Jia2019(BaseDataset):
             line_freq=50.0,
         ),
         participants=ParticipantMetadata(
+            gender={"male": 39, "female": 11},
             n_subjects=15,
             health_status="stroke",
             clinical_population="stroke",
             species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
+            trial_duration=6.8,
             events=dict(_EVENTS),
             paradigm="imagery",
             n_classes=2,
@@ -131,6 +133,7 @@ class Jia2019(BaseDataset):
             mode="offline",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Tianyu Jia",
             doi="10.6084/m9.figshare.7636301",
             description=(
                 "EEG from 15 stroke patients performing left- vs right-hand motor "

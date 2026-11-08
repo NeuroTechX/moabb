@@ -175,6 +175,10 @@ class Thapa2025(BaseDataset):
             },
         ),
         documentation=DocumentationMetadata(
+            funding=["College of Engineering Research Mini Grant Program"],
+            ethics_approval=[
+                "University of Kentucky Institutional Review Board (IRB protocol #57031)"
+            ],
             doi="10.1038/s41597-025-06039-9",
             description=(
                 "A large EEG database of freewill reaching and grasping tasks "

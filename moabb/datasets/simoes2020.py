@@ -128,6 +128,9 @@ class Simoes2020(BaseDataset):
             mode="online",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Miguel Castelo-Branco",
+            ethics_approval=["CEIC - Comissão de Ética para a Investigação Clínica"],
+            repository="Zenodo",
             doi=_DOI,
             investigators=[
                 "Marco Simoes",

@@ -141,6 +141,7 @@ class MartinezPeon2024(BaseDataset):
             events={"level_10": 1, "level_40": 2, "level_70": 3},
         ),
         documentation=DocumentationMetadata(
+            senior_author="Dulce Martinez-Peon",
             doi="10.6084/m9.figshare.25773342.v1",
             description=(
                 "EEG kinesthetic motor imagery at three graded hand-grip force "

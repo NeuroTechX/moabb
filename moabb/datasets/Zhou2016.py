@@ -119,7 +119,7 @@ class Zhou2016(OpenNeuroMirrorMixin, BaseBIDSDataset):
             events={"left_hand": 1, "right_hand": 2, "feet": 3},
             paradigm="imagery",
             n_classes=3,
-            class_labels=["right_hand", "left_hand", "feet"],
+            class_labels=["left_hand", "right_hand", "feet"],
             trial_duration=10.0,
             study_design="Three-class motor imagery (left hand, right hand, foot movement imagination) according to cue direction",
             feedback_type="none",

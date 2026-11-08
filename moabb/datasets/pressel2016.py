@@ -182,6 +182,7 @@ class Pressel2016(BaseDataset):
             },
         ),
         documentation=DocumentationMetadata(
+            senior_author="H. Leonardo Rufiner",
             doi="10.1117/12.2255697",
             investigators=[
                 "German A. Pressel Coretto",

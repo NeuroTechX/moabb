@@ -161,7 +161,7 @@ class RomaniBF2025ERP(BaseDataset):
             events={"Target": 1, "NonTarget": 2},
             paradigm="p300",
             n_classes=2,
-            class_labels=["target", "non-target"],
+            class_labels=["Target", "NonTarget"],
             trial_duration=0.9,
             study_design="Within-subject study with two main sessions separated by visual texture swap (counterbalanced). Each session: calibration, tutorial, practice run with Complex Task (5 targets) and Speller Task (10 targets). Optional free-play third session for 16 participants.",
             feedback_type="visual",

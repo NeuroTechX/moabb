@@ -88,6 +88,7 @@ class Brodu2012(BaseDataset):
         ),
         participants=ParticipantMetadata(n_subjects=1, species="homo sapiens"),
         experiment=ExperimentMetadata(
+            trial_duration=4.0,
             paradigm="imagery",
             n_classes=2,
             class_labels=["left_hand", "right_hand"],
@@ -98,6 +99,7 @@ class Brodu2012(BaseDataset):
             "one subject over a two-week period.",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Anatole Lecuyer",
             doi="10.1016/j.neucom.2011.10.010",
             description="OpenViBE motor imagery dataset (left vs right hand, "
             "Graz protocol, 11 channels, 512 Hz; one subject, 14 records).",

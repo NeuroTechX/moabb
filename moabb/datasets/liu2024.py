@@ -199,6 +199,7 @@ class Liu2024(BaseDataset):
             electrode_material="Ag/AgCl semi-dry electrodes based on highly absorbable porous sponges dampened with 3% NaCl solution",
         ),
         participants=ParticipantMetadata(
+            handedness={"right": 48, "left": 2},
             n_subjects=47,  # 50 released; 5, 15, 49 excluded by default (gh-1248)
             health_status="acute stroke patients",
             clinical_population="acute stroke patients (1-30 days post-stroke)",

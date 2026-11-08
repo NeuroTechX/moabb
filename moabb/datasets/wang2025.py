@@ -132,6 +132,8 @@ class Wang2025(BaseDataset):
             events=dict(EVENT_ID),
         ),
         documentation=DocumentationMetadata(
+            senior_author="Yueming Wang",
+            ethics_approval=["Ethics Committee of Zhejiang University"],
             doi="10.1109/TNSRE.2025.3591254",
             description="Four-class motor imagery EEG from 15 healthy subjects "
             "(left hand, right hand, tongue, both feet) recorded with 62 channels "

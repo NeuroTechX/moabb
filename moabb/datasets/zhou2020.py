@@ -259,12 +259,21 @@ def _make_metadata(cohort=None):
                 "Yan Han",
                 "Kedi Xu",
             ],
+            senior_author="Kedi Xu",
             institution="Zhejiang University",
             country="CN",
             repository="Zenodo",
             data_url=f"https://zenodo.org/records/{_ZENODO_RECORD}",
             publication_year=2021,
             license="CC-BY-4.0",
+            ethics_approval=[
+                "Human Research Ethics Committee of The Second Affiliated Hospital of Zhejiang University School of Medicine"
+            ],
+            funding=[
+                "National Key R&D Program of China (2018YFA0701400)",
+                "National Natural Science Foundation of China (31627802, 81873911)",
+                "Zhejiang Lab (2019KE0AD01)",
+            ],
         ),
         sessions_per_subject=7,
         runs_per_session=6,

@@ -101,6 +101,7 @@ class Chen2017SingleFlicker(BaseDataset):
             age_max=32,
         ),
         experiment=ExperimentMetadata(
+            trial_duration=3.5,
             paradigm="ssvep",
             events={"north": 1, "east": 2, "west": 3, "south": 4},
             n_classes=4,

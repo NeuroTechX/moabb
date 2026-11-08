@@ -271,6 +271,11 @@ class NETBCI2026(BaseBIDSDataset):
             mode="online",
         ),
         documentation=DocumentationMetadata(
+            funding=[
+                "Investissements d'avenir ANR-10-IAIHU-06",
+                "ANR-NIH CRCNS ANR-15-NEUC-0006-02",
+                "NICHD 1R01HD086888-01",
+            ],
             doi="10.1038/s41597-026-08237-5",
             investigators=[
                 "Marie-Constance Corsi",

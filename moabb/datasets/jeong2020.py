@@ -259,6 +259,8 @@ class Jeong2020(BaseDataset):
             },
         ),
         documentation=DocumentationMetadata(
+            senior_author="Seong-Whan Lee",
+            repository="Zenodo",
             doi="10.1093/gigascience/giaa098",
             investigators=[
                 "Ji-Hoon Jeong",

@@ -226,7 +226,7 @@ class Schirrmeister2017(BaseDataset):
         experiment=ExperimentMetadata(
             paradigm="imagery",
             n_classes=4,
-            class_labels=["left_hand", "right_hand", "feet", "rest"],
+            class_labels=["right_hand", "left_hand", "rest", "feet"],
             study_design="Executed movements including left hand (sequential finger-tapping), right hand (sequential finger-tapping), feet (repetitive toe clenching), and rest conditions",
             stimulus_type="visual",
             stimulus_modalities=["visual"],

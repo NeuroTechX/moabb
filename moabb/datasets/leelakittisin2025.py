@@ -115,7 +115,7 @@ class Leelakittisin2025(BaseDataset):
             channel_types={"eeg": 60, "eog": 2, "stim": 1},
             montage="10-05",
             reference=None,
-            ground=None,
+            ground="AFz",
             sensors=EEG_CHANNELS,
             line_freq=50.0,
             auxiliary_channels=AuxiliaryChannelsMetadata(
@@ -152,6 +152,8 @@ class Leelakittisin2025(BaseDataset):
             mode="offline",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Theerawit Wilaiprasitporn",
+            data_url="https://doi.org/10.5281/zenodo.20348444",
             doi="10.5281/zenodo.20348444",
             description=(
                 "First public EEG dataset explicitly targeting sit-to-stand and "

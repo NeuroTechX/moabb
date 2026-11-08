@@ -190,6 +190,7 @@ class IMUMIA2026(BaseDataset):
             "the task's body part following the arrow direction.",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Chao Chen",
             doi="10.5281/zenodo.20421767",
             description="Human motor-imagery EEG covering diverse cognitive states: "
             "five body-part tasks (hand, foot, thumb, index finger, pinch) under "

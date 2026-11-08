@@ -120,6 +120,8 @@ class NeuroTUMBCI2025(BaseDataset):
             "for 3 s following a 1 s directional cue.",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Enrico A. Fazzi",
+            associated_paper_doi="10.48550/arXiv.2511.23384",
             doi="10.5281/zenodo.18087806",
             description="Mobile EEG motor imagery dataset from two pilots recorded "
             "during the development of the neuroTUM BCI system for the 2024 "

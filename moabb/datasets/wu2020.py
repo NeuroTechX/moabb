@@ -116,6 +116,8 @@ class Wu2020(BaseDataset):
             mode="offline",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Rosa H M Chan",
+            ethics_approval=["Ethics Committee at the City University of Hong Kong"],
             doi="10.1088/1741-2552/abc1b6",
             investigators=[
                 "Xiaoli Wu",

@@ -90,6 +90,8 @@ class Lioi2020_XP1(OpenNeuroMirrorMixin, BaseDataset):
             auxiliary_channels=AuxiliaryChannelsMetadata(other_physiological=["ecg"]),
         ),
         participants=ParticipantMetadata(
+            age_std=9.9,
+            age_mean=33.7,
             n_subjects=10,
             health_status="healthy",
             gender={"male": 8, "female": 2},
@@ -119,6 +121,9 @@ class Lioi2020_XP1(OpenNeuroMirrorMixin, BaseDataset):
             mode="online",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Christian Barillot",
+            ethics_approval=["Comité de Protection des Personnes Ouest V"],
+            repository="OpenNeuro",
             doi="10.1038/s41597-020-0498-3",
             related_paper_dois=["10.3389/fnhum.2017.00193", "10.1101/862375"],
             investigators=list(_AUTHORS),

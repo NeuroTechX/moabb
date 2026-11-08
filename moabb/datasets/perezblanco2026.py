@@ -170,6 +170,10 @@ class PerezBlanco2026(BaseDataset):
             mode="offline",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Hector Lizarraga Torreblanca",
+            ethics_approval=[
+                "Institutional Research Ethics Committee of Tecnologico de Monterrey (PR2024-05v1)"
+            ],
             doi="10.1038/s41597-026-07287-z",
             investigators=[
                 "Jorge German Perez Blanco",

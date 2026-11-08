@@ -449,6 +449,7 @@ class Lee2019_MI(Lee2019):
             },
         ),
         documentation=DocumentationMetadata(
+            data_url="https://doi.org/10.5524/100542",
             doi="10.1093/gigascience/giz002",
             description="EEG dataset and OpenBMI toolbox for three BCI paradigms: an investigation into BCI illiteracy. Includes MI, ERP, and SSVEP paradigms with a large number of subjects over multiple sessions.",
             investigators=[
@@ -706,8 +707,8 @@ class Lee2019_ERP(Lee2019):
             events={"Target": 1, "NonTarget": 2},
             paradigm="p300",
             n_classes=2,
-            class_labels=["target", "non_target"],
-            trial_duration=None,
+            class_labels=["Target", "NonTarget"],
+            trial_duration=1.0,
             study_design="36-symbol ERP row-column speller with random-set presentation and face stimuli, offline training and online test phases",
             feedback_type="visual",
             stimulus_type="rc_speller",
@@ -719,6 +720,7 @@ class Lee2019_ERP(Lee2019):
             task_type="copy_spelling",
         ),
         documentation=DocumentationMetadata(
+            data_url="https://doi.org/10.5524/100542",
             doi="10.1093/gigascience/giz002",
             description="EEG dataset and OpenBMI toolbox for three BCI paradigms: an investigation into BCI illiteracy",
             investigators=[
@@ -952,7 +954,7 @@ class Lee2019_SSVEP(Lee2019):
             events={"12.0": 1, "8.57": 2, "6.67": 3, "5.45": 4},
             paradigm="ssvep",
             n_classes=4,
-            class_labels=["down", "right", "left", "up"],
+            class_labels=["12.0", "8.57", "6.67", "5.45"],
             trial_duration=4.0,
             study_design="Four-target SSVEP paradigm with frequencies 5.45, 6.67, 8.57, and 12 Hz presented in four screen positions (down, right, left, up). Training phase (offline) and test phase (online with visual feedback). 25 trials per target frequency per phase.",
             feedback_type="visual",
@@ -966,6 +968,7 @@ class Lee2019_SSVEP(Lee2019):
             task_type="selective_attention",
         ),
         documentation=DocumentationMetadata(
+            data_url="https://doi.org/10.5524/100542",
             doi="10.1093/gigascience/giz002",
             description="EEG dataset and OpenBMI toolbox for three BCI paradigms: an investigation into BCI illiteracy",
             investigators=[

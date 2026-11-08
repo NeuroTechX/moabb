@@ -207,6 +207,11 @@ class AguileraRodriguez2025(BaseDataset):
             },
         ),
         documentation=DocumentationMetadata(
+            senior_author="Luz María Alonso-Valerdi",
+            ethics_approval=[
+                "Ethics Committee of Medical School at Tecnologico de Monterrey (CONBIOETICA-19-CEI-011-20161017)"
+            ],
+            data_url="https://data.mendeley.com/datasets/57g8z63tmy",
             doi=_DOI,
             investigators=[
                 "Edgar Aguilera-Rodriguez",

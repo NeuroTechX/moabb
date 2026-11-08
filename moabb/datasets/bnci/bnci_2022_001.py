@@ -528,15 +528,10 @@ class BNCI2022_001(BNCIBaseDataset):
             handedness={"right": 12, "left": 1},
         ),
         experiment=ExperimentMetadata(
-            events={
-                "trajectory_start": 1,
-                "waypoint_miss": 16,
-                "waypoint_hit": 48,
-                "trajectory_end": 255,
-            },
+            events={"trajectory_start": 1},
             paradigm="imagery",
-            n_classes=3,
-            class_labels=["right_hand", "left_hand", "feet"],
+            n_classes=1,
+            class_labels=["trajectory_start"],
             trial_duration=90.0,
             study_design="Subjects piloted a simulated drone through circular waypoints using a flight joystick, controlling roll and pitch while the drone maintained constant velocity. In offline session: 32 trajectories each with constant difficulty level (v-shape design from level 16 to 1 and back to 16), each trajectory had 32 waypoints and lasted ~90 seconds. In online sessions: each condition consisted of 12 trajectories with 33 waypoints and 8 decision points per trajectory.",
             feedback_type="visual",
@@ -556,6 +551,7 @@ class BNCI2022_001(BNCIBaseDataset):
             },
         ),
         documentation=DocumentationMetadata(
+            data_url="http://bnci-horizon-2020.eu/database/data-sets",
             doi="10.1109/TAFFC.2021.3059688",
             investigators=["Ping-Keng Jao", "Ricardo Chavarriaga", "Jose del R. Millan"],
             institution="Ecole Polytechnique Federale de Lausanne",

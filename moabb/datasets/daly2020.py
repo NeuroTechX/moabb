@@ -83,7 +83,14 @@ class Daly2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
             line_freq=50.0,
         ),
         participants=ParticipantMetadata(
-            n_subjects=18, health_status="healthy", species="human"
+            gender={"male": 14, "female": 4},
+            age_max=28,
+            age_min=18,
+            age_std=2.7,
+            age_mean=21.7,
+            n_subjects=18,
+            health_status="healthy",
+            species="human",
         ),
         experiment=ExperimentMetadata(
             events=dict(_EVENTS),
@@ -106,6 +113,8 @@ class Daly2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
             mode="online",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Slawomir J. Nasuto",
+            repository="OpenNeuro",
             doi="10.18112/openneuro.ds002720.v1.0.1",
             investigators=[
                 "Ian Daly",

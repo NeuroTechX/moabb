@@ -184,10 +184,11 @@ class PhysionetMI(BaseDataset):
             n_subjects=109, health_status="healthy", species="human"
         ),
         experiment=ExperimentMetadata(
+            trial_duration=3.0,
             events={"left_hand": 2, "right_hand": 3, "feet": 5, "hands": 4, "rest": 1},
             paradigm="imagery",
-            n_classes=4,
-            class_labels=["left_hand", "right_hand", "feet", "rest"],
+            n_classes=5,
+            class_labels=["left_hand", "right_hand", "feet", "hands", "rest"],
             study_design="14 runs per subject: two one-minute baseline recordings (eyes open, eyes closed) followed by three repetitions of four two-minute task conditions (executed/imagined unilateral fist movements to left/right targets; executed/imagined bilateral fists/feet movements to top/bottom targets)",
             stimulus_type="cue-based",
             stimulus_modalities=["visual"],

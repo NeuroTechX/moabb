@@ -119,6 +119,12 @@ class Iwama2023(OpenNeuroMirrorMixin, BaseBIDSDataset):
             mode="online",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Junichi Ushiba",
+            funding=["JST Moonshot R&D (grant number JPMJMS2012)"],
+            ethics_approval=[
+                "Ethics Committee of the Faculty of Science and Technology, Keio University (IRB: 2020-38, 2021-74)"
+            ],
+            repository="OpenNeuro",
             doi="10.1038/s41597-023-02260-6",
             investigators=[
                 "Seitaro Iwama",

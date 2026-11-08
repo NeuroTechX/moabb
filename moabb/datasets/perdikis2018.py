@@ -131,6 +131,9 @@ class Perdikis2018(BaseDataset):
             instructions="Perform the cued kinesthetic motor imagery (both-hands, both-feet, or rest) to control the BrainRunners avatar.",
         ),
         documentation=DocumentationMetadata(
+            ethics_approval=[
+                "Cantonal Committee of Vaud for ethics in human research (CER-VD protocol PB_2017-00295)"
+            ],
             doi="10.5281/zenodo.841764",
             description="EEG recordings and application logs from the two tetraplegic pilots of team Brain Tweakers (CNBI, EPFL) during longitudinal motor-imagery BCI training and the Cybathlon 2016 BCI race; this loader exposes the cue-based offline calibration runs (both-hands / both-feet / rest).",
             investigators=[

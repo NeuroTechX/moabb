@@ -287,8 +287,8 @@ class Kojima2024B(BaseDataset):
                 "ASME-2stream_D3": 1,
                 "ASME-2stream_D4": 1,
             },
-            n_classes=4,
-            class_labels=["D1", "D2", "D3", "D4"],
+            n_classes=2,
+            class_labels=["Target", "NonTarget"],
             trials_per_class=None,
             trial_duration=90.0,
             tasks=["ASME-4stream", "ASME-2stream"],
@@ -324,9 +324,9 @@ class Kojima2024B(BaseDataset):
             investigators=["Simon Kojima", "Shin'ichiro Kanoh"],
             institution="Shibaura Institute of Technology",
             country="JP",
-            repository=None,
+            repository="Harvard dataverse",
             data_url="https://doi.org/10.7910/DVN/1UJDV6",
-            license="CC BY",
+            license="CC0-1.0",
             publication_year=2024,
             senior_author="Shin'ichiro Kanoh",
             contact_info=["simon.kojima@ieee.org"],
@@ -470,7 +470,6 @@ class Kojima2024B(BaseDataset):
         return f"{run}{task}"
 
     def _get_files_list(self, subject, manifest):
-
         subject_id = self.convert_subject_to_subject_id(subject)
 
         manifest_files = manifest["datasetVersion"]["files"]

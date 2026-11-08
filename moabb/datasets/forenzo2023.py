@@ -146,6 +146,9 @@ class Forenzo2023(BaseDataset):
             mode="online",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Bin He",
+            ethics_approval=["Institutional Review Board of Carnegie Mellon University"],
+            repository="KiltHub (Figshare)",
             doi="10.1109/TBME.2023.3298957",
             investigators=[
                 "Dylan Forenzo",

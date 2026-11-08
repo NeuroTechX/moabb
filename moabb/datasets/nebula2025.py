@@ -163,6 +163,7 @@ class NeBULA2025(BaseDataset):
             species="human",
         ),
         experiment=ExperimentMetadata(
+            trial_duration=2.0,
             events=dict(_EVENTS),
             paradigm="imagery",
             task_type="motor execution",
@@ -186,6 +187,8 @@ class NeBULA2025(BaseDataset):
             ),
         ),
         documentation=DocumentationMetadata(
+            senior_author="Marianna Semprini",
+            ethics_approval=["CER Liguria: 784/2022 - DB id 12044"],
             doi="10.1038/s41597-025-05042-4",
             description=(
                 "NeBULA: high-density EEG and surface EMG recorded during a "
@@ -214,10 +217,7 @@ class NeBULA2025(BaseDataset):
             repository="Figshare",
             data_url="https://doi.org/10.1038/s41597-025-05042-4",
             publication_year=2025,
-            funding=[
-                "Istituto Nazionale Assicurazione Infortuni sul Lavoro (INAIL), "
-                "project grant PR19-RR-P2"
-            ],
+            funding=["INAIL Project grant number PR19-RR-P2"],
             license="CC-BY-4.0",
         ),
         sessions_per_subject=1,

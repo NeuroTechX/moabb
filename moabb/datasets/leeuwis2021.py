@@ -183,6 +183,10 @@ class Leeuwis2021(BaseDataset):
             instructions="Imagine moving the left or right hand following the cue.",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Maryam Alimardani",
+            ethics_approval=[
+                "Research Ethics Committee of Tilburg School of Humanities and Digital Sciences (REDC #20201003)"
+            ],
             doi="10.34894/Z7ZVOD",
             related_paper_dois=["10.3389/fnhum.2021.634748"],
             description="Single-session left/right-hand motor-imagery EEG from 55 "

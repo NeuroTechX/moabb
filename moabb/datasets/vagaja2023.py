@@ -135,6 +135,7 @@ class Vagaja2023(BaseDataset):
             auxiliary_channels=AuxiliaryChannelsMetadata(has_emg=True, emg_channels=2),
         ),
         participants=ParticipantMetadata(
+            age_mean=23.9,
             n_subjects=26,
             health_status="healthy",
             gender={"male": 10, "female": 16},
@@ -166,6 +167,7 @@ class Vagaja2023(BaseDataset):
             ),
         ),
         documentation=DocumentationMetadata(
+            senior_author="Athanasios Vourvopoulos",
             doi="10.5281/zenodo.8086086",
             description=(
                 "Motor-imagery EEG plus bipolar EMG, skin temperature and "

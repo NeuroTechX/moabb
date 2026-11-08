@@ -207,7 +207,7 @@ class Cho2017(BaseDataset):
         experiment=ExperimentMetadata(
             paradigm="imagery",
             n_classes=2,
-            class_labels=["right_hand", "left_hand"],
+            class_labels=["left_hand", "right_hand"],
             trial_duration=3.0,
             study_design="motor imagery",
             stimulus_type="visual instruction",

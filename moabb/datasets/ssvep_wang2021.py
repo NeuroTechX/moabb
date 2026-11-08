@@ -90,6 +90,7 @@ class Wang2021Combined(BaseDataset):
             n_subjects=8, health_status="healthy", handedness="right"
         ),
         experiment=ExperimentMetadata(
+            class_labels=["14.17", "12.14", "9.44", "7.73"],
             paradigm="ssvep",
             events={"14.17": 1, "12.14": 2, "9.44": 3, "7.73": 4},
             n_classes=4,
@@ -128,7 +129,7 @@ class Wang2021Combined(BaseDataset):
             license="CC BY 4.0",
             publication_year=2021,
             contact_info=["zjzhang@zju.edu.cn"],
-            funding=["National Natural Science Foundation of China (31371039)"],
+            funding=["National Natural Science Foundation of China Grant 31371039"],
             ethics_approval=[
                 "Institutional review board, Department of Psychology and Behavioral Sciences, Zhejiang University"
             ],

@@ -120,8 +120,8 @@ class Peterson2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
             hardware="OpenBCI Cyton + Daisy (16-channel) with Electro-Cap System II",
             cap_manufacturer="Electro-Cap International",
             cap_model="Electro-Cap System II",
-            reference="left ear lobe",
-            ground="right ear lobe",
+            reference="left earlobe",
+            ground="right earlobe",
             filters=(
                 "paper: 0.5-45 Hz 3rd-order Butterworth band-pass applied in "
                 "OpenViBE during acquisition; BIDS sidecars: n/a"
@@ -131,12 +131,17 @@ class Peterson2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
             line_freq=50.0,
         ),
         participants=ParticipantMetadata(
+            handedness={"right": 12},
+            gender={"male": 8, "female": 4},
+            age_std=3.7,
+            age_mean=25.9,
             n_subjects=10,
             health_status="healthy",
             bci_experience="naive",
             species="human",
         ),
         experiment=ExperimentMetadata(
+            trial_duration=4.0,
             events=dict(_EVENTS),
             paradigm="imagery",
             n_classes=2,
@@ -154,6 +159,13 @@ class Peterson2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
             mode="offline",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Ruben Spies",
+            funding=[
+                "AFOSR/SOARD Grant FA9550-14-1-0130",
+                "UNL CAI+D-UNL 2016 PIC No. 50420150100036LI",
+                "ANPCyT PICT 2015-0586",
+            ],
+            repository="OpenNeuro",
             doi="10.1016/j.heliyon.2020.e03425",
             investigators=[
                 "Victoria Peterson",

@@ -174,6 +174,15 @@ class Yi2025(BaseDataset):
             feedback_type="none",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Jin Qian",
+            funding=[
+                "Natural Science Foundation of China (Grant 62006014, U2441253, 12275295)",
+                "China Postdoctoral Science Foundation (Grant GZC20231910)",
+            ],
+            ethics_approval=[
+                "Ethical Committee of Tianjin University (approved number: TJUE-210)"
+            ],
+            repository="Figshare",
             doi="10.1038/s41597-025-05286-0",
             investigators=[
                 "Weibo Yi",

@@ -181,6 +181,7 @@ class WRCC2023_MI_A(_WRCC2023):
             events=dict(WRCC2023_EVENTS),
         ),
         documentation=DocumentationMetadata(
+            senior_author="WRCC2023",
             doi="10.7910/DVN/J9JFES",
             description="MI-A three-class (left hand, right hand, feet) motor "
             "imagery EEG dataset from the 2023 World Robot Contest BCI competition.",
@@ -297,6 +298,7 @@ class WRCC2023_MI_B(_WRCC2023):
             events=dict(WRCC2023_EVENTS),
         ),
         documentation=DocumentationMetadata(
+            senior_author="WRCC2023",
             doi="10.7910/DVN/HFNWRX",
             description="MI-B three-class (left hand, right hand, feet) motor imagery "
             "EEG dataset of the BCI competition at the 2023 World Robot Contest; "
@@ -396,6 +398,7 @@ class WRCC2023_MI_C(_WRCC2023):
             clinical_population="stroke",
         ),
         experiment=ExperimentMetadata(
+            trial_duration=3.999,
             paradigm="imagery",
             n_classes=3,
             class_labels=["left_hand", "right_hand", "feet"],
@@ -405,6 +408,7 @@ class WRCC2023_MI_C(_WRCC2023):
             events=dict(WRCC2023_EVENTS),
         ),
         documentation=DocumentationMetadata(
+            senior_author="WRCC2023",
             doi="10.7910/DVN/G8FBHH",
             description="Three-class (left hand, right hand, feet) motor imagery "
             "EEG dataset from the 2023 World Robot Contest BCI competition (MI-C "

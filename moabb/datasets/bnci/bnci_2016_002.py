@@ -422,17 +422,11 @@ class BNCI2016_002(BNCIBaseDataset):
             species="human",
         ),
         experiment=ExperimentMetadata(
-            paradigm="emergency_braking",
-            task_type="driving_simulation",
-            events={
-                "car_brake": 1,
-                "car_hold": 2,
-                "react_emg": 3,
-                "car_accelerate": 4,
-                "car_collision": 5,
-            },
+            paradigm="p300",
+            task_type="emergency_braking",
+            events={"Target": 1, "NonTarget": 2},
             n_classes=2,
-            class_labels=["normal_driving", "emergency_braking"],
+            class_labels=["Target", "NonTarget"],
             trial_duration=3.0,
             study_design="Participants drove a virtual racing car using steering wheel and gas/brake pedals, tightly following a computer-controlled lead vehicle at 100 km/h. The lead vehicle occasionally decelerated abruptly (20-40s inter-stimulus-interval) to 60-80 km/h, requiring immediate emergency braking. Three blocks of 45 min each with 10-15 min rest between blocks.",
             feedback_type="visual (colored circle indicating distance: green <20m, yellow otherwise; brakelight flashing)",
@@ -452,6 +446,7 @@ class BNCI2016_002(BNCIBaseDataset):
             },
         ),
         documentation=DocumentationMetadata(
+            data_url="http://doc.ml.tu-berlin.de/bbci/BNCIHorizon2020-EmergencyBraking/",
             doi="10.1088/1741-2560/8/5/056001",
             description="Emergency braking detection during simulated driving using EEG and EMG to predict driver's braking intention before behavioral response.",
             investigators=[

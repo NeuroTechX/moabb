@@ -207,6 +207,11 @@ class Schrag2026Pediatric(BaseDataset):
             ),
         ),
         documentation=DocumentationMetadata(
+            funding=[
+                "Alberta Innovates",
+                "Cumming School of Medicine",
+                "Alberta Children's Hospital Foundation",
+            ],
             doi=_DOI,
             associated_paper_doi=_PREPRINT_DOI,
             data_url=f"https://doi.org/{_DOI}",
@@ -228,7 +233,7 @@ class Schrag2026Pediatric(BaseDataset):
             license="CC-BY-4.0",
             publication_year=2026,
             ethics_approval=[
-                "University of Calgary Conjoint Health Research Ethics Board, REB25-0723"
+                "University of Calgary Conjoint Health Research Ethics Board (REB25-0723)"
             ],
             keywords=[
                 "SSVEP",
