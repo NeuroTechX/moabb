@@ -195,7 +195,7 @@ class Huebner2017(_BaseVisualMatrixSpellerDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            channel_types={"eeg": 31, "misc": 6},
+            channel_types={"eeg": 31, "eog": 1, "misc": 5},
             montage="standard_1020",
             hardware="BrainAmp DC",
             sensor_type="passive Ag/AgCl",
@@ -451,7 +451,7 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            channel_types={"eeg": 31, "misc": 6},
+            channel_types={"eeg": 31, "eog": 1, "misc": 5},
             montage="extended 10-20",
             hardware="BrainAmp DC",
             sensor_type="Ag/AgCl",
@@ -498,6 +498,12 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
                 "x_Respi",
             ],
             line_freq=50.0,
+            auxiliary_channels=AuxiliaryChannelsMetadata(
+                has_eog=True,
+                eog_channels=1,
+                eog_type=["vertical"],
+                other_physiological=["pulse", "respiration"],
+            ),
             cap_manufacturer="EasyCap",
         ),
         participants=ParticipantMetadata(
@@ -668,10 +674,11 @@ def _read_raw_llp_study_data(vhdr_fname, raw_slice_offset, verbose=None):
     raw_object: mne.io.Raw
         the loaded BVR raw object.
     """
-    non_scalp_channels = ["EOGvu", "x_EMGl", "x_GSR", "x_Respi", "x_Pulse", "x_Optic"]
+    misc_channels = ["x_EMGl", "x_GSR", "x_Respi", "x_Pulse", "x_Optic"]
     raw_bvr = mne.io.read_raw_brainvision(
-        vhdr_fname=vhdr_fname,  # eog='EOGvu',
-        misc=non_scalp_channels,
+        vhdr_fname=vhdr_fname,
+        eog=["EOGvu"],
+        misc=misc_channels,
         preload=True,
         verbose=verbose,
     )  # type: mne.io.Raw

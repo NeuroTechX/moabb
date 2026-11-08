@@ -15,6 +15,7 @@ from . import download as dl
 from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
+    AuxiliaryChannelsMetadata,
     BCIApplicationMetadata,
     CrossValidationMetadata,
     DatasetMetadata,
@@ -120,6 +121,12 @@ class Yang2025(BaseDataset):
             filters={},
             sensors=list(_CH_NAMES_EEG),
             line_freq=50.0,
+            auxiliary_channels=AuxiliaryChannelsMetadata(
+                has_eog=True,
+                eog_channels=4,
+                eog_type=["horizontal", "vertical"],
+                other_physiological=["ecg"],
+            ),
         ),
         participants=ParticipantMetadata(
             n_subjects=51,

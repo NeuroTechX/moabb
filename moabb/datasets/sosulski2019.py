@@ -339,9 +339,9 @@ class Sosulski2019(BaseDataset):
         return trial_info
 
     def _get_single_run_data(self, file_path):
-        non_scalp_channels = ["EOGvu", "x_EMGl", "x_GSR", "x_Respi", "x_Pulse", "x_Optic"]
+        misc_channels = ["x_EMGl", "x_GSR", "x_Respi", "x_Pulse", "x_Optic"]
         raw = mne.io.read_raw_brainvision(
-            file_path, misc=non_scalp_channels, preload=True
+            file_path, eog=["EOGvu"], misc=misc_channels, preload=True
         )
         raw.set_montage("colin27_1020")
         if self.reject_non_iid:

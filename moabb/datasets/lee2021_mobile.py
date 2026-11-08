@@ -78,7 +78,7 @@ class Lee2021Mobile(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
-            channel_types={"eeg": 48, "eog": 2},
+            channel_types={"eeg": 46, "eog": 4},
             montage="standard_1005",
             hardware="BrainAmp (Brain Product GmbH)",
             line_freq=60.0,
@@ -287,6 +287,18 @@ class Lee2021Mobile(BaseDataset):
                     session = str(session)
 
             raw = mne.io.read_raw_brainvision(str(vhdr_path), preload=True, verbose=False)
+
+            # The /sourcedata/ .vhdr header types VEOGU/VEOGL as EEG; re-type all
+            # 4 EOG channels as 'eog' (and any IMU channels if present as 'misc').
+            ch_type_map = {}
+            for ch in raw.ch_names:
+                ch_upper = ch.upper()
+                if ch_upper in ("HEOGL", "HEOGR", "VEOGU", "VEOGL"):
+                    ch_type_map[ch] = "eog"
+                elif any(tag in ch_upper for tag in ("ACC", "GYRO", "MAG")):
+                    ch_type_map[ch] = "misc"
+            if ch_type_map:
+                raw.set_channel_types(ch_type_map, verbose=False)
 
             # Rename stimulus markers to match event names
             if self._task_name == "SSVEP":
@@ -498,7 +510,7 @@ class Lee2021Mobile_ERP(Lee2021Mobile):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
-            channel_types={"eeg": 48, "eog": 2},
+            channel_types={"eeg": 46, "eog": 4},
             montage="standard_1005",
             hardware="BrainAmp (Brain Product GmbH)",
             line_freq=60.0,

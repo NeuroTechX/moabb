@@ -523,6 +523,7 @@ class Test_Datasets:
         assert len(set(labels)) == len(dataset.subject_list) == 17
 
     def test_download_falls_back_from_nemar(self, monkeypatch, tmp_path):
+        monkeypatch.setattr("moabb.datasets.base.get_download_provider", lambda: "auto")
         dataset = FakeDataset(n_subjects=1)
         dataset.nemar_id = "nm000001"
         fallback_calls = []
@@ -546,6 +547,7 @@ class Test_Datasets:
         assert fallback_calls == [(1, tmp_path, True, None, None)]
 
     def test_download_without_nemar_id_uses_fallback(self, monkeypatch, tmp_path):
+        monkeypatch.setattr("moabb.datasets.base.get_download_provider", lambda: "auto")
         dataset = FakeDataset(n_subjects=1)
         dataset.nemar_id = None
         nemar_calls = []
@@ -1915,7 +1917,7 @@ def test_lee2024_data_path_downloads_the_real_upstream_inventory(tmp_path, monke
         json.dumps({"files": [{"file": "Dat_sub01/sub01_Testing1.mat"}]})
     )
     dataset = Lee2024_DL()
-    monkeypatch.setattr(dataset, "_sourcedata_store", lambda: store)
+    monkeypatch.setattr(dataset, "_sourcedata_store", lambda *args, **kwargs: store)
     monkeypatch.setattr(
         Lee2024, "_upstream_tree", classmethod(lambda cls: pytest.fail("tree used"))
     )

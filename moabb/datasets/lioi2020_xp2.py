@@ -12,6 +12,7 @@ from .base import BaseBIDSDataset
 from .download import get_dataset_path
 from .metadata.schema import (
     AcquisitionMetadata,
+    AuxiliaryChannelsMetadata,
     BCIApplicationMetadata,
     CrossValidationMetadata,
     DatasetMetadata,
@@ -140,6 +141,7 @@ class Lioi2020_XP2(OpenNeuroMirrorMixin, BaseBIDSDataset):
             ground="AFz",
             sensors=list(_CH_NAMES),
             line_freq=50.0,
+            auxiliary_channels=AuxiliaryChannelsMetadata(other_physiological=["ecg"]),
         ),
         participants=ParticipantMetadata(
             n_subjects=17,

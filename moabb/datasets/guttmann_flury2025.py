@@ -19,6 +19,7 @@ from . import download as dl
 from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
+    AuxiliaryChannelsMetadata,
     BCIApplicationMetadata,
     CrossValidationMetadata,
     DatasetMetadata,
@@ -179,6 +180,9 @@ _ACQUISITION = AcquisitionMetadata(
     filters={"highpass_time_constant_s": 10},
     sensors=list(_CH_NAMES),
     line_freq=50.0,
+    auxiliary_channels=AuxiliaryChannelsMetadata(
+        has_eog=True, eog_channels=1, eog_type=["horizontal"]
+    ),
 )
 
 

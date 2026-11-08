@@ -13,6 +13,7 @@ from . import download as dl
 from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
+    AuxiliaryChannelsMetadata,
     BCIApplicationMetadata,
     CrossValidationMetadata,
     DatasetMetadata,
@@ -81,6 +82,9 @@ class Wang2021Combined(BaseDataset):
             line_freq=50.0,
             impedance_threshold_kohm=5.0,
             electrode_material="Ag/AgCl",
+            auxiliary_channels=AuxiliaryChannelsMetadata(
+                has_eog=True, eog_channels=2, eog_type=["horizontal", "vertical"]
+            ),
         ),
         participants=ParticipantMetadata(
             n_subjects=8, health_status="healthy", handedness="right"

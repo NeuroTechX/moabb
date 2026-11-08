@@ -15,6 +15,7 @@ from . import download as dl
 from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
+    AuxiliaryChannelsMetadata,
     BCIApplicationMetadata,
     CrossValidationMetadata,
     DatasetMetadata,
@@ -219,6 +220,9 @@ def _make_metadata(cohort=None):
             filters={"bandpass": [0.5, 100], "notch_hz": 50},
             sensors=sensors,
             line_freq=50.0,
+            auxiliary_channels=AuxiliaryChannelsMetadata(
+                has_eog=True, eog_channels=2, eog_type=["horizontal", "vertical"]
+            ),
         ),
         participants=ParticipantMetadata(
             n_subjects=n_subjects,

@@ -15,6 +15,7 @@ from . import download as dl
 from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
+    AuxiliaryChannelsMetadata,
     BCIApplicationMetadata,
     CrossValidationMetadata,
     DatasetMetadata,
@@ -172,6 +173,13 @@ class Jeong2020(BaseDataset):
             filters={"highpass": 0.016, "lowpass": 1000},
             sensors=list(_CH_NAMES_EEG),
             line_freq=60.0,
+            auxiliary_channels=AuxiliaryChannelsMetadata(
+                has_eog=True,
+                eog_channels=4,
+                eog_type=["horizontal", "vertical"],
+                has_emg=True,
+                emg_channels=7,
+            ),
         ),
         participants=ParticipantMetadata(
             n_subjects=25,
@@ -345,6 +353,15 @@ class Jeong2020(BaseDataset):
                 raw = mne.io.read_raw_brainvision(
                     str(vhdr_path), preload=True, verbose=False
                 )
+                ch_type_map = {}
+                for ch in raw.ch_names:
+                    ch_upper = ch.upper()
+                    if "EOG" in ch_upper:
+                        ch_type_map[ch] = "eog"
+                    elif ch_upper.startswith("EMG"):
+                        ch_type_map[ch] = "emg"
+                if ch_type_map:
+                    raw.set_channel_types(ch_type_map, verbose=False)
 
                 # Remap stimulus markers to unified event codes.
                 self._remap_annotations(raw, task_type)

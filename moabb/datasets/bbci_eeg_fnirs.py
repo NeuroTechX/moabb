@@ -401,7 +401,7 @@ class Shin2017A(BaseShin2017):
             line_freq=50.0,
             auxiliary_channels=AuxiliaryChannelsMetadata(
                 has_eog=True,
-                eog_channels=4,
+                eog_channels=2,
                 eog_type=["horizontal", "vertical"],
                 has_emg=False,
                 other_physiological=["ecg", "respiration"],
@@ -736,7 +736,7 @@ class Shin2017B(BaseShin2017):
             line_freq=50.0,
             auxiliary_channels=AuxiliaryChannelsMetadata(
                 has_eog=True,
-                eog_channels=4,
+                eog_channels=2,
                 eog_type=["horizontal", "vertical"],
                 other_physiological=["ecg", "respiration"],
             ),

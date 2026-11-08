@@ -13,6 +13,7 @@ from ._openneuro_mirror import OpenNeuroMirrorMixin
 from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
+    AuxiliaryChannelsMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
@@ -77,6 +78,7 @@ class Nieto2022(OpenNeuroMirrorMixin, BaseDataset):
             sensor_type="EEG/EMG",
             reference="EXG1/EXG2 (left and right ear lobes; raw BDF files are not re-referenced)",
             impedance_threshold_kohm=0.04,
+            auxiliary_channels=AuxiliaryChannelsMetadata(has_emg=True, emg_channels=8),
         ),
         participants=ParticipantMetadata(
             n_subjects=10,

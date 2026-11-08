@@ -226,7 +226,7 @@ class Ofner2017(BaseDataset):
             line_freq=50.0,
             montage="standard_1005",
             auxiliary_channels=AuxiliaryChannelsMetadata(
-                has_emg=False, other_physiological=None
+                has_eog=True, eog_channels=3, has_emg=False, other_physiological=None
             ),
         ),
         participants=ParticipantMetadata(

@@ -15,6 +15,7 @@ from . import download as dl
 from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
+    AuxiliaryChannelsMetadata,
     BCIApplicationMetadata,
     CrossValidationMetadata,
     DatasetMetadata,
@@ -104,12 +105,18 @@ class Liu2025(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            channel_types={"eeg": 60, "ecg": 1, "eog": 4},
+            channel_types={"eeg": 59, "ecg": 1, "eog": 4},
             montage="standard_1020",
             hardware="NeuSen W (Neuracle, Inc.)",
             sensor_type="Ag/AgCl",
             filters={"notch": 50.0},
             line_freq=50.0,
+            auxiliary_channels=AuxiliaryChannelsMetadata(
+                has_eog=True,
+                eog_channels=4,
+                eog_type=["horizontal", "vertical"],
+                other_physiological=["ecg"],
+            ),
         ),
         participants=ParticipantMetadata(
             n_subjects=27,
@@ -267,6 +274,13 @@ class Liu2025(BaseDataset):
                     raw = mne.io.read_raw_brainvision(
                         str(vhdr), preload=True, verbose="ERROR"
                     )
+                    ch_type_map = {
+                        ch: ("ecg" if ch.upper() == "ECG" else "eog")
+                        for ch in raw.ch_names
+                        if ch.upper() in ("ECG", "HEOR", "HEOL", "VEOU", "VEOL")
+                    }
+                    if ch_type_map:
+                        raw.set_channel_types(ch_type_map, verbose=False)
 
                     # Map BrainVision stimulus annotations to event names.
                     # BV format: "Stimulus/S  3" -> "gait_imagery"
