@@ -43,7 +43,7 @@ print(",".join(eager))
 
 
 def test_import_single_dataset_is_lazy():
-    """Importing one dataset must not import all other dataset modules."""
+    """Importing one dataset must not import all other dataset modules or heavy optional deps."""
     out = _run_python(
         """
 import sys
@@ -58,6 +58,35 @@ eager = [
         "moabb.paradigms",
         "moabb.evaluations",
         "matplotlib",
+        "mne_bids",
+        "nemar",
+        "h5py",
+        "pycountry",
+        "sklearn",
+    )
+    if m in sys.modules
+]
+print(",".join(eager))
+"""
+    )
+    assert out == ""
+
+
+def test_import_dataset_list_skips_heavy_optional_deps():
+    """Building dataset_list should not import mne_bids, nemar, pycountry, or sklearn."""
+    out = _run_python(
+        """
+import sys
+from moabb.datasets.utils import dataset_list
+
+assert len(dataset_list) > 200
+eager = [
+    m for m in (
+        "mne_bids",
+        "nemar",
+        "pycountry",
+        "sklearn",
+        "codecarbon",
     )
     if m in sys.modules
 ]

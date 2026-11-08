@@ -1,6 +1,5 @@
 """MIBMPI2024: MI-BMPI motor-imagery brain-mobile phone dataset (Yilmaz et al., 2024)."""
 
-import h5py
 import mne
 import numpy as np
 from scipy.io import loadmat
@@ -254,6 +253,8 @@ class MIBMPI2024(BaseDataset):
         ``(n_trials, n_samples, n_channels)``. The label ``.mat`` file stores a
         per-trial array of integers (1 = tap, 2 = swipe).
         """
+        import h5py
+
         with h5py.File(set_path, "r") as f:
             arr = np.asarray(f["data"], dtype=np.float64)
 

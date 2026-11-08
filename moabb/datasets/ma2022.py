@@ -7,7 +7,6 @@ Data DOI: 10.6084/m9.figshare.19228725
 
 import pandas as pd
 from mne.channels import get_builtin_montages, make_standard_montage
-from mne_bids import events_file_to_annotation_kwargs
 
 from .base import BaseBIDSDataset
 from .metadata.schema import (
@@ -394,6 +393,8 @@ class Ma2022(BaseBIDSDataset):
         bids_path = next(
             p for p in self.bids_paths(subject) if int(p.session) == int(session) + 1
         )
+        from mne_bids import events_file_to_annotation_kwargs
+
         events_file = bids_path.find_matching_sidecar(suffix="events", extension=".tsv")
         annotations = events_file_to_annotation_kwargs(events_file)
         return pd.DataFrame(

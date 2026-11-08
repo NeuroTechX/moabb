@@ -10,7 +10,10 @@ We can convert at the Raw, Epochs or Array level.
 #
 # License: BSD (3-clause)
 
+from __future__ import annotations
+
 import abc
+import contextlib
 import csv
 import datetime
 import json
@@ -25,25 +28,36 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Dict, Type
 
 import mne
-import mne_bids
-
-
-try:
-    from mne_bids._fileio import _open_lock as _bids_lock
-except ImportError:  # pragma: no cover - defensive fallback
-    import contextlib
-
-    @contextlib.contextmanager
-    def _bids_lock(_path):
-        yield
-
-
 from numpy import load as np_load
 from numpy import save as np_save
 
 import moabb
 from moabb.datasets import download as dl
 from moabb.datasets._channel_pick import pick_channels_for_modalities
+
+
+if TYPE_CHECKING:
+    import mne_bids
+
+
+@contextlib.contextmanager
+def _bids_lock(path):
+    try:
+        from mne_bids._fileio import _open_lock
+    except ImportError:  # pragma: no cover - defensive fallback
+        yield
+        return
+    with _open_lock(path):
+        yield
+
+
+def __getattr__(name):
+    if name == "mne_bids":
+        import mne_bids as val
+
+        globals()["mne_bids"] = val
+        return val
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 if TYPE_CHECKING:
@@ -2304,6 +2318,8 @@ class BIDSInterfaceBase(abc.ABC):
         subject folder of the BIDS structure. This property allows loading
         caches that were created with the old path.
         """
+        import mne_bids
+
         return mne_bids.BIDSPath(
             root=self.root,
             subject=subject_moabb_to_bids(self.subject),
@@ -2315,6 +2331,8 @@ class BIDSInterfaceBase(abc.ABC):
 
     def erase(self):
         """Erase the cache of the subject if it exists."""
+        import mne_bids
+
         log.info("Starting erasing cache of %s...", repr(self))
 
         if not self.root.exists():
@@ -2405,6 +2423,8 @@ class BIDSInterfaceBase(abc.ABC):
         return sessions_data
 
     def _cache_paths(self):
+        import mne_bids
+
         legacy_lock_exists = (
             self._migration_lock_file.exists() or self._legacy_lock_file.fpath.exists()
         )
@@ -2438,6 +2458,8 @@ class BIDSInterfaceBase(abc.ABC):
 
         The type of the ``run`` object can vary (see the subclases).
         """
+        import mne_bids
+
         log.info("Starting caching %s", repr(self))
         mne_bids.BIDSPath(root=self.root).mkdir(exist_ok=True)
 
@@ -2561,12 +2583,16 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
         return "eeg"
 
     def _load_file(self, bids_path, preload):
+        import mne_bids
+
         raw = mne_bids.read_raw_bids(
             bids_path, extra_params={"preload": preload}, verbose=self.verbose
         )
         return raw
 
     def _write_file(self, bids_path, raw):
+        import mne_bids
+
         if not raw.annotations:
             raise ValueError(
                 "Raw object must have annotations to be saved in BIDS format."

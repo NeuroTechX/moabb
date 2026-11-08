@@ -7,7 +7,6 @@ import zipfile
 from pathlib import Path
 
 import mne
-from mne_bids import find_matching_paths
 
 from moabb.datasets import download as dl
 from moabb.datasets.metadata.schema import (
@@ -301,6 +300,8 @@ class Thapa2025(BaseDataset):
         # combination with ``fpath.exists()``. Only the headers: without an
         # extension filter the run's ``_eeg.eeg``/``_eeg.vmrk`` match too, and
         # read_raw_brainvision refuses them.
+        from mne_bids import find_matching_paths
+
         return find_matching_paths(
             root=root,
             subjects=subj,

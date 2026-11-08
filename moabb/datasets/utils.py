@@ -15,7 +15,6 @@ import zipfile
 from pathlib import Path
 
 import mne
-import mne_bids
 import numpy as np
 from mne import create_info
 from mne.channels import make_standard_montage
@@ -123,7 +122,7 @@ def dataset_search(  # noqa: C901
             f"got '{paradigm}'"
         )
 
-    for type_d in dataset_list:
+    for type_d in globals()["dataset_list"]:
         if type_d.__name__ in deprecated_names:
             continue
 
@@ -251,7 +250,7 @@ def _download_all(update_path=True, verbose=None):
     # iterate over dataset
     if not globals().get("dataset_list"):
         _init_dataset()
-    for ds in dataset_list:
+    for ds in globals()["dataset_list"]:
         # call download
         ds().download(update_path=True, verbose=verbose, accept=True)
 
@@ -444,6 +443,8 @@ def bids_metainfo(bids_path: Path) -> dict:
         The path to the BIDS dataset.
     """
     json_data = {}
+
+    import mne_bids
 
     paths = mne_bids.find_matching_paths(root=bids_path, datatypes="eeg")
 
@@ -874,7 +875,11 @@ class _BaseDatasetPlotter:
             datasets
             if datasets is not None
             else sorted(
-                [dataset() for dataset in dataset_list if "Fake" not in dataset.__name__],
+                [
+                    dataset()
+                    for dataset in globals()["dataset_list"]
+                    if "Fake" not in dataset.__name__
+                ],
                 key=lambda x: x.__class__.__name__,
             )
         )

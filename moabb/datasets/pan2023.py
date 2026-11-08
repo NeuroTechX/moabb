@@ -1,6 +1,5 @@
 """Pan2023 cross-session motor imagery dataset."""
 
-import h5py
 import numpy as np
 from mne import Annotations, create_info
 from mne.channels import make_standard_montage
@@ -254,6 +253,8 @@ class Pan2023(_PanDataverse):
     @staticmethod
     def _mat_to_raw(file_path):
         """Load one v7.3 (HDF5) ``.mat`` session file into a continuous Raw."""
+        import h5py
+
         with h5py.File(file_path, "r") as f:
             sfreq = float(np.asarray(f["fs"]).ravel()[0])
             # h5py returns MATLAB's (n_channels, n_samples, n_trials) transposed.

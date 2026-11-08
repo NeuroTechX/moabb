@@ -8,7 +8,6 @@ from typing import List, Optional
 import mne
 import numpy as np
 from mne.datasets import fetch_dataset
-from mne_bids import BIDSPath, get_entity_vals, read_raw_bids
 
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.download import get_dataset_path
@@ -556,6 +555,8 @@ class RomaniBF2025ERP(BaseDataset):
                 logging.warning(f"No EEG EDF found for {ses_name}")
                 continue
 
+            from mne_bids import BIDSPath, read_raw_bids
+
             ses_name = ses_name.replace("ses-", "")
             bids_path = BIDSPath(
                 subject=subject_label,
@@ -660,6 +661,8 @@ class RomaniBF2025ERP(BaseDataset):
         subjects : List[str]
             e.g. ["P01", "P02", "P03"]
         """
+        from mne_bids import get_entity_vals
+
         subject_labels = get_entity_vals(root=self.data_folder, entity_key="subject")
         subjects = []
 

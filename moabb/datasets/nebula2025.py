@@ -5,7 +5,6 @@ import zipfile
 from pathlib import Path
 
 from mne.channels import make_standard_montage
-from mne_bids import BIDSPath, get_entity_vals, read_raw_bids
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
@@ -295,6 +294,8 @@ class NeBULA2025(BaseDataset):
             subject, path=path, force_update=force_update, verbose=verbose
         )
 
+        from mne_bids import BIDSPath, get_entity_vals
+
         tasks = get_entity_vals(root / f"sub-{subject:02d}", "task")
         return [
             BIDSPath(
@@ -312,6 +313,8 @@ class NeBULA2025(BaseDataset):
 
     def _get_single_subject_data(self, subject):
         """Return the data of a single subject as {session: {run: raw}}."""
+        from mne_bids import read_raw_bids
+
         bids_paths = self.data_path(subject)
         montage = make_standard_montage("colin27_1005")
 

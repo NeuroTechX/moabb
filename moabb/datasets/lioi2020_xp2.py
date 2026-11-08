@@ -4,7 +4,6 @@ import logging
 from pathlib import Path
 from types import MappingProxyType
 
-import mne_bids
 import requests
 
 from ._openneuro_mirror import OpenNeuroMirrorMixin
@@ -288,6 +287,8 @@ class Lioi2020_XP2(OpenNeuroMirrorMixin, BaseBIDSDataset):
                 Path(bids_path.root) / f"task-{bids_path.task}_events.tsv"
             )
 
+        import mne_bids
+
         key_by_entity = {(task, run): key for task, run, key in self._run_plan(subject)}
         result = {}
         for bids_path in bids_paths:
@@ -320,6 +321,8 @@ class Lioi2020_XP2(OpenNeuroMirrorMixin, BaseBIDSDataset):
         mirror_root = self._mirror_root(subject, path, force_update, update_path, verbose)
         if mirror_root is not None:
             return mirror_root
+
+        import mne_bids
 
         sid = self._sid(subject)
         bids_root = Path(get_dataset_path("Lioi2020-XP2", path)) / "MNE-lioi2020-xp2-data"

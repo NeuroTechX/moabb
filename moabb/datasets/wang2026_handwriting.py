@@ -9,10 +9,8 @@ import json
 import zipfile
 from pathlib import Path
 
-import mne_bids
 import pandas as pd
 from mne.channels import get_builtin_montages, make_standard_montage
-from mne_bids import events_file_to_annotation_kwargs
 
 from .base import BaseBIDSDataset
 from .download import data_dl, get_dataset_path
@@ -472,6 +470,8 @@ class Wang2026Handwriting(BaseBIDSDataset):
             else "standard_1005"
         )
         montage = make_standard_montage(montage_name)
+        import mne_bids
+
         data = {}
         for bids_path in bids_paths:
             raw = mne_bids.read_raw_bids(
@@ -533,6 +533,8 @@ class Wang2026Handwriting(BaseBIDSDataset):
             for p in self.bids_paths(subject)
             if int(p.session) == int(session) + 1 and p.task == run
         )
+        from mne_bids import events_file_to_annotation_kwargs
+
         events_file = bids_path.find_matching_sidecar(suffix="events", extension=".tsv")
         annotations = events_file_to_annotation_kwargs(events_file)
         return pd.DataFrame(

@@ -2,8 +2,6 @@
 
 from pathlib import Path
 
-import mne_bids
-
 from ._openneuro_mirror import OpenNeuroMirrorMixin
 from .base import BaseBIDSDataset
 from .bids_interface import StepType
@@ -22,7 +20,6 @@ from .metadata.schema import (
     SignalProcessingMetadata,
     Tags,
 )
-from .preprocessing import FixedPipeline, SetRawAnnotations
 from .utils import stim_channels_with_selected_ids
 
 
@@ -58,12 +55,25 @@ _ANNOT_TO_NAME = {
 PETERSON2020_CACHE_VERSION = "edf-blank-physdim-uv-to-v-v1"
 
 
-class _PetersonSetRawAnnotations(SetRawAnnotations):
-    """Carry the unit repair version into MOABB's raw-cache fingerprint."""
+def _get_peterson_set_raw_annotations():
+    if "_PetersonSetRawAnnotations" not in globals():
+        from .preprocessing import SetRawAnnotations
 
-    def __init__(self, event_id, interval, cache_version):
-        self.cache_version = cache_version
-        super().__init__(event_id, interval)
+        class _PetersonSetRawAnnotations(SetRawAnnotations):
+            """Carry the unit repair version into MOABB's raw-cache fingerprint."""
+
+            def __init__(self, event_id, interval, cache_version):
+                self.cache_version = cache_version
+                super().__init__(event_id, interval)
+
+        globals()["_PetersonSetRawAnnotations"] = _PetersonSetRawAnnotations
+    return globals()["_PetersonSetRawAnnotations"]
+
+
+def __getattr__(name):
+    if name == "_PetersonSetRawAnnotations":
+        return _get_peterson_set_raw_annotations()
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 class Peterson2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
@@ -225,11 +235,14 @@ class Peterson2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
         )
 
     def _create_process_pipeline(self):
+        from .preprocessing import FixedPipeline
+
+        cls = _get_peterson_set_raw_annotations()
         return FixedPipeline(
             [
                 (
                     StepType.RAW,
-                    _PetersonSetRawAnnotations(
+                    cls(
                         self.event_id,
                         interval=self.interval,
                         cache_version=PETERSON2020_CACHE_VERSION,
@@ -295,6 +308,8 @@ class Peterson2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
                     verbose=verbose,
                     fname=rel_path,
                 )
+        import mne_bids
+
         mne_bids.make_dataset_description(
             path=bids_root,
             name="Motor Imagery vs Rest - Low-Cost EEG System",

@@ -488,9 +488,6 @@ def _build_dataset_metadata_catalog():
     # Include base ERP CORE dataset to match expected catalog counts
     dataset_classes.setdefault("ErpCore2021", ErpCore2021)
 
-    # Canonicalize class-level METADATA before building the catalog
-    canonicalize_dataset_class_catalog(dataset_classes)
-
     for name, dataset_cls in dataset_classes.items():
         if "Fake" in name:
             continue
@@ -499,9 +496,11 @@ def _build_dataset_metadata_catalog():
         except Exception:
             dataset = None
 
-        metadata = getattr(dataset_cls, "METADATA", None)
+        class_metadata = getattr(dataset_cls, "METADATA", None)
+        has_class_metadata = isinstance(class_metadata, DatasetMetadata)
+        metadata = class_metadata
         # Also check instance attribute (e.g. Lee2024 sets self.METADATA in __init__)
-        if not isinstance(metadata, DatasetMetadata) and dataset is not None:
+        if not has_class_metadata and dataset is not None:
             metadata = getattr(dataset, "METADATA", metadata)
         if not isinstance(metadata, DatasetMetadata):
             if dataset is None:
@@ -526,6 +525,8 @@ def _build_dataset_metadata_catalog():
         metadata = _merge_with_dataset(metadata, dataset)
         metadata = _apply_manual_overrides(name, metadata)
         metadata = _apply_dataset_family_defaults(name, metadata)
+        if has_class_metadata:
+            dataset_cls.METADATA = metadata
 
         catalog[name] = metadata
     return catalog
