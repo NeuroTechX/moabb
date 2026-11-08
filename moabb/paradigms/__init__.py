@@ -6,34 +6,56 @@ have two-class, multi-class, or continuous paradigms; similarly,
 different preprocessing is necessary for ERP vs ERD paradigms.
 """
 
-from .cognitive import CognitiveTask as CognitiveTask
-from .cognitive import FakeCognitiveParadigm as FakeCognitiveParadigm
-from .cvep import CVEP as CVEP
-from .cvep import BaseCVEP as BaseCVEP
-from .cvep import FakeCVEPParadigm as FakeCVEPParadigm
-from .cvep import FilterBankCVEP as FilterBankCVEP
-from .fixed_interval_windows import (
-    BaseFixedIntervalWindowsProcessing as BaseFixedIntervalWindowsProcessing,
-)
-from .fixed_interval_windows import (
-    FilterBankFixedIntervalWindowsProcessing as FilterBankFixedIntervalWindowsProcessing,
-)
-from .fixed_interval_windows import (
-    FixedIntervalWindowsProcessing as FixedIntervalWindowsProcessing,
-)
-from .motor_imagery import BaseMotorImagery as BaseMotorImagery
-from .motor_imagery import FakeImageryParadigm as FakeImageryParadigm
-from .motor_imagery import FilterBankLeftRightImagery as FilterBankLeftRightImagery
-from .motor_imagery import FilterBankMotorImagery as FilterBankMotorImagery
-from .motor_imagery import Imagery as Imagery
-from .motor_imagery import LeftRightImagery as LeftRightImagery
-from .motor_imagery import MotorImagery as MotorImagery
-from .motor_imagery import SpeechImagery as SpeechImagery
-from .p300 import P300 as P300
-from .p300 import BaseP300 as BaseP300
-from .p300 import FakeP300Paradigm as FakeP300Paradigm
-from .resting_state import RestingStateToP300Adapter as RestingStateToP300Adapter
-from .ssvep import SSVEP as SSVEP
-from .ssvep import BaseSSVEP as BaseSSVEP
-from .ssvep import FakeSSVEPParadigm as FakeSSVEPParadigm
-from .ssvep import FilterBankSSVEP as FilterBankSSVEP
+import importlib
+
+
+_LAZY_IMPORTS = {
+    "CognitiveTask": ".cognitive",
+    "FakeCognitiveParadigm": ".cognitive",
+    "CVEP": ".cvep",
+    "BaseCVEP": ".cvep",
+    "FakeCVEPParadigm": ".cvep",
+    "FilterBankCVEP": ".cvep",
+    "BaseFixedIntervalWindowsProcessing": ".fixed_interval_windows",
+    "FilterBankFixedIntervalWindowsProcessing": ".fixed_interval_windows",
+    "FixedIntervalWindowsProcessing": ".fixed_interval_windows",
+    "BaseMotorImagery": ".motor_imagery",
+    "FakeImageryParadigm": ".motor_imagery",
+    "FilterBankLeftRightImagery": ".motor_imagery",
+    "FilterBankMotorImagery": ".motor_imagery",
+    "Imagery": ".motor_imagery",
+    "LeftRightImagery": ".motor_imagery",
+    "MotorImagery": ".motor_imagery",
+    "SpeechImagery": ".motor_imagery",
+    "P300": ".p300",
+    "BaseP300": ".p300",
+    "FakeP300Paradigm": ".p300",
+    "RestingStateToP300Adapter": ".resting_state",
+    "SSVEP": ".ssvep",
+    "BaseSSVEP": ".ssvep",
+    "FakeSSVEPParadigm": ".ssvep",
+    "FilterBankSSVEP": ".ssvep",
+}
+
+__all__ = list(_LAZY_IMPORTS)
+
+
+def __getattr__(name):
+    if name in _LAZY_IMPORTS:
+        mod = importlib.import_module(_LAZY_IMPORTS[name], __name__)
+        val = getattr(mod, name)
+        globals()[name] = val
+        return val
+    try:
+        mod = importlib.import_module(f".{name}", __name__)
+        globals()[name] = mod
+        return mod
+    except ModuleNotFoundError as exc:
+        if exc.name != f"{__name__}.{name}":
+            raise
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
+def __dir__():
+    return sorted(set(globals()) | set(_LAZY_IMPORTS))
+

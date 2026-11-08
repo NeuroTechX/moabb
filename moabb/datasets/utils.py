@@ -30,28 +30,37 @@ from moabb.utils import aliases_list
 
 logger = logging.getLogger(__name__)
 
-dataset_list = []
-dataset_dict = {}
+_dataset_list = []
+_dataset_dict = {}
 
 
 def _init_dataset():
     # Recompute dataset registries on each call to avoid duplicate accumulation
     # from repeated initialization in long-lived test sessions.
-    dataset_list.clear()
-    dataset_dict.clear()
+    _dataset_list.clear()
+    _dataset_dict.clear()
+    globals()["dataset_list"] = _dataset_list
+    globals()["dataset_dict"] = _dataset_dict
 
     for ds in inspect.getmembers(db, inspect.isclass):
         if issubclass(ds[1], BaseDataset):
-            dataset_list.append(ds[1])
+            _dataset_list.append(ds[1])
 
     deprecated_names = list(zip(*aliases_list))[0] if aliases_list else ()
     dataset_class = {
         dataset.__name__: dataset
-        for dataset in dataset_list
+        for dataset in _dataset_list
         if dataset.__name__ not in deprecated_names
     }
 
-    dataset_dict.update(dataset_class)
+    _dataset_dict.update(dataset_class)
+
+
+def __getattr__(name):
+    if name in ("dataset_list", "dataset_dict"):
+        _init_dataset()
+        return globals()[name]
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 def dataset_search(  # noqa: C901
@@ -90,10 +99,7 @@ def dataset_search(  # noqa: C901
     channels: list of str
         list or set of channels
     """
-    if len(dataset_list) == 0:
-        _init_dataset()
-
-    if not dataset_dict:
+    if not globals().get("dataset_list") or not globals().get("dataset_dict"):
         _init_dataset()
 
     deprecated_names = list(zip(*aliases_list))[0] if aliases_list else ()
@@ -243,6 +249,8 @@ def _download_all(update_path=True, verbose=None):
     """
 
     # iterate over dataset
+    if not globals().get("dataset_list"):
+        _init_dataset()
     for ds in dataset_list:
         # call download
         ds().download(update_path=True, verbose=verbose, accept=True)
@@ -860,6 +868,8 @@ class _BaseDatasetPlotter:
 
         from moabb.analysis.plotting import _get_dataset_parameters, get_dataset_area
 
+        if datasets is None and not globals().get("dataset_list"):
+            _init_dataset()
         self.datasets = datasets = (
             datasets
             if datasets is not None

@@ -9,7 +9,7 @@ import traceback
 import warnings
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
-from functools import cached_property
+from functools import cached_property, lru_cache
 from inspect import signature
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, Union
@@ -38,7 +38,6 @@ from moabb.datasets.download import (
     nemar_store,
     seed_loader_cache,
 )
-from moabb.datasets.preprocessing import FixedPipeline, SetRawAnnotations
 from moabb.utils import get_download_provider
 
 
@@ -179,16 +178,23 @@ def apply_step(pipeline, obj):
         raise error
 
 
+_CAMEL_KEBAB_RE = re.compile(r"[a-zA-Z0-9\-]+")
+_ABBREV_SUB_RE = re.compile(r"([A-Za-z])")
+_SESSION_RUN_RE = re.compile(r"([0-9]+)(|[a-zA-Z]+[a-zA-Z0-9]*)")
+_UNIT_SUFFIX_RE = re.compile(r"( ?\((\w+)\))$")
+
+
 def is_camel_kebab_case(name: str):
     """Check if a string is in CamelCase but can also contain dashes."""
-    return re.fullmatch(r"[a-zA-Z0-9\-]+", name) is not None
+    return _CAMEL_KEBAB_RE.fullmatch(name) is not None
 
 
+@lru_cache(maxsize=512)
 def is_abbrev(abbrev_name: str, full_name: str):
     """Check if abbrev_name is an abbreviation of full_name,
     i.e. ifthe characters in abbrev_name are all in full_name
     and in the same order. They must share the same capital letters."""
-    pattern = re.sub(r"([A-Za-z])", r"\1[a-z0-9\-]*", re.escape(abbrev_name))
+    pattern = _ABBREV_SUB_RE.sub(r"\1[a-z0-9\-]*", re.escape(abbrev_name))
     return re.fullmatch(pattern, full_name) is not None
 
 
@@ -224,12 +230,11 @@ constraint_message = (
 
 
 def check_session_names(data):
-    pattern = session_run_pattern()
     for _subject, sessions in data.items():
         indexes = []
         for session in sessions.keys():
-            match = re.fullmatch(pattern, session)
-            if not isinstance(session, str) or not match:
+            match = _SESSION_RUN_RE.fullmatch(session) if isinstance(session, str) else None
+            if not match:
                 raise ValueError(
                     f"Session {constraint_message} Found key {session!r} instead. "
                     f"If you used cache, you may need to erase it using overwrite=True."
@@ -242,13 +247,12 @@ def check_session_names(data):
 
 
 def check_run_names(data):
-    pattern = session_run_pattern()
     for _subject, sessions in data.items():
         for _session, runs in sessions.items():
             indexes = []
             for run in runs.keys():
-                match = re.fullmatch(pattern, run)
-                if not isinstance(run, str) or not match:
+                match = _SESSION_RUN_RE.fullmatch(run) if isinstance(run, str) else None
+                if not match:
                     raise ValueError(
                         f"Run {constraint_message} Found key {run!r} instead. "
                         f"If you used cache, you may need to erase it using overwrite=True."
@@ -261,8 +265,7 @@ def check_run_names(data):
 
 
 def _transfer_unit(key: str, value: str):
-    pattern = r"( ?\((\w+)\))$"
-    match = re.search(pattern, key)
+    match = _UNIT_SUFFIX_RE.search(key)
     if match:
         suffix, unit = match.groups()
         return key[: -len(suffix)], f"{value} {unit}"
@@ -800,6 +803,8 @@ class BaseDataset(metaclass=MetaclassDataset):
             return None
 
     def _create_process_pipeline(self):
+        from moabb.datasets.preprocessing import FixedPipeline, SetRawAnnotations
+
         return FixedPipeline(
             [(StepType.RAW, SetRawAnnotations(self.event_id, interval=self.interval))]
         )
@@ -963,6 +968,8 @@ class BaseDataset(metaclass=MetaclassDataset):
         """Return subjects whose source data must be loaded."""
         if not cache_config.use:
             return subjects
+
+        from moabb.datasets.preprocessing import FixedPipeline
 
         steps = list(process_pipeline.steps)
         missing = []
@@ -1504,6 +1511,8 @@ class BaseDataset(metaclass=MetaclassDataset):
         then eventually saves or overwrites the cache version depending on the
         parameters.
         """
+        from moabb.datasets.preprocessing import FixedPipeline
+
         steps = list(process_pipeline.steps)
         overwrite_requested = (
             cache_config.overwrite_raw

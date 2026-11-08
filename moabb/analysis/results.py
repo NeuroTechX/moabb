@@ -1,4 +1,5 @@
 import hashlib
+import importlib.util
 import os
 import os.path as osp
 import re
@@ -16,12 +17,10 @@ from sklearn.pipeline import Pipeline
 from moabb.utils import _open_lock_hdf5
 
 
-try:
-    from codecarbon import EmissionsTracker  # noqa
+_carbonfootprint = importlib.util.find_spec("codecarbon") is not None
 
-    _carbonfootprint = True
-except ImportError:
-    _carbonfootprint = False
+
+_ADDRESS_RE = re.compile(r"0x[\w]+>")
 
 
 def get_string_rep(obj):
@@ -39,8 +38,8 @@ def get_string_rep(obj):
             RuntimeWarning,
             stacklevel=2,
         )
-    str_no_addresses = re.sub(
-        r"0x[\w]+>", "0x__", str_repr
+    str_no_addresses = _ADDRESS_RE.sub(
+        "0x__", str_repr
     )  # \w also includes _ for address such as 0x__
     return str_no_addresses.replace("\n", "").encode("utf8")
 
@@ -189,6 +188,7 @@ class Results:
                     dset.create_dataset(
                         "data",
                         (0, n_cols + n_add_cols),
+                        dtype="f4",
                         maxshape=(None, n_cols + n_add_cols),
                     )
                     dset.attrs["channels"] = d1["n_channels"]
@@ -203,14 +203,15 @@ class Results:
                 new_len = old_len + n_new
                 dset["id"].resize(new_len, 0)
                 dset["data"].resize(new_len, 0)
-                if _carbonfootprint and "codecarbon_task_name" in dset:
+                has_cc_task = _carbonfootprint and "codecarbon_task_name" in dset
+                if has_cc_task:
                     dset["codecarbon_task_name"].resize(new_len, 0)
 
-                for i, d in enumerate(dlist):
-                    row = old_len + i
-                    dset["id"][row, :] = np.asarray(
-                        [str(d["subject"]), str(d["session"])]
-                    )
+                ids_batch = []
+                data_batch = []
+                cc_names_batch = []
+                for d in dlist:
+                    ids_batch.append([str(d["subject"]), str(d["session"])])
                     try:
                         add_cols = [d[ac] for ac in self.additional_columns]
                     except KeyError:
@@ -237,14 +238,18 @@ class Results:
                             # Add NaN if carbon_emission is not available
                             cols.append(np.nan)
 
-                        # Save unique CodeCarbon task name (only if dataset exists)
-                        if "codecarbon_task_name" in dset:
-                            dset["codecarbon_task_name"][row] = str(
-                                d.get("codecarbon_task_name", "")
-                            )
+                        if has_cc_task:
+                            cc_names_batch.append(str(d.get("codecarbon_task_name", "")))
 
                     all_cols = np.asarray([*cols, *add_cols])
-                    dset["data"][row, :] = all_cols[:n_existing]
+                    data_batch.append(all_cols[:n_existing])
+
+                dset["id"][old_len:new_len, :] = np.asarray(ids_batch)
+                dset["data"][old_len:new_len, :] = np.asarray(data_batch)
+                if has_cc_task:
+                    dset["codecarbon_task_name"][old_len:new_len] = np.asarray(
+                        cc_names_batch, dtype=object
+                    )
 
     @staticmethod
     def _to_dataframe_from_file(f, digests=None):
@@ -394,12 +399,9 @@ class Results:
         dict
             A dict containing the pipelines to compute.
         """
-        ret = {
-            k: pipelines[k]
-            for k in pipelines.keys()
-            if not self._already_computed(pipelines[k], dataset, subj, process_pipeline)
-        }
-        return ret
+        return self.batch_not_yet_computed(
+            pipelines, dataset, [subj], process_pipeline
+        ).get(subj, {})
 
     def _already_computed(
         self, pipeline, dataset, subject, process_pipeline, session=None
