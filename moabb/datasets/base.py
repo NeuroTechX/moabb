@@ -1240,7 +1240,7 @@ class BaseDataset(metaclass=MetaclassDataset):
             return 0
         return seed_loader_cache(store.parent, self._nemar_subject_ids(subject))
 
-    def _sourcedata_store(self):
+    def _sourcedata_store(self, path=None):
         """Local NEMAR sourcedata store to serve this dataset's loads from.
 
         None when the dataset has no deposit or the provider is pinned to
@@ -1248,7 +1248,7 @@ class BaseDataset(metaclass=MetaclassDataset):
         """
         if self.nemar_id is None or get_download_provider() == "upstream":
             return None
-        return nemar_store(self.code, self.nemar_id) / "sourcedata"
+        return nemar_store(self.code, self.nemar_id, path=path) / "sourcedata"
 
     def sourcedata_path(self, subject=None, path=None, force_update=False, verbose=None):
         """Get the dataset's *original* pre-BIDS distribution from NEMAR.

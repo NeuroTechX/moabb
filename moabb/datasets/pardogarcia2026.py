@@ -10,6 +10,7 @@ from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
+    AuxiliaryChannelsMetadata,
     DatasetMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
@@ -146,6 +147,9 @@ class PardoGarcia2026(BaseDataset):
             ground=None,
             sensors=list(PARDOGARCIA2026_CHANNELS),
             line_freq=50.0,
+            auxiliary_channels=AuxiliaryChannelsMetadata(
+                has_eog=True, eog_channels=4, eog_type=["horizontal", "vertical"]
+            ),
         ),
         participants=ParticipantMetadata(
             n_subjects=18,

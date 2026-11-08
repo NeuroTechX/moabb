@@ -10,6 +10,7 @@ from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
+    AuxiliaryChannelsMetadata,
     BCIApplicationMetadata,
     CrossValidationMetadata,
     DatasetMetadata,
@@ -131,6 +132,7 @@ class Vagaja2023(BaseDataset):
             software="BrainVision Recorder",
             sensors=list(_EEG_CHANNELS),
             line_freq=50.0,
+            auxiliary_channels=AuxiliaryChannelsMetadata(has_emg=True, emg_channels=2),
         ),
         participants=ParticipantMetadata(
             n_subjects=26,

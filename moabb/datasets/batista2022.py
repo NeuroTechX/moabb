@@ -11,6 +11,7 @@ from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
+    AuxiliaryChannelsMetadata,
     BCIApplicationMetadata,
     CrossValidationMetadata,
     DatasetMetadata,
@@ -116,6 +117,9 @@ class Batista2022(BaseDataset):
             software="BrainVision Recorder",
             sensors=list(_EEG_CHANNELS),
             line_freq=50.0,
+            auxiliary_channels=AuxiliaryChannelsMetadata(
+                other_physiological=["ecg", "respiration", "ppg"]
+            ),
         ),
         participants=ParticipantMetadata(
             n_subjects=20,

@@ -1009,3 +1009,132 @@ def test_country_flag_handles_bad_input(value, expected, country_constants):
 @pytest.mark.parametrize("missing", [float("nan"), None])
 def test_format_cell_handles_nan(fmt, missing):
     assert _format_cell(missing, fmt) == ""
+
+
+@pytest.mark.parametrize("name", DATASETS_WITH_METADATA)
+def test_channel_types_and_auxiliary_channels_consistency(name, dataset_metadata):
+    """Ensure eog/emg/ecg counts in channel_types match auxiliary_channels."""
+    acq = dataset_metadata[name].acquisition
+    ct = acq.channel_types
+    aux = acq.auxiliary_channels
+
+    eog_ct = ct.get("eog", 0)
+    if eog_ct > 0:
+        assert aux is not None and aux.has_eog is True, (
+            f"{name} has eog={eog_ct} in channel_types but auxiliary_channels.has_eog is not True"
+        )
+        if aux.eog_channels is not None:
+            assert aux.eog_channels == eog_ct, (
+                f"{name} has eog={eog_ct} in channel_types != auxiliary_channels.eog_channels={aux.eog_channels}"
+            )
+
+    emg_ct = ct.get("emg", 0)
+    if emg_ct > 0:
+        assert aux is not None and aux.has_emg is True, (
+            f"{name} has emg={emg_ct} in channel_types but auxiliary_channels.has_emg is not True"
+        )
+        if aux.emg_channels is not None:
+            assert aux.emg_channels == emg_ct, (
+                f"{name} has emg={emg_ct} in channel_types != auxiliary_channels.emg_channels={aux.emg_channels}"
+            )
+
+    ecg_ct = ct.get("ecg", 0)
+    if ecg_ct > 0:
+        other = [x.lower() for x in (aux.other_physiological or [])] if aux else []
+        assert "ecg" in other, (
+            f"{name} has ecg={ecg_ct} in channel_types but 'ecg' not in auxiliary_channels.other_physiological"
+        )
+
+
+class TestLoaderChannelCategorization:
+    """Verify loaders re-type EOG/EMG/ECG/IMU channels mistyped as EEG in raw headers."""
+
+    def test_lee2021_mobile_retypes_veog_and_imu(self, monkeypatch):
+        dataset = Lee2021Mobile(paradigm="ssvep", subjects=[1], sessions=[2])
+        monkeypatch.setattr(
+            dataset, "data_path", lambda subject: ["/tmp/sub-01_ses-02_task-SSVEP_eeg.vhdr"]
+        )
+        info = mne.create_info(
+            ["Cz", "HEOGL", "HEOGR", "VEOGU", "VEOGL", "HaccX"],
+            sfreq=500.0,
+            ch_types=["eeg", "eog", "eog", "eeg", "eeg", "eeg"],
+        )
+        raw = mne.io.RawArray(np.zeros((6, 50)), info, verbose=False)
+        raw.set_annotations(
+            mne.Annotations(
+                onset=[0.0, 0.01, 0.02],
+                duration=[0.0, 0.0, 0.0],
+                description=["Stimulus/S 11", "Stimulus/S 12", "Stimulus/S 13"],
+            )
+        )
+        monkeypatch.setattr(
+            "moabb.datasets.lee2021_mobile.mne.io.read_raw_brainvision",
+            lambda *args, **kwargs: raw.copy(),
+        )
+        sessions = dataset._get_single_subject_data(1)
+        out = sessions["2"]["0"]
+        assert out.get_channel_types() == ["eeg", "eog", "eog", "eog", "eog", "misc"]
+
+    def test_liu2025_retypes_ecg_and_eog(self, monkeypatch, tmp_path):
+        from moabb.datasets.liu2025 import Liu2025
+
+        dataset = Liu2025(subjects=[1])
+        ses_dir = tmp_path / "sub-01" / "ses-pre" / "eeg"
+        ses_dir.mkdir(parents=True)
+        (ses_dir / "run1.vhdr").touch()
+        monkeypatch.setattr(dataset, "data_path", lambda subject: str(tmp_path))
+
+        info = mne.create_info(
+            ["Cz", "ECG", "HEOR", "HEOL", "VEOU", "VEOL"],
+            sfreq=1000.0,
+            ch_types=["eeg"] * 6,
+        )
+        raw = mne.io.RawArray(np.zeros((6, 100)), info, verbose=False)
+        raw.set_annotations(
+            mne.Annotations(onset=[0.01], duration=[0.0], description=["Stimulus/S  3"])
+        )
+        monkeypatch.setattr(
+            "moabb.datasets.liu2025.mne.io.read_raw_brainvision",
+            lambda *args, **kwargs: raw.copy(),
+        )
+        sessions = dataset._get_single_subject_data(1)
+        out = sessions["0pre"]["0"]
+        assert out.get_channel_types(picks=["Cz", "ECG", "HEOR", "HEOL", "VEOU", "VEOL"]) == [
+            "eeg",
+            "ecg",
+            "eog",
+            "eog",
+            "eog",
+            "eog",
+        ]
+
+    def test_jeong2020_retypes_eog_and_emg(self, monkeypatch, tmp_path):
+        from moabb.datasets.jeong2020 import Jeong2020
+
+        dataset = Jeong2020(subjects=[1])
+        (tmp_path / "session1_sub1_reaching_MI.vhdr").touch()
+        monkeypatch.setattr(dataset, "data_path", lambda subject: str(tmp_path))
+
+        info = mne.create_info(
+            ["Cz", "hEOG_L", "vEOG_U", "EMG_1", "EMG_ref"],
+            sfreq=1000.0,
+            ch_types=["eeg"] * 5,
+        )
+        raw = mne.io.RawArray(np.zeros((5, 100)), info, verbose=False)
+        raw.set_annotations(
+            mne.Annotations(onset=[0.01], duration=[0.0], description=["Stimulus/S 11"])
+        )
+        monkeypatch.setattr(
+            "moabb.datasets.jeong2020.mne.io.read_raw_brainvision",
+            lambda *args, **kwargs: raw.copy(),
+        )
+        sessions = dataset._get_single_subject_data(1)
+        out = sessions["0"]["0"]
+        assert out.get_channel_types(picks=["Cz", "hEOG_L", "vEOG_U", "EMG_1", "EMG_ref"]) == [
+            "eeg",
+            "eog",
+            "eog",
+            "emg",
+            "emg",
+        ]
+

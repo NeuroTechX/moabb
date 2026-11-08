@@ -457,7 +457,7 @@ class Lee2024(BaseDataset):
             ]
         return cls._upstream_paths
 
-    def _subject_files(self, config, subj_str):
+    def _subject_files(self, config, subj_str, path=None):
         """One subject's files, as upstream-relative paths under the experiment.
 
         The NEMAR deposit's provenance manifest is the preferred inventory --
@@ -468,7 +468,7 @@ class Lee2024(BaseDataset):
         filename patterns silently dropped 345 files, e.g. subject 8's
         unpadded ``sub8_*`` names and every ``param.mat``).
         """
-        store = self._sourcedata_store()
+        store = self._sourcedata_store(path)
         manifest = store / "sourcedata_provenance.json" if store else None
         if manifest and manifest.is_file():
             rels = (f["file"] for f in json.loads(manifest.read_text())["files"])
@@ -490,7 +490,7 @@ class Lee2024(BaseDataset):
         config = _EXPERIMENT_CONFIGS[self._experiment]
         subj_str = self._subj_str(subject, config)
         unpadded = self._subj_str(subject, {"zero_pad": False})
-        for rel in self._subject_files(config, subj_str):
+        for rel in self._subject_files(config, subj_str, path=path):
             # The loader constructs zero-padded names; subject 8's upstream
             # files are unpadded (sub8_*), so normalize the local name.
             local = rel.replace(f"{unpadded}_", f"{subj_str}_")

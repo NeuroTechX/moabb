@@ -22,6 +22,7 @@ from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
+    AuxiliaryChannelsMetadata,
     DatasetMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
@@ -136,7 +137,13 @@ class ErpCore2021(BaseDataset):
     """
 
     METADATA = DatasetMetadata(
-        acquisition=AcquisitionMetadata(sampling_rate=1024.0, channel_types={"eeg": 30}),
+        acquisition=AcquisitionMetadata(
+            sampling_rate=1024.0,
+            channel_types={"eeg": 30, "eog": 3},
+            auxiliary_channels=AuxiliaryChannelsMetadata(
+                has_eog=True, eog_channels=3, eog_type=["horizontal", "vertical"]
+            ),
+        ),
         participants=ParticipantMetadata(n_subjects=40),
         experiment=ExperimentMetadata(paradigm="p300"),
         documentation=DocumentationMetadata(

@@ -290,7 +290,7 @@ def _load_data_006_2015(
     eeg_data = convert_units(data.X, from_unit="uV", to_unit="V")
     sfreq = float(data.fs)
     ch_names = [str(ch).strip() for ch in data.clab]
-    ch_types = ["eeg"] * len(ch_names)
+    ch_types = ["eog" if ch.upper().startswith("EOG") else "eeg" for ch in ch_names]
     trigger = np.zeros((len(eeg_data), 1))
     if hasattr(data, "trial") and len(data.trial) > 0:
         trial_indices = np.array(data.trial).flatten().astype(int) - 1
@@ -1020,7 +1020,7 @@ class BNCI2015_006(MNEBNCI):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=200.0,
-            channel_types={"eeg": 64},
+            channel_types={"eeg": 63, "eog": 1},
             montage="10-10",
             hardware="Brain Products",
             sensor_type="active electrode",
@@ -1030,7 +1030,9 @@ class BNCI2015_006(MNEBNCI):
             filters={"bandpass": [0.016, 250]},
             line_freq=50.0,
             impedance_threshold_kohm=20.0,
-            auxiliary_channels=None,
+            auxiliary_channels=AuxiliaryChannelsMetadata(
+                has_eog=True, eog_channels=1, eog_type=["vertical"]
+            ),
             cap_manufacturer="Brain Products",
             cap_model="actiCAP",
             electrode_type="active",

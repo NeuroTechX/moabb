@@ -397,6 +397,9 @@ def _apply_dataset_family_defaults(
             sampling_rate=1024.0,
             channel_types={"eeg": 30, "eog": 3},
             hardware="Biosemi ActiveTwo",
+            auxiliary_channels=AuxiliaryChannelsMetadata(
+                has_eog=True, eog_channels=3, eog_type=["horizontal", "vertical"]
+            ),
         )
         participants = metadata.participants or ParticipantMetadata(n_subjects=40)
         participants = replace(participants, n_subjects=40)

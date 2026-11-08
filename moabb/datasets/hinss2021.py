@@ -78,8 +78,8 @@ class Hinss2021(BaseDataset):
     nemar_id = "nm000343"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
-            sampling_rate=500.0,
-            channel_types={"eeg": 62},
+            sampling_rate=_SFREQ,
+            channel_types={"eeg": 61},
             montage="standard_1020",
             hardware="ActiCHamp (Brain Products Gmbh)",
             sensor_type="active Ag/AgCl",

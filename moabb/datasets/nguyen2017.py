@@ -17,6 +17,7 @@ from . import download as dl
 from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
+    AuxiliaryChannelsMetadata,
     CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
@@ -168,6 +169,7 @@ _NGUYEN_ACQUISITION = AcquisitionMetadata(
     filters={"highpass": 8.0, "lowpass": 70.0, "notch_hz": 60.0},
     line_freq=60.0,
     sensor_type="EEG",
+    auxiliary_channels=AuxiliaryChannelsMetadata(has_eog=True, eog_channels=4),
 )
 
 _NGUYEN_PREPROCESSING = PreprocessingMetadata(

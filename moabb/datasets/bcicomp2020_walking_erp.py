@@ -17,6 +17,7 @@ from . import download as dl
 from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
+    AuxiliaryChannelsMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
@@ -220,6 +221,11 @@ class BCIComp2020WalkingERP(BaseDataset):
             # Frontiers review paper either; left unset rather than
             # guessed.
             sensors=list(_CH_NAMES),
+            auxiliary_channels=AuxiliaryChannelsMetadata(
+                has_eog=True,
+                eog_channels=len(_EOG_CHANNELS),
+                eog_type=["horizontal", "vertical"],
+            ),
         ),
         participants=ParticipantMetadata(
             n_subjects=15,
