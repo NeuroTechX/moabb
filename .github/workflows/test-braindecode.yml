@@ -18,6 +18,7 @@ jobs:
   test:
     name: dev ${{ matrix.os }}, py-${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
     strategy:
       fail-fast: true
       matrix:
@@ -51,13 +52,35 @@ jobs:
           repository: braindecode/braindecode
           path: braindecode
 
-      - name: Install moabb, braindecode and run tests
+      - name: Install moabb and braindecode
         run: |
           uv pip install -e .
           cd braindecode && uv pip install -e .[tests]
-          echo "Running tests"
           uv pip install pytest-xdist
-          pytest test/ --quiet -n auto
+
+      # Only the MOABB integration: braindecode's full suite (~8k tests, its
+      # whole model zoo) with -n auto exhausts the 16 GB runner, which then
+      # stops with "The runner has received a shutdown signal". braindecode's
+      # own CI runs that suite.
+      - name: Run braindecode's MOABB tests
+        run: |
+          cd braindecode
+          pytest test/ --quiet -n 2 -k moabb
+
+      - name: Run braindecode's MOABB examples
+        env:
+          MPLBACKEND: Agg
+        run: |
+          cd braindecode
+          for example in \
+              examples/datasets_io/plot_moabb_dataset_example.py \
+              examples/model_building/plot_bcic_iv_2a_moabb_trial.py \
+              examples/model_building/plot_bcic_iv_2a_moabb_cropped.py \
+              examples/advanced_training/plot_moabb_benchmark.py; do
+            echo "::group::$example"
+            python "$example"
+            echo "::endgroup::"
+          done
 
       - name: Save MNE Data Cache
         if: success() && steps.cache-mne_data.outputs.cache-hit != 'true' && github.event_name == 'push' && github.ref == 'refs/heads/develop'
