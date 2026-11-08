@@ -136,3 +136,40 @@ def test_lazy_attributes_and_dir():
 
     with pytest.raises(AttributeError, match="braindecode"):
         _ = moabb.pipelines.KerasEEGNet_8_2
+
+
+def test_import_evaluations_and_analysis_skips_optional_deps():
+    """Importing evaluations and analysis should not import optuna, h5py, or pyriemann."""
+    out = _run_python(
+        """
+import sys
+from moabb.evaluations import WithinSessionEvaluation
+from moabb.analysis import Results
+
+eager = [
+    m for m in ("optuna", "h5py", "pyriemann", "codecarbon", "moabb.pipelines.classification")
+    if m in sys.modules
+]
+print(",".join(eager))
+"""
+    )
+    assert out == ""
+
+
+def test_pipeline_requires_epochs_does_not_import_classification():
+    """_pipeline_requires_epochs must not import moabb.pipelines.classification when unused."""
+    out = _run_python(
+        """
+import sys
+from sklearn.dummy import DummyClassifier
+from sklearn.pipeline import make_pipeline
+from moabb.evaluations.utils import _pipeline_requires_epochs
+
+pipe = make_pipeline(DummyClassifier())
+assert _pipeline_requires_epochs(pipe) is False
+assert "moabb.pipelines.classification" not in sys.modules
+assert "pyriemann" not in sys.modules
+print("ok")
+"""
+    )
+    assert out == "ok"

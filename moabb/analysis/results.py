@@ -6,11 +6,9 @@ import re
 import warnings
 from datetime import datetime
 
-import h5py
 import numpy as np
 import pandas as pd
 from mne import get_config, set_config
-from mne.datasets.utils import _get_path
 from sklearn.base import BaseEstimator
 from sklearn.pipeline import Pipeline
 
@@ -18,6 +16,20 @@ from moabb.utils import _open_lock_hdf5
 
 
 _carbonfootprint = importlib.util.find_spec("codecarbon") is not None
+
+
+def __getattr__(name):
+    if name == "h5py":
+        import h5py
+
+        globals()["h5py"] = h5py
+        return h5py
+    if name == "_get_path":
+        from mne.datasets.utils import _get_path
+
+        globals()["_get_path"] = _get_path
+        return _get_path
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 _ADDRESS_RE = re.compile(r"0x[\w]+>")
@@ -100,6 +112,8 @@ class Results:
             self.additional_columns = additional_columns
 
         if hdf5_path is None:
+            from mne.datasets.utils import _get_path
+
             if get_config("MOABB_RESULTS") is None:
                 # Use MNE_DATA if configured (env var or config file),
                 # otherwise fall back to ~/mne_data
@@ -173,6 +187,8 @@ class Results:
                 n_add_cols = len(self.additional_columns)
                 if dname not in ppline_grp.keys():
                     # create dataset subgroup if nonexistent
+                    import h5py
+
                     dset = ppline_grp.create_group(dname)
                     dset.attrs["n_subj"] = len(d1["dataset"].subject_list)
                     dset.attrs["n_sessions"] = d1["dataset"].n_sessions
@@ -429,6 +445,8 @@ class Results:
             True if the pipeline has already been computed for the given
             dataset and subject, False otherwise.
         """
+        import h5py
+
         with h5py.File(self.filepath, "r") as f:
             # get the digest from repr
             digest = get_pipeline_digest(process_pipeline, pipeline)
