@@ -160,7 +160,7 @@ class _Dreyer2023Base(BaseDataset):
             events={"left_hand": 1, "right_hand": 2},
             paradigm="imagery",
             n_classes=2,
-            class_labels=["right_hand", "left_hand"],
+            class_labels=["left_hand", "right_hand"],
             trial_duration=8.0,
             study_design="Graz protocol",
             feedback_type="continuous visual",
@@ -287,7 +287,6 @@ class _Dreyer2023Base(BaseDataset):
         *,
         return_all_modalities=False,
     ):
-
         self.sub_id = sub_id
 
         if sub_id is None:

@@ -149,6 +149,11 @@ class Liu2025(BaseDataset):
             mode="offline",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Dong Ming",
+            ethics_approval=[
+                "Ethics Committee of Tianjin Huanhu Hospital (IEC-B-013-V3.0)"
+            ],
+            repository="Zenodo",
             doi=_DOI,
             investigators=[
                 "Yuan Liu",

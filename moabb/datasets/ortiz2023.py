@@ -141,6 +141,11 @@ class Ortiz2023(BaseDataset):
             events={"relax": 1, "motor_imagery": 2, "regressive_count": 3},
         ),
         documentation=DocumentationMetadata(
+            senior_author="Jose M. Azorin",
+            funding=["European Union H2020 EUROBENCH (DECODED subproject)"],
+            ethics_approval=[
+                "Ethics and Integrity in Research Committee of Miguel Hernández University of Elche"
+            ],
             doi="10.1038/s41597-023-02243-7",
             description=(
                 "EEG database for the cognitive assessment of motor imagery "

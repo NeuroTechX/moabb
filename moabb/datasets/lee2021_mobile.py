@@ -585,6 +585,7 @@ class Lee2021Mobile_ERP(Lee2021Mobile):
             ],
         ),
         experiment=ExperimentMetadata(
+            class_labels=["Target", "NonTarget"],
             paradigm="p300",
             events={"Target": 2, "NonTarget": 1},
             n_classes=2,

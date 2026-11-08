@@ -206,6 +206,7 @@ class BCIComp2020UpperLimb(BaseDataset):
             line_freq=60.0,
         ),
         participants=ParticipantMetadata(
+            gender={"male": 20, "female": 30},
             n_subjects=15,
             health_status="healthy",
             age_min=20,
@@ -238,6 +239,8 @@ class BCIComp2020UpperLimb(BaseDataset):
             mode="offline",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Seong-Whan Lee",
+            ethics_approval=["Korea University Institutional Review Board"],
             doi="10.3389/fnhum.2022.898300",
             investigators=[
                 "Ji-Hoon Jeong",

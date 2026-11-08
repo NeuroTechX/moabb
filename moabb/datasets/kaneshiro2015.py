@@ -112,6 +112,9 @@ class Kaneshiro2015(BaseDataset):
             mode="offline",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Patrick Suppes",
+            ethics_approval=["Institutional Review Board of Stanford University"],
+            repository="Stanford Digital Repository",
             doi=_DOI,
             investigators=[
                 "Blair Kaneshiro",

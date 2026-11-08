@@ -147,6 +147,7 @@ class Tavakolan2017(BaseDataset):
             ),
         ),
         documentation=DocumentationMetadata(
+            funding=["CIHR", "NSERC", "MSFHR"],
             doi="10.1371/journal.pone.0174161",
             investigators=[
                 "Mojgan Tavakolan",
@@ -165,7 +166,9 @@ class Tavakolan2017(BaseDataset):
             repository="Zenodo",
             license="CC0-1.0",
             publication_year=2017,
-            ethics_approval=["Simon Fraser University Office of Research Ethics"],
+            ethics_approval=[
+                "Office of Research Ethics (#2012s0527), Simon Fraser University"
+            ],
             keywords=[
                 "motor imagery",
                 "EEG",

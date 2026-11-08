@@ -137,6 +137,7 @@ class Shin2022(BaseDataset):
             ),
         ),
         documentation=DocumentationMetadata(
+            ethics_approval=["Institutional Review Board of Carnegie Mellon University"],
             doi="10.3389/fnhum.2022.951591",
             investigators=["Hyonyoung Shin", "Daniel Suma", "Bin He"],
             senior_author="Bin He",

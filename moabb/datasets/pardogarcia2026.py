@@ -152,6 +152,8 @@ class PardoGarcia2026(BaseDataset):
             ),
         ),
         participants=ParticipantMetadata(
+            gender={"male": 7, "female": 10},
+            age_mean=51.9,
             n_subjects=18,
             health_status="mixed",
             clinical_population="chronic middle cerebral artery (MCA) stroke",
@@ -180,6 +182,10 @@ class PardoGarcia2026(BaseDataset):
             ),
         ),
         documentation=DocumentationMetadata(
+            senior_author="M. A. Pozo",
+            ethics_approval=[
+                "Medical Ethical Reviewing Committee of the Hospital Clínico San Carlos in Madrid, Spain (Nº22/459-E_Tesis)"
+            ],
             doi="10.5281/zenodo.19599465",
             description=(
                 "Pre-execution, two-class hand motor-imagery EEG (pinch vs fist) "

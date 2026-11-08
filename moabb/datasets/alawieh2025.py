@@ -109,6 +109,7 @@ class Alawieh2025(BaseDataset):
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
+            line_freq=60.0,
             sampling_rate=512.0,
             channel_types={"eeg": 32, "eog": 3},
             montage="10-20",
@@ -136,6 +137,8 @@ class Alawieh2025(BaseDataset):
             events={"left_hand": 1, "right_hand": 2},
         ),
         documentation=DocumentationMetadata(
+            senior_author="José del R. Millán",
+            funding=["Coleman Fung Foundation"],
             doi="10.5281/zenodo.15454354",
             description=(
                 "Longitudinal two-class (left/right hand) motor-imagery BCI "
@@ -160,8 +163,7 @@ class Alawieh2025(BaseDataset):
             related_paper_dois=["10.1101/2024.06.10.24308723"],
             institution="The University of Texas at Austin",
             ethics_approval=[
-                "University of Texas at Austin IRB Protocol #2020-03-0073",
-                "ClinicalTrials.gov NCT05183152",
+                "University of Texas at Austin Institutional Review Board (IRB protocol number: 2020-03-0073; ClinicalTrials.gov NCT05183152)"
             ],
         ),
         sessions_per_subject=1,

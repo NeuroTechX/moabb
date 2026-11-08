@@ -246,6 +246,7 @@ class Beetl2021_A(BaseDataset):
             study_domain="BCI",
         ),
         documentation=DocumentationMetadata(
+            license="CC-BY-4.0",
             doi="10.48550/arXiv.2202.12950",
             description="Motor Imagery dataset from BEETL Competition - Dataset A. Part of the NeurIPS 2021 BEETL competition focusing on transfer learning for subject independence and heterogeneous EEG datasets.",
             investigators=[
@@ -259,7 +260,7 @@ class Beetl2021_A(BaseDataset):
             ],
             institution="Multiple institutions",
             country="GB",
-            repository="Figshare",
+            repository="beetl.ai",
             data_url="https://beetl.ai/data",
             publication_year=2022,
             senior_author="A. Aldo Faisal",
@@ -718,6 +719,7 @@ class Beetl2021_B(BaseDataset):
             has_training_test_split=True,
         ),
         documentation=DocumentationMetadata(
+            license="CC-BY-4.0",
             description="Motor Imagery dataset from BEETL Competition - Dataset B. Part of the NeurIPS 2021 BEETL competition Task 2 focusing on transfer learning for motor imagery decoding. Dataset B contains data from Weibo2014 with 32 EEG channels selected around the motor cortex, sampled at 200 Hz. 4-class motor imagery: left hand, right hand, feet, and rest.",
             investigators=[
                 "Xiaoxi Wei",
@@ -744,7 +746,7 @@ class Beetl2021_B(BaseDataset):
             ],
             institution="Imperial College London",
             country="GB",
-            repository="Figshare",
+            repository="beetl.ai",
             data_url="https://beetl.ai/data",
             publication_year=2022,
             senior_author="A. Aldo Faisal",

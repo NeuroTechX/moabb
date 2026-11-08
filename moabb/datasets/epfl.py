@@ -155,7 +155,7 @@ class EPFLP300(BaseDataset):
             events={"Target": 2, "NonTarget": 1},
             paradigm="p300",
             n_classes=2,
-            class_labels=["target", "non-target"],
+            class_labels=["Target", "NonTarget"],
             trial_duration=1.0,
             study_design="Subjects counted silently how often a prescribed image (one of six: television, telephone, lamp, door, window, radio) was flashed while images were flashed in random sequences",
             feedback_type="none",
@@ -171,6 +171,7 @@ class EPFLP300(BaseDataset):
             },
         ),
         documentation=DocumentationMetadata(
+            data_url="http://bci.epfl.ch/p300",
             doi="10.1016/j.jneumeth.2007.03.005",
             investigators=[
                 "Ulrich Hoffmann",

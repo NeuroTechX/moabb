@@ -181,8 +181,8 @@ class Thielen2015(BaseDataset):
         experiment=ExperimentMetadata(
             events={"1.0": 101, "0.0": 100},
             paradigm="cvep",
-            n_classes=36,
-            class_labels=["target"],
+            n_classes=2,
+            class_labels=["1.0", "0.0"],
             trial_duration=4.2,
             study_design="6x6 matrix speller BCI using modulated Gold codes for visual stimulation; participants focused on target symbols while cells flashed according to pseudo-random bit-sequences",
             feedback_type="visual",

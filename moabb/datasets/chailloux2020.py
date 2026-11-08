@@ -123,6 +123,9 @@ class Chailloux2020(OpenNeuroMirrorMixin, BaseDataset):
             mode="offline",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Javier M. Antelis",
+            funding=["CONACyT Grant PN2015-873"],
+            repository="OpenNeuro",
             doi="10.3390/s20247198",
             investigators=[
                 "J. David Chailloux Peguero",

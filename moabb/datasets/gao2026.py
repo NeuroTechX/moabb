@@ -171,12 +171,13 @@ class Gao2026(BaseDataset):
             line_freq=50.0,
         ),
         participants=ParticipantMetadata(
+            age_std=0.8,
             n_subjects=22,
             health_status="healthy",
             gender={"male": 17, "female": 5},
-            age_mean=None,
-            age_min=20.0,
-            age_max=23.0,
+            age_mean=21.4,
+            age_min=20,
+            age_max=23,
             handedness=None,
             species="human",
         ),
@@ -198,6 +199,10 @@ class Gao2026(BaseDataset):
             mode="offline",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Yunfa Fu",
+            ethics_approval=[
+                "Medical Ethics Committee of Kunming University of Science and Technology (KMUST-MEC-2023-029)"
+            ],
             doi="10.1038/s41597-025-06512-5",
             investigators=[
                 "Jing'ao Gao",

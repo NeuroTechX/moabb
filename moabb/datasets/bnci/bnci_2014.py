@@ -437,7 +437,7 @@ class BNCI2014_001(MNEBNCI):
                 "Benjamin Blankertz",
             ],
             institution="Berlin Institute of Technology",
-            country="DE",
+            country="AT",
             license="CC-BY-ND-4.0",
             repository="BNCI Horizon",
             data_url="http://www.bbci.de/competition/iv/",
@@ -655,6 +655,8 @@ class BNCI2014_002(MNEBNCI):
             events={"right_hand": 1, "feet": 2},
         ),
         documentation=DocumentationMetadata(
+            senior_author="Gernot R. Müller-Putz",
+            data_url="http://bnci-horizon-2020.eu/database/data-sets",
             doi="10.1515/bmt-2014-0117",
             investigators=[
                 "David Steyrl",
@@ -1054,7 +1056,7 @@ class BNCI2014_008(MNEBNCI):
             paradigm="p300",
             n_classes=2,
             class_labels=["Target", "NonTarget"],
-            trial_duration=None,
+            trial_duration=1.0,
             study_design="P300 speller with 6x6 matrix for copy-spelling task in ALS patients",
             feedback_type="visual",
             stimulus_type="row-column intensification",
@@ -1067,6 +1069,7 @@ class BNCI2014_008(MNEBNCI):
             events={"Target": 2, "NonTarget": 1},
         ),
         documentation=DocumentationMetadata(
+            data_url="http://bnci-horizon-2020.eu/database/data-sets",
             doi="10.3389/fnhum.2013.00732",
             investigators=[
                 "Angela Riccio",
@@ -1278,6 +1281,7 @@ class BNCI2014_009(MNEBNCI):
             },
         ),
         documentation=DocumentationMetadata(
+            data_url="http://bnci-horizon-2020.eu/database/data-sets",
             doi="10.1088/1741-2560/11/3/035008",
             description="Complete record of P300 evoked potentials recorded with BCI2000 using two different paradigms: P300 Speller (overt attention) and GeoSpell (covert attention). 10 healthy subjects focused on one out of 36 different characters.",
             investigators=[

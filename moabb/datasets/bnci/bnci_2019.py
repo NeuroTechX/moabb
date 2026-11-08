@@ -194,11 +194,11 @@ class BNCI2019_001(BaseDataset):
             task_type="attempted movement",
             n_classes=5,
             class_labels=[
+                "supination",
+                "pronation",
                 "hand_open",
                 "palmar_grasp",
                 "lateral_grasp",
-                "pronation",
-                "supination",
             ],
             trial_duration=5.0,
             tasks=[
@@ -218,11 +218,11 @@ class BNCI2019_001(BaseDataset):
             has_training_test_split=True,
             instructions="Participants were instructed to attempt or execute movements based on class cue displayed on screen. They were asked to focus gaze on fixation cross, avoid eye movements, swallowing, and blinking during trial period.",
             events={
-                "hand_open": 1,
-                "palmar_grasp": 2,
-                "lateral_grasp": 3,
-                "pronation": 4,
-                "supination": 5,
+                "supination": 776,
+                "pronation": 777,
+                "hand_open": 779,
+                "palmar_grasp": 925,
+                "lateral_grasp": 926,
             },
         ),
         documentation=DocumentationMetadata(

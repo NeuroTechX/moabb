@@ -144,6 +144,8 @@ class Lioi2020_XP2(OpenNeuroMirrorMixin, BaseBIDSDataset):
             auxiliary_channels=AuxiliaryChannelsMetadata(other_physiological=["ecg"]),
         ),
         participants=ParticipantMetadata(
+            age_std=9.9,
+            age_mean=33.7,
             n_subjects=17,
             health_status="healthy",
             species="human",
@@ -172,6 +174,9 @@ class Lioi2020_XP2(OpenNeuroMirrorMixin, BaseBIDSDataset):
             mode="online",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Christian Barillot",
+            ethics_approval=["Comité de Protection des Personnes Ouest V"],
+            repository="OpenNeuro",
             doi="10.1038/s41597-020-0498-3",
             investigators=list(_AUTHORS),
             institution="Univ Rennes, Inria, CNRS, Inserm, IRISA",

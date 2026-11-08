@@ -135,6 +135,7 @@ class Han2026(OpenNeuroMirrorMixin, BaseDataset):
             ),
         ),
         documentation=DocumentationMetadata(
+            senior_author="Ming Tang",
             doi="10.18112/openneuro.ds007327.v1.1.0",
             description=(
                 "EEG from 35 healthy subjects performing basketball motor "

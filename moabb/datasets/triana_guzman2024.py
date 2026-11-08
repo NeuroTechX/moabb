@@ -275,6 +275,12 @@ class TrianaGuzman2024(OpenNeuroMirrorMixin, BaseBIDSDataset):
             mode="offline",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Javier M. Antelis",
+            funding=[
+                "Minciencias/Colciencias contract 594-2019 (project 80740-594-2019)"
+            ],
+            ethics_approval=["Ethics Committee of the Universidad Antonio Nariño"],
+            repository="OpenNeuro",
             doi="10.3389/fninf.2022.961089",
             investigators=[
                 "Nayid Triana-Guzman",

@@ -109,6 +109,7 @@ class PoloHortiguela2025(BaseDataset):
             events={"rest": 1, "motor_imagery": 2},
         ),
         documentation=DocumentationMetadata(
+            senior_author="Jose M. Azorin",
             doi="10.5281/zenodo.14672334",
             description="Open-loop EEG dataset of lower-limb (ankle dorsiflexion/plantarflexion) kinesthetic motor imagery versus relaxation from six healthy participants, recorded with a static and a motion exoskeleton model.",
             investigators=[

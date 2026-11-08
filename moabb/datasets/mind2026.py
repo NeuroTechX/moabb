@@ -130,20 +130,23 @@ class MIND2026(BaseDataset):
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
+            ground="forehead (GND)",
+            reference="parietal region (REF)",
             sampling_rate=1000.0,
             channel_types={"eeg": 64},
             montage="10-20",
-            hardware="Neuroscan SynAmps (64-channel Ag/AgCl, 10-20)",
+            hardware="Neuroscan SynAmps2 wireless",
             sensor_type="Ag/AgCl",
             electrode_type="wet",
             line_freq=50.0,
         ),
         participants=ParticipantMetadata(
+            handedness={"right": 30},
             n_subjects=30,
             health_status="healthy",
-            gender={"female": 12, "male": 18},
-            age_min=19.0,
-            age_max=25.0,
+            gender={"male": 18, "female": 12},
+            age_min=19,
+            age_max=25,
             species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
@@ -173,6 +176,8 @@ class MIND2026(BaseDataset):
             ),
         ),
         documentation=DocumentationMetadata(
+            senior_author="Ziyu Jia",
+            associated_paper_doi="10.48550/arXiv.2602.04299",
             doi=MIND2026_DOI,
             description=(
                 "Multimodal fNIRS-EEG dataset for four-class directional "

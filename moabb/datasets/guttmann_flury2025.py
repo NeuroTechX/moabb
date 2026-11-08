@@ -149,10 +149,17 @@ _BIS_MAP = {
 _DOCUMENTATION = DocumentationMetadata(
     doi=_DOI,
     investigators=["Eva Guttmann-Flury", "Xinjun Sheng", "Xiangyang Zhu"],
+    senior_author="Xiangyang Zhu",
     institution="Shanghai Jiao Tong University",
     country="CN",
     publication_year=2025,
+    repository="Zenodo",
+    data_url="https://zenodo.org/records/18970793",
     license="CC0",
+    ethics_approval=[
+        "Institutional Review Board of Shanghai Jiao Tong University (Protocol No. IRB HRP E2021216I)"
+    ],
+    funding=["National Natural Science Foundation of China (Grant No. 91948302)"],
 )
 
 # Shared participant metadata.
@@ -161,6 +168,7 @@ _PARTICIPANTS = ParticipantMetadata(
     health_status="healthy",
     gender={"female": 11, "male": 20},
     age_mean=28.3,
+    age_std=7.0,
     age_min=20.0,
     age_max=57.0,
     species="human",
@@ -912,6 +920,7 @@ class GuttmannFlury2025_P300(BaseDataset):
         acquisition=_ACQUISITION,
         participants=_PARTICIPANTS,
         experiment=ExperimentMetadata(
+            trial_duration=1.0,
             events=dict(_P300_EVENTS),
             paradigm="p300",
             n_classes=2,

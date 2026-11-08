@@ -151,6 +151,10 @@ class MILimbEEG(BaseDataset):
             events=EVENTS,
         ),
         documentation=DocumentationMetadata(
+            senior_author="Kleber Gonzalez",
+            ethics_approval=[
+                "Institutional Review Board of the Smart Data Analysis Systems Group (SDAS Group)"
+            ],
             doi="10.1016/j.dib.2023.109540",
             description=(
                 "Over 8,680 four-second EEG recordings from 60 volunteers "

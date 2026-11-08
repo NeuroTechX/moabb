@@ -136,6 +136,13 @@ class Zhang2025(BaseDataset):
             mode="offline",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Chen Yang",
+            funding=[
+                "National Natural Science Foundation of China (Grants 62376035, 62006024, U2241208, 62071057)",
+                "Fundamental Research Funds for the Central Universities (Grant 2023RC26)",
+            ],
+            ethics_approval=["Tsinghua Institutional Review Board"],
+            repository="Figshare",
             doi=_DOI,
             investigators=[
                 "Yufeng Zhang",

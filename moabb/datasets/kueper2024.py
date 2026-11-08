@@ -243,6 +243,8 @@ class Kueper2024(BaseDataset):
             events={"unilateral": 1, "bilateral": 2, "rest": 3},
         ),
         documentation=DocumentationMetadata(
+            senior_author="Elsa Andrea Kirchner",
+            ethics_approval=["Ethics Committee of the University of Bielefeld"],
             doi="10.1038/s41598-024-65910-8",
             description="EEG dataset of self-initiated, executed unilateral "
             "(right arm) and bilateral reaching movements from 14 healthy subjects "

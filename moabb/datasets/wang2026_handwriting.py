@@ -158,7 +158,7 @@ class Wang2026Handwriting(BaseBIDSDataset):
     Dataset from [1]_.
 
     The dataset contains EEG recordings from 21 healthy, right-handed adults
-    (10 female, 11 male, aged 22-32 years) performing two handwriting-imagery
+    (8 female, 13 male, aged 22-32 years) performing two handwriting-imagery
     tasks:
 
     - **CCS-HI** (Chinese character strokes imagery): five stroke classes
@@ -223,14 +223,11 @@ class Wang2026Handwriting(BaseBIDSDataset):
         participants=ParticipantMetadata(
             n_subjects=len(_SUBJECT_IDS),
             health_status="healthy",
-            gender={
-                "male": sum(1 for s in _SUBJECT_IDS if _DEMOGRAPHICS[s][0] == "male"),
-                "female": sum(1 for s in _SUBJECT_IDS if _DEMOGRAPHICS[s][0] == "female"),
-            },
+            gender={"male": 13, "female": 8},
             age_mean=sum(_DEMOGRAPHICS[s][1] for s in _SUBJECT_IDS) / len(_SUBJECT_IDS),
-            age_min=min(_DEMOGRAPHICS[s][1] for s in _SUBJECT_IDS),
-            age_max=max(_DEMOGRAPHICS[s][1] for s in _SUBJECT_IDS),
-            handedness={"right": len(_SUBJECT_IDS)},
+            age_min=22,
+            age_max=32,
+            handedness={"right": 21},
             bci_experience="mixed (expert and novice groups)",
             ages=[_DEMOGRAPHICS[s][1] for s in _SUBJECT_IDS],
             sexes=[_DEMOGRAPHICS[s][0] for s in _SUBJECT_IDS],
@@ -238,13 +235,19 @@ class Wang2026Handwriting(BaseBIDSDataset):
         experiment=ExperimentMetadata(
             paradigm="cognitive",
             events=dict(WANG2026_EVENTS),
-            n_classes=5,
+            n_classes=11,
             class_labels=[
                 "horizontal",
                 "vertical",
                 "left_falling",
                 "right_falling",
                 "turning",
+                "a",
+                "o",
+                "e",
+                "i",
+                "u",
+                "v",
             ],
             trial_duration=_TRIAL_DURATION,
             study_design=(
@@ -285,10 +288,14 @@ class Wang2026Handwriting(BaseBIDSDataset):
             license="CC-BY-4.0",
             publication_year=2026,
             ethics_approval=(
-                "Approved by the Ethics Committee of Kunming University of "
-                "Science and Technology (Approval No.: KMUST-MEC-2023-026)"
+                [
+                    "Ethics Committee of Kunming University of Science and Technology (Approval No.: KMUST-MEC-2023-026)"
+                ]
             ),
-            funding=["National Natural Science Foundation of China (Grant No. 62376112)"],
+            funding=[
+                "National Natural Science Foundation of China (Grant Nos. 62376112, 82172058, 81771926, 61763022, 62366026, 62006246)",
+                "China Postdoctoral Science Foundation (Grant No. 2023M734315)",
+            ],
             keywords=[
                 "handwriting imagery",
                 "EEG",
