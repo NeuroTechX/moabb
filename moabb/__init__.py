@@ -15,20 +15,9 @@ _UTILS_EXPORTS = (
     "setup_seed",
 )
 
-_SUBPACKAGES = (
-    "analysis",
-    "datasets",
-    "evaluations",
-    "paradigms",
-    "pipelines",
-    "utils",
-)
+_SUBPACKAGES = ("analysis", "datasets", "evaluations", "paradigms", "pipelines", "utils")
 
-__all__ = [
-    "__version__",
-    "benchmark",
-    *_UTILS_EXPORTS,
-]
+__all__ = ["__version__", "benchmark", *_UTILS_EXPORTS]
 
 
 def __getattr__(name):
@@ -46,4 +35,3 @@ def __getattr__(name):
 
 def __dir__():
     return sorted(set(globals()) | set(_UTILS_EXPORTS) | set(_SUBPACKAGES))
-
