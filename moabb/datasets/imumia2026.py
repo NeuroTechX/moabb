@@ -229,7 +229,7 @@ class IMUMIA2026(BaseDataset):
         ),
         data_structure=DataStructureMetadata(
             n_trials=120,
-            n_trials_per_class={label: 12 for label in _EVENTS},
+            n_trials_per_class=dict.fromkeys(_EVENTS, 12),
             n_blocks=5,
             trials_context="Single session with five runs (one motor-imagery task "
             "each). Only the Classic Arrow cues (12 trials per side and task) are "
