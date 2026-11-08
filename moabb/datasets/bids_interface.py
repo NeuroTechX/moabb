@@ -42,7 +42,6 @@ from numpy import load as np_load
 from numpy import save as np_save
 
 import moabb
-from moabb.analysis.results import get_digest
 from moabb.datasets import download as dl
 from moabb.datasets._channel_pick import pick_channels_for_modalities
 
@@ -2251,6 +2250,8 @@ class BIDSInterfaceBase(abc.ABC):
     @property
     def desc(self):
         """Return the description of the processing pipeline."""
+        from moabb.analysis.results import get_digest
+
         return get_digest(self.processing_params)
 
     def __repr__(self):

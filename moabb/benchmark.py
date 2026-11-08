@@ -1,36 +1,11 @@
+import importlib.util
 import logging
 import os
 import os.path as osp
 from pathlib import Path
 
-import mne
-import pandas as pd
-import yaml
-from mne.utils import _open_lock
 
-from moabb import paradigms as moabb_paradigms
-from moabb.analysis import analyze
-from moabb.datasets.base import BaseDataset
-from moabb.datasets.fake import FakeDataset
-from moabb.evaluations import (
-    CrossSessionEvaluation,
-    CrossSubjectEvaluation,
-    WithinSessionEvaluation,
-)
-from moabb.evaluations.utils import _pipeline_requires_epochs
-from moabb.pipelines.utils import (
-    generate_paradigms,
-    generate_param_grid,
-    parse_pipelines_from_directory,
-)
-
-
-try:
-    from codecarbon import EmissionsTracker  # noqa
-
-    _carbonfootprint = True
-except ImportError:
-    _carbonfootprint = False
+_carbonfootprint = importlib.util.find_spec("codecarbon") is not None
 
 log = logging.getLogger(__name__)
 
@@ -190,6 +165,24 @@ def benchmark(  # noqa: C901
         Create the function to run the benchmark
     """
     # set logs
+    import mne
+    import pandas as pd
+    import yaml
+    from mne.utils import _open_lock
+
+    from moabb.datasets.fake import FakeDataset
+    from moabb.evaluations import (
+        CrossSessionEvaluation,
+        CrossSubjectEvaluation,
+        WithinSessionEvaluation,
+    )
+    from moabb.evaluations.utils import _pipeline_requires_epochs
+    from moabb.pipelines.utils import (
+        generate_paradigms,
+        generate_param_grid,
+        parse_pipelines_from_directory,
+    )
+
     if evaluations is None:
         evaluations = ["WithinSession", "CrossSession", "CrossSubject"]
 
@@ -353,6 +346,8 @@ def benchmark(  # noqa: C901
 
 def _display_results(results):
     """Print results after computation."""
+    import pandas as pd
+
     tab = []
     for d in results["dataset"].unique():
         for p in results["pipeline"].unique():
@@ -394,6 +389,8 @@ def _combine_paradigms(prdgm_results):
         Results with filterbank and direct paradigms combined
     """
     eval_results = prdgm_results.copy()
+    import pandas as pd
+
     combine_paradigms = ["SSVEP"]
     for p in combine_paradigms:
         if f"FilterBank{p}" in eval_results.keys() and f"{p}" in eval_results.keys():
@@ -416,6 +413,8 @@ def _save_results(eval_results, output, plot):
     plot: bool
         Plot results after computing
     """
+    from moabb.analysis import analyze
+
     for prdgm, prdgm_result in eval_results.items():
         prdgm_path = Path(output) / prdgm
         if not osp.isdir(prdgm_path):
@@ -455,6 +454,9 @@ def _inc_exc_datasets(
 
     # --- Inclusion logic ---
     if include_datasets is not None:
+        from moabb.datasets.base import BaseDataset
+        from moabb.datasets.fake import FakeDataset
+
         include_codes = _validate_list_per_paradigm(
             all_paradigm_codes, paradigm_name, include_datasets, "include_datasets"
         )
@@ -509,6 +511,8 @@ def _get_paradigm_instance(paradigm_name, context_params=None):
     ValueError
         If the paradigm name is not found in moabb.paradigms.
     """
+    from moabb import paradigms as moabb_paradigms
+
     context_params = context_params or {}
 
     # Find matching class name in moabb.paradigms, case-insensitive
@@ -571,6 +575,8 @@ def _validate_list_per_paradigm(all_paradigm_codes, paradigm_name, ds_list, list
         raise ValueError(f"{list_name} cannot be an empty list.")
 
     # Ensure homogeneity: all strings or all dataset objects
+    from moabb.datasets.base import BaseDataset
+
     all_str = all(isinstance(x, str) for x in ds_list)
     all_obj = all(isinstance(x, BaseDataset) for x in ds_list)
 
