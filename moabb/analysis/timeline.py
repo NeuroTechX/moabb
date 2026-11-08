@@ -123,6 +123,12 @@ _PARADIGM_STYLES: dict[str, dict[str, dict]] = {
         "eyes_open": {"facecolor": "#B0BEC5", "edgecolor": "#455A64"},
         "eyes_closed": {"facecolor": "#455A64", "edgecolor": "#263238"},
     },
+    "cognitive": {
+        "cue": {"facecolor": "#CE93D8", "edgecolor": "#6A1B9A"},
+        "imagery": {"facecolor": "#8E24AA", "edgecolor": "#4A148C"},
+        "feedback": {"facecolor": "#AB47BC", "edgecolor": "#4A148C"},
+        "fixation": {"facecolor": "#E1BEE7", "edgecolor": "#BA68C8"},
+    },
 }
 
 
@@ -303,7 +309,7 @@ def _format_time(seconds: float) -> str:
     """Format seconds to a human-friendly label."""
     if seconds == 0:
         return "0s"
-    if seconds < 0.1:
+    if 0 < abs(seconds) < 0.1:
         return f"{seconds * 1000:.0f}ms"
     if seconds == int(seconds):
         return f"{int(seconds)}s"
@@ -505,6 +511,33 @@ def _is_motor_execution(metadata, dataset: BaseDataset | None = None) -> bool:
     )
 
 
+def _finalize_mi_timeline(
+    dataset: BaseDataset,
+    phases: list[TimelinePhase],
+    total_dur: float,
+    notes: list[str] | None = None,
+    paradigm: str = "imagery",
+) -> StimulusTimeline:
+    """Create a StimulusTimeline with phase boundary annotations."""
+    annotations = [
+        TimelineAnnotation(p.onset_s, p.onset_s, _format_time(p.onset_s)) for p in phases
+    ]
+    end_t = (
+        phases[-1].onset_s + phases[-1].duration_s
+        if phases and phases[0].onset_s < 0
+        else total_dur
+    )
+    annotations.append(TimelineAnnotation(end_t, end_t, _format_time(end_t)))
+    return StimulusTimeline(
+        paradigm=paradigm,
+        dataset_name=_dataset_name(dataset),
+        phases=phases,
+        annotations=annotations,
+        total_duration_s=total_dur,
+        notes=notes or None,
+    )
+
+
 def _extract_mi_timeline(metadata, dataset: BaseDataset) -> StimulusTimeline | None:
     ps = _get_paradigm_specific(metadata)
     sp = _get_stim_pres(metadata)
@@ -512,7 +545,7 @@ def _extract_mi_timeline(metadata, dataset: BaseDataset) -> StimulusTimeline | N
     task_label = "Motor Execution" if is_execution else "Motor Imagery"
     cue_task_label = "Cue + ME" if is_execution else "Cue + MI"
 
-    cross_onset_s = 0.0
+    cross_onset_s: float | None = None
     beep_s: float | None = None
     cue_onset_s: float | None = None
     cue_dur_s: float | None = None
@@ -545,103 +578,363 @@ def _extract_mi_timeline(metadata, dataset: BaseDataset) -> StimulusTimeline | N
         if v is not None:
             trial_dur_s = v / 1000.0
 
-    # Build from what we have; fall back to dataset.interval
+    # Build from what we have; fall back to imagery_dur_s / dataset.interval
     exp = getattr(metadata, "experiment", None) if metadata else None
     if trial_dur_s is None and exp is not None:
         trial_dur_s = getattr(exp, "trial_duration", None)
     interval = getattr(dataset, "interval", None)
     if trial_dur_s is None and interval is not None:
-        trial_dur_s = float(interval[1] - interval[0])
+        int_span = float(interval[1] - interval[0])
+        trial_dur_s = max(int_span, imagery_dur_s or 0.0)
+    elif trial_dur_s is None and imagery_dur_s is not None:
+        trial_dur_s = imagery_dur_s
 
     if trial_dur_s is None:
         return None
 
-    phases: list[TimelinePhase] = []
-    annotations: list[TimelineAnnotation] = []
-
-    # Fixation cross — use explicit None check so 0.0 is honoured as a valid onset
-    default_fix = min(2.0, round(trial_dur_s * 0.25, 2)) if trial_dur_s <= 2.0 else 2.0
-    fix_end = (
-        beep_s
-        if beep_s is not None
-        else (cue_onset_s if cue_onset_s is not None else default_fix)
-    )
-    phases.append(
-        TimelinePhase(
-            "Fixation +", cross_onset_s, fix_end - cross_onset_s, "fixation", "cross"
+    # 1. Explicit stimulus_presentation timing (e.g. BNCI2014_001)
+    if any(
+        x is not None
+        for x in (cross_onset_s, beep_s, cue_onset_s, feedback_onset_s)
+    ):
+        phases: list[TimelinePhase] = []
+        c_onset = cross_onset_s if cross_onset_s is not None else 0.0
+        default_fix = (
+            min(2.0, round(trial_dur_s * 0.25, 2)) if trial_dur_s <= 2.0 else 2.0
         )
-    )
-
-    if cue_onset_s is not None and cue_dur_s is None:
-        cue_dur_s = (feedback_onset_s - cue_onset_s) if feedback_onset_s else 1.25
-
-    # Motor imagery / execution / feedback
-    if feedback_onset_s is not None:
-        if cue_onset_s is not None and cue_dur_s is not None:
-            phases.append(
-                TimelinePhase("Cue", cue_onset_s, cue_dur_s, "cue", "arrow_left")
-            )
-        if feedback_dur_s is None:
-            feedback_dur_s = trial_dur_s - feedback_onset_s
+        fix_end = (
+            beep_s
+            if beep_s is not None
+            else (cue_onset_s if cue_onset_s is not None else default_fix)
+        )
         phases.append(
-            TimelinePhase(task_label, feedback_onset_s, feedback_dur_s, "imagery")
-        )
-    elif cue_onset_s is not None and cue_dur_s is not None:
-        img_onset = cue_onset_s + cue_dur_s
-        img_dur = imagery_dur_s or (trial_dur_s - img_onset)
-        # Some MI protocols start imagery at cue onset, with the cue covering
-        # only the first part of the imagery period.
-        if (
-            imagery_dur_s is not None
-            and cue_onset_s + cue_dur_s + imagery_dur_s > trial_dur_s
-            and cue_onset_s + imagery_dur_s <= trial_dur_s
-        ):
-            phases.append(
-                TimelinePhase(cue_task_label, cue_onset_s, cue_dur_s, "cue", "arrow_left")
+            TimelinePhase(
+                "Fixation +", c_onset, fix_end - c_onset, "fixation", "cross"
             )
-            remaining_img_dur = imagery_dur_s - cue_dur_s
-            if remaining_img_dur > 0:
+        )
+        if cue_onset_s is not None and cue_dur_s is None:
+            cue_dur_s = (feedback_onset_s - cue_onset_s) if feedback_onset_s else 1.25
+
+        if feedback_onset_s is not None:
+            if cue_onset_s is not None and cue_dur_s is not None:
+                phases.append(
+                    TimelinePhase("Cue", cue_onset_s, cue_dur_s, "cue", "arrow_left")
+                )
+            if feedback_dur_s is None:
+                feedback_dur_s = trial_dur_s - feedback_onset_s
+            phases.append(
+                TimelinePhase(task_label, feedback_onset_s, feedback_dur_s, "imagery")
+            )
+        elif cue_onset_s is not None and cue_dur_s is not None:
+            img_onset = cue_onset_s + cue_dur_s
+            img_dur = imagery_dur_s or (trial_dur_s - img_onset)
+            if (
+                imagery_dur_s is not None
+                and cue_onset_s + cue_dur_s + imagery_dur_s > trial_dur_s
+                and cue_onset_s + imagery_dur_s <= trial_dur_s
+            ):
                 phases.append(
                     TimelinePhase(
-                        task_label, cue_onset_s + cue_dur_s, remaining_img_dur, "imagery"
+                        cue_task_label, cue_onset_s, cue_dur_s, "cue", "arrow_left"
+                    )
+                )
+                remaining_img_dur = imagery_dur_s - cue_dur_s
+                if remaining_img_dur > 0:
+                    phases.append(
+                        TimelinePhase(
+                            task_label,
+                            cue_onset_s + cue_dur_s,
+                            remaining_img_dur,
+                            "imagery",
+                        )
+                    )
+            else:
+                phases.append(
+                    TimelinePhase("Cue", cue_onset_s, cue_dur_s, "cue", "arrow_left")
+                )
+                phases.append(TimelinePhase(task_label, img_onset, img_dur, "imagery"))
+        else:
+            img_onset = fix_end
+            phases.append(
+                TimelinePhase(task_label, img_onset, trial_dur_s - img_onset, "imagery")
+            )
+
+        last = phases[-1]
+        end_of_last = last.onset_s + last.duration_s
+        if trial_dur_s - end_of_last > 0.1:
+            phases.append(
+                TimelinePhase("Rest", end_of_last, trial_dur_s - end_of_last, "rest")
+            )
+        return _finalize_mi_timeline(dataset, phases, trial_dur_s)
+
+    synch = (getattr(exp, "synchronicity", None) or "").lower() if exp else ""
+    stim_type = (getattr(exp, "stimulus_type", None) or "").lower() if exp else ""
+    sdesign = (getattr(exp, "study_design", None) or "").lower() if exp else ""
+    modalities = (
+        [m.lower() for m in (getattr(exp, "stimulus_modalities", None) or [])]
+        if exp
+        else []
+    )
+
+    # 2. Self-paced / Asynchronous / Continuous protocols (NEVER show Fixation +)
+    is_self_paced = (
+        synch == "self-paced"
+        or "self-paced" in sdesign
+        or "freewill" in sdesign
+        or (sp and "self_paced_execution" in sp)
+    )
+    if is_self_paced:
+        if sp and ("self_paced_execution" in sp or "break_return_cup" in sp):
+            # Thapa2025: 0-12s self-paced trial after audio 'start' cue, 12-19s break
+            phases = [
+                TimelinePhase("Audio 'Start'", 0.0, 1.0, "cue"),
+                TimelinePhase(f"Self-Paced {task_label}", 1.0, 11.0, "imagery"),
+                TimelinePhase("Break / Rest", 12.0, 7.0, "rest"),
+            ]
+            notes = [
+                "Self-paced freewill reach & grasp (any time in 0\u201312s)  |  "
+                "Epoch: [0, 4]s from movement onset"
+            ]
+            return _finalize_mi_timeline(dataset, phases, 19.0, notes)
+        if interval is not None and float(interval[0]) < 0:
+            # Movement-onset-locked self-paced (e.g. BNCI2020_001 [-2, 3], Kueper2024 [-2, 1])
+            tmin, tmax = float(interval[0]), float(interval[1])
+            pre_dur = abs(tmin)
+            post_dur = tmax
+            phases = [
+                TimelinePhase("Pre-Movement", tmin, pre_dur, "rest"),
+                TimelinePhase(f"Self-Paced {task_label}", 0.0, post_dur, "imagery"),
+            ]
+            notes = [
+                f"Self-paced protocol aligned to movement onset (0s); epoch [{tmin:g}, {tmax:g}]s"
+            ]
+            return _finalize_mi_timeline(dataset, phases, pre_dur + post_dur, notes)
+        phases = [TimelinePhase(f"Self-Paced {task_label}", 0.0, trial_dur_s, "imagery")]
+        return _finalize_mi_timeline(
+            dataset, phases, trial_dur_s, ["Self-paced protocol (no fixation cross)"]
+        )
+
+    if synch == "asynchronous":
+        int_dur = (
+            float(interval[1] - interval[0])
+            if interval is not None
+            else trial_dur_s
+        )
+        if trial_dur_s > int_dur + 0.1:
+            phases = [
+                TimelinePhase(f"Asynchronous {task_label}", 0.0, int_dur, "imagery"),
+                TimelinePhase("Rest", int_dur, trial_dur_s - int_dur, "rest"),
+            ]
+        else:
+            phases = [
+                TimelinePhase(f"Asynchronous {task_label}", 0.0, trial_dur_s, "imagery")
+            ]
+        return _finalize_mi_timeline(
+            dataset, phases, trial_dur_s, ["Asynchronous protocol"]
+        )
+
+    if synch == "continuous" or "continuous pursuit" in stim_type:
+        if cue_dur_s and 0 < cue_dur_s < trial_dur_s:
+            phases = [
+                TimelinePhase("Cue", 0.0, cue_dur_s, "cue"),
+                TimelinePhase(
+                    f"Continuous {task_label}",
+                    cue_dur_s,
+                    trial_dur_s - cue_dur_s,
+                    "imagery",
+                ),
+            ]
+        else:
+            phases = [
+                TimelinePhase(f"Continuous {task_label}", 0.0, trial_dur_s, "imagery")
+            ]
+        return _finalize_mi_timeline(
+            dataset, phases, trial_dur_s, ["Continuous tracking protocol"]
+        )
+
+    # 3. Auditory-only protocols (NEVER show visual Fixation + cross)
+    is_auditory_only = (
+        bool(modalities)
+        and all(m in ("auditory", "audio") for m in modalities)
+    )
+    if is_auditory_only:
+        phases = []
+        if cue_dur_s and 0 < cue_dur_s < trial_dur_s:
+            img_d = min(
+                imagery_dur_s or (trial_dur_s - cue_dur_s), trial_dur_s - cue_dur_s
+            )
+            phases.append(TimelinePhase("Audio Cue", 0.0, cue_dur_s, "cue"))
+            phases.append(TimelinePhase(task_label, cue_dur_s, img_d, "imagery"))
+            rem = trial_dur_s - (cue_dur_s + img_d)
+            if rem > 0.1:
+                phases.append(TimelinePhase("Rest", cue_dur_s + img_d, rem, "rest"))
+        else:
+            img_d = min(imagery_dur_s or trial_dur_s, trial_dur_s)
+            phases.append(TimelinePhase(task_label, 0.0, img_d, "imagery"))
+            rem = trial_dur_s - img_d
+            if rem > 0.1:
+                phases.append(TimelinePhase("Rest", img_d, rem, "rest"))
+        return _finalize_mi_timeline(dataset, phases, trial_dur_s)
+
+    # 4. Synchronous / Cue-based protocols using interval & ParadigmSpecificMetadata
+    has_fixation = any(
+        kw in stim_type or kw in sdesign for kw in ("fixation", "cross", "graz")
+    )
+    int_start = float(interval[0]) if interval is not None else 0.0
+    int_end = float(interval[1]) if interval is not None else trial_dur_s
+    int_dur = int_end - int_start
+
+    # 4a. Epoch starts at t > 0 (pre-task fixation/cue period in [0, int_start])
+    if int_start > 0:
+        total_dur = max(trial_dur_s, int_end)
+        phases = []
+        # Check whether cue_dur_s occurs immediately before int_start (e.g. Weibo2014, Yang2025)
+        if (
+            imagery_dur_s is not None
+            and abs(int_dur - imagery_dur_s) < 0.1
+            and cue_dur_s is not None
+            and 0 < cue_dur_s <= int_start
+        ):
+            if int_start - cue_dur_s > 0.05:
+                phases.append(
+                    TimelinePhase(
+                        "Fixation +", 0.0, int_start - cue_dur_s, "fixation", "cross"
+                    )
+                )
+            phases.append(
+                TimelinePhase(
+                    "Cue", int_start - cue_dur_s, cue_dur_s, "cue", "arrow_left"
+                )
+            )
+            phases.append(TimelinePhase(task_label, int_start, int_dur, "imagery"))
+        else:
+            # Cue starts at int_start (e.g. BNCI2014_002, BNCI2014_004, BNCI2019_001, Nieto2022)
+            pre_label = "Fixation +" if has_fixation or int_start >= 1.5 else "Cue / Prep"
+            pre_style = "fixation" if pre_label == "Fixation +" else "cue"
+            phases.append(TimelinePhase(pre_label, 0.0, int_start, pre_style))
+            if cue_dur_s is not None and 0 < cue_dur_s < int_dur:
+                phases.append(
+                    TimelinePhase(
+                        cue_task_label, int_start, cue_dur_s, "cue", "arrow_left"
+                    )
+                )
+                phases.append(
+                    TimelinePhase(
+                        task_label,
+                        int_start + cue_dur_s,
+                        int_dur - cue_dur_s,
+                        "imagery",
+                    )
+                )
+            elif cue_dur_s is not None and abs(cue_dur_s - int_dur) < 0.1:
+                phases.append(
+                    TimelinePhase(cue_task_label, int_start, int_dur, "imagery")
+                )
+            else:
+                phases.append(TimelinePhase(task_label, int_start, int_dur, "imagery"))
+
+        end_of_last = phases[-1].onset_s + phases[-1].duration_s
+        if total_dur - end_of_last > 0.1:
+            phases.append(
+                TimelinePhase("Rest", end_of_last, total_dur - end_of_last, "rest")
+            )
+        return _finalize_mi_timeline(dataset, phases, total_dur)
+
+    # 4b. Epoch starts at t == 0
+    eff_img_dur = imagery_dur_s or int_dur or trial_dur_s
+
+    # Case where full trial_dur_s is longer than the imagery/execution window
+    if trial_dur_s > eff_img_dur + 0.1:
+        phases = []
+        if cue_dur_s is not None and cue_dur_s > 0:
+            rem_after_cue_img = trial_dur_s - (cue_dur_s + eff_img_dur)
+            if abs(cue_dur_s - eff_img_dur) < 0.1:
+                # Cue stays visible throughout the imagery window (e.g. GrosseWentrup2009, Zhou2016, NETBCI2026)
+                phases.append(
+                    TimelinePhase(cue_task_label, 0.0, eff_img_dur, "imagery")
+                )
+            elif has_fixation and rem_after_cue_img >= 2.0 and int_dur <= eff_img_dur + 0.1:
+                fix_d = 2.0
+                phases.append(
+                    TimelinePhase("Fixation +", 0.0, fix_d, "fixation", "cross")
+                )
+                phases.append(
+                    TimelinePhase("Cue", fix_d, cue_dur_s, "cue", "arrow_left")
+                )
+                phases.append(
+                    TimelinePhase(
+                        task_label, fix_d + cue_dur_s, eff_img_dur, "imagery"
+                    )
+                )
+            elif cue_dur_s + eff_img_dur <= trial_dur_s + 0.05:
+                phases.append(
+                    TimelinePhase("Cue", 0.0, cue_dur_s, "cue", "arrow_left")
+                )
+                phases.append(
+                    TimelinePhase(task_label, cue_dur_s, eff_img_dur, "imagery")
+                )
+            else:
+                phases.append(
+                    TimelinePhase(
+                        cue_task_label, 0.0, cue_dur_s, "cue", "arrow_left"
+                    )
+                )
+                phases.append(
+                    TimelinePhase(
+                        task_label,
+                        cue_dur_s,
+                        max(0.5, eff_img_dur - cue_dur_s),
+                        "imagery",
                     )
                 )
         else:
+            if has_fixation and trial_dur_s - eff_img_dur >= 2.0:
+                fix_d = 2.0
+                phases.append(
+                    TimelinePhase("Fixation +", 0.0, fix_d, "fixation", "cross")
+                )
+                phases.append(
+                    TimelinePhase(task_label, fix_d, eff_img_dur, "imagery")
+                )
+            else:
+                phases.append(TimelinePhase(task_label, 0.0, eff_img_dur, "imagery"))
+
+        end_of_last = phases[-1].onset_s + phases[-1].duration_s
+        if trial_dur_s - end_of_last > 0.1:
             phases.append(
-                TimelinePhase("Cue", cue_onset_s, cue_dur_s, "cue", "arrow_left")
+                TimelinePhase("Rest", end_of_last, trial_dur_s - end_of_last, "rest")
             )
-            phases.append(TimelinePhase(task_label, img_onset, img_dur, "imagery"))
-    else:
-        # Simple: just event interval
-        img_onset = fix_end
-        phases.append(
-            TimelinePhase(task_label, img_onset, trial_dur_s - img_onset, "imagery")
-        )
+        return _finalize_mi_timeline(dataset, phases, trial_dur_s)
 
-    # Rest at end if there's remaining time
-    last = phases[-1]
-    end_of_last = last.onset_s + last.duration_s
-    if trial_dur_s - end_of_last > 0.1:
-        phases.append(
-            TimelinePhase("Rest", end_of_last, trial_dur_s - end_of_last, "rest")
-        )
+    # Case where trial_dur_s == eff_img_dur (timeline shows the [0, trial_dur_s] task epoch)
+    if cue_dur_s is not None and 0 < cue_dur_s < trial_dur_s:
+        phases = [
+            TimelinePhase(cue_task_label, 0.0, cue_dur_s, "cue", "arrow_left"),
+            TimelinePhase(task_label, cue_dur_s, trial_dur_s - cue_dur_s, "imagery"),
+        ]
+        return _finalize_mi_timeline(dataset, phases, trial_dur_s)
 
-    # Time ticks as annotations
-    for p in phases:
-        annotations.append(
-            TimelineAnnotation(p.onset_s, p.onset_s, _format_time(p.onset_s))
-        )
-    annotations.append(
-        TimelineAnnotation(trial_dur_s, trial_dur_s, _format_time(trial_dur_s))
-    )
+    if cue_dur_s is not None and abs(cue_dur_s - trial_dur_s) < 0.1:
+        phases = [TimelinePhase(cue_task_label, 0.0, trial_dur_s, "imagery")]
+        return _finalize_mi_timeline(dataset, phases, trial_dur_s)
 
-    return StimulusTimeline(
-        paradigm="imagery",
-        dataset_name=_dataset_name(dataset),
-        phases=phases,
-        annotations=annotations,
-        total_duration_s=trial_dur_s,
-    )
+    if metadata is None:
+        default_fix = (
+            min(2.0, round(trial_dur_s * 0.25, 2)) if trial_dur_s <= 2.0 else 2.0
+        )
+        phases = [
+            TimelinePhase("Fixation +", 0.0, default_fix, "fixation", "cross"),
+            TimelinePhase(task_label, default_fix, trial_dur_s - default_fix, "imagery"),
+        ]
+        return _finalize_mi_timeline(dataset, phases, trial_dur_s)
+
+    # Default cue-triggered epoch [0, trial_dur_s] where t=0 is cue/task onset
+    cue_d = min(1.0, round(trial_dur_s * 0.2, 2))
+    phases = [
+        TimelinePhase("Cue", 0.0, cue_d, "cue", "arrow_left"),
+        TimelinePhase(task_label, cue_d, trial_dur_s - cue_d, "imagery"),
+    ]
+    return _finalize_mi_timeline(dataset, phases, trial_dur_s)
 
 
 # -- SSVEP --
@@ -829,6 +1122,69 @@ def _extract_rstate_timeline(metadata, dataset: BaseDataset) -> StimulusTimeline
     )
 
 
+# -- Cognitive --
+
+
+def _extract_cognitive_timeline(
+    metadata, dataset: BaseDataset
+) -> StimulusTimeline | None:
+    ps = _get_paradigm_specific(metadata)
+    sp = _get_stim_pres(metadata)
+    exp = getattr(metadata, "experiment", None) if metadata else None
+
+    if sp and "writing_duration" in sp:
+        fade_in = (_parse_timing_ms(sp.get("fade_in_duration", "")) or 2000.0) / 1000.0
+        vis = (_parse_timing_ms(sp.get("visible_duration", "")) or 500.0) / 1000.0
+        fade_out = (_parse_timing_ms(sp.get("fade_out_duration", "")) or 2000.0) / 1000.0
+        write_d = (_parse_timing_ms(sp.get("writing_duration", "")) or 4000.0) / 1000.0
+        total = fade_in + vis + fade_out + write_d
+        phases = [
+            TimelinePhase("Fade-In", 0.0, fade_in, "fixation"),
+            TimelinePhase("Letter Cue", fade_in, vis, "cue"),
+            TimelinePhase("Fade-Out", fade_in + vis, fade_out, "fixation"),
+            TimelinePhase("Handwriting", fade_in + vis + fade_out, write_d, "imagery"),
+        ]
+        return _finalize_mi_timeline(
+            dataset, phases, total, paradigm="cognitive"
+        )
+
+    task_type = (getattr(exp, "task_type", None) or "").replace("_", " ").title() if exp else ""
+    sdesign = (getattr(exp, "study_design", None) or "").lower() if exp else ""
+    if not task_type:
+        task_type = "Mental Arithmetic" if "arithmetic" in sdesign else "Cognitive Task"
+
+    trial_dur_s = getattr(exp, "trial_duration", None) if exp else None
+    interval = getattr(dataset, "interval", None)
+    if trial_dur_s is None and interval is not None:
+        trial_dur_s = float(interval[1] - interval[0])
+    if trial_dur_s is None:
+        return None
+
+    cue_dur_s = getattr(ps, "cue_duration_s", None) if ps else None
+    instr = (getattr(exp, "instructions", None) or "").lower() if exp else ""
+    if cue_dur_s is None and "displayed for 2s" in instr:
+        cue_dur_s = 2.0
+        total = cue_dur_s + trial_dur_s
+        phases = [
+            TimelinePhase("Instruction", 0.0, cue_dur_s, "cue"),
+            TimelinePhase(task_type, cue_dur_s, trial_dur_s, "imagery"),
+        ]
+        return _finalize_mi_timeline(dataset, phases, total, paradigm="cognitive")
+
+    if cue_dur_s and 0 < cue_dur_s < trial_dur_s:
+        phases = [
+            TimelinePhase("Cue", 0.0, cue_dur_s, "cue"),
+            TimelinePhase(task_type, cue_dur_s, trial_dur_s - cue_dur_s, "imagery"),
+        ]
+    else:
+        cue_d = min(0.8, round(trial_dur_s * 0.2, 2))
+        phases = [
+            TimelinePhase("Visual Cue", 0.0, cue_d, "cue"),
+            TimelinePhase(task_type, cue_d, trial_dur_s - cue_d, "imagery"),
+        ]
+    return _finalize_mi_timeline(dataset, phases, trial_dur_s, paradigm="cognitive")
+
+
 # -- Generic fallback --
 
 
@@ -867,6 +1223,7 @@ _EXTRACTORS: dict[str, callable] = {
     "ssvep": _extract_ssvep_timeline,
     "cvep": _extract_cvep_timeline,
     "rstate": _extract_rstate_timeline,
+    "cognitive": _extract_cognitive_timeline,
 }
 
 
@@ -975,7 +1332,12 @@ def _render_scaled_phases(
         _draw_phase_block(ax, x, w, p.label, p.style, paradigm=timeline.paradigm)
         tick_positions.append((x, _format_time(p.onset_s)))
         x += w
-    tick_positions.append((x, _format_time(total)))
+    end_time = (
+        phases[-1].onset_s + phases[-1].duration_s
+        if phases[0].onset_s < 0
+        else total
+    )
+    tick_positions.append((x, _format_time(end_time)))
     total_x = x
 
     # Draw ticks, skipping overlaps (need at least 0.5 visual units apart)
@@ -1074,6 +1436,7 @@ _RENDERERS: dict[str, callable] = {
     "ssvep": _render_ssvep,
     "cvep": _render_cvep,
     "rstate": _render_rstate,
+    "cognitive": _render_mi,
 }
 
 
