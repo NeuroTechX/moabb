@@ -1033,7 +1033,7 @@
       <a class="ds-btn" href="https://github.com/NeuroTechX/moabb/issues/new?title=%5BDataset%5D%20Issue%20with%20BNCI2016_002&amp;body=%23%23%20Dataset%0A%0A-%20%2A%2ADataset%20ID%3A%2A%2A%20BNCI2016_002%0A%0A%23%23%20Issue%20Description%0A%0APlease%20describe%20the%20issue%20you%20encountered%20with%20this%20dataset%3A%0A%0A%23%23%20Steps%20to%20Reproduce%0A%0A1.%20%0A2.%20%0A3.%20%0A%0A%23%23%20Expected%20Behavior%0A%0A%0A%23%23%20Additional%20Context%0A%0A&amp;labels=dataset" target="_blank" rel="noopener">Report Issue</a>
   </div>
   <div class="ds-overview-teaser"><p class="ds-overview-title">Overview</p><p class="ds-overview-text">BNCI 2016-002 Emergency Braking during Simulated Driving dataset.</p><p class="ds-overview-text">Dataset from</p><p class="ds-overview-text"><strong>Dataset Description</strong></p><p class="ds-overview-text">This dataset contains EEG and physiological signals recorded during emergency braking maneuvers in a driving simulator. The study demonstrated that drivers&#x27; intentions to perform emergency braking can be detected from brain and muscle activity prior to the behavioral response, enabling predictive braking assistance systems.</p><p class="ds-overview-text">Participants drove in a realistic driving simulator, maintaining distance from a lead vehicle while navigating curves and traffic. When the lead vehicle unexpectedly braked (emergency situation), subjects had to brake as quickly as possible. The dataset captures the neural and physiological signatures preceding emergency braking actions.</p><p class="ds-overview-text"><strong>Participants</strong></p><ul class="ds-overview-list ds-overview-text"><li>- 18 subjects (14 males, 4 females) in the original study; 15 subjects are available in the BNCI release and exposed by this loader (<code>n_subjects=15</code>; gender split of the released subset unknown)</li><li>Age: 30.6 +/- 5.4 years (original study)</li><li>Three 45-minute driving blocks per subject, released as one recording per subject and loaded as a single session</li><li>All healthy with valid driver&#x27;s licenses</li><li>Location: Berlin Institute of Technology (TU Berlin), Germany</li></ul><div class="ds-overview-full"><p><strong>Recording Details</strong></p>
-<ul class="ds-overview-list"><li>- Equipment: BrainProducts actiCap system with BrainAmp amplifiers</li><li>Channels: 59 EEG + 2 EOG + 1 EMG + 7 driving-related signals = 69 total</li><li>Sampling rate: 200 Hz (downsampled from 1000 Hz)</li><li>Reference: Common average reference</li><li>EEG electrode montage: Extended 10-20 system</li></ul>
+<ul class="ds-overview-list"><li>- Equipment: Easycap passive Ag/AgCl electrode cap with BrainAmp amplifiers</li><li>Channels: 59 EEG + 2 EOG + 1 EMG + 7 driving-related signals = 69 total</li><li>Sampling rate: 200 Hz (downsampled from 1000 Hz)</li><li>Reference: Nose</li><li>EEG electrode montage: Extended 10-20 system</li></ul>
 <p><strong>Additional Channels</strong></p>
 <ul class="ds-overview-list"><li>- EOGv, EOGh: Vertical and horizontal electrooculogram</li><li>EMGf: Electromyogram (right foot, tibialis anterior muscle)</li><li>lead_gas, lead_brake: Lead vehicle gas/brake pedal positions</li><li>dist_to_lead: Distance to lead vehicle</li><li>wheel_X, wheel_Y: Steering wheel position</li><li>gas, brake: Subject&#x27;s gas/brake pedal positions</li></ul>
 <p><strong>Experimental Procedure</strong></p>
@@ -1186,10 +1186,10 @@ per subject and loaded as a single session</p></li>
 </ul>
 <p><strong>Recording Details</strong></p>
 <ul class="simple">
-<li><p>Equipment: BrainProducts actiCap system with BrainAmp amplifiers</p></li>
+<li><p>Equipment: Easycap passive Ag/AgCl electrode cap with BrainAmp amplifiers</p></li>
 <li><p>Channels: 59 EEG + 2 EOG + 1 EMG + 7 driving-related signals = 69 total</p></li>
 <li><p>Sampling rate: 200 Hz (downsampled from 1000 Hz)</p></li>
-<li><p>Reference: Common average reference</p></li>
+<li><p>Reference: Nose</p></li>
 <li><p>EEG electrode montage: Extended 10-20 system</p></li>
 </ul>
 <p><strong>Additional Channels</strong></p>
@@ -1264,7 +1264,7 @@ Metadata</label><div class="sd-tab-content docutils">
 <td><p>15</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>#Chan</strong></p></td>
-<td><p>69</p></td>
+<td><p>61</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>#Trials / class</strong></p></td>
 <td><p>varies brake / EMG</p></td>

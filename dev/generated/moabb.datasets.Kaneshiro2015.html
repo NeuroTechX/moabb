@@ -1003,16 +1003,16 @@
 <h1>moabb.datasets.Kaneshiro2015<a class="headerlink" href="#moabb-datasets-kaneshiro2015" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="moabb.datasets.Kaneshiro2015">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">Kaneshiro2015</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/kaneshiro2015.py#L46-L248"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Kaneshiro2015" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">Kaneshiro2015</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/kaneshiro2015.py#L49-L298"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Kaneshiro2015" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDataset</span></code></a></p>
 <div class="ds-card" role="region" aria-label="Kaneshiro2015 dataset overview">
-  <a class="ds-card-source" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/kaneshiro2015.py#L46-L248" target="_blank" rel="noopener">[source]</a>
+  <a class="ds-card-source" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/kaneshiro2015.py#L49-L298" target="_blank" rel="noopener">[source]</a>
   <div class="ds-card-head">
     <p class="ds-card-kicker">Dataset Snapshot</p>
     <p class="ds-card-title">Kaneshiro2015</p>
 
     <p class="ds-subtitle">Imagery, 6 classes (human_body vs human_face vs animal_body vs animal_face vs fruit_vegetable vs inanimate_object)</p>
-    <div class="ds-provenance"><p class="ds-authors"><span class="ds-authors-label">Authors</span><span class="ds-author-name">Blair Kaneshiro</span>, <span class="ds-author-name">Marcos Perreau Guimaraes</span>, <span class="ds-author-name">Hyung-Suk Kim</span>, <span class="ds-author-name">Anthony M. Norcia</span>, <span class="ds-author-name ds-author-senior">Patrick Suppes</span></p><div class="ds-provenance-meta"><span>🇺🇸 Stanford University, US</span><span class="ds-provenance-sep">·</span><span>2015</span></div></div>
+    <div class="ds-provenance"><p class="ds-authors"><span class="ds-authors-label">Authors</span><span class="ds-author-name">Blair Kaneshiro</span>, <span class="ds-author-name">Marcos Perreau Guimaraes</span>, <span class="ds-author-name">Hyung-Suk Kim</span>, <span class="ds-author-name">Anthony M. Norcia</span>, <span class="ds-author-name ds-author-senior">Patrick Suppes</span></p><div class="ds-provenance-meta"><span>🇺🇸 Stanford University, US</span><span class="ds-provenance-sep">·</span><span>2015</span><span class="ds-provenance-sep">·</span><a href="mailto:blairbo@ccrma.stanford.edu">blairbo@ccrma.stanford.edu</a></div></div>
   </div>
   <div class="ds-stats">
       <span class="ds-chip" style="--chip-color: #1565C0">Imagery</span>
@@ -1233,6 +1233,14 @@ Metadata</label><div class="sd-tab-content docutils">
 <li><p><strong>Reference</strong>: average</p></li>
 </ul>
 </div>
+<div class="admonition-preprocessing admonition">
+<p class="admonition-title">Preprocessing</p>
+<ul class="simple">
+<li><p><strong>Data state</strong>: epoched</p></li>
+<li><p><strong>Bandpass filter</strong>: 1-25 Hz</p></li>
+<li><p><strong>Re-reference</strong>: average</p></li>
+</ul>
+</div>
 <div class="admonition-data-access admonition">
 <p class="admonition-title">Data Access</p>
 <ul class="simple">
@@ -1253,7 +1261,7 @@ Metadata</label><div class="sd-tab-content docutils">
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.Kaneshiro2015.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/kaneshiro2015.py#L141-L152"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Kaneshiro2015.__init__" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/kaneshiro2015.py#L191-L202"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Kaneshiro2015.__init__" title="Link to this definition">#</a></dt>
 <dd><p>Initialize function for the BaseDataset.</p>
 </dd></dl>
 
@@ -1316,7 +1324,7 @@ path.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.Kaneshiro2015.data_path">
-<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/kaneshiro2015.py#L196-L248"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Kaneshiro2015.data_path" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/kaneshiro2015.py#L246-L298"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Kaneshiro2015.data_path" title="Link to this definition">#</a></dt>
 <dd><p>Get path to local copy of a subject data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

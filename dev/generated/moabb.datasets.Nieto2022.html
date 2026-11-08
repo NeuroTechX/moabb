@@ -1003,10 +1003,10 @@
 <h1>moabb.datasets.Nieto2022<a class="headerlink" href="#moabb-datasets-nieto2022" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="moabb.datasets.Nieto2022">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">Nieto2022</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/nieto2022.py#L56-L312"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Nieto2022" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">Nieto2022</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/nieto2022.py#L56-L355"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Nieto2022" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">OpenNeuroMirrorMixin</span></code>, <a class="reference internal" href="moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDataset</span></code></a></p>
 <div class="ds-card" role="region" aria-label="Nieto2022 dataset overview">
-  <a class="ds-card-source" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/nieto2022.py#L56-L312" target="_blank" rel="noopener">[source]</a>
+  <a class="ds-card-source" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/nieto2022.py#L56-L355" target="_blank" rel="noopener">[source]</a>
   <div class="ds-card-head">
     <p class="ds-card-kicker">Dataset Snapshot</p>
     <p class="ds-card-title">Nieto2022</p>
@@ -1207,7 +1207,9 @@ HED Event Tags</div>
 Channel Summary</div>
 <div class="ds-channel-card"><div class="ds-channel-row"><span>Total channels</span><strong>136</strong></div>
 <div class="ds-channel-row"><span>EEG</span><strong>128 (EEG/EMG)</strong></div>
-<div class="ds-channel-row"><span>EMG</span><strong>8</strong></div>
+<div class="ds-channel-row"><span>EOG</span><strong>4</strong></div>
+<div class="ds-channel-row"><span>EMG</span><strong>2</strong></div>
+<div class="ds-channel-row"><span>MISC</span><strong>2</strong></div>
 <div class="ds-channel-row"><span>Montage</span><strong>biosemi128</strong></div>
 <div class="ds-channel-row"><span>Sampling</span><strong>1024 Hz</strong></div>
 <div class="ds-channel-row"><span>Reference</span><strong>EXG1 and EXG2 (left and right earlobes)</strong></div>
@@ -1252,10 +1254,10 @@ Metadata</label><div class="sd-tab-content docutils">
 <td><p>128</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>#Classes</strong></p></td>
-<td><p>4</p></td>
+<td><p>12</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>#Trials / class</strong></p></td>
-<td><p>141</p></td>
+<td><p>47</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>Trials length</strong></p></td>
 <td><p>2.5 s</p></td>
@@ -1282,6 +1284,7 @@ Metadata</label><div class="sd-tab-content docutils">
 <li><p><strong>Population</strong>: healthy</p></li>
 <li><p><strong>Age</strong>: 34 (range: 24-56) years</p></li>
 <li><p><strong>Handedness</strong>: {‘right’: 10}</p></li>
+<li><p><strong>BCI experience</strong>: naive</p></li>
 </ul>
 </div>
 <div class="admonition-equipment admonition">
@@ -1318,7 +1321,7 @@ Metadata</label><div class="sd-tab-content docutils">
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.Nieto2022.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/nieto2022.py#L187-L203"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Nieto2022.__init__" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/nieto2022.py#L220-L236"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Nieto2022.__init__" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
@@ -1380,7 +1383,7 @@ path.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.Nieto2022.data_path">
-<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/nieto2022.py#L270-L291"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Nieto2022.data_path" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/nieto2022.py#L313-L334"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Nieto2022.data_path" title="Link to this definition">#</a></dt>
 <dd><p>Get path to local copy of a subject data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1411,7 +1414,7 @@ list of length one, for compatibility.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.Nieto2022.download">
-<span class="sig-name descname"><span class="pre">download</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accept</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/nieto2022.py#L293-L312"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Nieto2022.download" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">download</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accept</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/nieto2022.py#L336-L355"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Nieto2022.download" title="Link to this definition">#</a></dt>
 <dd><p>Fetch each subject’s three session BDFs.</p>
 </dd></dl>
 

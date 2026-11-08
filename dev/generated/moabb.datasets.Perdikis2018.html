@@ -1003,16 +1003,16 @@
 <h1>moabb.datasets.Perdikis2018<a class="headerlink" href="#moabb-datasets-perdikis2018" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="moabb.datasets.Perdikis2018">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">Perdikis2018</span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/perdikis2018.py#L54-L300"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Perdikis2018" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">Perdikis2018</span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/perdikis2018.py#L54-L321"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Perdikis2018" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDataset</span></code></a></p>
 <div class="ds-card" role="region" aria-label="Perdikis2018 dataset overview">
-  <a class="ds-card-source" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/perdikis2018.py#L54-L300" target="_blank" rel="noopener">[source]</a>
+  <a class="ds-card-source" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/perdikis2018.py#L54-L321" target="_blank" rel="noopener">[source]</a>
   <div class="ds-card-head">
     <p class="ds-card-kicker">Dataset Snapshot</p>
     <p class="ds-card-title">Perdikis2018</p>
     <p class="ds-card-alt-name">EEG recordings and application logs from the two tetraplegic pilots of team Brain Tweakers (CNBI, EPFL) during longitudinal motor-imagery BCI training and the Cybathlon 2016 BCI race; this loader exposes the cue-based offline calibration runs (both-hands / both-feet / rest).</p>
     <p class="ds-subtitle">Imagery, 3 classes (both_feet vs both_hands vs rest)</p>
-    <div class="ds-provenance"><p class="ds-authors"><span class="ds-authors-label">Authors</span><span class="ds-author-name">Serafeim Perdikis</span>, <span class="ds-author-name">Luca Tonin</span>, <span class="ds-author-name">Sareh Saeedi</span>, <span class="ds-author-name">Christoph Schneider</span>, <span class="ds-author-name ds-author-senior">Jose del R. Millan</span></p><div class="ds-provenance-meta"><span>🇨🇭 Defitech Chair in Brain-Machine Interface (CNBI), Center for Neuroprosthetics, Ecole Polytechnique Federale de Lausanne (EPFL), CH</span><span class="ds-provenance-sep">·</span><span>2018</span></div></div>
+    <div class="ds-provenance"><p class="ds-authors"><span class="ds-authors-label">Authors</span><span class="ds-author-name">Serafeim Perdikis</span>, <span class="ds-author-name">Luca Tonin</span>, <span class="ds-author-name">Sareh Saeedi</span>, <span class="ds-author-name">Christoph Schneider</span>, <span class="ds-author-name ds-author-senior">Jose del R. Millan</span></p><div class="ds-provenance-meta"><span>🇨🇭 Defitech Chair in Brain-Machine Interface (CNBI), Center for Neuroprosthetics, Ecole Polytechnique Federale de Lausanne (EPFL), CH</span><span class="ds-provenance-sep">·</span><span>2018</span><span class="ds-provenance-sep">·</span><a href="mailto:serafeim.perdikis@epfl.ch">serafeim.perdikis@epfl.ch</a></div></div>
   </div>
   <div class="ds-stats">
       <span class="ds-chip" style="--chip-color: #1565C0">Imagery</span>
@@ -1131,6 +1131,7 @@ Channel Summary</div>
 <div class="ds-channel-row"><span>EEG</span><strong>16 (Ag/AgCl)</strong></div>
 <div class="ds-channel-row"><span>Montage</span><strong>10-05</strong></div>
 <div class="ds-channel-row"><span>Sampling</span><strong>512 Hz</strong></div>
+<div class="ds-channel-row"><span>Filter</span><strong>{&#x27;bandpass&#x27;: [0.1, 100.0], &#x27;notch&#x27;: 50.0}</strong></div>
 <div class="ds-channel-row"><span>Notch / line</span><strong>50 Hz</strong></div></div></div>
 </div>
 </div>
@@ -1201,14 +1202,23 @@ Metadata</label><div class="sd-tab-content docutils">
 <tr class="row-odd"><td><p><strong>#Classes</strong></p></td>
 <td><p>3</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>Trials length</strong></p></td>
+<tr class="row-even"><td><p><strong>#Trials / class</strong></p></td>
+<td><p>varies</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Trials length</strong></p></td>
 <td><p>4 s</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>Freq</strong></p></td>
+<tr class="row-even"><td><p><strong>Freq</strong></p></td>
 <td><p>512 Hz</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>#Sessions</strong></p></td>
+<tr class="row-odd"><td><p><strong>#Sessions</strong></p></td>
 <td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>#Runs</strong></p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Total_trials</strong></p></td>
+<td><p>varies</p></td>
 </tr>
 </tbody>
 </table>
@@ -1219,7 +1229,9 @@ Metadata</label><div class="sd-tab-content docutils">
 <ul class="simple">
 <li><p><strong>Population</strong>: spinal cord injury</p></li>
 <li><p><strong>Clinical population</strong>: tetraplegia (chronic spinal cord injury)</p></li>
-<li><p><strong>BCI experience</strong>: experienced</p></li>
+<li><p><strong>Age</strong>: 39 (range: 30-48) years</p></li>
+<li><p><strong>Handedness</strong>: {‘right’: 2}</p></li>
+<li><p><strong>BCI experience</strong>: mixed (P1 experienced, P2 naive at training onset)</p></li>
 </ul>
 </div>
 <div class="admonition-equipment admonition">
@@ -1264,7 +1276,7 @@ Notes</label><div class="sd-tab-content docutils">
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.Perdikis2018.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/perdikis2018.py#L193-L202"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Perdikis2018.__init__" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/perdikis2018.py#L214-L223"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Perdikis2018.__init__" title="Link to this definition">#</a></dt>
 <dd><p>Initialize function for the BaseDataset.</p>
 </dd></dl>
 
@@ -1327,7 +1339,7 @@ path.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.Perdikis2018.data_path">
-<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/perdikis2018.py#L204-L230"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Perdikis2018.data_path" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/perdikis2018.py#L225-L251"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Perdikis2018.data_path" title="Link to this definition">#</a></dt>
 <dd><p>Download/extract the pilot’s archive; return <code class="docutils literal notranslate"><span class="pre">[pilot_folder]</span></code>.</p>
 </dd></dl>
 

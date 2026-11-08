@@ -1003,7 +1003,7 @@
 <h1>moabb.datasets.lee2021_mobile.Lee2021Mobile<a class="headerlink" href="#moabb-datasets-lee2021-mobile-lee2021mobile" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="moabb.datasets.lee2021_mobile.Lee2021Mobile">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">moabb.datasets.lee2021_mobile.</span></span><span class="sig-name descname"><span class="pre">Lee2021Mobile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paradigm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_all_modalities</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/lee2021_mobile.py#L31-L490"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.lee2021_mobile.Lee2021Mobile" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">moabb.datasets.lee2021_mobile.</span></span><span class="sig-name descname"><span class="pre">Lee2021Mobile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paradigm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_all_modalities</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/lee2021_mobile.py#L34-L516"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.lee2021_mobile.Lee2021Mobile" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDataset</span></code></a></p>
 <div class="sd-tab-item docutils">
 <p class="sd-tab-label rubric">Overview</p>
@@ -1028,12 +1028,12 @@ original 500 Hz recording; the IMU channels are not loaded.</p>
 - Session ‘02’: Standing (0 m/s)
 - Session ‘03’: Slow walking (0.8 m/s)
 - Session ‘04’: Fast walking (1.6 m/s)
-- Session ‘05’: Slight running (2.0 m/s) [subjects 1-18 only]</p>
+- Session ‘05’: Slight running (2.0 m/s) [subjects 1-19 in ERP, 1-18 in SSVEP except sub-10]</p>
 <p>For ERP, session ‘01’ is also available (training, standing only).</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>Not all subjects have session ‘05’ (2.0 m/s running). Subjects 19-24
-only have sessions 01-04.</p>
+<p>Not all subjects have session ‘05’ (2.0 m/s running). Subjects 20-24
+only have sessions 01-04 (and subject 10 lacks SSVEP session 05).</p>
 <p>The BIDS events.tsv files have onset in samples (not seconds as BIDS
 requires), so data is loaded via MNE’s BrainVision reader directly
 instead of mne_bids.</p>
@@ -1074,10 +1074,17 @@ standing, walking, and running,” Scientific Data, vol. 8, p. 315,
 <div class="admonition-equipment admonition">
 <p class="admonition-title">Equipment</p>
 <ul class="simple">
-<li><p><strong>Amplifier</strong>: BrainAmp (Brain Product GmbH)</p></li>
+<li><p><strong>Amplifier</strong>: BrainAmp (Brain Product GmbH) + Smarting wireless amplifier (mBrainTrain)</p></li>
 <li><p><strong>Electrodes</strong>: Ag/AgCl</p></li>
 <li><p><strong>Montage</strong>: standard_1005</p></li>
 <li><p><strong>Reference</strong>: FCz</p></li>
+</ul>
+</div>
+<div class="admonition-preprocessing admonition">
+<p class="admonition-title">Preprocessing</p>
+<ul class="simple">
+<li><p><strong>Data state</strong>: raw</p></li>
+<li><p><strong>Notes</strong>: MOABB loads raw 500 Hz /sourcedata/ BrainVision files (32 scalp-EEG, 4 EOG, 14 ear-EEG).</p></li>
 </ul>
 </div>
 <div class="admonition-data-access admonition">
@@ -1099,7 +1106,7 @@ standing, walking, and running,” Scientific Data, vol. 8, p. 315,
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.lee2021_mobile.Lee2021Mobile.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paradigm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_all_modalities</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/lee2021_mobile.py#L224-L257"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.lee2021_mobile.Lee2021Mobile.__init__" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paradigm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_all_modalities</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/lee2021_mobile.py#L250-L283"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.lee2021_mobile.Lee2021Mobile.__init__" title="Link to this definition">#</a></dt>
 <dd><p>Initialize function for the BaseDataset.</p>
 </dd></dl>
 
@@ -1162,7 +1169,7 @@ path.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.lee2021_mobile.Lee2021Mobile.data_path">
-<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/lee2021_mobile.py#L313-L340"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.lee2021_mobile.Lee2021Mobile.data_path" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/lee2021_mobile.py#L339-L366"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.lee2021_mobile.Lee2021Mobile.data_path" title="Link to this definition">#</a></dt>
 <dd><p>Get path to local copy of a subject data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

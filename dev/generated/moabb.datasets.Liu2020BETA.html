@@ -1003,10 +1003,10 @@
 <h1>moabb.datasets.Liu2020BETA<a class="headerlink" href="#moabb-datasets-liu2020beta" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="moabb.datasets.Liu2020BETA">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">Liu2020BETA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/ssvep_liu2020.py#L47-L316"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Liu2020BETA" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">Liu2020BETA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/ssvep_liu2020.py#L47-L336"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Liu2020BETA" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDataset</span></code></a></p>
 <div class="ds-card" role="region" aria-label="Liu2020BETA dataset overview">
-  <a class="ds-card-source" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/ssvep_liu2020.py#L47-L316" target="_blank" rel="noopener">[source]</a>
+  <a class="ds-card-source" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/ssvep_liu2020.py#L47-L336" target="_blank" rel="noopener">[source]</a>
   <div class="ds-card-head">
     <p class="ds-card-kicker">Dataset Snapshot</p>
     <p class="ds-card-title">Liu2020BETA</p>
@@ -1031,7 +1031,7 @@
       <a class="ds-btn" href="../dataset_summary.html#ssvep">Compare Similar</a>
       <a class="ds-btn" href="https://github.com/NeuroTechX/moabb/issues/new?title=%5BDataset%5D%20Issue%20with%20Liu2020BETA&amp;body=%23%23%20Dataset%0A%0A-%20%2A%2ADataset%20ID%3A%2A%2A%20Liu2020BETA%0A%0A%23%23%20Issue%20Description%0A%0APlease%20describe%20the%20issue%20you%20encountered%20with%20this%20dataset%3A%0A%0A%23%23%20Steps%20to%20Reproduce%0A%0A1.%20%0A2.%20%0A3.%20%0A%0A%23%23%20Expected%20Behavior%0A%0A%0A%23%23%20Additional%20Context%0A%0A&amp;labels=dataset" target="_blank" rel="noopener">Report Issue</a>
   </div>
-  <div class="ds-overview-teaser"><p class="ds-overview-title">Overview</p><p class="ds-overview-text">BETA SSVEP benchmark dataset.</p><p class="ds-overview-text">Dataset from</p><p class="ds-overview-text">The BETA database contains 64-channel EEG recordings from 70 healthy subjects (42 males, 28 females, aged 9-64 years, mean age 25.14) performing a 40-target cued-spelling SSVEP-BCI task. Unlike Wang2016 which was collected in a shielded room, BETA was recorded in a normal classroom, providing a more realistic BCI benchmark.</p><p class="ds-overview-text">Stimuli used joint frequency and phase modulation (JFPM) with 40 targets arranged in a 5x8 QWERTY virtual keyboard. Frequencies ranged from 8.0 to 15.8 Hz (0.2 Hz step) with initial phases from 0 to 19.5<em>pi (0.5</em>pi step).</p><p class="ds-overview-text">Each subject completed 4 blocks of 40 trials. Stimulation duration was 2 s for subjects S1-S15 (experienced) and 3 s for subjects S16-S70 (naive), plus a 0.5 s visual cue. EEG was recorded at 1000 Hz with a Synamps2 system (Neuroscan) using 64 channels in the international 10-10 system, then downsampled to 250 Hz.</p><div class="ds-overview-full"><p>Data are stored as 4D matrices [64, 750, 4, 40] corresponding to [channels, time points, block index, target index]. Each epoch is 3 s (750 samples at 250 Hz).</p></div><div class="ds-overview-actions"><button class="ds-overview-toggle" type="button" aria-expanded="false" aria-controls="ds-overview-liu2020beta" onclick="var el=this.closest('.ds-overview-teaser');el.classList.toggle('ds-expanded');var exp=el.classList.contains('ds-expanded');this.setAttribute('aria-expanded',exp?'true':'false');this.textContent=exp?'Show less ▴':'Show more ▾';">Show more ▾</button><a class="ds-overview-tab-link" href="#ds-overview-liu2020beta" onclick="event.preventDefault();var tab=document.querySelector('.ds-doc-tabs .sd-tab-label');if(tab){tab.click();}var target=document.getElementById('ds-overview-liu2020beta');if(target){target.scrollIntoView({behavior:'smooth',block:'start'});}">Open in Overview tab →</a></div></div>
+  <div class="ds-overview-teaser"><p class="ds-overview-title">Overview</p><p class="ds-overview-text">BETA SSVEP benchmark dataset.</p><p class="ds-overview-text">Dataset from</p><p class="ds-overview-text">The BETA database contains 64-channel EEG recordings from 70 healthy subjects (42 males, 28 females, aged 9-64 years, mean age 25.14) performing a 40-target cued-spelling SSVEP-BCI task. Unlike Wang2016 which was collected in a shielded room, BETA was recorded in a normal classroom, providing a more realistic BCI benchmark.</p><p class="ds-overview-text">Stimuli used joint frequency and phase modulation (JFPM) with 40 targets arranged in a 5x8 QWERTY virtual keyboard. Frequencies ranged from 8.0 to 15.8 Hz (0.2 Hz step) with initial phases from 0 to 19.5<em>pi (0.5</em>pi step).</p><p class="ds-overview-text">Each subject completed 4 blocks of 40 trials. All 70 subjects had prior experience from round 1 of the 2018 China BCI Olympics; stimulation duration was 2 s for subjects S1-S15 and 3 s for subjects S16-S70, plus a 0.5 s visual cue and 0.5 s post-stimulus rest. EEG was recorded at 1000 Hz with a Synamps2 system (Neuroscan) using 64 channels in the international 10-10 system, then downsampled to 250 Hz.</p><div class="ds-overview-full"><p>Data are stored as 4D matrices [64, 750, 4, 40] (3 s epochs, 750 samples at 250 Hz) for S1-S15 and [64, 1000, 4, 40] (4 s epochs, 1000 samples at 250 Hz) for S16-S70, corresponding to [channels, time points, block index, target index].</p></div><div class="ds-overview-actions"><button class="ds-overview-toggle" type="button" aria-expanded="false" aria-controls="ds-overview-liu2020beta" onclick="var el=this.closest('.ds-overview-teaser');el.classList.toggle('ds-expanded');var exp=el.classList.contains('ds-expanded');this.setAttribute('aria-expanded',exp?'true':'false');this.textContent=exp?'Show less ▴':'Show more ▾';">Show more ▾</button><a class="ds-overview-tab-link" href="#ds-overview-liu2020beta" onclick="event.preventDefault();var tab=document.querySelector('.ds-doc-tabs .sd-tab-label');if(tab){tab.click();}var target=document.getElementById('ds-overview-liu2020beta');if(target){target.scrollIntoView({behavior:'smooth',block:'start'});}">Open in Overview tab →</a></div></div>
   <div id="ds-quickstart-liu2020beta" class="ds-quickstart" role="region" aria-labelledby="ds-quickstart-btn-liu2020beta" aria-hidden="true" hidden>
   <div class="ds-quickstart-code"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">Liu2020BETA</span>
 
@@ -1246,6 +1246,7 @@ Channel Summary</div>
 <div class="ds-channel-row"><span>Montage</span><strong>10-05</strong></div>
 <div class="ds-channel-row"><span>Sampling</span><strong>250 Hz</strong></div>
 <div class="ds-channel-row"><span>Reference</span><strong>Cz</strong></div>
+<div class="ds-channel-row"><span>Filter</span><strong>{&#x27;bandpass_hz&#x27;: [0.15, 200.0], &#x27;notch_hz&#x27;: 50.0}</strong></div>
 <div class="ds-channel-row"><span>Notch / line</span><strong>50 Hz</strong></div></div></div>
 </div>
 </div>
@@ -1265,14 +1266,16 @@ realistic BCI benchmark.</p>
 <p>Stimuli used joint frequency and phase modulation (JFPM) with 40 targets
 arranged in a 5x8 QWERTY virtual keyboard. Frequencies ranged from 8.0 to
 15.8 Hz (0.2 Hz step) with initial phases from 0 to 19.5*pi (0.5*pi step).</p>
-<p>Each subject completed 4 blocks of 40 trials. Stimulation duration was 2 s
-for subjects S1-S15 (experienced) and 3 s for subjects S16-S70 (naive), plus
-a 0.5 s visual cue. EEG was recorded at 1000 Hz with a Synamps2 system
-(Neuroscan) using 64 channels in the international 10-10 system, then
-downsampled to 250 Hz.</p>
-<p>Data are stored as 4D matrices [64, 750, 4, 40] corresponding to
-[channels, time points, block index, target index]. Each epoch is 3 s
-(750 samples at 250 Hz).</p>
+<p>Each subject completed 4 blocks of 40 trials. All 70 subjects had prior
+experience from round 1 of the 2018 China BCI Olympics; stimulation
+duration was 2 s for subjects S1-S15 and 3 s for subjects S16-S70, plus
+a 0.5 s visual cue and 0.5 s post-stimulus rest. EEG was recorded at
+1000 Hz with a Synamps2 system (Neuroscan) using 64 channels in the
+international 10-10 system, then downsampled to 250 Hz.</p>
+<p>Data are stored as 4D matrices [64, 750, 4, 40] (3 s epochs, 750 samples at
+250 Hz) for S1-S15 and [64, 1000, 4, 40] (4 s epochs, 1000 samples at
+250 Hz) for S16-S70, corresponding to [channels, time points, block index,
+target index].</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Like Wang2016, this dataset includes channels ‘CB1’ and ‘CB2’ which are
@@ -1340,7 +1343,7 @@ Metadata</label><div class="sd-tab-content docutils">
 <ul class="simple">
 <li><p><strong>Population</strong>: healthy</p></li>
 <li><p><strong>Age</strong>: 25.14 (range: 9-64) years</p></li>
-<li><p><strong>BCI experience</strong>: mixed</p></li>
+<li><p><strong>BCI experience</strong>: experienced</p></li>
 </ul>
 </div>
 <div class="admonition-equipment admonition">
@@ -1355,6 +1358,7 @@ Metadata</label><div class="sd-tab-content docutils">
 <p class="admonition-title">Preprocessing</p>
 <ul class="simple">
 <li><p><strong>Data state</strong>: epoched</p></li>
+<li><p><strong>Bandpass filter</strong>: 3-100 Hz</p></li>
 </ul>
 </div>
 <div class="admonition-data-access admonition">
@@ -1378,7 +1382,7 @@ Metadata</label><div class="sd-tab-content docutils">
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.Liu2020BETA.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/ssvep_liu2020.py#L227-L238"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Liu2020BETA.__init__" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/ssvep_liu2020.py#L247-L258"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Liu2020BETA.__init__" title="Link to this definition">#</a></dt>
 <dd><p>Initialize function for the BaseDataset.</p>
 </dd></dl>
 
@@ -1441,7 +1445,7 @@ path.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.Liu2020BETA.data_path">
-<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/ssvep_liu2020.py#L277-L316"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Liu2020BETA.data_path" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/ssvep_liu2020.py#L297-L336"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Liu2020BETA.data_path" title="Link to this definition">#</a></dt>
 <dd><p>Get path to local copy of a subject data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

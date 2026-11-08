@@ -1003,16 +1003,16 @@
 <h1>moabb.datasets.Wang2025<a class="headerlink" href="#moabb-datasets-wang2025" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="moabb.datasets.Wang2025">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">Wang2025</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/wang2025.py#L53-L238"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Wang2025" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">Wang2025</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/wang2025.py#L56-L286"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Wang2025" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDataset</span></code></a></p>
 <div class="ds-card" role="region" aria-label="Wang2025 dataset overview">
-  <a class="ds-card-source" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/wang2025.py#L53-L238" target="_blank" rel="noopener">[source]</a>
+  <a class="ds-card-source" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/wang2025.py#L56-L286" target="_blank" rel="noopener">[source]</a>
   <div class="ds-card-head">
     <p class="ds-card-kicker">Dataset Snapshot</p>
     <p class="ds-card-title">Wang2025</p>
     <p class="ds-card-alt-name">Four-class motor imagery EEG from 15 healthy subjects (left hand, right hand, tongue, both feet) recorded with 62 channels at 256 Hz over two days of calibration and online feedback sessions.</p>
     <p class="ds-subtitle">Imagery, 4 classes (left_hand vs right_hand vs tongue vs feet)</p>
-    <div class="ds-provenance"><p class="ds-authors"><span class="ds-authors-label">Authors</span><span class="ds-author-name">Jiaheng Wang</span>, <span class="ds-author-name">Lin Yao</span>, <span class="ds-author-name ds-author-senior">Yueming Wang</span></p><div class="ds-provenance-meta"><span>🇨🇳 Zhejiang University, CN</span><span class="ds-provenance-sep">·</span><span>2025</span></div></div>
+    <div class="ds-provenance"><p class="ds-authors"><span class="ds-authors-label">Authors</span><span class="ds-author-name">Jiaheng Wang</span>, <span class="ds-author-name">Lin Yao</span>, <span class="ds-author-name ds-author-senior">Yueming Wang</span></p><div class="ds-provenance-meta"><span>🇨🇳 Zhejiang University, CN</span><span class="ds-provenance-sep">·</span><span>2025</span><span class="ds-provenance-sep">·</span><a href="mailto:lin.yao@zju.edu.cn">lin.yao@zju.edu.cn</a></div></div>
   </div>
   <div class="ds-stats">
       <span class="ds-chip" style="--chip-color: #1565C0">Imagery</span>
@@ -1253,6 +1253,13 @@ Metadata</label><div class="sd-tab-content docutils">
 <li><p><strong>Montage</strong>: 10-10</p></li>
 </ul>
 </div>
+<div class="admonition-preprocessing admonition">
+<p class="admonition-title">Preprocessing</p>
+<ul class="simple">
+<li><p><strong>Data state</strong>: epoched and filtered</p></li>
+<li><p><strong>Notes</strong>: High-pass filtered above 0.1 Hz and segmented from -1 s to 4 s relative to cue onset</p></li>
+</ul>
+</div>
 <div class="admonition-data-access admonition">
 <p class="admonition-title">Data Access</p>
 <ul class="simple">
@@ -1281,7 +1288,7 @@ Notes</label><div class="sd-tab-content docutils">
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.Wang2025.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/wang2025.py#L167-L178"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Wang2025.__init__" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/wang2025.py#L215-L226"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Wang2025.__init__" title="Link to this definition">#</a></dt>
 <dd><p>Initialize function for the BaseDataset.</p>
 </dd></dl>
 
@@ -1344,7 +1351,7 @@ path.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.Wang2025.data_path">
-<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/wang2025.py#L180-L192"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Wang2025.data_path" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/wang2025.py#L228-L240"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Wang2025.data_path" title="Link to this definition">#</a></dt>
 <dd><p>Return <code class="docutils literal notranslate"><span class="pre">[s1_calibration,</span> <span class="pre">s1_feedback,</span> <span class="pre">s2_calibration,</span> <span class="pre">s2_feedback]</span></code>.</p>
 </dd></dl>
 

@@ -1003,10 +1003,10 @@
 <h1>moabb.datasets.MILimbEEG<a class="headerlink" href="#moabb-datasets-milimbeeg" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="moabb.datasets.MILimbEEG">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">MILimbEEG</span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/milimbeeg.py#L55-L353"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.MILimbEEG" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">MILimbEEG</span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/milimbeeg.py#L55-L379"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.MILimbEEG" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDataset</span></code></a></p>
 <div class="ds-card" role="region" aria-label="MILimbEEG dataset overview">
-  <a class="ds-card-source" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/milimbeeg.py#L55-L353" target="_blank" rel="noopener">[source]</a>
+  <a class="ds-card-source" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/milimbeeg.py#L55-L379" target="_blank" rel="noopener">[source]</a>
   <div class="ds-card-head">
     <p class="ds-card-kicker">Dataset Snapshot</p>
     <p class="ds-card-title">MILimbEEG</p>
@@ -1136,6 +1136,7 @@ Channel Summary</div>
 <div class="ds-channel-row"><span>Montage</span><strong>10-10</strong></div>
 <div class="ds-channel-row"><span>Sampling</span><strong>125 Hz</strong></div>
 <div class="ds-channel-row"><span>Reference</span><strong>neutral ear (monopolar)</strong></div>
+<div class="ds-channel-row"><span>Filter</span><strong>5-50 Hz active bandpass, 60 Hz notch</strong></div>
 <div class="ds-channel-row"><span>Notch / line</span><strong>60 Hz</strong></div></div></div>
 </div>
 </div>
@@ -1215,17 +1216,23 @@ Metadata</label><div class="sd-tab-content docutils">
 <tr class="row-odd"><td><p><strong>#Classes</strong></p></td>
 <td><p>8</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>Trials length</strong></p></td>
+<tr class="row-even"><td><p><strong>#Trials / class</strong></p></td>
+<td><p>varies</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Trials length</strong></p></td>
 <td><p>3.992 s</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>Freq</strong></p></td>
+<tr class="row-even"><td><p><strong>Freq</strong></p></td>
 <td><p>125 Hz</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>#Sessions</strong></p></td>
+<tr class="row-odd"><td><p><strong>#Sessions</strong></p></td>
 <td><p>1</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>#Runs</strong></p></td>
+<tr class="row-even"><td><p><strong>#Runs</strong></p></td>
 <td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Total_trials</strong></p></td>
+<td><p>varies</p></td>
 </tr>
 </tbody>
 </table>
@@ -1235,7 +1242,7 @@ Metadata</label><div class="sd-tab-content docutils">
 <p class="admonition-title">Participants</p>
 <ul class="simple">
 <li><p><strong>Population</strong>: mixed</p></li>
-<li><p><strong>Clinical population</strong>: mostly healthy; 2 amputees (both upper limbs; right lower limb below the knee), 1 hydrocephalus after ventricular infarct, 18 post-COVID-19</p></li>
+<li><p><strong>Clinical population</strong>: mostly healthy; 2 amputees (both upper limbs; right lower limb below the knee), 1 Infantile Cerebral Palsy (ICP) due to ventricular infarction with hydrocephalus, 18 post-COVID-19</p></li>
 <li><p><strong>Age</strong>: 36 years</p></li>
 <li><p><strong>Handedness</strong>: {‘right’: 57, ‘left’: 3}</p></li>
 </ul>
@@ -1285,7 +1292,7 @@ Notes</label><div class="sd-tab-content docutils">
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.MILimbEEG.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/milimbeeg.py#L214-L223"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.MILimbEEG.__init__" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/milimbeeg.py#L240-L249"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.MILimbEEG.__init__" title="Link to this definition">#</a></dt>
 <dd><p>Initialize function for the BaseDataset.</p>
 </dd></dl>
 
@@ -1348,7 +1355,7 @@ path.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.MILimbEEG.data_path">
-<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/milimbeeg.py#L225-L248"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.MILimbEEG.data_path" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/milimbeeg.py#L251-L274"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.MILimbEEG.data_path" title="Link to this definition">#</a></dt>
 <dd><p>Get path to local copy of a subject data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

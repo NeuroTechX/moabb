@@ -1003,10 +1003,10 @@
 <h1>moabb.datasets.MartinezPeon2025<a class="headerlink" href="#moabb-datasets-martinezpeon2025" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="moabb.datasets.MartinezPeon2025">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">MartinezPeon2025</span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/martinezpeon2025.py#L49-L225"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.MartinezPeon2025" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">MartinezPeon2025</span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/martinezpeon2025.py#L51-L243"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.MartinezPeon2025" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDataset</span></code></a></p>
 <div class="ds-card" role="region" aria-label="MartinezPeon2025 dataset overview">
-  <a class="ds-card-source" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/martinezpeon2025.py#L49-L225" target="_blank" rel="noopener">[source]</a>
+  <a class="ds-card-source" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/martinezpeon2025.py#L51-L243" target="_blank" rel="noopener">[source]</a>
   <div class="ds-card-head">
     <p class="ds-card-kicker">Dataset Snapshot</p>
     <p class="ds-card-title">MartinezPeon2025</p>
@@ -1129,6 +1129,7 @@ Channel Summary</div>
 <div class="ds-channel-row"><span>EEG</span><strong>20 (dry)</strong></div>
 <div class="ds-channel-row"><span>Montage</span><strong>10-20</strong></div>
 <div class="ds-channel-row"><span>Sampling</span><strong>500 Hz</strong></div>
+<div class="ds-channel-row"><span>Filter</span><strong>none</strong></div>
 <div class="ds-channel-row"><span>Notch / line</span><strong>60 Hz</strong></div></div></div>
 </div>
 </div>
@@ -1233,6 +1234,12 @@ Metadata</label><div class="sd-tab-content docutils">
 <li><p><strong>Montage</strong>: 10-20</p></li>
 </ul>
 </div>
+<div class="admonition-preprocessing admonition">
+<p class="admonition-title">Preprocessing</p>
+<ul class="simple">
+<li><p><strong>Data state</strong>: raw</p></li>
+</ul>
+</div>
 <div class="admonition-data-access admonition">
 <p class="admonition-title">Data Access</p>
 <ul class="simple">
@@ -1263,7 +1270,7 @@ nonstationarity instead of imagery content; prefer cross-subject evaluation.</p>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.MartinezPeon2025.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/martinezpeon2025.py#L170-L179"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.MartinezPeon2025.__init__" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/martinezpeon2025.py#L188-L197"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.MartinezPeon2025.__init__" title="Link to this definition">#</a></dt>
 <dd><p>Initialize function for the BaseDataset.</p>
 </dd></dl>
 
@@ -1326,7 +1333,7 @@ path.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.MartinezPeon2025.data_path">
-<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/martinezpeon2025.py#L181-L197"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.MartinezPeon2025.data_path" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/martinezpeon2025.py#L199-L215"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.MartinezPeon2025.data_path" title="Link to this definition">#</a></dt>
 <dd><p>Return the four CSV paths of a subject, ordered 10/40/70/100% MVC.</p>
 </dd></dl>
 

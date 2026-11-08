@@ -1011,11 +1011,11 @@
     <p class="ds-card-kicker">Dataset Snapshot</p>
     <p class="ds-card-title">BNCI2025_001</p>
     <p class="ds-card-alt-name">EEG dataset investigating simultaneous encoding of speed, distance, and direction in discrete hand reaching movements using a four-direction center-out task</p>
-    <p class="ds-subtitle">Imagery, 16 classes</p>
+    <p class="ds-subtitle">Motor Execution, 16 classes</p>
     <div class="ds-provenance"><p class="ds-authors"><span class="ds-authors-label">Authors</span><span class="ds-author-name">Nitikorn Srisrisawang</span>, <span class="ds-author-name ds-author-senior">Gernot R Müller-Putz</span></p><div class="ds-provenance-meta"><span>🇦🇹 Institute of Neural Engineering, Graz University of Technology, AT</span><span class="ds-provenance-sep">·</span><span>2024</span><span class="ds-provenance-sep">·</span><a href="mailto:gernot.mueller@tugraz.at">gernot.mueller@tugraz.at</a></div></div>
   </div>
   <div class="ds-stats">
-      <span class="ds-chip" style="--chip-color: #1565C0">Imagery</span>
+      <span class="ds-chip" style="--chip-color: #1565C0">Motor Execution</span>
       <span class="ds-chip ds-chip-muted">Code: BNCI2025-001</span>
       <span class="ds-chip ds-chip-muted">20 subjects</span>
       <span class="ds-chip ds-chip-muted">1 session</span>
@@ -1033,7 +1033,7 @@
       <a class="ds-btn" href="https://github.com/NeuroTechX/moabb/issues/new?title=%5BDataset%5D%20Issue%20with%20BNCI2025_001&amp;body=%23%23%20Dataset%0A%0A-%20%2A%2ADataset%20ID%3A%2A%2A%20BNCI2025_001%0A%0A%23%23%20Issue%20Description%0A%0APlease%20describe%20the%20issue%20you%20encountered%20with%20this%20dataset%3A%0A%0A%23%23%20Steps%20to%20Reproduce%0A%0A1.%20%0A2.%20%0A3.%20%0A%0A%23%23%20Expected%20Behavior%0A%0A%0A%23%23%20Additional%20Context%0A%0A&amp;labels=dataset" target="_blank" rel="noopener">Report Issue</a>
   </div>
   <div class="ds-overview-teaser"><p class="ds-overview-title">Overview</p><p class="ds-overview-text">BNCI 2025-001 Motor Kinematics Reaching dataset.</p><p class="ds-overview-text">Dataset from Srisrisawang &amp; Muller-Putz (2024)</p><p class="ds-overview-text"><strong>Dataset Description</strong></p><p class="ds-overview-text">This dataset investigates how the brain simultaneously encodes multiple kinematic parameters (speed, distance, and direction) during discrete reaching movements. Participants performed a four-direction center-out reaching task with varying speeds (quick/slow) and distances (near/far).</p><p class="ds-overview-text">The dataset provides insight into movement planning and execution processes as measured through EEG, enabling research on brain-computer interfaces for motor control and neurorehabilitation applications.</p><p class="ds-overview-text"><strong>Participants</strong></p><ul class="ds-overview-list ds-overview-text"><li>- 20 healthy subjects (12 male, 8 female)</li><li>Age: 26.1 +/- 4.1 years</li><li>Handedness: 17 right-handed, 3 left-handed (all used right hand)</li><li>Location: Institute of Neural Engineering, Graz University of Technology, Austria</li></ul><div class="ds-overview-full"><p><strong>Recording Details</strong></p>
-<ul class="ds-overview-list"><li>- Equipment: BrainAmp (Brain Products GmbH)</li><li>Channels: 60 EEG + 4 EOG = 64 total channels</li><li>Sampling rate: 500 Hz</li><li>Reference: Common average reference (CAR) across 55 channels</li><li>EOG placement: Outer canthi, above/below left eye</li><li>Electrode positions: Measured with ultrasonic device (ELPOS, Zebris)</li></ul>
+<ul class="ds-overview-list"><li>- Equipment: BrainAmp (Brain Products GmbH)</li><li>Channels: 60 EEG + 4 EOG = 64 total channels</li><li>Sampling rate: 500 Hz</li><li>Reference: Right mastoid (offline CAR across 55 channels)</li><li>EOG placement: Outer canthi, above/below left eye</li><li>Electrode positions: Measured with ultrasonic device (ELPOS, Zebris)</li></ul>
 <p><strong>Experimental Procedure</strong></p>
 <ul class="ds-overview-list"><li>- 4-direction center-out reaching task</li><li>2 speed levels: slow, quick</li><li>2 distance levels: near, far</li><li>16 conditions total (4 directions x 2 speeds x 2 distances)</li><li>~60 trials per condition (~960 total per subject)</li><li>Trial structure:</li><li>1 s preparation period</li><li>Cue movement (0.4-2.4 s depending on condition)</li><li>&gt;= 1 s waiting period</li><li>Movement execution</li><li>1 s feedback display</li><li>2 s intertrial interval</li></ul>
 <p><strong>Event Codes</strong></p>
@@ -1112,7 +1112,7 @@
 Stimulus Protocol</div>
 <a class="timeline-diagram reference internal image-reference" href="../_images/BNCI2025_001.svg"><img alt="../_images/BNCI2025_001.svg" class="timeline-diagram" src="../_images/BNCI2025_001.svg" style="width: 100%;" />
 </a>
-<p class="ds-viz-note">4s task window per trial · 16-class imagery paradigm · 1 runs/session across 1 sessions</p></div>
+<p class="ds-viz-note">4s task window per trial · 16-class motor execution paradigm · 1 runs/session across 1 sessions</p></div>
 </div>
 </div>
 <div class="sd-col sd-d-flex-row docutils">
@@ -1246,7 +1246,7 @@ Channel Summary</div>
 <div class="ds-channel-row"><span>EOG</span><strong>4</strong></div>
 <div class="ds-channel-row"><span>Montage</span><strong>10-05</strong></div>
 <div class="ds-channel-row"><span>Sampling</span><strong>500 Hz</strong></div>
-<div class="ds-channel-row"><span>Reference</span><strong>common average</strong></div>
+<div class="ds-channel-row"><span>Reference</span><strong>right mastoid</strong></div>
 <div class="ds-channel-row"><span>Filter</span><strong>50 Hz notch</strong></div>
 <div class="ds-channel-row"><span>Notch / line</span><strong>50 Hz</strong></div></div></div>
 </div>
@@ -1280,7 +1280,7 @@ Technology, Austria</p></li>
 <li><p>Equipment: BrainAmp (Brain Products GmbH)</p></li>
 <li><p>Channels: 60 EEG + 4 EOG = 64 total channels</p></li>
 <li><p>Sampling rate: 500 Hz</p></li>
-<li><p>Reference: Common average reference (CAR) across 55 channels</p></li>
+<li><p>Reference: Right mastoid (offline CAR across 55 channels)</p></li>
 <li><p>EOG placement: Outer canthi, above/below left eye</p></li>
 <li><p>Electrode positions: Measured with ultrasonic device (ELPOS, Zebris)</p></li>
 </ul>
@@ -1342,7 +1342,7 @@ Metadata</label><div class="sd-tab-content docutils">
 <td><p>20</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>#Chan</strong></p></td>
-<td><p>64</p></td>
+<td><p>60</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>#Classes</strong></p></td>
 <td><p>16</p></td>
@@ -1383,25 +1383,25 @@ Metadata</label><div class="sd-tab-content docutils">
 <li><p><strong>Amplifier</strong>: BrainAmp</p></li>
 <li><p><strong>Electrodes</strong>: EEG</p></li>
 <li><p><strong>Montage</strong>: standard_1005</p></li>
-<li><p><strong>Reference</strong>: common average</p></li>
+<li><p><strong>Reference</strong>: right mastoid</p></li>
 </ul>
 </div>
 <div class="admonition-preprocessing admonition">
 <p class="admonition-title">Preprocessing</p>
 <ul class="simple">
-<li><p><strong>Data state</strong>: preprocessed with eye artifact correction</p></li>
+<li><p><strong>Data state</strong>: raw</p></li>
 <li><p><strong>Bandpass filter</strong>: 0.3-80 Hz</p></li>
 <li><p><strong>Steps</strong>: low-pass filter at 100 Hz, notch filter at 50 Hz, downsampling to 200 Hz, bad channel rejection and interpolation, bandpass filter 0.3-80 Hz, eye artifact correction via SGEYESUB, ICA with FastICA algorithm, IC artifact removal, low-pass filter at 3 Hz, downsampling to 10 Hz, bad trial rejection, common average reference</p></li>
 <li><p><strong>Re-reference</strong>: common average</p></li>
-<li><p><strong>Notes</strong>: Frontal channels (AF7, AF3, AFz, AF4, AF8) and EOG removed prior to CAR to reduce residual eye artifacts. Final analysis used 55 channels. Eye blocks recorded separately for SGEYESUB model training. Bad trials rejected based on amplitude &gt;200 µV or standard deviation &gt;5SD. Movement-related bad trials rejected for incorrect direction, no movement, duration &lt;0.2s or &gt;4s, or movement initiated &lt;0.5s after cue stop.</p></li>
+<li><p><strong>Notes</strong>: Distributed files are raw 500 Hz 64-channel EEGLAB (.set/.fdt) recordings; listed preprocessing steps are from the paper’s offline analysis. Frontal channels (AF7, AF3, AFz, AF4, AF8) and EOG removed prior to CAR to reduce residual eye artifacts. Final analysis used 55 channels. Eye blocks recorded separately for SGEYESUB model training. Bad trials rejected based on amplitude &gt;200 µV or standard deviation &gt;5SD. Movement-related bad trials rejected for incorrect direction, no movement, duration &lt;0.2s or &gt;4s, or movement initiated &lt;0.5s after cue stop.</p></li>
 </ul>
 </div>
 <div class="admonition-data-access admonition">
 <p class="admonition-title">Data Access</p>
 <ul class="simple">
 <li><p><strong>DOI</strong>: 10.1088/1741-2552/ada0ea</p></li>
-<li><p><strong>Data URL</strong>: <a class="github reference external" href="https://github.com/rkobler/eyeartifactcorrection">rkobler/eyeartifactcorrection</a></p></li>
-<li><p><strong>Repository</strong>: GitHub</p></li>
+<li><p><strong>Data URL</strong>: <a class="reference external" href="https://lampx.tugraz.at/~bci/database/001-2025/">https://lampx.tugraz.at/~bci/database/001-2025/</a></p></li>
+<li><p><strong>Repository</strong>: BNCI Horizon 2020</p></li>
 </ul>
 </div>
 <div class="admonition-experimental-protocol admonition">

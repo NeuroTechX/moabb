@@ -1003,10 +1003,10 @@
 <h1>moabb.datasets.BNCI2020_002<a class="headerlink" href="#moabb-datasets-bnci2020-002" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="moabb.datasets.BNCI2020_002">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">BNCI2020_002</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_all_modalities</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/bnci/bnci_2020.py#L728-L1016"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.BNCI2020_002" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">BNCI2020_002</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_all_modalities</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/bnci/bnci_2020.py#L733-L1027"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.BNCI2020_002" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="moabb.datasets.bnci.base.BNCIBaseDataset.html#moabb.datasets.bnci.base.BNCIBaseDataset" title="moabb.datasets.bnci.base.BNCIBaseDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCIBaseDataset</span></code></a></p>
 <div class="ds-card" role="region" aria-label="BNCI2020_002 dataset overview">
-  <a class="ds-card-source" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/bnci/bnci_2020.py#L728-L1016" target="_blank" rel="noopener">[source]</a>
+  <a class="ds-card-source" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/bnci/bnci_2020.py#L733-L1027" target="_blank" rel="noopener">[source]</a>
   <div class="ds-card-head">
     <p class="ds-card-kicker">Dataset Snapshot</p>
     <p class="ds-card-title">BNCI2020_002</p>
@@ -1035,12 +1035,12 @@
   <div class="ds-overview-teaser"><p class="ds-overview-title">Overview</p><p class="ds-overview-text">BNCI 2020-002 Attention Shift (Covert Spatial Attention) dataset.</p><p class="ds-overview-text">Dataset from</p><p class="ds-overview-text"><strong>Dataset Description</strong></p><p class="ds-overview-text">This dataset contains EEG recordings from 18 healthy subjects performing a covert spatial attention task for brain-computer interface (BCI) control. The paradigm decodes binary decisions based on the N2pc component - a neurological marker reflecting attention to visual targets in specific hemispheres.</p><p class="ds-overview-text">Subjects were presented with colored stimuli (red and green crosses) in left and right visual hemifields simultaneously. By covertly shifting attention to one side (left or right), subjects could indicate &quot;yes&quot; or &quot;no&quot; responses without any overt movement, enabling gaze-independent communication.</p><p class="ds-overview-text"><strong>Participants</strong></p><ul class="ds-overview-list ds-overview-text"><li>- 18 healthy subjects (10 female)</li><li>Age range: 19-38 years (mean 27 years)</li><li>All right-handed</li><li>Normal or corrected-to-normal vision</li><li>Location: Otto-von-Guericke University Magdeburg, Germany</li></ul><div class="ds-overview-full"><p><strong>Recording Details</strong></p>
 <ul class="ds-overview-list"><li>- Equipment: BrainAmp DC Amplifier (Brain Products GmbH)</li><li>Channels: 29 EEG + 2 EOG (horizontal and vertical)</li><li>Electrode positions: Standard 10-20 system</li><li>Reference: Right mastoid</li><li>Sampling rate: 250 Hz</li><li>Hardware filter: 0.1 Hz high-pass</li><li>Display: 24&quot; TFT, 70 cm viewing distance</li></ul>
 <p><strong>Experimental Procedure</strong></p>
-<ul class="ds-overview-list"><li>- Binary communication task: attend left (red cross) for &quot;no&quot;, attend right (green cross) for &quot;yes&quot;</li><li>120 statements presented, subjects respond by covert attention shift</li><li>Each trial: 10 visual stimuli presentations</li><li>Stimulus parameters tested:</li><li>Four symbol sizes: 0.45, 0.90, 1.36, 1.81 degrees visual angle</li><li>Five eccentricities: 4, 5.5, 7, 8.5, 10 degrees visual angle</li><li>Inter-stimulus interval: ~175 ms</li><li>Online accuracy: 88.5% (+/- 7.8%)</li></ul>
+<ul class="ds-overview-list"><li>- Binary communication task: attend left (red cross) for &quot;no&quot;, attend right (green cross) for &quot;yes&quot;</li><li>168 trials presented across 7 blocks of 24 trials (2 calibration blocks = 48 trials + 5 online blocks = 120 trials), subjects respond by covert attention shift</li><li>Each trial: 10 visual stimuli presentations</li><li>Stimulus parameters tested:</li><li>Four symbol sizes: 0.45, 0.90, 1.36, 1.81 degrees visual angle</li><li>Five eccentricities: 4, 5.5, 7, 8.5, 10 degrees visual angle</li><li>Inter-stimulus interval: 600 ms (jittered by 0-250 ms; SOA = 850 ms + jitter)</li><li>Online accuracy: 88.5% (+/- 7.8%)</li></ul>
 <p><strong>Event Codes</strong></p>
 <p>For P300 paradigm compatibility, events are named Target/NonTarget:</p>
 <ul class="ds-overview-list"><li>- NonTarget (1): Left attention (no response)</li><li>Target (2): Right attention (yes response)</li></ul>
 <p><strong>Data Organization</strong></p>
-<ul class="ds-overview-list"><li>- 1 session per subject</li><li>120 trials per subject, each with 10 stimulus presentations</li><li>Trial duration: 16 seconds (4000 samples at 250 Hz)</li><li>Data stored in MAT format with fields:</li><li>bciexp.data: EEG data (channels x samples x trials)</li><li>bciexp.heog, bciexp.veog: EOG data</li><li>bciexp.intention: subject&#x27;s intended response (yes/no)</li><li>subject: demographic information</li></ul></div><div class="ds-overview-actions"><button class="ds-overview-toggle" type="button" aria-expanded="false" aria-controls="ds-overview-bnci2020_002" onclick="var el=this.closest('.ds-overview-teaser');el.classList.toggle('ds-expanded');var exp=el.classList.contains('ds-expanded');this.setAttribute('aria-expanded',exp?'true':'false');this.textContent=exp?'Show less ▴':'Show more ▾';">Show more ▾</button><a class="ds-overview-tab-link" href="#ds-overview-bnci2020_002" onclick="event.preventDefault();var tab=document.querySelector('.ds-doc-tabs .sd-tab-label');if(tab){tab.click();}var target=document.getElementById('ds-overview-bnci2020_002');if(target){target.scrollIntoView({behavior:'smooth',block:'start'});}">Open in Overview tab →</a></div></div>
+<ul class="ds-overview-list"><li>- 1 session per subject</li><li>168 trials per subject (48 calibration + 120 online), each with 10 stimulus presentations</li><li>Trial duration: 16 seconds (4000 samples at 250 Hz)</li><li>Data stored in MAT format with fields:</li><li>bciexp.data: EEG data (channels x samples x trials)</li><li>bciexp.heog, bciexp.veog: EOG data</li><li>bciexp.intention: subject&#x27;s intended response (yes/no)</li><li>subject: demographic information</li></ul></div><div class="ds-overview-actions"><button class="ds-overview-toggle" type="button" aria-expanded="false" aria-controls="ds-overview-bnci2020_002" onclick="var el=this.closest('.ds-overview-teaser');el.classList.toggle('ds-expanded');var exp=el.classList.contains('ds-expanded');this.setAttribute('aria-expanded',exp?'true':'false');this.textContent=exp?'Show less ▴':'Show more ▾';">Show more ▾</button><a class="ds-overview-tab-link" href="#ds-overview-bnci2020_002" onclick="event.preventDefault();var tab=document.querySelector('.ds-doc-tabs .sd-tab-label');if(tab){tab.click();}var target=document.getElementById('ds-overview-bnci2020_002');if(target){target.scrollIntoView({behavior:'smooth',block:'start'});}">Open in Overview tab →</a></div></div>
   <div id="ds-quickstart-bnci2020_002" class="ds-quickstart" role="region" aria-labelledby="ds-quickstart-btn-bnci2020_002" aria-hidden="true" hidden>
   <div class="ds-quickstart-code"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">BNCI2020_002</span>
 
@@ -1187,7 +1187,9 @@ communication.</p>
 <ul class="simple">
 <li><p>Binary communication task: attend left (red cross) for “no”,
 attend right (green cross) for “yes”</p></li>
-<li><p>120 statements presented, subjects respond by covert attention shift</p></li>
+<li><p>168 trials presented across 7 blocks of 24 trials (2 calibration blocks =
+48 trials + 5 online blocks = 120 trials), subjects respond by covert
+attention shift</p></li>
 <li><p>Each trial: 10 visual stimuli presentations</p></li>
 <li><dl class="simple">
 <dt>Stimulus parameters tested:</dt><dd><ul>
@@ -1197,7 +1199,7 @@ attend right (green cross) for “yes”</p></li>
 </dd>
 </dl>
 </li>
-<li><p>Inter-stimulus interval: ~175 ms</p></li>
+<li><p>Inter-stimulus interval: 600 ms (jittered by 0-250 ms; SOA = 850 ms + jitter)</p></li>
 <li><p>Online accuracy: 88.5% (+/- 7.8%)</p></li>
 </ul>
 <p><strong>Event Codes</strong></p>
@@ -1209,7 +1211,7 @@ attend right (green cross) for “yes”</p></li>
 <p><strong>Data Organization</strong></p>
 <ul class="simple">
 <li><p>1 session per subject</p></li>
-<li><p>120 trials per subject, each with 10 stimulus presentations</p></li>
+<li><p>168 trials per subject (48 calibration + 120 online), each with 10 stimulus presentations</p></li>
 <li><p>Trial duration: 16 seconds (4000 samples at 250 Hz)</p></li>
 <li><dl class="simple">
 <dt>Data stored in MAT format with fields:</dt><dd><ul>
@@ -1226,8 +1228,8 @@ attend right (green cross) for “yes”</p></li>
 <div role="list" class="citation-list">
 <div class="citation" id="r1325e154f3ff-1" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
-<p>Reichert, C., Tellez-Ceja, I. F., Schwenker, F., Rusnac, A.-L.,
-Curio, G., Aust, L., &amp; Hinrichs, H. (2020). Impact of Stimulus Features
+<p>Reichert, C., Tellez Ceja, I. F., Sweeney-Reed, C. M., Heinze, H.-J.,
+Hinrichs, H., &amp; Dürschmid, S. (2020). Impact of Stimulus Features
 on the Performance of a Gaze-Independent Brain-Computer Interface
 Based on Covert Spatial Attention Shifts. Frontiers in Neuroscience,
 14, 591777. <a class="reference external" href="https://doi.org/10.3389/fnins.2020.591777">https://doi.org/10.3389/fnins.2020.591777</a></p>
@@ -1255,7 +1257,7 @@ Metadata</label><div class="sd-tab-content docutils">
 <td><p>18</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>#Chan</strong></p></td>
-<td><p>31</p></td>
+<td><p>30</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>#Trials / class</strong></p></td>
 <td><p>varies NT / T</p></td>
@@ -1347,7 +1349,7 @@ making it suitable for users who cannot control eye movements.</p>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.BNCI2020_002.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_all_modalities</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/bnci/bnci_2020.py#L1002-L1016"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.BNCI2020_002.__init__" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_all_modalities</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/bnci/bnci_2020.py#L1013-L1027"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.BNCI2020_002.__init__" title="Link to this definition">#</a></dt>
 <dd><p>Initialize function for the BaseDataset.</p>
 </dd></dl>
 

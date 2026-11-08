@@ -1003,16 +1003,16 @@
 <h1>moabb.datasets.WRCC2023_MI_B<a class="headerlink" href="#moabb-datasets-wrcc2023-mi-b" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="moabb.datasets.WRCC2023_MI_B">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">WRCC2023_MI_B</span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/wrcc2023.py#L223-L333"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.WRCC2023_MI_B" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">WRCC2023_MI_B</span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/wrcc2023.py#L230-L354"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.WRCC2023_MI_B" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_WRCC2023</span></code></p>
 <div class="ds-card" role="region" aria-label="WRCC2023_MI_B dataset overview">
-  <a class="ds-card-source" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/wrcc2023.py#L223-L333" target="_blank" rel="noopener">[source]</a>
+  <a class="ds-card-source" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/wrcc2023.py#L230-L354" target="_blank" rel="noopener">[source]</a>
   <div class="ds-card-head">
     <p class="ds-card-kicker">Dataset Snapshot</p>
     <p class="ds-card-title">WRCC2023_MI_B</p>
     <p class="ds-card-alt-name">MI-B three-class (left hand, right hand, feet) motor imagery EEG dataset of the BCI competition at the 2023 World Robot Contest; 9 subjects (2 stroke, 7 healthy).</p>
     <p class="ds-subtitle">Imagery, 3 classes (left_hand vs right_hand vs feet)</p>
-    <div class="ds-provenance"><p class="ds-authors"><span class="ds-authors-label">Authors</span><span class="ds-author-name ds-author-senior">WRCC2023</span></p><div class="ds-provenance-meta"><span>2024</span></div></div>
+    <div class="ds-provenance"><p class="ds-authors"><span class="ds-authors-label">Authors</span><span class="ds-author-name ds-author-senior">WRCC2023</span></p><div class="ds-provenance-meta"><span>🇨🇳 World Robot Contest (WRCC2023) BCI competition, CN</span><span class="ds-provenance-sep">·</span><span>2024</span></div></div>
   </div>
   <div class="ds-stats">
       <span class="ds-chip" style="--chip-color: #1565C0">Imagery</span>
@@ -1244,6 +1244,8 @@ Metadata</label><div class="sd-tab-content docutils">
 <p class="admonition-title">Experimental Protocol</p>
 <ul class="simple">
 <li><p><strong>Paradigm</strong>: imagery</p></li>
+<li><p><strong>Feedback</strong>: none</p></li>
+<li><p><strong>Stimulus</strong>: cue</p></li>
 </ul>
 </div>
 </div>
@@ -1266,7 +1268,7 @@ audit, 2026-09-30).</p>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.WRCC2023_MI_B.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/wrcc2023.py#L332-L333"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.WRCC2023_MI_B.__init__" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/wrcc2023.py#L353-L354"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.WRCC2023_MI_B.__init__" title="Link to this definition">#</a></dt>
 <dd><p>Initialize function for the BaseDataset.</p>
 </dd></dl>
 
@@ -1329,7 +1331,7 @@ path.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.WRCC2023_MI_B.data_path">
-<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/wrcc2023.py#L63-L70"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.WRCC2023_MI_B.data_path" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/wrcc2023.py#L64-L71"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.WRCC2023_MI_B.data_path" title="Link to this definition">#</a></dt>
 <dd><p>Return the local path of a single subject’s <code class="docutils literal notranslate"><span class="pre">.mat</span></code> file.</p>
 </dd></dl>
 
