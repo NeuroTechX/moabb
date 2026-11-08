@@ -166,7 +166,8 @@ def _make_metadata(cohort=None):
             sampling_rate=sfreq,
             channel_types={"eeg": len(channels)},
             montage="standard_1020",
-            hardware="BrainVision Recorder (BrainProducts)",
+            hardware="BrainProducts",
+            software="BrainVision Recorder (BrainProducts)",
             reference=None,
             ground=None,
             sensors=channels,
@@ -177,6 +178,7 @@ def _make_metadata(cohort=None):
         ),
         experiment=ExperimentMetadata(
             paradigm="imagery",
+            task_type="left_right_hand",
             n_classes=2,
             class_labels=["left_hand", "right_hand"],
             trial_duration=4.0,
@@ -184,6 +186,7 @@ def _make_metadata(cohort=None):
             "imagery; each recording is one class, with the imagery cue onset "
             "marked by the S 1 BrainVision stimulus marker.",
             stimulus_modalities=["visual"],
+            synchronicity="synchronous",
             mode="offline",
             events=dict(EVENTS),
         ),

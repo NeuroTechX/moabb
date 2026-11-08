@@ -93,7 +93,7 @@ class Kumar2024(BaseDataset):
 
     The two transfer learning training protocols used were:
     - Generic Recentering (GR): unsupervised domain adaptation (subjects 1-9)
-    - Personally Assisted Recentering (PAR): supervised recalibration (subjects 10-18)
+    - Personally Adjusted Recentering (PAR): supervised recalibration (subjects 10-18)
 
     Trial structure (bar task):
     - Fixation cross: 1.0 s
@@ -150,21 +150,21 @@ class Kumar2024(BaseDataset):
             n_classes=2,
             class_labels=["left_hand", "right_hand"],
             events={"left_hand": 1, "right_hand": 2},
-            trials_per_class={"left_hand": 10, "right_hand": 10},
+            trials_per_class={"left_hand": 200, "right_hand": 200},
             trial_duration=5.0,
             study_design=(
                 "Longitudinal BCI training with inter-subject transfer learning. "
                 "Subjects performed left/right hand MI with bar-feedback and car "
                 "racing tasks across 6 sessions on separate days. Two groups: "
-                "Generic Recentering (GR, N=9) and Personally Assisted Recentering "
+                "Generic Recentering (GR, N=9) and Personally Adjusted Recentering "
                 "(PAR, N=9)."
             ),
             feedback_type="continuous visual",
             stimulus_type="visual cue and bar feedback",
             stimulus_modalities=["visual"],
             primary_modality="visual",
-            mode="online",
-            synchronicity="cue-based",
+            mode="both",
+            synchronicity="synchronous",
             has_training_test_split=False,
             instructions=(
                 "Subjects were instructed to mentally rehearse the kinesthetics, "
@@ -191,6 +191,7 @@ class Kumar2024(BaseDataset):
             senior_author="Jose del R. Millan",
             contact_info=["satyam.kumar@utexas.edu", "jose.millan@austin.utexas.edu"],
             institution="The University of Texas at Austin",
+            institution_department="Department of Electrical and Computer Engineering; Department of Neurology",
             institution_address="Austin, TX, USA",
             country="US",
             repository="Zenodo",
@@ -250,8 +251,8 @@ class Kumar2024(BaseDataset):
             imagery_duration_s=5.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials=20,
-            n_trials_per_class={"left_hand": 10, "right_hand": 10},
+            n_trials=400,
+            n_trials_per_class={"left_hand": 200, "right_hand": 200},
             n_blocks=6,
             trials_context=(
                 "20 trials per run (10 left, 10 right). "
@@ -269,7 +270,7 @@ class Kumar2024(BaseDataset):
             "a single expert is readily transferable to inexperienced users via "
             "domain adaptation techniques allowing calibration-free BCI training. "
             "We introduce two real-time frameworks: Generic Recentering (GR) "
-            "through unsupervised adaptation and Personally Assisted Recentering "
+            "through unsupervised adaptation and Personally Adjusted Recentering "
             "(PAR) that extends GR by employing supervised recalibration. We "
             "evaluated our frameworks on 18 healthy naive subjects over five "
             "online sessions, who operated a synchronous bar task and a car "

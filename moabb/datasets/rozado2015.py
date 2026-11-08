@@ -115,7 +115,7 @@ class Rozado2015(BaseDataset):
 
     References
     ----------
-    .. [1] D. Rozado, T. Duenser, and B. Gruen, "Improving the performance
+    .. [1] D. Rozado, A. Duenser, and B. Howell, "Improving the performance
        of an EEG-based motor imagery brain computer interface using task
        evoked changes in pupil diameter," PLoS ONE, vol. 10, no. 3,
        e0121262, 2015.
@@ -130,9 +130,11 @@ class Rozado2015(BaseDataset):
             channel_types={"eeg": 32},
             montage="biosemi32",
             hardware="BioSemi ActiveTwo",
+            software="Lab Streaming Layer (LSL), LabRecorder, SNAP",
             reference="CMS/DRL",
             line_freq=50.0,
             sensor_type="active",
+            electrode_type="wet",
             electrode_material="sintered Ag/AgCl",
             cap_manufacturer="BioSemi",
         ),
@@ -163,6 +165,7 @@ class Rozado2015(BaseDataset):
         ),
         documentation=DocumentationMetadata(
             ethics_approval=["CSIRO Human Research Ethics Committee"],
+            funding=["CSIRO internal funding"],
             doi="10.1371/journal.pone.0121262",
             investigators=["David Rozado", "Andreas Duenser", "Ben Howell"],
             senior_author="David Rozado",

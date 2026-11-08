@@ -85,19 +85,22 @@ class Lioi2020_XP1(OpenNeuroMirrorMixin, BaseDataset):
             hardware="Brain Products MR-compatible 64-channel EEG",
             reference="FCz",
             ground="AFz",
+            impedance_threshold_kohm=20.0,
             line_freq=50.0,
             sensors=list(_CH_NAMES),
             auxiliary_channels=AuxiliaryChannelsMetadata(other_physiological=["ecg"]),
         ),
         participants=ParticipantMetadata(
-            age_std=9.9,
-            age_mean=33.7,
+            age_std=5.74,
+            age_mean=28.4,
             n_subjects=10,
             health_status="healthy",
             gender={"male": 8, "female": 2},
             age_min=19.0,
             age_max=39.0,
-            species="human",
+            handedness="right",
+            bci_experience="naive",
+            species="homo sapiens",
             ages=[25, 27, 25, 31, 39, 36, 19, 29, 27, 26],
             sexes=["male"] * 5 + ["female"] + ["male"] * 2 + ["female", "male"],
         ),
@@ -122,6 +125,7 @@ class Lioi2020_XP1(OpenNeuroMirrorMixin, BaseDataset):
         ),
         documentation=DocumentationMetadata(
             senior_author="Christian Barillot",
+            contact_info=["giulia.lioi@inria.fr"],
             ethics_approval=["Comité de Protection des Personnes Ouest V"],
             repository="OpenNeuro",
             doi="10.1038/s41597-020-0498-3",
@@ -142,7 +146,8 @@ class Lioi2020_XP1(OpenNeuroMirrorMixin, BaseDataset):
             imagery_duration_s=20.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials=780,
+            n_trials=80,
+            n_trials_per_class={"rest": 40, "right_hand": 40},
             trials_context=(
                 "Per subject: 3 NF runs x 10 MI blocks + 2 MI runs x 5 blocks "
                 "= 40 right-hand MI blocks (30 for sub 1, missing MIpre/MIpost), "

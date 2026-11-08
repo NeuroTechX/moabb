@@ -238,7 +238,7 @@ class Ofner2017(BaseDataset):
             age_min=22.0,
             age_max=40.0,
             handedness={"right": 14, "left": 1},
-            species="human",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             events={
@@ -265,6 +265,8 @@ class Ofner2017(BaseDataset):
             study_design="Trial-based paradigm with sustained movements/motor imagery. Each trial: fixation cross at 0s, cue presentation at 2s, sustained movement/MI execution. Subjects performed both movement execution (ME) and motor imagery (MI) in separate sessions.",
             feedback_type="none",
             stimulus_type="visual cue",
+            stimulus_modalities=["visual", "auditory"],
+            primary_modality="visual",
             synchronicity="synchronous",
             mode="offline",
             instructions="Subjects were instructed to execute sustained movements in ME session and perform kinesthetic motor imagery in MI session. For rest class, subjects were instructed to avoid any movement and to stay in the starting position.",
@@ -355,7 +357,7 @@ class Ofner2017(BaseDataset):
                 "hand_close",
             ],
             cue_duration_s=None,
-            imagery_duration_s=None,
+            imagery_duration_s=3.0,
         ),
         data_structure=DataStructureMetadata(
             n_trials=420,

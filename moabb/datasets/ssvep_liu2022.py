@@ -27,7 +27,7 @@ from .metadata.schema import (
     SignalProcessingMetadata,
     Tags,
 )
-from .utils import FIGSHARE_DL_URL, safe_extract_tar
+from .utils import FIGSHARE_DL_URL, TSINGHUA_64CH_NAMES, safe_extract_tar
 
 
 # Figshare file IDs for per-subject tar.gz files (S1.tar.gz through S100.tar.gz)
@@ -161,9 +161,11 @@ class Liu2022EldBETA(BaseDataset):
             channel_types={"eeg": 64},
             montage="standard_1005",
             hardware="Synamps2 (Neuroscan)",
+            sensors=list(TSINGHUA_64CH_NAMES),
             line_freq=50.0,
             reference="Cz",
             impedance_threshold_kohm=20,
+            filters={"notch_hz": 50.0},
         ),
         participants=ParticipantMetadata(
             n_subjects=100,
@@ -384,7 +386,7 @@ class Liu2022EldBETA(BaseDataset):
             paradigm="ssvep",
             events={freq: int(idx) for idx, freq in _TARGET_TO_FREQ.items()},
             n_classes=9,
-            trial_duration=5.0,
+            trial_duration=6.0,
             stimulus_type="JFPM visual flicker",
             stimulus_modalities=["visual"],
             primary_modality="visual",
@@ -393,6 +395,7 @@ class Liu2022EldBETA(BaseDataset):
             task_type="9-target SSVEP speller",
             feedback_type="visual",
             has_training_test_split=False,
+            stimulus_presentation={"SoftwareName": "Psychophysics Toolbox (MATLAB)"},
         ),
         documentation=DocumentationMetadata(
             doi="10.1038/s41597-022-01372-9",
@@ -417,7 +420,11 @@ class Liu2022EldBETA(BaseDataset):
                 "National Natural Science Foundation of China (No. 62171473)",
                 "Doctoral Brain+X Seed Grant Program of Tsinghua University",
                 "Strategic Priority Research Program of Chinese Academy of Sciences (No. XDB32040200)",
+                "Beijing Science and Technology Program (No. Z201100004420015)",
+                "Key-Area Research and Development Program of Guangdong Province (No. 2018B030339001)",
+                "National Key Research and Development Program of China (No. 2017YFB1002505)",
             ],
+            contact_info=["chenxg@bme.cams.cn"],
             keywords=["SSVEP", "BCI", "EEG", "elderly", "aging", "benchmark", "JFPM"],
         ),
         paradigm_specific=ParadigmSpecificMetadata(

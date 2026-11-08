@@ -140,10 +140,12 @@ class ErpCore2021(BaseDataset):
         acquisition=AcquisitionMetadata(
             sampling_rate=1024.0,
             channel_types={"eeg": 30, "eog": 3},
+            montage="standard_1020",
             hardware="Biosemi ActiveTwo",
             sensor_type="active Ag/AgCl",
             reference="CMS/DRL (PO1/PO2); single-ended recording",
             ground="CMS/DRL (PO1/PO2)",
+            software="Presentation (Neurobehavioral Systems)",
             filters="fifth-order sinc low-pass filter, half-power cutoff at 204.8 Hz",
             line_freq=60.0,
             sensors=[
@@ -194,6 +196,7 @@ class ErpCore2021(BaseDataset):
             age_min=18,
             age_max=30,
             handedness={"right": 38, "left": 2},
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             paradigm="p300",
@@ -214,7 +217,7 @@ class ErpCore2021(BaseDataset):
                 "Steven J. Luck",
             ],
             senior_author="Steven J. Luck",
-            institution="San Diego State University",
+            institution="San Diego State University; University of California, Davis",
             institution_department="Department of Psychology",
             institution_address="San Diego, CA, 92120, USA",
             country="US",
@@ -234,10 +237,19 @@ class ErpCore2021(BaseDataset):
                 "for human event-related potential research. NeuroImage, 225, 117465. "
                 "https://doi.org/10.1016/j.neuroimage.2020.117465"
             ),
+            keywords=[
+                "Event-related potentials",
+                "EEG",
+                "Data quality",
+                "Open science",
+                "Reproducibility",
+            ],
             publication_year=2021,
             repository="Osf",
             license="CC-BY-4.0",
         ),
+        sessions_per_subject=1,
+        runs_per_session=1,
     )
 
     def __init__(
@@ -263,10 +275,10 @@ class ErpCore2021(BaseDataset):
             interval = (-0.2, 0.8)
             events = {"Target": 1, "NonTarget": 2}
         elif task == "ERN":
-            interval = (-0.8, 0.2)
+            interval = (-0.6, 0.4)
             events = {"Target": 1, "NonTarget": 2}
         elif task == "LRP":
-            interval = (-0.6, 0.4)
+            interval = (-0.8, 0.2)
             events = {"Target": 1, "NonTarget": 2}
         else:
             raise ValueError(f"Unknown task {task}")
@@ -311,13 +323,13 @@ class ErpCore2021(BaseDataset):
             raw.load_data()  # Preload the data because read_raw_bids does not load it
             raw = raw.set_montage("colin27_1020", match_case=False)
 
+        raw = self.handle_events_reading(events_path, raw)
+
         # Shift the stimulus event codes forward in time
         # to account for the LCD monitor delay
         # (26 ms on our monitor, as measured with a photosensor).
-        if self.task != "MMN":
+        if self.task in ("N170", "N2pc", "N400", "P3"):
             raw.annotations.onset = raw.annotations.onset + 0.026
-
-        raw = self.handle_events_reading(events_path, raw)
 
         # There is only one session
         sessions = {"0": {"0": raw}}

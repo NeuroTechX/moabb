@@ -146,7 +146,7 @@ class Stieger2021(BaseDataset):
             hardware="Neuroscan SynAmps RT amplifiers",
             sensor_type="EEG",
             reference=None,
-            software="Neuroscan",
+            software="Neuroscan acquisition software and BCI2000",
             filters="0.1 to 200 Hz with 60 Hz notch filter",
             sensors=[
                 "AF3",
@@ -219,8 +219,8 @@ class Stieger2021(BaseDataset):
             n_subjects=62,
             health_status="healthy",
             gender={"male": 13, "female": 49},
-            age_mean=None,
-            age_std=None,
+            age_mean=39.2,
+            age_std=14.4,
             age_min=18,
             age_max=63,
             handedness="mostly right-handed",
@@ -265,7 +265,7 @@ class Stieger2021(BaseDataset):
                 "longitudinal",
                 "learning",
             ],
-            repository="GitHub",
+            repository="Figshare",
             data_url="https://doi.org/10.6084/m9.figshare.13123148.v1",
             funding=[
                 "NIH AT009263",
@@ -274,7 +274,7 @@ class Stieger2021(BaseDataset):
                 "NIH MH114233",
                 "NIH EB029354",
             ],
-            license="CC-BY-NC-4.0",
+            license="CC-BY-4.0",
         ),
         tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Active"]),
         preprocessing=PreprocessingMetadata(

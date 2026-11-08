@@ -257,6 +257,20 @@ class Beetl2021_A(BaseDataset):
                 "Sylvain Chevallier",
                 "Vinay Jayaram",
                 "Camille Jeunet",
+                "Stylianos Bakas",
+                "Siegfried Ludwig",
+                "Konstantinos Barmpas",
+                "Mehdi Bahri",
+                "Yannis Panagakis",
+                "Nikolaos Laskaris",
+                "Dimitrios A. Adamos",
+                "Stefanos Zafeiriou",
+                "William C. Duong",
+                "Stephen M. Gordon",
+                "Vernon J. Lawhern",
+                "Maciej Śliwowski",
+                "Vincent Rouanne",
+                "Piotr Tempczyk",
             ],
             institution="Multiple institutions",
             country="GB",
@@ -266,6 +280,14 @@ class Beetl2021_A(BaseDataset):
             senior_author="A. Aldo Faisal",
             contact_info=["xiaoxi.wei18@imperial.ac.uk", "aldo.faisal@imperial.ac.uk"],
             associated_paper_doi="10.48550/arXiv.2202.12950",
+            funding=[
+                "UKRI Turing AI Fellowship Grant (EP/V025449/1)",
+                "ANR BrAIN AI chair (ANR-20-CHIA-0016)",
+                "CEA NUMERICS program",
+                "European Union Horizon 2020 Marie Sklodowska-Curie grant No 800945",
+                "Facebook Reality Labs",
+                "BCI Society",
+            ],
             keywords=[
                 "machine learning",
                 "transfer learning",
@@ -454,6 +476,7 @@ class Beetl2021_A(BaseDataset):
             # the data and is dropped.
             interval=[0, 4 - 1 / 500],
             paradigm="imagery",
+            doi="10.48550/arXiv.2202.12950",
             selected_subjects=subjects,
             selected_sessions=sessions,
         )
@@ -696,7 +719,7 @@ class Beetl2021_B(BaseDataset):
         participants=ParticipantMetadata(
             n_subjects=2,  # Beetl2021_B has subjects 3-5 in leaderboard, 4-5 in final (default=final)
             health_status="healthy",
-            species="human",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             paradigm="imagery",
@@ -719,6 +742,7 @@ class Beetl2021_B(BaseDataset):
             has_training_test_split=True,
         ),
         documentation=DocumentationMetadata(
+            doi="10.48550/arXiv.2202.12950",
             license="CC-BY-4.0",
             description="Motor Imagery dataset from BEETL Competition - Dataset B. Part of the NeurIPS 2021 BEETL competition Task 2 focusing on transfer learning for motor imagery decoding. Dataset B contains data from Weibo2014 with 32 EEG channels selected around the motor cortex, sampled at 200 Hz. 4-class motor imagery: left hand, right hand, feet, and rest.",
             investigators=[
@@ -802,7 +826,6 @@ class Beetl2021_B(BaseDataset):
             classifiers=[
                 "EEGNet",
                 "EEGInception",
-                "DeepSleep",
                 "Shallow ConvNet",
                 "SPDNet",
                 "Deep Sets",
@@ -885,6 +908,7 @@ class Beetl2021_B(BaseDataset):
             # the data and is dropped.
             interval=[0, 4 - 1 / 200],
             paradigm="imagery",
+            doi="10.48550/arXiv.2202.12950",
             selected_subjects=subjects,
             selected_sessions=sessions,
         )

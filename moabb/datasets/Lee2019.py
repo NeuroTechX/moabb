@@ -103,7 +103,7 @@ class Lee2019(BaseDataset):
             code="Lee2019-" + code_suffix,
             interval=interval,
             paradigm=paradigm,
-            doi="10.5524/100542",
+            doi="10.1093/gigascience/giz002",
             selected_subjects=subjects,
             selected_sessions=sessions,
             return_all_modalities=return_all_modalities,
@@ -401,8 +401,8 @@ class Lee2019_MI(Lee2019):
                 "TTP7h",
             ],
             line_freq=60.0,
-            software=None,
-            cap_manufacturer=None,
+            software="OpenBMI, Psychophysics Toolbox",
+            cap_manufacturer="Brain Products",
             auxiliary_channels=AuxiliaryChannelsMetadata(
                 has_eog=False, has_emg=True, emg_channels=4
             ),
@@ -451,6 +451,11 @@ class Lee2019_MI(Lee2019):
         documentation=DocumentationMetadata(
             data_url="https://doi.org/10.5524/100542",
             doi="10.1093/gigascience/giz002",
+            associated_paper_doi="10.1093/gigascience/giz002",
+            funding=[
+                "Institute for Information & Communications Technology Promotion (IITP) grant funded by the Korea government (No. 2017-0-00451)",
+                "National Research Foundation of Korea (NRF) grant funded by the MSIT (No. 2015R1A5A1037627)",
+            ],
             description="EEG dataset and OpenBMI toolbox for three BCI paradigms: an investigation into BCI illiteracy. Includes MI, ERP, and SSVEP paradigms with a large number of subjects over multiple sessions.",
             investigators=[
                 "Min-Ho Lee",
@@ -511,7 +516,7 @@ class Lee2019_MI(Lee2019):
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
             imagery_tasks=["left_hand", "right_hand"],
-            cue_duration_s=3.0,
+            cue_duration_s=None,
             imagery_duration_s=4.0,
         ),
         data_structure=DataStructureMetadata(
@@ -522,7 +527,7 @@ class Lee2019_MI(Lee2019):
         file_format="MAT",
         data_processed=False,
         abstract="Electroencephalography (EEG)-based brain-computer interface (BCI) systems are mainly divided into three major paradigms: motor imagery (MI), event-related potential (ERP), and steady-state visually evoked potential (SSVEP). Here, we present a BCI dataset that includes the three major BCI paradigms with a large number of subjects over multiple sessions. In addition, information about the psychological and physiological conditions of BCI users was obtained using a questionnaire, and task-unrelated parameters such as resting state, artifacts, and electromyography of both arms were also recorded. We evaluated the decoding accuracies for the individual paradigms and determined performance variations across both subjects and sessions. Furthermore, we looked for more general, severe cases of BCI illiteracy than have been previously reported in the literature. Average decoding accuracies across all subjects and sessions were 71.1% (± 0.15), 96.7% (± 0.05), and 95.1% (± 0.09), and rates of BCI illiteracy were 53.7%, 11.1%, and 10.2% for MI, ERP, and SSVEP, respectively. Compared to the ERP and SSVEP paradigms, the MI paradigm exhibited large performance variations between both subjects and sessions. Furthermore, we found that 27.8% (15 out of 54) of users were universally BCI literate, i.e., they were able to proficiently perform all three paradigms. Interestingly, we found no universally illiterate BCI user, i.e., all participants were able to control at least one type of BCI system.",
-        methodology="Experimental procedure: 54 healthy subjects participated in two sessions on different days. Each session consisted of three BCI paradigms performed sequentially: ERP speller (36 symbols, row-column presentation with face stimuli), MI task (binary left/right hand imagery), and SSVEP (four target frequencies: 5.45, 6.67, 8.57, 12 Hz). Each paradigm had offline training and online test phases. EEG recorded at 1000 Hz with 62 Ag/AgCl electrodes using BrainAmp amplifier, nose-referenced, grounded to AFz. Impedance maintained below 10 kOhm. Subjects seated 60 cm from 21-inch LCD monitor. Questionnaires collected demographic, physiological, and psychological data. Artifact data (eye blinking, eye movements, teeth clenching, arm flexing) and resting state EEG also recorded. Total experiment duration: ~205 minutes per session.",
+        methodology="Experimental procedure: 54 healthy subjects participated in two sessions on different days. Each session consisted of three BCI paradigms performed sequentially: ERP speller (36 symbols, row-column presentation with face stimuli), MI task (binary left/right hand imagery), and SSVEP (four target frequencies: 5.45, 6.67, 8.57, 12 Hz). Each paradigm had offline training and online test phases. EEG recorded at 1000 Hz with 62 Ag/AgCl electrodes using BrainAmp amplifier, nasion-referenced, grounded to AFz. Impedance maintained below 10 kOhm. Subjects seated 60 cm from 21-inch LCD monitor. Questionnaires collected demographic, physiological, and psychological data. Artifact data (eye blinking, eye movements, teeth clenching, arm flexing) and resting state EEG also recorded. Total experiment duration: ~205 minutes per session.",
     )
 
     __init__ = partialmethod(Lee2019.__init__, "MI")
@@ -686,7 +691,7 @@ class Lee2019_ERP(Lee2019):
                 "TTP7h",
             ],
             line_freq=60.0,
-            software="OpenBMI",
+            software="OpenBMI, Psychophysics Toolbox",
             cap_manufacturer="Brain Products",
             auxiliary_channels=AuxiliaryChannelsMetadata(
                 has_eog=False, has_emg=True, emg_channels=4
@@ -696,12 +701,12 @@ class Lee2019_ERP(Lee2019):
             n_subjects=54,
             health_status="healthy",
             gender={"female": 25, "male": 29},
-            age_mean=29.5,
+            age_mean=None,
             age_min=24,
             age_max=35,
-            handedness="right",
+            handedness={"right": 50, "left": 2, "ambidexter": 2},
             bci_experience="mixed",
-            species="human",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             events={"Target": 1, "NonTarget": 2},
@@ -714,14 +719,20 @@ class Lee2019_ERP(Lee2019):
             stimulus_type="rc_speller",
             stimulus_modalities=["visual"],
             primary_modality="visual",
-            mode="offline",
+            mode="both",
             has_training_test_split=True,
+            synchronicity="synchronous",
             instructions="Subjects were asked to copy-spell given sentences by gazing at target characters on screen. In training: 'NEURAL NETWORKS AND DEEP LEARNING' (33 characters), in test: 'PATTERN RECOGNITION MACHINE LEARNING' (36 characters). Participants counted number of times each target character flashed.",
             task_type="copy_spelling",
         ),
         documentation=DocumentationMetadata(
             data_url="https://doi.org/10.5524/100542",
             doi="10.1093/gigascience/giz002",
+            associated_paper_doi="10.1093/gigascience/giz002",
+            funding=[
+                "Institute for Information & Communications Technology Promotion (IITP) grant funded by the Korea government (No. 2017-0-00451)",
+                "National Research Foundation of Korea (NRF) grant funded by the MSIT (No. 2015R1A5A1037627)",
+            ],
             description="EEG dataset and OpenBMI toolbox for three BCI paradigms: an investigation into BCI illiteracy",
             investigators=[
                 "Min-Ho Lee",
@@ -937,7 +948,8 @@ class Lee2019_SSVEP(Lee2019):
             auxiliary_channels=AuxiliaryChannelsMetadata(
                 has_eog=False, has_emg=True, emg_channels=4
             ),
-            software="OpenBMI",
+            software="OpenBMI, Psychophysics Toolbox",
+            cap_manufacturer="Brain Products",
         ),
         participants=ParticipantMetadata(
             n_subjects=54,
@@ -946,7 +958,7 @@ class Lee2019_SSVEP(Lee2019):
             age_mean=None,
             age_min=24,
             age_max=35,
-            handedness=None,
+            handedness={"right": 50, "left": 2, "ambidexter": 2},
             bci_experience="mixed",
             species="homo sapiens",
         ),
@@ -970,6 +982,11 @@ class Lee2019_SSVEP(Lee2019):
         documentation=DocumentationMetadata(
             data_url="https://doi.org/10.5524/100542",
             doi="10.1093/gigascience/giz002",
+            associated_paper_doi="10.1093/gigascience/giz002",
+            funding=[
+                "Institute for Information & Communications Technology Promotion (IITP) grant funded by the Korea government (No. 2017-0-00451)",
+                "National Research Foundation of Korea (NRF) grant funded by the MSIT (No. 2015R1A5A1037627)",
+            ],
             description="EEG dataset and OpenBMI toolbox for three BCI paradigms: an investigation into BCI illiteracy",
             investigators=[
                 "Min-Ho Lee",
@@ -1008,10 +1025,7 @@ class Lee2019_SSVEP(Lee2019):
         runs_per_session=1,
         tags=Tags(pathology=["Healthy"], modality=["Visual"], type=["Perception"]),
         preprocessing=PreprocessingMetadata(
-            data_state="raw EEG available",
-            preprocessing_applied=True,
-            preprocessing_steps=["downsampling"],
-            downsampled_to_hz=100,
+            data_state="raw", preprocessing_applied=False
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=["CCA"], feature_extraction=["CCA", "PSD"]
@@ -1027,11 +1041,11 @@ class Lee2019_SSVEP(Lee2019):
         ),
         data_structure=DataStructureMetadata(
             n_trials=200,
-            n_trials_per_class={"5.45": 25, "6.67": 25, "8.57": 25, "12.0": 25},
-            trials_context="100 trials (4 classes × 25 trials) in offline training phase and 100 trials in online test phase for SSVEP",
+            n_trials_per_class={"5.45": 50, "6.67": 50, "8.57": 50, "12.0": 50},
+            trials_context="per session (25 in offline training phase + 25 in online test phase; 200 total trials per session)",
         ),
         file_format="MAT",
-        data_processed=True,
+        data_processed=False,
         abstract="Electroencephalography (EEG)-based brain-computer interface (BCI) systems are mainly divided into three major paradigms: motor imagery (MI), event-related potential (ERP), and steady-state visually evoked potential (SSVEP). Here, we present a BCI dataset that includes the three major BCI paradigms with a large number of subjects over multiple sessions. In addition, information about the psychological and physiological conditions of BCI users was obtained using a questionnaire, and task-unrelated parameters such as resting state, artifacts, and electromyography of both arms were also recorded. We evaluated the decoding accuracies for the individual paradigms and determined performance variations across both subjects and sessions. Furthermore, we looked for more general, severe cases of BCI illiteracy than have been previously reported in the literature. Average decoding accuracies across all subjects and sessions were 71.1% (± 0.15), 96.7% (± 0.05), and 95.1% (± 0.09), and rates of BCI illiteracy were 53.7%, 11.1%, and 10.2% for MI, ERP, and SSVEP, respectively. Compared to the ERP and SSVEP paradigms, the MI paradigm exhibited large performance variations between both subjects and sessions. Furthermore, we found that 27.8% (15 out of 54) of users were universally BCI literate, i.e., they were able to proficiently perform all three paradigms. Interestingly, we found no universally illiterate BCI user, i.e., all participants were able to control at least one type of BCI system.",
         methodology="Three BCI paradigms (MI, ERP, SSVEP) were recorded sequentially from 54 subjects over 2 sessions on different days. EEG recorded at 1000 Hz with 62 Ag/AgCl electrodes using BrainAmp hardware, down-sampled to 100 Hz for analysis. Impedances maintained below 10 kΩ. Subjects seated 60 cm from 21-inch LCD monitor (60 Hz, 1600×1200). SSVEP paradigm: 4 target frequencies (5.45, 6.67, 8.57, 12 Hz) presented in 4 positions (down, right, left, up). Each stimulus presented for 4 s with 6 s ISI. Each target presented 25 times (100 trials total per phase). Training and test phases for online feedback. CCA used for classification. Resting state data recorded before and after each task. Questionnaires collected psychological and physiological conditions.",
     )

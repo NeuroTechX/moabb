@@ -11,9 +11,11 @@ from moabb.datasets.base import BaseDataset
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
     DatasetMetadata,
+    DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
     ParticipantMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 
@@ -103,6 +105,8 @@ class MIMED2024(BaseDataset):
             n_subjects=30,
             health_status="healthy",
             gender={"male": 16, "female": 14},
+            age_min=19.0,
+            age_max=24.0,
             species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
@@ -112,13 +116,16 @@ class MIMED2024(BaseDataset):
             class_labels=["left_hand", "right_hand", "trunk"],
             events={"left_hand": 1, "right_hand": 2, "trunk": 3},
             stimulus_type="video",
+            stimulus_modalities=["visual", "auditory"],
+            feedback_type="none",
+            synchronicity="cue-based",
             mode="offline",
         ),
         documentation=DocumentationMetadata(
             senior_author="Ni Nyoman Mestri Agustini",
             funding=["Universitas Pendidikan Ganesha Funding No: 1175/UN48.16/LT/2023"],
             ethics_approval=[
-                "Ethics Committee, Universitas Pendidikan Ganesha (038/UN48.16/LT/2023)"
+                "Ethics Committee, Universitas Pendidikan Ganesha (038/UN.48.24.11/LT/2023)"
             ],
             doi="10.1016/j.dib.2024.110833",
             related_paper_dois=["10.17632/zs25xxjkm9.3"],
@@ -147,6 +154,22 @@ class MIMED2024(BaseDataset):
         ),
         sessions_per_subject=2,
         runs_per_session=6,
+        data_structure=DataStructureMetadata(
+            n_trials=12,
+            n_trials_per_class={"left_hand": 4, "right_hand": 4, "trunk": 4},
+            n_blocks=4,
+            trials_context="3 movement scenario folders x 4 blocks per subject across 2 days",
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["Decision Tree", "Support Vector Machine (SVM)"],
+            feature_extraction=["Differential Entropy (DE)"],
+            frequency_bands={
+                "theta": [4.0, 8.0],
+                "alpha": [8.0, 14.0],
+                "beta": [14.0, 31.0],
+                "gamma": [31.0, 45.0],
+            },
+        ),
         tags=Tags(modality=["Motor"], type=["Motor Imagery"]),
         file_format="MAT (converted from EDF)",
         abstract=(

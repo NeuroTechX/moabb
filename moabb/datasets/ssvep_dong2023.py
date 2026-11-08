@@ -84,14 +84,18 @@ class Dong2023(BaseDataset):
             line_freq=50.0,
             reference="Fp1",
             ground="Fp2",
+            impedance_threshold_kohm=100.0,
         ),
         participants=ParticipantMetadata(
             n_subjects=59,
             health_status="healthy",
             gender={"male": 37, "female": 22},
             age_mean=12.4,
+            age_std=1.3,
             age_min=10,
             age_max=16,
+            bci_experience="naive",
+            handedness={"right": 59},
             # fmt: off
             ages=[
                 15,
@@ -264,18 +268,21 @@ class Dong2023(BaseDataset):
             paradigm="ssvep",
             events=dict(_EVENTS),
             n_classes=40,
-            trial_duration=4.0,
+            trial_duration=5.0,
             stimulus_type="JFPM visual flicker",
             stimulus_modalities=["visual"],
             primary_modality="visual",
             synchronicity="synchronous",
-            mode="offline",
+            mode="online",
             feedback_type="visual",
             task_type="SSVEP speller",
             has_training_test_split=False,
+            stimulus_presentation={"SoftwareName": "PsychoPy"},
         ),
         documentation=DocumentationMetadata(
-            ethics_approval=["Institutional Review Board of Tsinghua University"],
+            ethics_approval=[
+                "Institutional Review Board of Tsinghua University (Project No. 20230058)"
+            ],
             doi="10.26599/BSA.2023.9050020",
             investigators=["Yue Dong", "Sen Tian"],
             senior_author="Yue Dong",
@@ -285,9 +292,14 @@ class Dong2023(BaseDataset):
             data_url="https://zenodo.org/records/18847318",
             license="CC BY-NC 4.0",
             publication_year=2023,
+            contact_info=["dongyue@jitri-bmf.com"],
         ),
         preprocessing=PreprocessingMetadata(
-            data_state="epoched", downsampled_to_hz=250.0
+            data_state="epoched",
+            preprocessing_applied=True,
+            downsampled_to_hz=250.0,
+            notch_hz=50.0,
+            epoch_window=[-0.5, 4.5],
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="ssvep",

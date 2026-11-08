@@ -143,22 +143,32 @@ _EXPERIMENT_CONFIGS = {
 def _make_metadata(experiment):
     """Build DatasetMetadata for a given experiment."""
     config = _EXPERIMENT_CONFIGS[experiment]
+    display_env = (
+        "AR display (Microsoft HoloLens 1)" if experiment == "AC" else "LCD display"
+    )
+    n_trials_str = (
+        "30 testing blocks per subject"
+        if not config["has_training"]
+        else "50 training + 30 testing blocks per subject"
+    )
     return DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
             channel_types={"eeg": config["n_eeg"]},
             montage="standard_1020",
             hardware="actiCHamp (Brain Products)",
-            sensor_type="active",
+            sensor_type="active wet",
             reference="left mastoid",
             ground="right mastoid",
+            impedance_threshold_kohm=5.0,
+            filters={"bandpass": [0.01, 50.0]},
             sensors=list(config["ch_names"]),
             line_freq=60.0,
         ),
         participants=ParticipantMetadata(
             n_subjects=config["n_subjects"],
             health_status="healthy",
-            species="human",
+            species="homo sapiens",
             **config.get("demographics", {}),
         ),
         experiment=ExperimentMetadata(
@@ -169,7 +179,7 @@ def _make_metadata(experiment):
             trial_duration=1.0,
             study_design=(
                 f"P300 BCI for {experiment} home appliance control; "
-                f"{config['n_classes']}-class oddball; LCD display"
+                f"{config['n_classes']}-class oddball; {display_env}"
             ),
             feedback_type="visual",
             stimulus_type="flash",
@@ -194,17 +204,21 @@ def _make_metadata(experiment):
             ],
             senior_author="Sung-Phil Kim",
             institution="Ulsan National Institute of Science and Technology",
+            institution_department="Department of Biomedical Engineering; Center for Bionics",
             country="KR",
             publication_year=2024,
             repository="GitHub",
             data_url="https://github.com/jml226/Home-Appliance-Control-Dataset",
             license="CC-BY-4.0",
+            contact_info=["laehyunk@kist.re.kr", "spkim@unist.ac.kr"],
             ethics_approval=[
                 "Institutional Review Board at the Ulsan National Institutes of Science and Technology (IRB: UNISTIRB-18-08-A)"
             ],
             funding=[
                 "Alchemist Project (grant number 20012355, Fully implantable closed loop Brain to X for voice communication) funded by MOTIE, Korea",
                 "Institute of Information & Communications Technology Planning & Evaluation (IITP) grant (No. 2017-0-00432)",
+                "Basic Science Research Program through the National Research Foundation of Korea (NRF) funded by the Ministry of Education (grant number NRF-2021R1A6A3A01086784)",
+                "Brain Research Program through the National Research Foundation of Korea (NRF) funded by the Ministry of Science, ICT & Future Planning (grant number 2022M3C7A1015112)",
             ],
         ),
         sessions_per_subject=1,
@@ -215,11 +229,14 @@ def _make_metadata(experiment):
             online_feedback=True,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="p300", soa_ms=750.0
+            detected_paradigm="p300",
+            soa_ms=750.0,
+            isi_ms=125.0,
+            n_repetitions=10,
+            n_targets=config["n_classes"],
         ),
         data_structure=DataStructureMetadata(
-            n_trials="50 training + 30 testing blocks per subject",
-            trials_context="per_subject",
+            n_trials=n_trials_str, trials_context="per_subject"
         ),
         data_processed=False,
         file_format="MATLAB",

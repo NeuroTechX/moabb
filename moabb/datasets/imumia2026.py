@@ -19,6 +19,7 @@ from moabb.datasets.metadata.schema import (
     ParadigmSpecificMetadata,
     ParticipantMetadata,
     PreprocessingMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 
@@ -197,6 +198,7 @@ class IMUMIA2026(BaseDataset):
             "two paradigms, 64-channel Neuroscan at 1000 Hz. Public five-subject "
             "sample of a 244-participant dataset.",
             investigators=["Jianxiu Li", "Changming Wang", "Chao Chen"],
+            contact_info=["lijx@imu.edu.cn", "cccovb@hotmail.com", "superwcm@163.com"],
             institution="Inner Mongolia University",
             institution_address="Inner Mongolia, China",
             country="CN",
@@ -212,12 +214,22 @@ class IMUMIA2026(BaseDataset):
         preprocessing=PreprocessingMetadata(
             data_state="raw", preprocessing_applied=False
         ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["SVM", "EEGNet"], feature_extraction=["CSP", "FBCSP", "FTA"]
+        ),
+        performance={
+            "svm_max_accuracy_percent": 63.3,
+            "svm_accuracy_std_percent": 1.1,
+            "eegnet_mean_accuracy_percent": 62.4,
+        },
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
             imagery_tasks=list(_EVENTS.keys()),
             imagery_duration_s=4.0,
         ),
         data_structure=DataStructureMetadata(
+            n_trials=120,
+            n_trials_per_class={label: 12 for label in _EVENTS},
             n_blocks=5,
             trials_context="Single session with five runs (one motor-imagery task "
             "each). Only the Classic Arrow cues (12 trials per side and task) are "

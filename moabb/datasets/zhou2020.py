@@ -24,6 +24,7 @@ from .metadata.schema import (
     ExperimentMetadata,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
+    PreprocessingMetadata,
     SignalProcessingMetadata,
     Tags,
 )
@@ -227,9 +228,9 @@ def _make_metadata(cohort=None):
         participants=ParticipantMetadata(
             n_subjects=n_subjects,
             health_status="healthy",
-            handedness="right-handed",
+            handedness="right",
             bci_experience="mixed",
-            species="human",
+            species="homo sapiens",
             **demographics,
         ),
         experiment=ExperimentMetadata(
@@ -262,9 +263,10 @@ def _make_metadata(cohort=None):
             senior_author="Kedi Xu",
             institution="Zhejiang University",
             country="CN",
-            repository="Zenodo",
-            data_url=f"https://zenodo.org/records/{_ZENODO_RECORD}",
+            repository="Hugging Face",
+            data_url="https://huggingface.co/datasets/Perun-w/ZJU-MI-EEG",
             publication_year=2021,
+            contact_info=["xukd@zju.edu.cn"],
             license="CC-BY-4.0",
             ethics_approval=[
                 "Human Research Ethics Committee of The Second Affiliated Hospital of Zhejiang University School of Medicine"
@@ -278,6 +280,14 @@ def _make_metadata(cohort=None):
         sessions_per_subject=7,
         runs_per_session=6,
         tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Research"]),
+        preprocessing=PreprocessingMetadata(
+            data_state="filtered continuous",
+            preprocessing_applied=True,
+            bandpass=[0.5, 100.0],
+            highpass_hz=0.5,
+            lowpass_hz=100.0,
+            notch_hz=50.0,
+        ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
             imagery_tasks=["left_hand", "right_hand", "feet", "rest"],

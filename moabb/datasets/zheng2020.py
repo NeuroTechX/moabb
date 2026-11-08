@@ -25,6 +25,7 @@ from .metadata.schema import (
     ExperimentMetadata,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
+    PreprocessingMetadata,
     SignalProcessingMetadata,
     Tags,
 )
@@ -111,6 +112,7 @@ class Zheng2020(BaseDataset):
             montage="standard_1020",
             hardware="Neuroscan Synamps2",
             reference="vertex (Cz)",
+            filters="0.15-200 Hz bandpass, 50 Hz notch",
             sensors=list(_CH_NAMES),
             line_freq=50.0,
         ),
@@ -121,8 +123,8 @@ class Zheng2020(BaseDataset):
             age_mean=24.9,
             age_min=23,
             age_max=29,
-            handedness="all right-handed",
-            species="human",
+            handedness="right",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             events={"Target": 2, "NonTarget": 1},
@@ -139,6 +141,9 @@ class Zheng2020(BaseDataset):
             stimulus_modalities=["visual"],
             primary_modality="visual",
             mode="offline",
+            stimulus_presentation={
+                "SoftwareName": "Psychophysics Toolbox Ver. 3 (PTB-3)"
+            },
         ),
         documentation=DocumentationMetadata(
             senior_author="Yijun Wang",
@@ -165,6 +170,11 @@ class Zheng2020(BaseDataset):
         sessions_per_subject=2,
         runs_per_session=3,
         tags=Tags(pathology=["Healthy"], modality=["ERP"], type=["RSVP"]),
+        preprocessing=PreprocessingMetadata(
+            data_state="continuous",
+            preprocessing_applied=False,
+            notes="Continuous 62-channel EEG + 1 trigger channel stored at 1000 Hz per block; hardware 0.15-200 Hz bandpass and 50 Hz notch applied during recording.",
+        ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="p300", soa_ms=100.0
         ),

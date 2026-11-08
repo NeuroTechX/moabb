@@ -154,7 +154,7 @@ class _Dreyer2023Base(BaseDataset):
             age_max=59,
             bci_experience="naive",
             handedness="right",
-            species="human",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             events={"left_hand": 1, "right_hand": 2},
@@ -199,6 +199,7 @@ class _Dreyer2023Base(BaseDataset):
             ethics_approval=[
                 "Inria's ethics committee, the COERLE (Approval number: 2018-13)"
             ],
+            acknowledgements="The authors are grateful to Aurélien Appriou, Damien Caselli, Camille Benaroch, Maria Sayu Yamamoto, Thibaut Monseigne and the experimenters for their help in collecting the data.",
             keywords=[
                 "motor imagery",
                 "brain-computer interface",
@@ -259,7 +260,7 @@ class _Dreyer2023Base(BaseDataset):
             n_blocks=6,
             block_duration_s=420.0,
         ),
-        file_format="GDF",
+        file_format="EDF",
         data_processed=False,
         sessions_per_subject=1,
         runs_per_session=6,
@@ -819,9 +820,9 @@ class Dreyer2023C(_Dreyer2023Base):
     :Project leader: Lotte Fabien
     :Project member: Rimbert Sébastien; Monseigne Thibaut
 
-    Dataset Dreyer2023C contains EEG, EOG and EMG signals recorded on 6 healthy subjects
-    performing Left-Right Motor Imagery experiments (4 women) who participated in datasets
-    A or B.
+    Dataset Dreyer2023C contains EEG, EOG and EMG signals recorded on 6 healthy naive
+    subjects performing Left-Right Motor Imagery experiments (4 women, age 20-26,
+    M = 22, SD = 2.34) recorded after datasets A and B were published.
     In addition, for each recording the following pieces of information are provided:
     subject's demographic, personality and cognitive profiles, the OpenViBE experimental
     instructions and codes, and experimenter's gender.
@@ -926,7 +927,7 @@ class Dreyer2023(_Dreyer2023Base):
 
     Dataset Dreyer2023 contains concatenated datasets Dreyer2023A, Dreyer2023B and Dreyer2023C.
 
-    Experiments were conducted by six experimenters. In addition, for each recording
+    Experiments were conducted by eight experimenters. In addition, for each recording
     the following pieces of information are provided:
     subject's demographic, personality and cognitive profiles, the OpenViBE experimental
     instructions and codes, and experimenter's gender.
@@ -945,7 +946,7 @@ class Dreyer2023(_Dreyer2023Base):
         - t=3.00s  a red arrow appears (subject starts to perform task)
         - t=4.25s  the red arrow disappears
         - t=4.25s  the feedback on performance is given in the form of a blue bar
-          with update frequency of 14 Hz
+          with update frequency of 16 Hz
         - t=8.00s  cross turns off (subject stops to perform task)
 
     EEG signals [1]_:

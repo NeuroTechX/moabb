@@ -69,16 +69,24 @@ class Nieto2022(OpenNeuroMirrorMixin, BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=_SFREQ,
-            channel_types={"eeg": 128, "emg": 8},
+            channel_types={"eeg": 128, "misc": 2, "eog": 4, "emg": 2},
             montage="biosemi128",
             hardware="BioSemi ActiveTwo high resolution biopotential measuring system",
             software="ActiView",
             filters={"lowpass": 208.0},
             line_freq=50.0,
             sensor_type="EEG/EMG",
+            electrode_type="active",
             reference="EXG1 and EXG2 (left and right earlobes)",
             impedance_threshold_kohm=0.04,
-            auxiliary_channels=AuxiliaryChannelsMetadata(has_emg=True, emg_channels=8),
+            auxiliary_channels=AuxiliaryChannelsMetadata(
+                has_eog=True,
+                eog_channels=4,
+                eog_type=["horizontal", "vertical"],
+                has_emg=True,
+                emg_channels=2,
+                other_physiological=["earlobe_references"],
+            ),
         ),
         participants=ParticipantMetadata(
             age_std=10.0,
@@ -86,9 +94,24 @@ class Nieto2022(OpenNeuroMirrorMixin, BaseDataset):
             n_subjects=10,
             health_status="healthy",
             gender={"male": 6, "female": 4},
+            sexes=[
+                "female",
+                "male",
+                "male",
+                "female",
+                "female",
+                "male",
+                "male",
+                "female",
+                "male",
+                "male",
+            ],
             age_min=24,
             age_max=56,
+            ages=[56, 50, 34, 24, 30, 29, 26, 28, 35, 31],
             handedness={"right": 10},
+            handedness_list=["right"] * 10,
+            bci_experience="naive",
             species="human",
         ),
         experiment=ExperimentMetadata(
@@ -120,6 +143,7 @@ class Nieto2022(OpenNeuroMirrorMixin, BaseDataset):
             primary_modality="visual",
             synchronicity="synchronous",
             mode="offline",
+            stimulus_presentation={"SoftwareName": "Psychtoolbox-3 (MATLAB R2017b)"},
             hed_tags={
                 k: _speech_hed(k.split("/")[-1], k.split("/")[0]) for k in _EVENTS.keys()
             },
@@ -140,12 +164,19 @@ class Nieto2022(OpenNeuroMirrorMixin, BaseDataset):
             ethics_approval=[
                 "Comité Asesor de Ética y Seguridad en el Trabajo Experimental (CEySTE, CCT-CONICET, Santa Fe, Argentina)"
             ],
+            funding=[
+                "CONICET PIP 2014-2016 No. 11220130100216-CO",
+                "ANPCyT PICT-2017-4596",
+                "UNL CAI+D 2016 PIC No. 50420150100036LI",
+                "UNL CAI+D 2020 No. 50620190100069LI",
+            ],
             publication_year=2022,
             license="CC-BY-4.0",
             data_url="https://openneuro.org/datasets/ds003626",
             repository="OpenNeuro",
             contact_info=["nnieto@sinc.unl.edu.ar"],
             associated_paper_doi=_DOI,
+            related_paper_dois=["10.18112/openneuro.ds003626.v2.1.0"],
             keywords=["inner speech", "EEG", "BCI", "Spanish", "pronounced speech"],
             description=(
                 "A multi-modal dataset for inner speech recognition containing EEG recordings "
@@ -154,6 +185,7 @@ class Nieto2022(OpenNeuroMirrorMixin, BaseDataset):
             ),
         ),
         data_structure=DataStructureMetadata(
+            n_trials=5640,
             n_trials_per_class={
                 "pronounced/up": 30,
                 "pronounced/down": 30,
@@ -177,6 +209,7 @@ class Nieto2022(OpenNeuroMirrorMixin, BaseDataset):
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
             imagery_tasks=["Arriba", "Abajo", "Derecha", "Izquierda"],
+            cue_duration_s=0.5,
             imagery_duration_s=2.5,
         ),
         sessions_per_subject=3,
@@ -259,9 +292,19 @@ class Nieto2022(OpenNeuroMirrorMixin, BaseDataset):
             montage = mne.channels.make_standard_montage("biosemi128")
             raw.set_montage(montage, on_missing="ignore")
             raw.drop_channels(["Status"])
-            # Set EXG channels to 'emg'
-            ch_types = {ch: "emg" for ch in raw.ch_names if "EXG" in ch}
-            raw.set_channel_types(ch_types)
+            # Set EXG channels: EXG1-EXG2 earlobe refs ('misc'), EXG3-EXG6 EOG ('eog'), EXG7-EXG8 EMG ('emg')
+            ch_types = {}
+            for ch in raw.ch_names:
+                if ch in ("EXG1", "EXG2"):
+                    ch_types[ch] = "misc"
+                elif ch in ("EXG3", "EXG4", "EXG5", "EXG6"):
+                    ch_types[ch] = "eog"
+                elif ch in ("EXG7", "EXG8"):
+                    ch_types[ch] = "emg"
+                elif "EXG" in ch:
+                    ch_types[ch] = "emg"
+            if ch_types:
+                raw.set_channel_types(ch_types)
 
             sessions[session_name] = {"0": raw}
 

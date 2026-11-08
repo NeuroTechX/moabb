@@ -109,7 +109,7 @@ class PerezBlanco2026(BaseDataset):
     ----------
     .. [1] Perez-Blanco, J. G., Huegel, J. C., Hernández-Rojas, L. G.,
            Valdez-Calderón, A., Lizárraga-Torreblanca, H., Cruz-Ortiz, D.,
-           Ballesteros, M., Gomez-Correa, J. C., & Antelis, J. M. (2026).
+           Ballesteros, M., Gomez-Correa, M., & Antelis, J. M. (2026).
            An EEG-EMG-kinematics dataset from wrist pointing tasks for
            biomarker research in neurorehabilitation. Scientific Data.
            DOI: https://doi.org/10.1038/s41597-026-07287-z
@@ -131,6 +131,9 @@ class PerezBlanco2026(BaseDataset):
             hardware="g.tec g.USBamp (serial UB-2016.05.01)",
             cap_manufacturer="g.tec",
             cap_model="g.GAMMAcap",
+            sensor_type="active",
+            electrode_type="wet",
+            software="BCI2000, Unity",
             reference="right ear",
             ground="AFz",
             filters={"bandpass": [0.1, 200.0], "notch": 60.0},
@@ -170,16 +173,21 @@ class PerezBlanco2026(BaseDataset):
             mode="offline",
         ),
         documentation=DocumentationMetadata(
-            senior_author="Hector Lizarraga Torreblanca",
+            senior_author="Javier M. Antelis",
             ethics_approval=[
                 "Institutional Research Ethics Committee of Tecnologico de Monterrey (PR2024-05v1)"
             ],
             doi="10.1038/s41597-026-07287-z",
             investigators=[
-                "Jorge German Perez Blanco",
-                "Javier Mauricio Antelis Ortiz",
-                "Luis Guillermo Hernandez Rojas",
-                "Hector Lizarraga Torreblanca",
+                "Jorge G. Perez-Blanco",
+                "Joel C. Huegel",
+                "Luis G. Hernández-Rojas",
+                "Amanda Valdez-Calderón",
+                "Héctor Lizárraga-Torreblanca",
+                "David Cruz-Ortiz",
+                "Mariana Ballesteros",
+                "Manuela Gomez-Correa",
+                "Javier M. Antelis",
             ],
             institution="Tecnologico de Monterrey",
             institution_address="Monterrey, Nuevo Leon, Mexico",

@@ -174,10 +174,10 @@ class Wang2026Handwriting(BaseBIDSDataset):
     to CPz with Fpz as ground, with a 0.1-100 Hz hardware band-pass and no
     software filtering applied before disclosure.
 
-    The subjects split into expert and novice groups by their handwriting
-    imagery performance (see the ``group`` column of the release's
-    ``participants.tsv``), which makes the dataset usable for both
-    within-session and expert/novice transfer analyses.
+    The subjects split into expert (7 with prior BCI experience) and novice
+    (14 BCI-naive) groups based on prior BCI experience (see the ``group``
+    column of the release's ``participants.tsv``), which makes the dataset
+    usable for both within-session and expert/novice transfer analyses.
 
     .. important::
 
@@ -198,7 +198,7 @@ class Wang2026Handwriting(BaseBIDSDataset):
 
     References
     ----------
-    .. [1] F. Wang, Y. Chen, P. Wang, A. Gong, H. Xu, and Y. Fu, "An EEG
+    .. [1] F. Wang, Y. Chen, P. Wang, A. Gong, J. Xu, and Y. Fu, "An EEG
        dataset for handwriting imagery decoding of Chinese character strokes
        and Pinyin single vowels," Scientific Data, 2026.
        DOI: 10.1038/s41597-026-06708-3
@@ -212,11 +212,13 @@ class Wang2026Handwriting(BaseBIDSDataset):
         acquisition=AcquisitionMetadata(
             sampling_rate=_SFREQ,
             channel_types={"eeg": 32},
-            montage="standard_1005",
+            montage="10-10",
             hardware="Neuracle NeuSenW32 32-channel Ag/AgCl cap",
+            software="Neuracle Acquisition Software",
             sensor_type="Ag/AgCl",
             reference="CPz",
             ground="Fpz",
+            impedance_threshold_kohm=10.0,
             sensors=list(WANG2026_CH_NAMES),
             line_freq=50.0,
         ),
@@ -225,10 +227,12 @@ class Wang2026Handwriting(BaseBIDSDataset):
             health_status="healthy",
             gender={"male": 13, "female": 8},
             age_mean=sum(_DEMOGRAPHICS[s][1] for s in _SUBJECT_IDS) / len(_SUBJECT_IDS),
+            age_median=25.0,
+            age_std=2.76,
             age_min=22,
             age_max=32,
             handedness={"right": 21},
-            bci_experience="mixed (expert and novice groups)",
+            bci_experience="7 with prior BCI experience (expert), 14 BCI-naive (novice)",
             ages=[_DEMOGRAPHICS[s][1] for s in _SUBJECT_IDS],
             sexes=[_DEMOGRAPHICS[s][0] for s in _SUBJECT_IDS],
         ),
@@ -257,7 +261,7 @@ class Wang2026Handwriting(BaseBIDSDataset):
             ),
             study_domain="communication",
             stimulus_type="visual cue (stroke or vowel to imagine writing)",
-            stimulus_modalities=["visual"],
+            stimulus_modalities=["visual", "auditory"],
             primary_modality="visual",
             synchronicity="synchronous",
             mode="offline",
@@ -277,16 +281,18 @@ class Wang2026Handwriting(BaseBIDSDataset):
                 "Yanxiao Chen",
                 "Peng Wang",
                 "Anmin Gong",
-                "Hui Xu",
+                "Jiaping Xu",
                 "Yunfa Fu",
             ],
             senior_author="Yunfa Fu",
-            institution="Minjiang University",
+            institution="Kunming University of Science and Technology",
+            institution_department="Faculty of Information Engineering and Automation; Brain Cognition and Brain-computer Intelligence Integration Group",
             country="CN",
             repository="figshare",
             data_url="https://doi.org/10.6084/m9.figshare.29987758.v4",
             license="CC-BY-4.0",
             publication_year=2026,
+            contact_info=["wf17853537709@163.com", "fyf@ynu.edu.cn"],
             ethics_approval=(
                 [
                     "Ethics Committee of Kunming University of Science and Technology (Approval No.: KMUST-MEC-2023-026)"
@@ -329,6 +335,7 @@ class Wang2026Handwriting(BaseBIDSDataset):
                 "right_falling",
                 "turning",
             ],
+            cue_duration_s=2.8,
             imagery_duration_s=_TRIAL_DURATION,
         ),
         data_structure=DataStructureMetadata(
@@ -341,10 +348,12 @@ class Wang2026Handwriting(BaseBIDSDataset):
             ),
         ),
         signal_processing=SignalProcessingMetadata(
-            classifiers=["EEGNet"], frequency_bands={"mu_beta": [8.0, 30.0]}
+            classifiers=["EEGNet"], frequency_bands={"bandpass": [1.0, 40.0]}
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="10-fold", cv_folds=10, evaluation_type=["within_session"]
+            cv_method="5-fold",
+            cv_folds=5,
+            evaluation_type=["within_session", "cross_session"],
         ),
         bci_application=BCIApplicationMetadata(
             environment="laboratory",

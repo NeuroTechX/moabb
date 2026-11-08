@@ -11,9 +11,12 @@ from moabb.datasets.base import BaseDataset
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
     DatasetMetadata,
+    DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
+    ParadigmSpecificMetadata,
     ParticipantMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 
@@ -149,18 +152,23 @@ class Leeuwis2021(BaseDataset):
             montage="standard_1020",
             hardware="g.Nautilus (g.tec Medical Engineering, Austria)",
             software="g.BSanalyze (g.tec)",
+            sensor_type="wet",
             reference="right earlobe",
             ground="AFz",
+            impedance_threshold_kohm=50.0,
+            filters={"bandpass": [0.5, 30.0], "notch": [48.0, 52.0]},
             sensors=list(LEEUWIS2021_EEG_CHANNELS),
             line_freq=50.0,
         ),
         participants=ParticipantMetadata(
             n_subjects=55,
             health_status="healthy",
+            gender={"female": 36, "male": 19},
             bci_experience="naive",
             handedness="right",
             age_mean=20.71,
             age_std=3.52,
+            age_median=19.0,
             species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
@@ -168,7 +176,7 @@ class Leeuwis2021(BaseDataset):
             n_classes=2,
             class_labels=["left_hand", "right_hand"],
             trials_per_class={"left_hand": 80, "right_hand": 80},
-            trial_duration=5.0,
+            trial_duration=8.0,
             study_design="Single-session, two-class left- versus right-hand motor "
             "imagery in 55 novice BCI users. One calibration run (no feedback) plus "
             "three feedback runs of 40 trials each (20 left, 20 right). Study "
@@ -176,6 +184,7 @@ class Leeuwis2021(BaseDataset):
             feedback_type="visual",
             stimulus_type="visual cue",
             stimulus_modalities=["visual"],
+            primary_modality="visual",
             synchronicity="cue-based",
             mode="online",
             has_training_test_split=True,
@@ -188,6 +197,7 @@ class Leeuwis2021(BaseDataset):
                 "Research Ethics Committee of Tilburg School of Humanities and Digital Sciences (REDC #20201003)"
             ],
             doi="10.34894/Z7ZVOD",
+            associated_paper_doi="10.3389/fnhum.2021.634748",
             related_paper_dois=["10.3389/fnhum.2021.634748"],
             description="Single-session left/right-hand motor-imagery EEG from 55 "
             "novice BCI users (16 channels, 250 Hz, g.Nautilus), collected to study "
@@ -195,6 +205,8 @@ class Leeuwis2021(BaseDataset):
             investigators=["Nikki Leeuwis", "Alissa Paas", "Maryam Alimardani"],
             institution="Tilburg University, Tilburg School of Humanities and "
             "Digital Sciences",
+            institution_department="Department of Cognitive Science and Artificial Intelligence",
+            contact_info=["n.leeuwis@hotmail.com"],
             country="NL",
             data_url="https://doi.org/10.34894/Z7ZVOD",
             publication_year=2021,
@@ -212,6 +224,21 @@ class Leeuwis2021(BaseDataset):
         sessions_per_subject=1,
         runs_per_session=4,
         tags=Tags(pathology=["healthy"], modality=["Motor"], type=["Motor Imagery"]),
+        paradigm_specific=ParadigmSpecificMetadata(
+            detected_paradigm="motor_imagery",
+            imagery_tasks=["left_hand", "right_hand"],
+            cue_duration_s=1.25,
+            imagery_duration_s=3.75,
+        ),
+        data_structure=DataStructureMetadata(
+            n_trials=160,
+            n_trials_per_class={"left_hand": 80, "right_hand": 80},
+            n_blocks=4,
+            trials_context="1 calibration run + 3 feedback runs x 40 trials (20 left, 20 right) = 160 trials per subject",
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["LDA"], feature_extraction=["CSP"], spatial_filters=["CSP"]
+        ),
         file_format="CSV",
         data_processed=False,
     )

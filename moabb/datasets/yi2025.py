@@ -152,7 +152,7 @@ class Yi2025(BaseDataset):
             age_min=22,
             age_max=27,
             health_status="healthy",
-            species="human",
+            species="homo sapiens",
             handedness="right",
             bci_experience="naive",
         ),
@@ -178,6 +178,7 @@ class Yi2025(BaseDataset):
             funding=[
                 "Natural Science Foundation of China (Grant 62006014, U2441253, 12275295)",
                 "China Postdoctoral Science Foundation (Grant GZC20231910)",
+                "Project of Construction and Support for High-level Teaching Teams of Beijing Municipal Institutions",
             ],
             ethics_approval=[
                 "Ethical Committee of Tianjin University (approved number: TJUE-210)"
@@ -198,6 +199,7 @@ class Yi2025(BaseDataset):
             country="CN",
             data_url="https://figshare.com/articles/dataset/Data/24123303",
             publication_year=2025,
+            contact_info=["yiweibo1987@163.com", "wangdan@bjut.edu.cn"],
             license="CC-BY-NC-ND-4.0",
         ),
         sessions_per_subject=1,

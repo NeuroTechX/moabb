@@ -170,6 +170,7 @@ _METADATA = DatasetMetadata(
     participants=ParticipantMetadata(
         n_subjects=39,
         health_status="healthy",
+        gender={"female": 18, "male": 13},
         age_mean=23.8,
         age_std=4.42,
         bci_experience="naive",
@@ -208,7 +209,7 @@ _METADATA = DatasetMetadata(
     ),
     documentation=_DOCUMENTATION,
     sessions_per_subject=5,
-    runs_per_session=None,
+    runs_per_session=6,
     contributing_labs=[
         "Carnegie Mellon University Biomedical Functional Imaging and Neuroengineering Lab"
     ],

@@ -203,6 +203,7 @@ class Han2024Fatigue(BaseDataset):
             has_training_test_split=True,
             task_type="gaze-shifting",
             feedback_type="none",
+            stimulus_presentation={"SoftwareName": "Psychophysics Toolbox (MATLAB)"},
         ),
         documentation=DocumentationMetadata(
             doi="10.1109/TNSRE.2024.3380635",
@@ -226,9 +227,12 @@ class Han2024Fatigue(BaseDataset):
                 "National Key Research and Development Program of China (Grant 2021YFF1200603)",
                 "National Natural Science Foundation of China (Grants 62276184, 61806141)",
             ],
+            contact_info=["clarenceke@tju.edu.cn", "richardming@tju.edu.cn"],
             keywords=["SSVEP", "BCI", "fatigue", "dynamic stopping", "EEG"],
         ),
-        preprocessing=PreprocessingMetadata(data_state="epoched"),
+        preprocessing=PreprocessingMetadata(
+            data_state="epoched", notch_hz=50.0, epoch_window=[-0.5, 2.5]
+        ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="ssvep",
             stimulus_frequencies_hz=(
@@ -237,8 +241,8 @@ class Han2024Fatigue(BaseDataset):
             frequency_resolution_hz=0.5,
         ),
         data_structure=DataStructureMetadata(
-            n_blocks=60,
-            n_trials="960 per frequency band (16 targets x 60 blocks)",
+            n_blocks=30,
+            n_trials="960 total per subject (480 per frequency band: 16 targets x 30 blocks per frequency condition)",
             trials_context="6 training + 24 fatigue blocks per frequency condition",
         ),
         signal_processing=SignalProcessingMetadata(
@@ -247,7 +251,11 @@ class Han2024Fatigue(BaseDataset):
             frequency_bands=None,
             spatial_filters=["TRCA"],
         ),
-        cross_validation=CrossValidationMetadata(evaluation_type=None),
+        cross_validation=CrossValidationMetadata(
+            cv_method="leave-one-block-out",
+            cv_folds=6,
+            evaluation_type=["within_subject", "cross_session"],
+        ),
         bci_application=BCIApplicationMetadata(environment="lab", online_feedback=False),
         tags=Tags(pathology=["healthy"], modality=["visual"], type=["perception"]),
         sessions_per_subject=2,

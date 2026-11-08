@@ -16,6 +16,7 @@ import json
 import logging
 import re
 import warnings
+from dataclasses import replace
 from functools import partialmethod
 from pathlib import Path
 
@@ -87,6 +88,7 @@ _STUDY_CONFIGS = {
         "n_eeg": 32,
         "grid": "9x8",
         "has_als": False,
+        "associated_paper_doi": None,
     },
     "B": {
         "subjects": [1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 16, 17, 18, 19, 20, 21],
@@ -94,6 +96,7 @@ _STUDY_CONFIGS = {
         "n_eeg": 16,
         "grid": "6x6",
         "has_als": True,
+        "associated_paper_doi": "10.1088/1741-2560/12/4/046027",
     },
     "C": {
         "subjects": [1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 18, 20, 21, 22],
@@ -101,6 +104,7 @@ _STUDY_CONFIGS = {
         "n_eeg": 32,
         "grid": "9x8",
         "has_als": False,
+        "associated_paper_doi": "10.1109/TNSRE.2014.2374471",
     },
     "D": {
         "subjects": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
@@ -108,6 +112,7 @@ _STUDY_CONFIGS = {
         "n_eeg": 32,
         "grid": "9x8",
         "has_als": False,
+        "associated_paper_doi": "10.1109/TNSRE.2014.2321290",
     },
     "E": {
         "subjects": [1, 2, 3, 4, 5, 6, 7, 8],
@@ -115,6 +120,7 @@ _STUDY_CONFIGS = {
         "n_eeg": 16,
         "grid": "9x8",
         "has_als": False,
+        "associated_paper_doi": "10.1109/TNSRE.2014.2321290",
     },
     "F": {
         "subjects": [3, 5, 6, 7, 8, 20, 21, 23, 24, 25],
@@ -122,6 +128,7 @@ _STUDY_CONFIGS = {
         "n_eeg": 16,
         "grid": "9x8",
         "has_als": True,
+        "associated_paper_doi": "10.1088/1741-2560/12/1/016013",
     },
     "G": {
         "subjects": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
@@ -129,6 +136,7 @@ _STUDY_CONFIGS = {
         "n_eeg": 16,
         "grid": "9x8",
         "has_als": False,
+        "associated_paper_doi": None,
     },
     "H": {
         "subjects": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
@@ -136,6 +144,7 @@ _STUDY_CONFIGS = {
         "n_eeg": 16,
         "grid": "9x8",
         "has_als": False,
+        "associated_paper_doi": "10.1088/1741-2552/aa776b",
     },
     "I": {
         "subjects": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
@@ -143,6 +152,7 @@ _STUDY_CONFIGS = {
         "n_eeg": 16,
         "grid": "9x8",
         "has_als": False,
+        "associated_paper_doi": "10.1088/1741-2552/aa7525",
     },
     "J": {
         "subjects": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
@@ -150,6 +160,7 @@ _STUDY_CONFIGS = {
         "n_eeg": 16,
         "grid": "6x6",
         "has_als": False,
+        "associated_paper_doi": "10.1088/1741-2552/aa7525",
     },
     "K": {
         "subjects": [1, 2, 3, 4, 9],
@@ -157,6 +168,7 @@ _STUDY_CONFIGS = {
         "n_eeg": 16,
         "grid": "9x8",
         "has_als": False,
+        "associated_paper_doi": None,
     },
     "L": {
         "subjects": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
@@ -164,6 +176,7 @@ _STUDY_CONFIGS = {
         "n_eeg": 16,
         "grid": "6x6",
         "has_als": True,
+        "associated_paper_doi": "10.1016/j.clinph.2010.05.016",
     },
     "M": {
         "subjects": [4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25],
@@ -171,6 +184,7 @@ _STUDY_CONFIGS = {
         "n_eeg": 16,
         "grid": "9x8",
         "has_als": False,
+        "associated_paper_doi": None,
     },
     "N": {
         "subjects": [1, 2, 3, 4, 5, 6, 7, 8],
@@ -178,6 +192,7 @@ _STUDY_CONFIGS = {
         "n_eeg": 16,
         "grid": "6x6",
         "has_als": True,
+        "associated_paper_doi": "10.1016/j.jneumeth.2012.01.008",
     },
     "O": {
         "subjects": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
@@ -185,6 +200,7 @@ _STUDY_CONFIGS = {
         "n_eeg": 32,
         "grid": "9x8",
         "has_als": False,
+        "associated_paper_doi": "10.3389/fnins.2012.00159",
     },
     "P": {
         "subjects": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
@@ -192,6 +208,7 @@ _STUDY_CONFIGS = {
         "n_eeg": 32,
         "grid": "9x8",
         "has_als": False,
+        "associated_paper_doi": "10.1088/1741-2560/9/2/026011",
     },
     "Q": {
         "subjects": list(range(1, 37)),
@@ -199,6 +216,7 @@ _STUDY_CONFIGS = {
         "n_eeg": 32,
         "grid": "9x8",
         "has_als": False,
+        "associated_paper_doi": "10.1088/1741-2560/11/3/036008",
     },
     "R": {
         "subjects": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
@@ -206,6 +224,7 @@ _STUDY_CONFIGS = {
         "n_eeg": 32,
         "grid": "9x8",
         "has_als": False,
+        "associated_paper_doi": "10.1109/TBME.2014.2369491",
     },
     "S1": {
         "subjects": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
@@ -213,6 +232,7 @@ _STUDY_CONFIGS = {
         "n_eeg": 32,
         "grid": "9x8",
         "has_als": False,
+        "associated_paper_doi": "10.3389/fnins.2015.00149",
     },
     "S2": {
         "subjects": [1, 2, 3, 4, 5, 6, 7, 8, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 25, 26, 27, 28],
@@ -220,6 +240,7 @@ _STUDY_CONFIGS = {
         "n_eeg": 32,
         "grid": "9x8",
         "has_als": False,
+        "associated_paper_doi": "10.3389/fnins.2015.00149",
     },
 }
 # fmt: on
@@ -239,11 +260,23 @@ _DOCUMENTATION = DocumentationMetadata(
         "Eric Sellers",
         "Leslie Collins",
     ],
+    senior_author="Leslie Collins",
     institution="Duke University; East Tennessee State University",
+    institution_department="Department of Electrical and Computer Engineering (Duke University); Department of Psychology (East Tennessee State University)",
     country="US",
     repository="PhysioNet",
     data_url="https://physionet.org/content/bigp3bci/1.0.0/",
     publication_year=2025,
+    ethics_approval=[
+        "Duke University Institutional Review Board",
+        "East Tennessee State University Institutional Review Board",
+    ],
+    funding=[
+        "National Institutes of Health (NIH) R01DC009834",
+        "National Institutes of Health (NIH) R21DC018156",
+        "Duke University Energy Initiative",
+    ],
+    keywords=["P300", "ERP", "BCI", "speller", "ALS", "EEG", "BCI2000"],
     license="CC-BY-4.0",
 )
 
@@ -308,7 +341,7 @@ class Mainsah2025(BaseDataset):
 
     Each study explores a different P300 speller paradigm variant
     (checkerboard, row-column, dynamic, adaptive, etc.) with either
-    a 6x6 or 9x8 character grid. Studies L through R include
+    a 6x6 or 9x8 character grid. Studies B, F, L, and N include
     participants with ALS.
 
     Each EDF+ file corresponds to one spelling block and contains:
@@ -589,6 +622,8 @@ def _make_study_metadata(study):
             sampling_rate=_SFREQ,
             channel_types={"eeg": config["n_eeg"]},
             hardware="g.USBamp (g.tec)",
+            software="BCI2000",
+            sensor_type="passive gel-based or active dry",
             montage="standard_1020",
             line_freq=60.0,
         ),
@@ -596,16 +631,35 @@ def _make_study_metadata(study):
             n_subjects=len(config["subjects"]),
             health_status="patients" if config["has_als"] else "healthy",
             clinical_population="ALS" if config["has_als"] else None,
+            age_min=18.0,
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             paradigm="p300",
             events={"Target": 2, "NonTarget": 1},
             n_classes=2,
             class_labels=["Target", "NonTarget"],
+            trial_duration=1.0,
+            task_type="p300_speller",
+            stimulus_type="character matrix flash",
+            stimulus_modalities=["visual"],
+            primary_modality="visual",
+            synchronicity="synchronous",
+            mode="both",
+            has_training_test_split=True,
         ),
-        documentation=_DOCUMENTATION,
+        documentation=replace(
+            _DOCUMENTATION,
+            related_paper_dois=(
+                [config["associated_paper_doi"]]
+                if config.get("associated_paper_doi")
+                else None
+            ),
+        ),
         sessions_per_subject=config["n_sessions"],
-        paradigm_specific=ParadigmSpecificMetadata(detected_paradigm="p300"),
+        paradigm_specific=ParadigmSpecificMetadata(
+            detected_paradigm="p300", n_targets=36 if config["grid"] == "6x6" else 72
+        ),
         signal_processing=SignalProcessingMetadata(
             classifiers=None,
             feature_extraction=["P300_ERP_detection"],
@@ -618,7 +672,13 @@ def _make_study_metadata(study):
         bci_application=BCIApplicationMetadata(
             applications=["speller"], environment="laboratory", online_feedback=True
         ),
-        tags=Tags(modality=["visual"], type=["perception"]),
+        tags=Tags(
+            pathology=["ALS"] if config["has_als"] else ["Healthy"],
+            modality=["visual"],
+            type=["perception"],
+        ),
+        file_format="EDF+",
+        data_processed=False,
     )
 
 

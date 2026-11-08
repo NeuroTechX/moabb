@@ -187,6 +187,7 @@ class Wang2016(BaseDataset):
             ],
             line_freq=50.0,
             reference="Cz",
+            ground="midway between Fz and FPz",
             sensor_type=None,
         ),
         participants=ParticipantMetadata(
@@ -197,7 +198,7 @@ class Wang2016(BaseDataset):
             age_min=17,
             age_max=34,
             bci_experience="8 experienced, 27 naïve",
-            species="human",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             paradigm="ssvep",

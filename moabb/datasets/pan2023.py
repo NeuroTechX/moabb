@@ -10,10 +10,14 @@ from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
+    DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
+    ParadigmSpecificMetadata,
     ParticipantMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 
@@ -191,7 +195,7 @@ class Pan2023(_PanDataverse):
             events={"left_hand": 1, "right_hand": 2},
         ),
         documentation=DocumentationMetadata(
-            senior_author="Lincong Pan",
+            senior_author="Dong Ming",
             doi="10.7910/DVN/251NOW",
             description="Cross-session motor imagery EEG dataset from 14 subjects "
             "performing cued left- vs right-hand motor imagery across two sessions.",
@@ -203,6 +207,11 @@ class Pan2023(_PanDataverse):
                 "Weibo Yi",
                 "Minpeng Xu",
                 "Dong Ming",
+            ],
+            contact_info=[
+                "flora_wk@tju.edu.cn",
+                "minpeng.xu@tju.edu.cn",
+                "panlincong@tju.edu.cn",
             ],
             institution="Tianjin University",
             institution_department=(
@@ -236,6 +245,27 @@ class Pan2023(_PanDataverse):
         ),
         sessions_per_subject=2,
         runs_per_session=1,
+        data_structure=DataStructureMetadata(
+            n_trials=240,
+            n_trials_per_class={"left_hand": 60, "right_hand": 60},
+            n_blocks=4,
+            trials_context="120 trials per session (4 blocks x 30 trials), 2 sessions per subject (240 total per subject)",
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["SVM", "sLDA", "TSLR", "MDRM", "KCS-FCNet"],
+            feature_extraction=["CSP", "FBCSP", "Riemannian covariance / tangent space"],
+            frequency_bands={"bandpass": [8.0, 30.0], "filter_bank": [4.0, 40.0]},
+            spatial_filters=["CSP"],
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="cross-session transfer", evaluation_type=["cross_session"]
+        ),
+        paradigm_specific=ParadigmSpecificMetadata(
+            detected_paradigm="motor_imagery",
+            imagery_tasks=["left_hand", "right_hand"],
+            cue_duration_s=4.0,
+            imagery_duration_s=4.0,
+        ),
         file_format="MAT (v7.3/HDF5)",
         tags=Tags(modality=["Motor"], type=["Motor Imagery"]),
     )

@@ -13,10 +13,16 @@ from moabb.datasets.base import BaseDataset
 from moabb.datasets.bson_loader import load_bson
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
+    BCIApplicationMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
+    DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
+    ParadigmSpecificMetadata,
     ParticipantMetadata,
+    SignalProcessingMetadata,
+    Tags,
 )
 from moabb.datasets.utils import (
     add_stim_channel_epoch,
@@ -147,6 +153,27 @@ class MartinezCagigal2023Checker(BaseDataset):
         acquisition=AcquisitionMetadata(
             sampling_rate=256.0,
             channel_types={"eeg": 16},
+            sensors=[
+                "F3",
+                "Fz",
+                "F4",
+                "C3",
+                "Cz",
+                "C4",
+                "CPz",
+                "P3",
+                "Pz",
+                "P4",
+                "PO7",
+                "PO8",
+                "Oz",
+                "I1",
+                "I2",
+                "POz",
+            ],
+            sensor_type="active",
+            montage="standard_1005",
+            line_freq=50.0,
             reference="right earlobe",
             ground="AFz",
             hardware="g.USBamp (g.tec)",
@@ -158,18 +185,65 @@ class MartinezCagigal2023Checker(BaseDataset):
             gender={"male": 11, "female": 5},
             age_mean=29.63,
             age_std=4.06,
+            bci_experience="mixed",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
-            trial_duration=1.0,
+            trial_duration=4.2,
             events={"0.0": 100, "1.0": 101},
             class_labels=["0.0", "1.0"],
             n_classes=2,
             paradigm="cvep",
+            task_type="cvep_speller",
+            study_design=(
+                "Within-subject evaluation of 8 spatial frequency conditions of a "
+                "black-background checkerboard (BB-CB) pattern in a 9-command "
+                "circular-shifting m-sequence c-VEP speller."
+            ),
+            feedback_type="visual",
+            stimulus_type="black-background checkerboard (BB-CB) m-sequence flash",
+            stimulus_modalities=["visual"],
+            primary_modality="visual",
+            synchronicity="synchronous",
+            mode="both",
+            has_training_test_split=True,
         ),
         sessions_per_subject=8,
         runs_per_session=3,
+        file_format="BSON (MEDUSA)",
+        data_processed=False,
+        paradigm_specific=ParadigmSpecificMetadata(
+            detected_paradigm="cvep",
+            code_type="m-sequence",
+            code_length=63,
+            n_targets=9,
+            n_repetitions=8,
+        ),
+        data_structure=DataStructureMetadata(
+            n_trials=384,
+            n_blocks=8,
+            trials_context=(
+                "8 conditions x 48 trials per condition (30 calibration trials across "
+                "2 runs + 18 online test trials in 1 run), each trial comprising 8 "
+                "cycles of a 63-bit m-sequence at 120 Hz (0.525 s/cycle, 4.2 s/trial)."
+            ),
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["CCA"],
+            feature_extraction=["canonical_correlation_analysis"],
+            frequency_bands={"broadband": [1.0, 60.0]},
+            spatial_filters=["CCA"],
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="calibration-then-test", evaluation_type=["within_subject"]
+        ),
+        performance={"accuracy_8cycles_c5": 99.31, "itr_8cycles_c5_bits_per_min": 43.39},
+        bci_application=BCIApplicationMetadata(
+            applications=["speller"], environment="laboratory", online_feedback=True
+        ),
+        tags=Tags(pathology=["Healthy"], modality=["Visual"], type=["c-VEP"]),
         documentation=DocumentationMetadata(
-            repository="U Valladoid",
+            repository="UVaDOC (University of Valladolid)",
             license="CC-BY-NC-SA-4.0",
             doi="10.71569/7c67-v596",
             associated_paper_doi="10.3389/fnhum.2023.1288438",
@@ -183,17 +257,25 @@ class MartinezCagigal2023Checker(BaseDataset):
                 "Roberto Hornero",
             ],
             senior_author="Roberto Hornero",
-            institution="University of Valladolid",
+            institution="University of Valladolid; University of Malaga",
             institution_department="Biomedical Engineering Group, ETSIT",
             institution_address="Paseo de Belén, 15, 47011, Valladolid, Spain",
             country="ES",
-            contact_info=["victor.martinez@gib.tel.uva.es"],
+            contact_info=["afernandezrguez@uma.es", "victor.martinez@gib.tel.uva.es"],
             ethics_approval=[
-                "Approved by the local ethics committee; all participants provided informed consent"
+                "Local Ethics Committee of the University of Valladolid (No. PI 22-2912)"
             ],
             funding=[
                 "Ministerio de Ciencia e Innovación/Agencia Estatal de Investigación and ERDF (TED2021-129915B-I00, RTC2019-007350-1, PID2020-115468RB-I00, PID2021-127261OB-I00)",
                 "CIBER-BBN through Instituto de Salud Carlos III",
+                "University of Malaga",
+            ],
+            keywords=[
+                "brain-computer interface (BCI)",
+                "code-modulated visual evoked potential (c-VEP)",
+                "spatial frequency",
+                "checkerboard",
+                "user experience",
             ],
             data_url="https://doi.org/10.71569/7c67-v596",
             how_to_acknowledge=(

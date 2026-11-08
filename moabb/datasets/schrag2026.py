@@ -1,7 +1,7 @@
 """Pediatric SSVEP-based BCI dataset (Schrag et al. 2026).
 
 Preprint DOI: 10.21203/rs.3.rs-9347306/v1
-Data DOI:     10.5281/zenodo.19440997
+Data DOI:     10.5281/zenodo.20848097
 """
 
 from __future__ import annotations
@@ -150,7 +150,7 @@ class Schrag2026Pediatric(BaseDataset):
        interface dataset in children and adolescents," Research Square
        preprint, 2026. DOI: 10.21203/rs.3.rs-9347306/v1
     .. [2] Schrag et al., 2026 SSVEP Pediatric Dataset.
-       Zenodo. DOI: 10.5281/zenodo.19440997
+       Zenodo. DOI: 10.5281/zenodo.20848097 (v3.0; v1.0: 10.5281/zenodo.19440997)
     """
 
     nemar_id = "nm000334"
@@ -160,7 +160,7 @@ class Schrag2026Pediatric(BaseDataset):
         acquisition=AcquisitionMetadata(
             sampling_rate=_SFREQ,
             channel_types={"eeg": 16},
-            montage="standard_1020",
+            montage="standard_1005",
             hardware="g.tec g.GAMMAsys + g.USBamp + g.GAMMAcap",
             sensors=list(_CH_NAMES),
             reference="earlobe",
@@ -170,7 +170,7 @@ class Schrag2026Pediatric(BaseDataset):
             electrode_type="wet",
             electrode_material="Ag/AgCl gel",
             cap_manufacturer="g.tec",
-            software="Unity3D + BCI-Essentials",
+            software="Unity3D + BCI-Essentials + Lab Streaming Layer (LSL)",
         ),
         participants=ParticipantMetadata(
             n_subjects=_N_SUBJECTS,
@@ -210,10 +210,11 @@ class Schrag2026Pediatric(BaseDataset):
             funding=[
                 "Alberta Innovates",
                 "Cumming School of Medicine",
-                "Alberta Children's Hospital Foundation",
+                "Alberta Children's Hospital Foundation (No. 10026817)",
             ],
-            doi=_DOI,
+            doi=_PREPRINT_DOI,
             associated_paper_doi=_PREPRINT_DOI,
+            related_paper_dois=[_DOI, "10.5281/zenodo.19440997"],
             data_url=f"https://doi.org/{_DOI}",
             investigators=[
                 "Emily Schrag",

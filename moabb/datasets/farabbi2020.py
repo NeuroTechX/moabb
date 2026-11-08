@@ -88,6 +88,21 @@ class Farabbi2020(BaseDataset):
         participants=ParticipantMetadata(
             n_subjects=12,
             health_status="healthy",
+            handedness={"right": 11, "ambidextrous": 1},
+            handedness_list=[
+                "right",
+                "right",
+                "right",
+                "right",
+                "ambidextrous",
+                "right",
+                "right",
+                "right",
+                "right",
+                "right",
+                "right",
+                "right",
+            ],
             bci_experience="naive",
             species="homo sapiens",
         ),
@@ -99,7 +114,8 @@ class Farabbi2020(BaseDataset):
             study_design="Cue-based left- vs right-hand motor imagery controlling a Baxter robot arm reaching toward objects, under first-person and third-person visual feedback.",
             feedback_type="visual",
             stimulus_type="visual",
-            stimulus_modalities=["visual"],
+            stimulus_modalities=["visual", "auditory"],
+            primary_modality="visual",
             synchronicity="cue-based",
             mode="online",
             has_training_test_split=True,
@@ -121,7 +137,10 @@ class Farabbi2020(BaseDataset):
                 "Athanasios Vourvopoulos",
             ],
             institution="Politecnico di Milano; Instituto Superior Tecnico, Universidade de Lisboa",
-            country="IT",
+            country="PT",
+            ethics_approval=[
+                "Approved by the Ethics Committee of CHULN and CAML (Faculty of Medicine, University of Lisbon) with reference number: 245/19"
+            ],
             data_url="https://doi.org/10.5281/zenodo.5882500",
             publication_year=2020,
             keywords=[

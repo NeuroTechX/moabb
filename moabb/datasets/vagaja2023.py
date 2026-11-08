@@ -132,7 +132,11 @@ class Vagaja2023(BaseDataset):
             software="BrainVision Recorder",
             sensors=list(_EEG_CHANNELS),
             line_freq=50.0,
-            auxiliary_channels=AuxiliaryChannelsMetadata(has_emg=True, emg_channels=2),
+            auxiliary_channels=AuxiliaryChannelsMetadata(
+                has_emg=True,
+                emg_channels=2,
+                other_physiological=["temperature", "accelerometer"],
+            ),
         ),
         participants=ParticipantMetadata(
             age_mean=23.9,
@@ -147,6 +151,7 @@ class Vagaja2023(BaseDataset):
             paradigm="imagery",
             n_classes=2,
             class_labels=["left_hand", "right_hand"],
+            trials_per_class={"left_hand": 20, "right_hand": 20},
             trial_duration=10.0,
             study_design=(
                 "Between-subject, randomized-group cue-based left- vs right-hand "
@@ -192,6 +197,9 @@ class Vagaja2023(BaseDataset):
             ],
             license="CC-BY-4.0",
             repository="Zenodo",
+            ethics_approval=[
+                "1964 Declaration of Helsinki; written informed consent obtained from all participants"
+            ],
         ),
         sessions_per_subject=1,
         runs_per_session=1,
@@ -214,6 +222,8 @@ class Vagaja2023(BaseDataset):
             imagery_duration_s=10.0,
         ),
         data_structure=DataStructureMetadata(
+            n_trials=40,
+            n_trials_per_class={"left_hand": 20, "right_hand": 20},
             n_blocks=1,
             trials_context=(
                 "One lab session per subject. Each subject has resting-state, "

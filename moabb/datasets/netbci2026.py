@@ -26,6 +26,7 @@ from .metadata.schema import (
     ExperimentMetadata,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 from .utils import stim_channels_with_selected_ids
@@ -236,6 +237,7 @@ class NETBCI2026(BaseBIDSDataset):
             reference="mastoids",
             ground="left scapula",
             impedance_threshold_kohm=20.0,
+            filters="0.01-330 Hz",
             line_freq=50.0,
             software="BCI2000",
         ),
@@ -245,6 +247,7 @@ class NETBCI2026(BaseBIDSDataset):
             species="human",
             gender={"female": 7, "male": 12},
             handedness="right-handed",
+            bci_experience="naive",
             age_mean=27.47,
             age_std=4.07,
             age_min=19.0,
@@ -273,6 +276,7 @@ class NETBCI2026(BaseBIDSDataset):
         documentation=DocumentationMetadata(
             funding=[
                 "Investissements d'avenir ANR-10-IAIHU-06",
+                "France Life Imaging ANR-11-INBS-0006",
                 "ANR-NIH CRCNS ANR-15-NEUC-0006-02",
                 "NICHD 1R01HD086888-01",
             ],
@@ -291,6 +295,7 @@ class NETBCI2026(BaseBIDSDataset):
                 "Fabrizio De Vico Fallani",
             ],
             senior_author="Fabrizio De Vico Fallani",
+            contact_info=["marie-constance.corsi@inria.fr"],
             institution="Paris Brain Institute (ICM)",
             country="FR",
             repository="Recherche Data Gouv",
@@ -298,7 +303,13 @@ class NETBCI2026(BaseBIDSDataset):
             publication_year=2026,
             license="CC-BY-4.0",
             ethics_approval=["CPP-IDF-VI of Paris, 2016-A00626-45"],
-            related_paper_dois=["10.1142/S0129065718500144"],
+            related_paper_dois=[
+                "10.1142/S0129065718500144",
+                "10.1088/1741-2552/ab9064",
+                "10.1016/j.neuroimage.2019.116500",
+                "10.1088/1741-2552/abef39",
+                "10.57745/RBJRC7",
+            ],
         ),
         sessions_per_subject=_N_SESSIONS,
         runs_per_session=_N_RUNS,
@@ -318,6 +329,14 @@ class NETBCI2026(BaseBIDSDataset):
                 "authors' checked trials: 375/456 runs keep 32, the rest 29-31 "
                 "(357-384 trials per class per subject, 14,431 in total)."
             ),
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["LDA"],
+            feature_extraction=[
+                "Autoregressive (AR) spectrum via Maximum Entropy Method (order 28, 0.5 s window, 28 ms step)",
+                "R-square feature selection",
+            ],
+            frequency_bands={"mu_beta_search": [5.0, 40.0], "alpha": [8.0, 13.0]},
         ),
         cross_validation=CrossValidationMetadata(
             cv_method="cross-session", evaluation_type=["within_subject", "cross_session"]

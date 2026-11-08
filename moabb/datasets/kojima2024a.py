@@ -56,7 +56,7 @@ class Kojima2024A(BaseDataset):
 
     Each participant completed 1 session consisting of 6 runs.
     Each run lasted approximately 5 minutes.
-    In each run, all deviant stimuli (D1--D4) were presented approximately 60 times.
+    In each run, all deviant stimuli (D1--D3) were presented approximately 60 times.
 
     .. figure:: /_static/paper_figures/Kojima2024.png
        :alt: Kojima2024 ASME-BCI — three auditory streams with oddball
@@ -78,7 +78,7 @@ class Kojima2024A(BaseDataset):
           TP10, P7, P5, P3, P1, Pz, P2, P4, P6, P8, PO7, PO3, POz, PO4, PO8,
           O1, Oz, O2
 
-          EEG signals were referenced to the right mastoid and grounded to the left mastoid.
+          EEG signals were referenced to the right earlobe and grounded to the left earlobe.
 
         - EOG was recorded using 2 electrodes (vEOG and hEOG), placed above/below and
           lateral to one eye.
@@ -216,7 +216,7 @@ class Kojima2024A(BaseDataset):
                 "female",
             ],
             handedness_list=None,
-            species="human",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             paradigm="p300",
@@ -335,6 +335,9 @@ class Kojima2024A(BaseDataset):
         performance={
             "description": "Classification accuracy over 80% for 5 subjects, over 75% for 9 subjects",
             "metric": "MCC (Matthews correlation coefficient)",
+            "accuracy_percent": 79.0,
+            "mcc": 0.50,
+            "itr_bits_per_min": 5.12,
         },
         bci_application=BCIApplicationMetadata(
             applications=["communication"],
@@ -349,7 +352,7 @@ class Kojima2024A(BaseDataset):
             code_length=None,
             n_targets=3,
             n_repetitions=None,
-            isi_ms=None,
+            isi_ms=30.0,
             soa_ms=180.0,
             imagery_tasks=None,
             cue_duration_s=None,

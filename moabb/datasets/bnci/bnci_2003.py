@@ -173,6 +173,7 @@ class BNCI2003_004(MNEBNCI):
         acquisition=AcquisitionMetadata(
             sampling_rate=100.0,
             channel_types={"eeg": 118},
+            montage="standard_1005",
             hardware="BrainAmp",
             reference=None,
             filters={"bandpass": [0.05, 200]},
@@ -300,14 +301,18 @@ class BNCI2003_004(MNEBNCI):
             sensor_type="EEG",
             auxiliary_channels=None,
         ),
-        participants=ParticipantMetadata(n_subjects=5, health_status="healthy"),
+        participants=ParticipantMetadata(
+            n_subjects=5, health_status="healthy", species="homo sapiens"
+        ),
         experiment=ExperimentMetadata(
             events={"right_hand": 0, "feet": 1},
             paradigm="imagery",
             n_classes=2,
             class_labels=["right_hand", "feet"],
             trial_duration=3.5,
+            feedback_type="none",
             stimulus_type="visual cue",
+            synchronicity="synchronous",
             mode="offline",
             stimulus_presentation={
                 "duration": "3.5 s",
@@ -318,6 +323,7 @@ class BNCI2003_004(MNEBNCI):
         ),
         documentation=DocumentationMetadata(
             doi="10.1109/TBME.2004.827088",
+            data_url="https://www.bbci.de/competition/iii/",
             investigators=[
                 "Guido Dornhege",
                 "Benjamin Blankertz",

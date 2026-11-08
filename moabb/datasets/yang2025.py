@@ -24,6 +24,7 @@ from .metadata.schema import (
     ExperimentMetadata,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
+    PreprocessingMetadata,
     SignalProcessingMetadata,
     Tags,
 )
@@ -115,9 +116,10 @@ class Yang2025(BaseDataset):
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
             channel_types={"eeg": 59, "ecg": 1, "eog": 4},
-            montage="standard_1005",
+            montage="10-20",
             hardware="Neuracle NeuSen W",
             sensor_type="Ag/AgCl",
+            impedance_threshold_kohm=5.0,
             filters={},
             sensors=list(_CH_NAMES_EEG),
             line_freq=50.0,
@@ -134,9 +136,9 @@ class Yang2025(BaseDataset):
             gender={"female": 18, "male": 44},
             age_min=17.0,
             age_max=30.0,
-            handedness="right-handed",
+            handedness="right",
             bci_experience="naive",
-            species="human",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             events=dict(_EVENTS_2C),
@@ -155,6 +157,7 @@ class Yang2025(BaseDataset):
             primary_modality="visual",
             synchronicity="synchronous",
             mode="offline",
+            stimulus_presentation={"SoftwareName": "E-Prime"},
         ),
         documentation=DocumentationMetadata(
             senior_author="Xiaorong Gao",
@@ -182,6 +185,9 @@ class Yang2025(BaseDataset):
         sessions_per_subject=3,
         runs_per_session=1,
         tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Research"]),
+        preprocessing=PreprocessingMetadata(
+            data_state="raw continuous", preprocessing_applied=False
+        ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
             imagery_tasks=["left_hand", "right_hand", "feet"],
