@@ -1052,7 +1052,9 @@ class TestLoaderChannelCategorization:
     def test_lee2021_mobile_retypes_veog_and_imu(self, monkeypatch):
         dataset = Lee2021Mobile(paradigm="ssvep", subjects=[1], sessions=[2])
         monkeypatch.setattr(
-            dataset, "data_path", lambda subject: ["/tmp/sub-01_ses-02_task-SSVEP_eeg.vhdr"]
+            dataset,
+            "data_path",
+            lambda subject: ["/tmp/sub-01_ses-02_task-SSVEP_eeg.vhdr"],
         )
         info = mne.create_info(
             ["Cz", "HEOGL", "HEOGR", "VEOGU", "VEOGL", "HaccX"],
@@ -1099,14 +1101,9 @@ class TestLoaderChannelCategorization:
         )
         sessions = dataset._get_single_subject_data(1)
         out = sessions["0pre"]["0"]
-        assert out.get_channel_types(picks=["Cz", "ECG", "HEOR", "HEOL", "VEOU", "VEOL"]) == [
-            "eeg",
-            "ecg",
-            "eog",
-            "eog",
-            "eog",
-            "eog",
-        ]
+        assert out.get_channel_types(
+            picks=["Cz", "ECG", "HEOR", "HEOL", "VEOU", "VEOL"]
+        ) == ["eeg", "ecg", "eog", "eog", "eog", "eog"]
 
     def test_jeong2020_retypes_eog_and_emg(self, monkeypatch, tmp_path):
         from moabb.datasets.jeong2020 import Jeong2020
@@ -1130,11 +1127,6 @@ class TestLoaderChannelCategorization:
         )
         sessions = dataset._get_single_subject_data(1)
         out = sessions["0"]["0"]
-        assert out.get_channel_types(picks=["Cz", "hEOG_L", "vEOG_U", "EMG_1", "EMG_ref"]) == [
-            "eeg",
-            "eog",
-            "eog",
-            "emg",
-            "emg",
-        ]
-
+        assert out.get_channel_types(
+            picks=["Cz", "hEOG_L", "vEOG_U", "EMG_1", "EMG_ref"]
+        ) == ["eeg", "eog", "eog", "emg", "emg"]
