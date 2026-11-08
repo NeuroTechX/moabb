@@ -40,7 +40,7 @@ from moabb.utils import get_download_provider
 
 
 if TYPE_CHECKING:
-    pass
+    import mne_bids
 
 
 log = logging.getLogger(__name__)

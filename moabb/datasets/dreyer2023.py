@@ -296,7 +296,6 @@ class _Dreyer2023Base(BaseDataset):
         *,
         return_all_modalities=False,
     ):
-
         self.sub_id = sub_id
 
         if sub_id is None:

@@ -720,7 +720,6 @@ class ErpCore2021_N2pc(ErpCore2021):
             return "Stimulus - target pink, target right, gap at bottom"
 
     def encoding(self, events_df):
-
         # Drop rows corresponding to the responses
         events_df.drop(events_df[events_df["value"].isin([201, 202])].index, inplace=True)
 
@@ -822,7 +821,6 @@ class ErpCore2021_P3(ErpCore2021):
             return "Stimulus - block target D, trial stimulus E"
 
     def encoding(self, events_df):
-
         # Drop rows corresponding to the responses
         events_df.drop(events_df[events_df["value"].isin([201, 202])].index, inplace=True)
 
@@ -896,7 +894,6 @@ class ErpCore2021_N400(ErpCore2021):
             return "Stimulus - target word, unrelated word pair, list 2"
 
     def encoding(self, events_df):
-
         # Drop rows corresponding to the responses
         events_df.drop(
             events_df[events_df["value"].isin([111, 112, 121, 122, 201, 202])].index,
@@ -1048,7 +1045,6 @@ class ErpCore2021_LRP(ErpCore2021):
             return "Response - right, incompatible flankers, target left"
 
     def encoding(self, events_df):
-
         # Check the first two rows if both are 'Response'
         if (
             events_df.iloc[0]["trial_type"] == "response"

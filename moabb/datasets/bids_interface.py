@@ -36,6 +36,10 @@ from moabb.datasets import download as dl
 from moabb.datasets._channel_pick import pick_channels_for_modalities
 
 
+if TYPE_CHECKING:
+    import mne_bids
+
+
 @contextlib.contextmanager
 def _bids_lock(path):
     try:
