@@ -226,9 +226,7 @@ def _pairedttest_exact(data):
     n_subj = data.shape[0]
     true = data.sum(axis=0)
     nperms = 2**n_subj
-    perms = np.array(
-        list(itertools.product([-1, 1], repeat=n_subj)), dtype=data.dtype
-    )
+    perms = np.array(list(itertools.product([-1, 1], repeat=n_subj)), dtype=data.dtype)
     randperms = (perms @ data.reshape(n_subj, -1)).reshape(nperms, *data.shape[1:])
     out = (randperms >= true).sum(axis=0, dtype=np.int32)
 
@@ -518,9 +516,7 @@ def compute_dataset_statistics(df, perm_cutoff=20):
     df = collapse_session_scores(df)
     out = {}
     for d, group in df.groupby("dataset", sort=False, observed=True):
-        score_data = group.pivot(
-            index="subject", values="score", columns="pipeline"
-        )
+        score_data = group.pivot(index="subject", values="score", columns="pipeline")
         algs = score_data.columns.tolist()
         if score_data.shape[0] < perm_cutoff:
             p = compute_pvals_perm(score_data, algs)
@@ -624,16 +620,20 @@ def find_significant_differences(df, perm_cutoff=20):
     T_full = df.pivot_table(values="smd", index=["dataset", "pipe1"], columns="pipe2")
     P = np.full((len(algs), len(algs)), np.nan)
     T = np.full((len(algs), len(algs)), np.nan)
-    full_grid = len(P_full) == len(dsets) * len(algs) and len(T_full) == len(
-        dsets
-    ) * len(algs)
+    full_grid = len(P_full) == len(dsets) * len(algs) and len(T_full) == len(dsets) * len(
+        algs
+    )
     if full_grid:
         midx = pd.MultiIndex.from_product([P_full.index.levels[0], algs])
-        p_cube = P_full.reindex(index=midx, columns=algs).to_numpy().reshape(
-            len(dsets), len(algs), len(algs)
+        p_cube = (
+            P_full.reindex(index=midx, columns=algs)
+            .to_numpy()
+            .reshape(len(dsets), len(algs), len(algs))
         )
-        t_cube = T_full.reindex(index=midx, columns=algs).to_numpy().reshape(
-            len(dsets), len(algs), len(algs)
+        t_cube = (
+            T_full.reindex(index=midx, columns=algs)
+            .to_numpy()
+            .reshape(len(dsets), len(algs), len(algs))
         )
     for i in range(len(algs)):
         for j in range(len(algs)):

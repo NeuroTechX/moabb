@@ -61,10 +61,7 @@ from moabb.utils import aliases_list
 _ = mne.set_log_level("CRITICAL")
 NEMAR_ID_PATTERN = r"(nm|on|ds)\d{6}"
 # Datasets without a NEMAR deposit: test fixtures only.
-NEMAR_ID_EXEMPT = {
-    "FakeDataset",
-    "FakeVirtualRealityDataset",
-}
+NEMAR_ID_EXEMPT = {"FakeDataset", "FakeVirtualRealityDataset"}
 # Datasets whose NEMAR deposit is assigned and has publication requested
 # (Status: requested), awaiting NEMAR administrator approval. Set ``nemar_id``
 # on each class once its deposit is published on data.nemar.org.

@@ -233,7 +233,9 @@ def check_session_names(data):
     for _subject, sessions in data.items():
         indexes = []
         for session in sessions.keys():
-            match = _SESSION_RUN_RE.fullmatch(session) if isinstance(session, str) else None
+            match = (
+                _SESSION_RUN_RE.fullmatch(session) if isinstance(session, str) else None
+            )
             if not match:
                 raise ValueError(
                     f"Session {constraint_message} Found key {session!r} instead. "
