@@ -437,7 +437,8 @@ class _Dreyer2023Base(BaseDataset):
         # Download and extract the dataset from OSF
         g = globals()
         if "BIDSPath" not in g or "get_entity_vals" not in g:
-            from mne_bids import BIDSPath as _BIDSPath, get_entity_vals as _get_entity_vals
+            from mne_bids import BIDSPath as _BIDSPath
+            from mne_bids import get_entity_vals as _get_entity_vals
 
             g.setdefault("BIDSPath", _BIDSPath)
             g.setdefault("get_entity_vals", _get_entity_vals)

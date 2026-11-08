@@ -35,10 +35,8 @@ def _nemar_deps():
     if "nemar" not in g or "NemarError" not in g:
         import nemar as _nemar
         from httpx import TransportError as _TransportError
-        from nemar.errors import (
-            NemarError as _NemarError,
-            SelectionError as _SelectionError,
-        )
+        from nemar.errors import NemarError as _NemarError
+        from nemar.errors import SelectionError as _SelectionError
 
         g.setdefault("nemar", _nemar)
         g.setdefault("NemarError", _NemarError)
@@ -57,6 +55,7 @@ def __getattr__(name):
         globals()["_get_path"] = _mne_get_path
         return _mne_get_path
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
 
 #: Local directory mirroring the upstream files of the dataset whose loader is
 #: currently executing (its NEMAR sourcedata store), or None. Set by
