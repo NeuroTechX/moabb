@@ -94,6 +94,8 @@ def test_subject_and_session_counts():
     assert {groups[s] for s in range(18, 38)} == {"Patients"}
     assert len({row[0] for row in _EPOCH_FILES}) == 98
     meta = HefmiIch2025.METADATA
+    assert HefmiIch2025.nemar_id == "nm000347"
+    assert HefmiIch2025()._nemar_subject(1) == "01"
     assert meta.participants.n_subjects == 37
     assert meta.sessions_per_subject == 3
     assert meta.data_structure.n_trials == 98 * 30
@@ -181,6 +183,26 @@ def test_data_path_rejects_a_file_that_does_not_match(mne_data, synthetic, monke
     monkeypatch.setattr(dl, "data_dl", wrong_bytes)
     with pytest.raises(OSError, match="does not match figshare file 40"):
         HefmiIch2025().data_path(2)
+
+
+def test_data_path_reads_active_nemar_store(mne_data, monkeypatch):
+    """nm000347 v1.0.5 stores epo_data/<group>/EEG/subject<N>/<k>_epo.mat."""
+    data = b"Normals/2/1"
+    rows = ((40, "Normals", 2, 1, len(data), hashlib.md5(data).hexdigest()),)
+    monkeypatch.setattr(hefmi_ich2025, "_EPOCH_FILES", rows)
+    monkeypatch.setattr(socket.socket, "connect", _forbid_connect)
+
+    dataset = HefmiIch2025()
+    store = Path(dataset._sourcedata_store())
+    stored = store / "epo_data/Normals/EEG/subject2/1_epo.mat"
+    stored.parent.mkdir(parents=True)
+    stored.write_bytes(data)
+
+    with dl.active_sourcedata_store(store):
+        paths = dataset.data_path(2)
+
+    assert len(paths) == 1
+    assert Path(paths[0]).read_bytes() == data
 
 
 def test_sessions_are_the_files_of_the_folder(mne_data, monkeypatch, tmp_path):
