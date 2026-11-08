@@ -173,6 +173,10 @@ class Yagan2023(BaseDataset):
             data_url="https://doi.org/10.17632/vyczny2r4w.1",
             license="CC-BY-4.0",
             publication_year=2023,
+            ethics_approval=(
+                "Human-subject EEG recordings collected at Sabanci University "
+                "with informed consent from all 18 healthy adult volunteers"
+            ),
             keywords=["P300", "ERP", "BCI", "speller", "row-column paradigm"],
         ),
         sessions_per_subject=1,

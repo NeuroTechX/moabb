@@ -284,6 +284,10 @@ class Wang2026Handwriting(BaseBIDSDataset):
             data_url="https://doi.org/10.6084/m9.figshare.29987758.v4",
             license="CC-BY-4.0",
             publication_year=2026,
+            ethics_approval=(
+                "Approved by the Ethics Committee of Kunming University of "
+                "Science and Technology (Approval No.: KMUST-MEC-2023-026)"
+            ),
             funding=["National Natural Science Foundation of China (Grant No. 62376112)"],
             keywords=[
                 "handwriting imagery",
