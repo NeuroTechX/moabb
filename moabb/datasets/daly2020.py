@@ -3,7 +3,6 @@
 import logging
 from pathlib import Path
 
-import mne_bids
 import numpy as np
 
 from ._openneuro_mirror import OpenNeuroMirrorMixin
@@ -203,6 +202,8 @@ class Daly2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
         return {"0": runs}
 
     def _read_raw_bids(self, bids_path):
+        import mne_bids
+
         raw = mne_bids.read_raw_bids(
             bids_path, extra_params=self._get_read_extra_params(None), verbose=False
         )
@@ -211,6 +212,8 @@ class Daly2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
 
     def _download_subject(self, subject, path, force_update, update_path, verbose) -> str:
         """Download the subject's BIDS files from OpenNeuro S3, return BIDS root."""
+        import mne_bids
+
         mirror_root = self._mirror_root(subject, path, force_update, update_path, verbose)
         if mirror_root is not None:
             return mirror_root

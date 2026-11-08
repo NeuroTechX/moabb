@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import functools
+import importlib.util
 import json
 import logging
 import warnings
@@ -21,20 +22,23 @@ from sklearn.utils.metaestimators import available_if
 log = logging.getLogger(__name__)
 
 
-try:
-    from optuna.distributions import CategoricalDistribution
-
-    optuna_available = True
-except ImportError:
-    optuna_available = False
+optuna_available = importlib.util.find_spec("optuna") is not None
+_carbonfootprint = importlib.util.find_spec("codecarbon") is not None
 
 
-try:
-    from codecarbon import EmissionsTracker, OfflineEmissionsTracker
+def __getattr__(name):
+    if name == "CategoricalDistribution":
+        from optuna.distributions import CategoricalDistribution
 
-    _carbonfootprint = True
-except ImportError:
-    _carbonfootprint = False
+        globals()["CategoricalDistribution"] = CategoricalDistribution
+        return CategoricalDistribution
+    if name in ("EmissionsTracker", "OfflineEmissionsTracker"):
+        from codecarbon import EmissionsTracker, OfflineEmissionsTracker
+
+        globals()["EmissionsTracker"] = EmissionsTracker
+        globals()["OfflineEmissionsTracker"] = OfflineEmissionsTracker
+        return globals()[name]
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 def _sklearn_is_fitted_true():
@@ -311,6 +315,8 @@ def _convert_sklearn_params_to_optuna(param_grid: dict) -> dict:
             "Optuna is not available. Please install it optuna and optuna-integration."
         )
     else:
+        from optuna.distributions import CategoricalDistribution
+
         optuna_params = {}
         for key, value in param_grid.items():
             try:
@@ -603,6 +609,8 @@ class Emissions:
             )
 
     def create_tracker(self):
+        from codecarbon import EmissionsTracker, OfflineEmissionsTracker
+
         if self.codecarbon_offline:
             tracker = OfflineEmissionsTracker(**self.codecarbon_config)
         else:

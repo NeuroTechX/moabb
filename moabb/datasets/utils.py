@@ -15,7 +15,6 @@ import zipfile
 from pathlib import Path
 
 import mne
-import mne_bids
 import numpy as np
 from mne import create_info
 from mne.channels import make_standard_montage
@@ -444,6 +443,8 @@ def bids_metainfo(bids_path: Path) -> dict:
         The path to the BIDS dataset.
     """
     json_data = {}
+
+    import mne_bids
 
     paths = mne_bids.find_matching_paths(root=bids_path, datatypes="eeg")
 

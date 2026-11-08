@@ -13,7 +13,6 @@ import mne
 import numpy as np
 import pandas as pd
 from mne.channels import make_standard_montage
-from mne_bids import BIDSPath, get_entity_vals, read_raw_bids
 from tqdm import tqdm
 
 from moabb.datasets import download as dl
@@ -36,6 +35,16 @@ from moabb.datasets.metadata.schema import (
 from moabb.utils import get_download_provider
 
 from .base import BaseDataset
+
+
+def __getattr__(name):
+    if name in ("BIDSPath", "get_entity_vals", "read_raw_bids"):
+        import mne_bids
+
+        val = getattr(mne_bids, name)
+        globals()[name] = val
+        return val
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 _manifest_link = "https://osf.io/download/p5av2/"
@@ -322,6 +331,8 @@ class _Dreyer2023Base(BaseDataset):
         # Get the file path for the subject's data
         files_path = self.data_path(subject)
         runs = {}
+        from mne_bids import BIDSPath, read_raw_bids
+
         for run_id, file in enumerate(files_path):
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
@@ -424,6 +435,15 @@ class _Dreyer2023Base(BaseDataset):
                 )
 
         # Download and extract the dataset from OSF
+        g = globals()
+        if "BIDSPath" not in g or "get_entity_vals" not in g:
+            from mne_bids import BIDSPath as _BIDSPath, get_entity_vals as _get_entity_vals
+
+            g.setdefault("BIDSPath", _BIDSPath)
+            g.setdefault("get_entity_vals", _get_entity_vals)
+        BIDSPath = g["BIDSPath"]
+        get_entity_vals = g["get_entity_vals"]
+
         dataset_path = self.download_by_subject(
             subject=subject, path=path, force_update=force_update
         )

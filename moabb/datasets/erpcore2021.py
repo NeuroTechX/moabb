@@ -16,7 +16,6 @@ import mne
 import numpy as np
 import pandas as pd
 import tqdm
-from mne_bids import BIDSPath, read_raw_bids
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
@@ -228,6 +227,8 @@ class ErpCore2021(BaseDataset):
             warnings.simplefilter("ignore")
 
             # Read the subject's raw data and set the montage
+            from mne_bids import read_raw_bids
+
             raw = read_raw_bids(bids_path=file_path, verbose=False)
             raw.load_data()  # Preload the data because read_raw_bids does not load it
             raw = raw.set_montage("colin27_1020", match_case=False)
@@ -283,6 +284,8 @@ class ErpCore2021(BaseDataset):
         )
 
         # Create a BIDSPath object for the subject
+        from mne_bids import BIDSPath
+
         bids_path = BIDSPath(
             subject=f"{subject:03d}",
             task=task,

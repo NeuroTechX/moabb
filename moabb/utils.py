@@ -14,8 +14,6 @@ import warnings
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import filelock
-import h5py
 import numpy as np
 from docstring_inheritance import NumpyDocstringInheritanceInitMeta
 from mne import get_config, set_config
@@ -28,6 +26,16 @@ if TYPE_CHECKING:
     from moabb.paradigms.base import BaseProcessing
 
 log = logging.getLogger(__name__)
+
+
+def __getattr__(name):
+    if name in ("filelock", "h5py"):
+        import importlib
+
+        mod = importlib.import_module(name)
+        globals()[name] = mod
+        return mod
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 def _handle_deprecated_kwargs(kwargs, renames, class_name):
@@ -443,6 +451,9 @@ def _open_lock_hdf5(path, *args, **kwargs):
         ``h5py.File``.
 
     """
+    import filelock
+    import h5py
+
     lock_timeout = float(os.environ.get("MOABB_HDF5_LOCK_TIMEOUT", "30"))
     allow_unlocked = os.environ.get("MOABB_ALLOW_UNLOCKED_HDF5", "").lower() in (
         "1",

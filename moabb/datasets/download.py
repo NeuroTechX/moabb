@@ -17,14 +17,10 @@ import warnings
 from pathlib import Path, PurePosixPath
 from urllib.parse import urlparse
 
-import nemar
 import pandas as pd
 import requests
-from httpx import TransportError
 from mne import get_config, set_config
-from mne.datasets.utils import _get_path
 from mne.utils import _url_to_local_path, verbose, warn
-from nemar.errors import NemarError, SelectionError
 from pooch import file_hash, retrieve
 from pooch.downloaders import choose_downloader
 from pooch.utils import unique_file_name
@@ -32,6 +28,35 @@ from requests.exceptions import HTTPError
 
 
 logger = logging.getLogger(__name__)
+
+
+def _nemar_deps():
+    g = globals()
+    if "nemar" not in g or "NemarError" not in g:
+        import nemar as _nemar
+        from httpx import TransportError as _TransportError
+        from nemar.errors import (
+            NemarError as _NemarError,
+            SelectionError as _SelectionError,
+        )
+
+        g.setdefault("nemar", _nemar)
+        g.setdefault("NemarError", _NemarError)
+        g.setdefault("SelectionError", _SelectionError)
+        g.setdefault("TransportError", _TransportError)
+    return g["nemar"], g["NemarError"], g["SelectionError"], g["TransportError"]
+
+
+def __getattr__(name):
+    if name in ("nemar", "NemarError", "SelectionError", "TransportError"):
+        _nemar_deps()
+        return globals()[name]
+    if name == "_get_path":
+        from mne.datasets.utils import _get_path as _mne_get_path
+
+        globals()["_get_path"] = _mne_get_path
+        return _mne_get_path
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 #: Local directory mirroring the upstream files of the dataset whose loader is
 #: currently executing (its NEMAR sourcedata store), or None. Set by
@@ -295,7 +320,12 @@ def get_dataset_path(sign, path):
             if not path_def.is_dir():
                 path_def.mkdir(parents=True)
             set_config("MNE_DATA", str(Path.home() / "mne_data"))
-    return _get_path(path, key, sign)
+    get_path_fn = globals().get("_get_path")
+    if get_path_fn is None:
+        from mne.datasets.utils import _get_path as get_path_fn
+
+        globals()["_get_path"] = get_path_fn
+    return get_path_fn(path, key, sign)
 
 
 @verbose
@@ -626,8 +656,9 @@ def nemar_dl(
     # nemar-py re-fetch the requested subject. Do not delete ``target_dir``
     # here: it is the shared BIDS root, and ``download()`` calls this once per
     # subject, so removing it would wipe subjects fetched in earlier iterations.
+    nemar_mod, NemarError, _SelectionError, TransportError = _nemar_deps()
     try:
-        nemar.download(
+        nemar_mod.download(
             dataset=nemar_id,
             target_dir=target_dir,
             subject=subject,
@@ -668,8 +699,9 @@ def _sourcedata_files_for_subject(target_dir, nemar_id, subject, force_update):
     """
     provenance = target_dir / SOURCEDATA_PROVENANCE
     if force_update or not provenance.is_file():
+        nemar_mod, NemarError, SelectionError, TransportError = _nemar_deps()
         try:
-            nemar.download(
+            nemar_mod.download(
                 dataset=nemar_id,
                 target_dir=target_dir,
                 scope="sourcedata",
@@ -1142,8 +1174,9 @@ def nemar_sourcedata_dl(
         f"NEMAR dataset {nemar_id} published no {what} -- the original "
         "distribution is not mirrored there."
     )
+    nemar_mod, NemarError, SelectionError, TransportError = _nemar_deps()
     try:
-        nemar.download(
+        nemar_mod.download(
             dataset=nemar_id,
             target_dir=target_dir,
             scope="sourcedata",

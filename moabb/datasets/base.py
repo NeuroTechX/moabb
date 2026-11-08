@@ -15,11 +15,9 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, Union
 from urllib.parse import quote
 
-import mne_bids
 import numpy as np
 import pandas as pd
 from joblib import Parallel, delayed
-from mne_bids import events_file_to_annotation_kwargs
 
 from moabb.datasets.bids_interface import (
     _FORMAT_EXTENSION_MAP,
@@ -89,6 +87,10 @@ _summary_table = pd.concat(
         _summary_table_rstate,
     ]
 )
+_summary_table_dict = {
+    idx: {col: val for col, val in zip(_summary_table.columns, row) if pd.notna(val)}
+    for idx, row in zip(_summary_table.index, _summary_table.to_numpy())
+}
 
 
 @dataclass
@@ -274,10 +276,11 @@ def _transfer_unit(key: str, value: str):
     return key, value
 
 
-def format_row(row: pd.Series, horizontal: bool = True):
+def format_row(row: pd.Series | dict, horizontal: bool = True):
     tab_prefix = " " * 8
     tab_sep = "="
-    row = row[~row.isna()]
+    if not isinstance(row, dict):
+        row = row[~row.isna()]
 
     def to_int(x):
         try:
@@ -542,12 +545,12 @@ class MetaclassDataset(abc.ABCMeta):
         doc = attrs.get("__doc__", "") or ""
         insert_blocks = []
 
-        try:
-            row = _summary_table.loc[name]
-            row_str, row = format_row(row, horizontal=False)
+        row = _summary_table_dict.get(name)
+        if row is not None:
+            row_str, _ = format_row(row, horizontal=False)
             insert_blocks.append(row_str)
-            attrs["_summary_table"] = row.to_dict()
-        except KeyError:
+            attrs["_summary_table"] = dict(row)
+        else:
             log.debug(
                 f"No description found for dataset {name}. "
                 f"Complete the appropriate moabb/datasets/summary_*.csv file"
@@ -1333,6 +1336,8 @@ class BaseDataset(metaclass=MetaclassDataset):
             for key, value in (self.nemar_bids_filters or {}).items():
                 if key in plural_filters:
                     search_params[plural_filters[key]] = value
+            import mne_bids
+
             bids_paths = mne_bids.find_matching_paths(**search_params)
             if not bids_paths:
                 raise NemarDownloadError(
@@ -1795,6 +1800,8 @@ class BaseBIDSDataset(BaseDataset):
     def bids_paths(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ) -> list[mne_bids.BIDSPath]:
+        import mne_bids
+
         root = self._download_subject(subject, path, force_update, update_path, verbose)
         return mne_bids.find_matching_paths(
             root=root, ignore_json=True, **self._get_path_search_params(subject)
@@ -1807,6 +1814,8 @@ class BaseBIDSDataset(BaseDataset):
         return [bids_path.fpath for bids_path in bids_paths]
 
     def _get_single_subject_data(self, subject):
+        import mne_bids
+
         bids_paths = self.bids_paths(subject)
         data = {}
         for bids_path in bids_paths:
@@ -1874,6 +1883,8 @@ class BaseBIDSDataset(BaseDataset):
             return None
 
         # Use official mne-bids API — handles n/a filtering, stim_type compat, etc.
+        from mne_bids import events_file_to_annotation_kwargs
+
         annot_kwargs = events_file_to_annotation_kwargs(events_fname)
 
         # Build DataFrame from API output
@@ -1950,6 +1961,8 @@ class LocalBIDSDataset(BaseBIDSDataset):
         unit_factor=1e6,
         return_all_modalities=False,
     ):
+        import mne_bids
+
         self.bids_root = bids_root
         self.path_search_params = path_search_params
         self.read_extra_params = read_extra_params

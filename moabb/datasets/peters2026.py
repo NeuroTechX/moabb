@@ -9,7 +9,6 @@ import warnings
 from pathlib import Path
 
 import mne
-import mne_bids
 import numpy as np
 import pandas as pd
 from mne.channels import get_builtin_montages, make_standard_montage
@@ -596,6 +595,8 @@ class Peters2026(OpenNeuroMirrorMixin, BaseBIDSDataset):
         )
 
     def _read_run(self, bids_path):
+        import mne_bids
+
         with warnings.catch_warnings():
             # participants.tsv has release-specific columns (devices_used, ...).
             warnings.filterwarnings("ignore", "Unable to map the following column")
