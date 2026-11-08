@@ -362,7 +362,9 @@ class BNCI2014_001(MNEBNCI):
                 "Pz",
             ],
             line_freq=50.0,
-            auxiliary_channels=AuxiliaryChannelsMetadata(has_eog=False, has_emg=False),
+            auxiliary_channels=AuxiliaryChannelsMetadata(
+                has_eog=True, eog_channels=3, has_emg=False
+            ),
             cap_manufacturer="EASYCAP GmbH",
             impedance_threshold_kohm=None,
         ),
