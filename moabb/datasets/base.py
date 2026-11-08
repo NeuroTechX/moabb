@@ -933,16 +933,25 @@ class BaseDataset(metaclass=MetaclassDataset):
             if subject not in self.subject_list:
                 raise ValueError("Invalid subject {:d} given".format(subject))
 
-        self._prefetch_nemar_sourcedata(
-            self._subjects_without_cache(subjects, cache_config, process_pipeline)
-        )
-
-        results = Parallel(n_jobs=n_jobs)(
-            delayed(self._get_selected_subject_data)(
-                subject, cache_config, process_pipeline, str_sessions, pat
+        if self.nemar_id is not None:
+            self._prefetch_nemar_sourcedata(
+                self._subjects_without_cache(subjects, cache_config, process_pipeline)
             )
-            for subject in subjects
-        )
+
+        if n_jobs in (1, None):
+            results = [
+                self._get_selected_subject_data(
+                    subject, cache_config, process_pipeline, str_sessions, pat
+                )
+                for subject in subjects
+            ]
+        else:
+            results = Parallel(n_jobs=n_jobs)(
+                delayed(self._get_selected_subject_data)(
+                    subject, cache_config, process_pipeline, str_sessions, pat
+                )
+                for subject in subjects
+            )
         data = dict(zip(subjects, results))
         check_subject_names(data)
         check_session_names(data)

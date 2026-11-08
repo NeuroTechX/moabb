@@ -7,13 +7,13 @@ import re
 import sys
 from collections import OrderedDict
 from copy import deepcopy
+from functools import lru_cache
 from glob import glob
 from importlib.resources import as_file, files
 
 import numpy as np
 import scipy.signal as scp
 import yaml
-from mne.utils import _open_lock
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import make_pipeline
 
@@ -21,6 +21,7 @@ from moabb.analysis.results import get_string_rep
 
 
 log = logging.getLogger(__name__)
+_YAML_LOADER = getattr(yaml, "CFullLoader", yaml.FullLoader)
 
 
 def create_pipeline_from_config(config):
@@ -194,8 +195,8 @@ def parse_pipelines_from_directory(dir_path):
 
     pipeline_configs = []
     for yaml_file in sorted(yaml_files):
-        with _open_lock(yaml_file, "r") as _file:
-            config_dict = yaml.load(_file.read(), Loader=yaml.FullLoader)
+        with open(yaml_file, "r") as _file:
+            config_dict = yaml.load(_file.read(), Loader=_YAML_LOADER)
             ppl = create_pipeline_from_config(config_dict["pipeline"])
             pipeline_config = {
                 "paradigms": config_dict["paradigms"],
@@ -387,6 +388,56 @@ class FilterBank(BaseEstimator, TransformerMixin):
         )
 
 
+@lru_cache(maxsize=256)
+def _design_filterbank_coeffs(sfreq_half, idx_fb, min_freq, max_freq):
+    """Cacheable filter coefficient design for filterbank."""
+    top = 100 if max_freq < 40 else 115
+    if top >= sfreq_half:
+        top = sfreq_half - 10
+
+    diff = max_freq - min_freq
+    pass_low = min_freq - 2 + idx_fb * diff
+    if min_freq - 4 > 0:
+        stop_low = (
+            min_freq - 4 + idx_fb * (diff - 2)
+            if idx_fb < 3
+            else min_freq - 4 + idx_fb * diff
+        )
+    else:
+        stop_low = 2 + idx_fb * (diff - 2) if idx_fb < 3 else 2 + idx_fb * diff
+
+    Wp = [pass_low / sfreq_half, top / sfreq_half]
+    Ws = [stop_low / sfreq_half, (top + 7) / sfreq_half]
+
+    Wp[0] = max(0.01, min(Wp[0], Wp[1] - 0.01))
+    Ws[0] = max(0.001, min(Ws[0], Wp[0] - 0.001))
+    Wp[1] = min(0.99, max(Wp[1], Wp[0] + 0.01))
+    Ws[1] = min(0.999, max(Ws[1], Wp[1] + 0.001))
+
+    try:
+        N, Wn = scp.cheb1ord(Wp, Ws, 3, 40)
+    except ValueError as e:
+        log.warning(
+            f"Filter design failed with parameters Wp={Wp}, Ws={Ws}: {e}. Using relaxed parameters."
+        )
+        Wp_relaxed = [min_freq / sfreq_half * 0.95, min(0.95, (top - 2) / sfreq_half)]
+        Ws_relaxed = [min_freq / sfreq_half * 0.85, min(0.99, top / sfreq_half)]
+        try:
+            N, Wn = scp.cheb1ord(Wp_relaxed, Ws_relaxed, 5, 30)
+        except ValueError:
+            log.warning("Filter still fails, using butterworth instead")
+            B, A = scp.butter(
+                4,
+                [min_freq / sfreq_half * 0.95, min(0.95, (top - 2) / sfreq_half)],
+                btype="bandpass",
+            )
+            return ("ba", B, A)
+
+    N = min(N, 10)
+    sos = scp.cheby1(N, 0.5, Wn, btype="bandpass", output="sos")
+    return ("sos", sos)
+
+
 def filterbank(X, sfreq, idx_fb, peaks):
     """Filter bank design for decomposing EEG data into sub-band components
     [1]_
@@ -420,16 +471,11 @@ def filterbank(X, sfreq, idx_fb, peaks):
     (https://github.com/mnakanishi/TRCA-SSVEP).
     """
     if idx_fb >= len(peaks):
-        raise (
-            ValueError("idx_fb should be less than number of SSVEP stimulus frequency")
-        )
+        raise ValueError("idx_fb should be less than number of SSVEP stimulus frequency")
 
-    # Calibration data comes in batches of trials
     if X.ndim == 3:
         num_chans = X.shape[1]
         num_trials = X.shape[0]
-
-    # Testdata come with only one trial at the time
     elif X.ndim == 2:
         num_chans = X.shape[0]
         num_trials = 1
@@ -437,90 +483,22 @@ def filterbank(X, sfreq, idx_fb, peaks):
         log.error("Invalid input shape")
         raise ValueError("Input data must be 2D or 3D array")
 
-    sfreq = sfreq / 2
-
-    peaks = np.sort(peaks)
-    min_freq = np.min(peaks)
-    max_freq = np.max(peaks)
-
-    if max_freq < 40:
-        top = 100
-    else:
-        top = 115
-    # Check for Nyquist
-    if top >= sfreq:
-        top = sfreq - 10
-
-    # Lowcut frequencies for the pass band (depends on the frequencies of SSVEP)
-    # No more than 3dB loss in the passband
-    diff = max_freq - min_freq
-    passband = [min_freq - 2 + x * diff for x in range(7)]
-    # passband = [peaks[i] - 1 for i in range(len(peaks))]
-
-    # At least 40db attenuation in the stopband
-    if min_freq - 4 > 0:
-        stopband = [
-            min_freq - 4 + x * (diff - 2) if x < 3 else min_freq - 4 + x * diff
-            for x in range(7)
-        ]
-    else:
-        stopband = [2 + x * (diff - 2) if x < 3 else 2 + x * diff for x in range(7)]
-    # stopband = [peaks[i] - 2 for i in range(len(peaks))]
-
-    Wp = [passband[idx_fb] / sfreq, top / sfreq]
-    Ws = [stopband[idx_fb] / sfreq, (top + 7) / sfreq]
-
-    # Ensure valid filter parameters for cheb1ord
-    # For bandpass: Ws[0] < Wp[0] < Wp[1] < Ws[1], all in (0, 1)
-    Wp[0] = max(0.01, min(Wp[0], Wp[1] - 0.01))  # Ensure Wp[0] < Wp[1]
-    Ws[0] = max(0.001, min(Ws[0], Wp[0] - 0.001))  # Ensure Ws[0] < Wp[0]
-    Wp[1] = min(0.99, max(Wp[1], Wp[0] + 0.01))  # Ensure Wp[1] > Wp[0]
-    Ws[1] = min(0.999, max(Ws[1], Wp[1] + 0.001))  # Ensure Ws[1] > Wp[1]
-
-    try:
-        N, Wn = scp.cheb1ord(Wp, Ws, 3, 40)  # Chebyshev type I filter order selection.
-    except ValueError as e:
-        log.warning(
-            f"Filter design failed with parameters Wp={Wp}, Ws={Ws}: {e}. Using relaxed parameters."
-        )
-        # Relax the filter specifications and try again
-        Wp_relaxed = [min_freq / sfreq * 0.95, min(0.95, (top - 2) / sfreq)]
-        Ws_relaxed = [min_freq / sfreq * 0.85, min(0.99, top / sfreq)]
+    coeffs = _design_filterbank_coeffs(
+        float(sfreq) / 2.0, int(idx_fb), float(np.min(peaks)), float(np.max(peaks))
+    )
+    if coeffs[0] == "ba":
+        _, B, A = coeffs
         try:
-            N, Wn = scp.cheb1ord(
-                Wp_relaxed, Ws_relaxed, 5, 30
-            )  # Relax from 3dB/40dB to 5dB/30dB
-        except ValueError:
-            log.warning("Filter still fails, using butterworth instead")
-            B, A = scp.butter(
-                4,
-                [min_freq / sfreq * 0.95, min(0.95, (top - 2) / sfreq)],
-                btype="bandpass",
-            )
-            try:
-                if num_trials == 1 and X.ndim == 2:
-                    return scp.filtfilt(
-                        B,
-                        A,
-                        X,
-                        axis=-1,
-                        padtype="odd",
-                        padlen=3 * (max(len(B), len(A)) - 1),
-                    )
-                return scp.filtfilt(B, A, X, axis=-1)
-            except Exception as e2:
-                log.error(f"Butterworth filter failed: {e2}")
-                return X.copy()
-        Wp = Wp_relaxed
-        Ws = Ws_relaxed
+            if num_trials == 1 and X.ndim == 2:
+                return scp.filtfilt(
+                    B, A, X, axis=-1, padtype="odd", padlen=3 * (max(len(B), len(A)) - 1)
+                )
+            return scp.filtfilt(B, A, X, axis=-1)
+        except Exception as e2:
+            log.error(f"Butterworth filter failed: {e2}")
+            return X.copy()
 
-    # Cap filter order to avoid numerical instability
-    N = min(N, 10)
-
-    # Use SOS (second-order sections) form for numerical stability
-    # Transfer function (B, A) form is numerically unstable for high-order filters
-    sos = scp.cheby1(N, 0.5, Wn, btype="bandpass", output="sos")
-
+    _, sos = coeffs
     try:
         return scp.sosfiltfilt(sos, X, axis=-1)
     except Exception as e:

@@ -6,6 +6,7 @@ from typing import Optional, Union
 from warnings import warn
 
 import numpy as np
+import pandas as pd
 from sklearn.model_selection import (
     BaseCrossValidator,
     GroupShuffleSplit,
@@ -293,12 +294,16 @@ class WithinSessionSplitter(BaseCrossValidator):
         return inner_splits * num_sessions_subjects
 
     def split(self, y, metadata):
-        all_index = metadata.index.values
+        all_index = metadata.index.to_numpy()
+        subject_col = metadata["subject"].to_numpy()
+        session_col = metadata["session"].to_numpy()
         self._last_split_metadata = None
+        needs_meta = (self.groups is not None and self._cv_uses_groups) or any(
+            callable(v) for v in self._cv_kwargs.values()
+        )
 
         # Shuffle subjects if required
-        # Convert to numpy array to avoid ArrowStringArray shuffle warning
-        subjects = np.array(metadata["subject"].unique())
+        subjects = np.array(pd.unique(subject_col), copy=True)
         if self.shuffle:
             # Use a separate RNG for shuffling to avoid advancing the
             # per-session RNG state, which would make folds depend on the
@@ -307,23 +312,25 @@ class WithinSessionSplitter(BaseCrossValidator):
             shuffle_rng.shuffle(subjects)
 
         for subject in subjects:
-            subject_mask = metadata["subject"] == subject
+            subject_mask = subject_col == subject
             subject_indices = all_index[subject_mask]
-            subject_metadata = metadata[subject_mask]
+            subject_sessions = session_col[subject_mask]
             y_subject = y[subject_mask]
+            subject_metadata = metadata[subject_mask] if needs_meta else None
 
             # Shuffle sessions if required
-            # Convert to numpy array to avoid ArrowStringArray shuffle warning
-            sessions = np.array(subject_metadata["session"].unique())
+            sessions = np.array(pd.unique(subject_sessions), copy=True)
 
             if self.shuffle:
                 shuffle_rng.shuffle(sessions)
 
             for session in sessions:
-                session_mask = subject_metadata["session"] == session
+                session_mask = subject_sessions == session
                 indices = subject_indices[session_mask]
                 y_session = y_subject[session_mask]
-                partition_metadata = subject_metadata[session_mask]
+                partition_metadata = (
+                    subject_metadata[session_mask] if needs_meta else None
+                )
 
                 # Create a fresh, independent RNG per session so that fold
                 # splits are deterministic and independent of how many
@@ -334,9 +341,9 @@ class WithinSessionSplitter(BaseCrossValidator):
 
                 # Instantiate a new internal splitter for each session, resolving
                 # any callable cv_kwargs against this partition's metadata.
-                splitter = self.cv_class(
-                    **_materialize_cv_kwargs(cv_kwargs, partition_metadata)
-                )
+                if needs_meta:
+                    cv_kwargs = _materialize_cv_kwargs(cv_kwargs, partition_metadata)
+                splitter = self.cv_class(**cv_kwargs)
 
                 # Forward groups only to a group-aware cv_class when requested;
                 # otherwise reproduce the legacy StratifiedKFold-on-labels split.
@@ -495,12 +502,15 @@ class WithinSubjectSplitter(BaseCrossValidator):
         return inner_splits * num_subjects
 
     def split(self, y, metadata):
-        all_index = metadata.index.values
+        all_index = metadata.index.to_numpy()
+        subject_col = metadata["subject"].to_numpy()
         self._last_split_metadata = None
+        needs_meta = (self.groups is not None and self._cv_uses_groups) or any(
+            callable(v) for v in self._cv_kwargs.values()
+        )
 
         # Shuffle subjects if required
-        # Convert to numpy array to avoid ArrowStringArray shuffle warning
-        subjects = np.array(metadata["subject"].unique())
+        subjects = np.array(pd.unique(subject_col), copy=True)
         # Reseed the RNG at each split() call so repeated calls are
         # reproducible. A single RNG is shared across subjects (instead of a
         # fresh per-subject one) to keep the fold sequence identical to the
@@ -510,15 +520,19 @@ class WithinSubjectSplitter(BaseCrossValidator):
             rng.shuffle(subjects)
 
         for subject in subjects:
-            subject_mask = metadata["subject"] == subject
+            subject_mask = subject_col == subject
             subject_indices = all_index[subject_mask]
-            subject_metadata = metadata[subject_mask]
+            subject_metadata = metadata[subject_mask] if needs_meta else None
             y_subject = y[subject_mask]
 
             # Instantiate a new internal splitter for each subject, resolving any
             # callable cv_kwargs against this subject's metadata slice and
             # sharing the reseeded RNG (reproducible across subjects, per #1107).
-            cv_kwargs = _materialize_cv_kwargs(self._cv_kwargs, subject_metadata)
+            cv_kwargs = (
+                _materialize_cv_kwargs(self._cv_kwargs, subject_metadata)
+                if needs_meta
+                else dict(self._cv_kwargs)
+            )
             if self.shuffle and self._random_state_capability is True:
                 cv_kwargs["random_state"] = rng
             splitter = self.cv_class(**cv_kwargs)
@@ -703,10 +717,8 @@ class CrossSessionSplitter(BaseCrossValidator):
 
     def split(self, y, metadata):
         # here, I am getting the index across all the subject
-        all_index = metadata.index.values
+        all_index = metadata.index.to_numpy()
         self._last_split_metadata = None
-        # I check how many subjects are here:
-        subjects = metadata["subject"].unique()
 
         # To make sure that when I shuffle the subject, I shuffle the same way
         # the session when the object is created
@@ -722,19 +734,20 @@ class CrossSessionSplitter(BaseCrossValidator):
                 yield all_index[train_idx], all_index[test_idx]
             return
 
+        subject_col = metadata["subject"].to_numpy()
+        session_col = metadata["session"].to_numpy()
+        subjects = pd.unique(subject_col)
+        needs_meta = (self.groups != "session" and self._cv_uses_groups) or any(
+            callable(v) for v in cv_kwargs.values()
+        )
+
         # For each subject I am creating the mask to select the subject metainformation.
         for subject in subjects:
-            # Creating the subject_mask
-            subject_mask = metadata["subject"] == subject
-            # from all the index, I am getting the trial index
+            subject_mask = subject_col == subject
             subject_indices = all_index[subject_mask]
-            # Here, I am getting the metainformation to use the column session
-            subject_metadata = metadata[subject_mask]
-            # getting the label at subject level
+            subject_sessions = session_col[subject_mask]
             y_subject = y[subject_mask]
-            # check the number of sessions and check how many sessions we
-            # have!
-            sessions = subject_metadata["session"].unique()
+            sessions = pd.unique(subject_sessions)
 
             if len(sessions) <= 1:
                 log.info(
@@ -743,9 +756,13 @@ class CrossSessionSplitter(BaseCrossValidator):
                 )
                 continue  # Skip subjects with only one session
 
-            # by default, I am using LeaveOneGroupOut
+            subject_metadata = metadata[subject_mask] if needs_meta else None
             splitter = self.cv_class(
-                **_materialize_cv_kwargs(cv_kwargs, subject_metadata)
+                **(
+                    _materialize_cv_kwargs(cv_kwargs, subject_metadata)
+                    if needs_meta
+                    else cv_kwargs
+                )
             )
 
             # Only pass groups to cv_classes that actually use them
@@ -753,7 +770,11 @@ class CrossSessionSplitter(BaseCrossValidator):
             # "The groups parameter is ignored" warning from e.g. TimeSeriesSplit.
             split_kwargs = {"X": subject_indices, "y": y_subject}
             if self._cv_uses_groups:
-                split_kwargs["groups"] = _resolve_groups(self.groups, subject_metadata)
+                split_kwargs["groups"] = (
+                    _resolve_groups(self.groups, subject_metadata)
+                    if needs_meta
+                    else subject_sessions
+                )
 
             for train_session_idx, test_session_idx in splitter.split(**split_kwargs):
                 self._last_split_metadata = _splitter_metadata(splitter)
@@ -904,7 +925,13 @@ class CrossSubjectSplitter(BaseCrossValidator):
 
     def split(self, y, metadata):
         # here, I am getting the index across all the subject
-        all_index = metadata.index.values
+        all_index = metadata.index.to_numpy()
+        subject_col = (
+            metadata["subject"].to_numpy() if 0 < self.calibration_size < 1 else None
+        )
+        session_col = (
+            metadata["session"].to_numpy() if 0 < self.calibration_size < 1 else None
+        )
 
         self._last_split_metadata = None
         if _is_metadata_splitter(self.cv_class):
@@ -937,9 +964,8 @@ class CrossSubjectSplitter(BaseCrossValidator):
                 if self.calibration_size == 1:
                     calib_idx = test_idx = target_idx
                 else:
-                    target_metadata = metadata.loc[target_idx, ["subject", "session"]]
-                    target_subjects = target_metadata["subject"].to_numpy()
-                    target_sessions = target_metadata["session"].to_numpy()
+                    target_subjects = subject_col[test_session_idx]
+                    target_sessions = session_col[test_session_idx]
                     calibration_mask = np.zeros(len(target_idx), dtype=bool)
                     for subject in np.unique(target_subjects):
                         for session in np.unique(
@@ -1069,10 +1095,12 @@ class CrossDatasetSplitter(BaseCrossValidator):
 
     def split(self, y, metadata):
         # here, I am getting the index across all entries
-        all_index = metadata.index.values
+        all_index = metadata.index.to_numpy()
         groups = self._resolve_checked_groups(metadata)
         splitter = self.cv_class(**_materialize_cv_kwargs(self._cv_kwargs, metadata))
         self._last_split_metadata = None
+        unique_groups, group_codes = np.unique(groups, return_inverse=True)
+        n_groups = len(unique_groups)
 
         # Only pass groups to cv_classes that actually use them
         split_kwargs = {"X": all_index, "y": y}
@@ -1080,8 +1108,12 @@ class CrossDatasetSplitter(BaseCrossValidator):
             split_kwargs["groups"] = groups
 
         for train_group_idx, test_group_idx in splitter.split(**split_kwargs):
-            train_groups = np.unique(groups[train_group_idx]).tolist()
-            test_groups = np.unique(groups[test_group_idx]).tolist()
+            train_groups = unique_groups[
+                np.bincount(group_codes[train_group_idx], minlength=n_groups) > 0
+            ].tolist()
+            test_groups = unique_groups[
+                np.bincount(group_codes[test_group_idx], minlength=n_groups) > 0
+            ].tolist()
 
             split_metadata = {
                 "train_datasets": tuple(train_groups),
@@ -1371,6 +1403,7 @@ class LearningCurveSplitter(GroupsConsumerMixin, BaseCrossValidator):
 
             # Get subset indices for each data size step
             data_size_steps = self._get_data_size_subsets(y_train_full)
+            has_two_classes = False
 
             # Iterate over data size steps
             for di, subset_indices in enumerate(data_size_steps):
@@ -1382,15 +1415,19 @@ class LearningCurveSplitter(GroupsConsumerMixin, BaseCrossValidator):
                 train_idx = train_idx_full[subset_indices]
 
                 # Skip splits where training set collapses to single class
-                # (can happen with small data_size values or imbalanced datasets)
-                if len(np.unique(y[train_idx])) < 2:
-                    warn(
-                        "Skipping split: training set has only one class "
-                        f"(data_size={len(subset_indices)}, perm={perm_i + 1})",
-                        RuntimeWarning,
-                        stacklevel=2,
-                    )
-                    continue
+                # (can happen with small data_size values or imbalanced datasets;
+                # subsets are nested so once >= 2 classes are present, larger steps keep them)
+                if not has_two_classes:
+                    y_sub = y[train_idx]
+                    if len(y_sub) < 2 or np.all(y_sub == y_sub[0]):
+                        warn(
+                            "Skipping split: training set has only one class "
+                            f"(data_size={len(subset_indices)}, perm={perm_i + 1})",
+                            RuntimeWarning,
+                            stacklevel=2,
+                        )
+                        continue
+                    has_two_classes = True
 
                 # Update current split metadata
                 self._current_perm = perm_i + 1  # 1-indexed for user display
@@ -1475,23 +1512,24 @@ class PurgedEpochKFold(GroupsConsumerMixin, BaseCrossValidator):
         except TypeError as error:
             raise ValueError("recording_id must be hashable.") from error
         limits = np.iinfo(np.int64)
+        min_i64, max_i64 = int(limits.min), int(limits.max)
+        int_types = (int, np.integer)
+        bool_types = (bool, np.bool_)
         parsed = []
         for column in (values[:, 1], values[:, 2]):
             ints = []
-            for raw in column:
-                if isinstance(raw, (bool, np.bool_)) or not isinstance(
-                    raw, (int, np.integer)
-                ):
+            for raw in column.tolist():
+                if isinstance(raw, bool_types) or not isinstance(raw, int_types):
                     raise ValueError("Epoch sample coordinates must be integers.")
                 value = int(raw)
-                if not limits.min <= value <= limits.max:
+                if not min_i64 <= value <= max_i64:
                     raise ValueError("Epoch sample coordinate exceeds int64 range.")
                 ints.append(value)
             parsed.append(np.asarray(ints, dtype=np.int64))
         starts, lengths = parsed
         if np.any(lengths <= 0):
             raise ValueError("epoch_n_samples must be strictly positive.")
-        if np.any(starts > limits.max - lengths):
+        if np.any(starts > max_i64 - lengths):
             raise ValueError("Epoch interval stop exceeds int64 range.")
         return runs, starts, lengths
 
@@ -1517,6 +1555,7 @@ class PurgedEpochKFold(GroupsConsumerMixin, BaseCrossValidator):
         if y is not None and len(y) != n_samples:
             raise ValueError("y must contain one label per epoch.")
 
+        stops = starts + lengths
         # Chronological blocks within each recording. No class-balanced DP:
         # fail closed if a contiguous fold cannot support every class.
         run_blocks = []
@@ -1524,26 +1563,27 @@ class PurgedEpochKFold(GroupsConsumerMixin, BaseCrossValidator):
             indices = np.flatnonzero(runs == run)
             if len(indices) < self.n_splits:
                 raise ValueError("Each recording needs at least n_splits epochs.")
-            chronological = indices[np.lexsort((indices, starts[indices]))]
+            chronological = indices[np.argsort(starts[indices], kind="stable")]
             run_blocks.append((run, np.array_split(chronological, self.n_splits)))
 
+        n_required = len(np.unique(y)) if y is not None else 0
         for fold in range(self.n_splits):
             test = np.sort(np.concatenate([blocks[fold] for _, blocks in run_blocks]))
             testing = np.zeros(n_samples, dtype=bool)
             testing[test] = True
             purged = np.zeros(n_samples, dtype=bool)
-            for run, _ in run_blocks:
-                local_test = test[runs[test] == run]
-                local_train = np.flatnonzero((runs == run) & ~testing)
-                train_start = starts[local_train]
-                test_start = starts[local_test]
+            for _, blocks in run_blocks:
+                local_test = blocks[fold]
+                local_train = np.concatenate(
+                    [blocks[b] for b in range(self.n_splits) if b != fold]
+                )
                 purged[
                     local_train[
                         self._overlap_mask(
-                            train_start,
-                            train_start + lengths[local_train],
-                            test_start,
-                            test_start + lengths[local_test],
+                            starts[local_train],
+                            stops[local_train],
+                            starts[local_test],
+                            stops[local_test],
                         )
                     ]
                 ] = True
@@ -1551,9 +1591,9 @@ class PurgedEpochKFold(GroupsConsumerMixin, BaseCrossValidator):
             if not len(train) or not len(test):
                 raise ValueError("Purging removed an entire train or test fold.")
             if y is not None:
-                required = np.unique(y)
-                if len(np.unique(y[train])) != len(required) or len(
-                    np.unique(y[test])
-                ) != len(required):
+                if (
+                    len(np.unique(y[train])) != n_required
+                    or len(np.unique(y[test])) != n_required
+                ):
                     raise ValueError("A purged fold lacks a class in train or test.")
             yield train, test

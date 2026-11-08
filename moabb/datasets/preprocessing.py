@@ -1,4 +1,5 @@
 import logging
+import os
 from collections import OrderedDict
 from enum import Enum
 from operator import methodcaller
@@ -6,6 +7,7 @@ from typing import Dict, List, Tuple, Union
 
 import mne
 import numpy as np
+from mne._fiff.constants import FIFF
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import FunctionTransformer, Pipeline, _name_estimators
 from sklearn.utils import Bunch
@@ -418,21 +420,22 @@ def _generate_sliding_window_events(
     # segment 0 runs from sample 0 to 999, segment 1 from 1000 to 1499, etc.
     transitions = events[:, 0].astype(np.int64, copy=False)
     labels = events[:, 2].astype(np.int32, copy=False)
+    n_trans = len(transitions)
 
-    kept_onsets = []
-    kept_labels = []
+    vote_starts = onsets.astype(np.int64) + epoch_offset_samples
+    vote_ends = vote_starts + window_samples
+    start_segs = np.searchsorted(transitions, vote_starts, side="right") - 1
+    end_segs = np.searchsorted(transitions, vote_ends, side="left") - 1
 
-    for start in onsets:
-        # The voting window is shifted by the epoch offset so that
-        # label assignment matches the actual data extracted by epoching
-        # (which uses tmin + interval[0] as start).
-        vote_start = int(start + epoch_offset_samples)
-        vote_end = int(vote_start + window_samples)
+    out_labels = np.empty(len(onsets), dtype="int32")
+    same_seg_mask = (start_segs >= 0) & (start_segs == end_segs)
+    out_labels[same_seg_mask] = labels[start_segs[same_seg_mask]]
 
-        # Find which segment the window starts in using binary search.
-        # searchsorted(right) - 1 gives the index of the last transition
-        # that is <= vote_start.
-        seg_idx = np.searchsorted(transitions, vote_start, side="right") - 1
+    multi_indices = np.flatnonzero(~same_seg_mask)
+    for idx in multi_indices:
+        vote_start = int(vote_starts[idx])
+        vote_end = int(vote_ends[idx])
+        seg_idx = int(start_segs[idx])
         durations_by_label = {}
 
         if seg_idx < 0:
@@ -442,11 +445,11 @@ def _generate_sliding_window_events(
             seg_start = int(transitions[0])
             seg_idx = 0
         else:
-            seg_start = int(vote_start)
+            seg_start = vote_start
 
         # Walk through all segment boundaries that fall inside this window,
         # accumulating how many samples each label occupies.
-        while seg_idx + 1 < len(transitions) and transitions[seg_idx + 1] < vote_end:
+        while seg_idx + 1 < n_trans and transitions[seg_idx + 1] < vote_end:
             current_label = int(labels[seg_idx])
             next_transition = int(transitions[seg_idx + 1])
             durations_by_label[current_label] = durations_by_label.get(
@@ -464,18 +467,15 @@ def _generate_sliding_window_events(
         # Pick the label that occupies the most samples in this window.
         # On ties, favor task labels over rest so that boundary windows
         # are more likely to retain a meaningful class label.
-        label = max(
+        out_labels[idx] = max(
             durations_by_label,
             key=lambda lbl: (durations_by_label[lbl], lbl != _REST_LABEL),
         )
 
-        kept_onsets.append(start)
-        kept_labels.append(label)
-
-    events_new = np.zeros((len(kept_onsets), 3), dtype="int32")
-    if len(kept_onsets) > 0:
-        events_new[:, 0] = np.asarray(kept_onsets, dtype="int32")
-        events_new[:, 2] = np.asarray(kept_labels, dtype="int32")
+    events_new = np.zeros((len(onsets), 3), dtype="int32")
+    if len(onsets) > 0:
+        events_new[:, 0] = onsets
+        events_new[:, 2] = out_labels
 
     return events_new
 
@@ -565,11 +565,27 @@ class FixedTransformer(TransformerMixin, BaseEstimator):
 
 
 def _get_event_id_values(event_id):
-    event_id_values = list(event_id.values())
-    if len(event_id_values) == 0:
+    if not event_id:
         return []
-    arrays = [np.atleast_1d(val) for val in event_id_values]
-    return np.concatenate(arrays).tolist()
+    out = []
+    for val in event_id.values():
+        if isinstance(val, (list, tuple, np.ndarray)):
+            out.extend(int(x) for x in val)
+        else:
+            out.append(int(val))
+    return out
+
+
+def _get_stim_channels(info):
+    """Fast-path stim channel lookup avoiding MNE config file lock when possible."""
+    if "MNE_STIM_CHANNEL" in os.environ or "MNE_STIM_CHANNEL_1" in os.environ:
+        return mne.utils._get_stim_channel(None, info, raise_error=False)
+    chs = [ch["ch_name"] for ch in info["chs"] if ch["kind"] == FIFF.FIFFV_STIM_CH]
+    if chs:
+        return chs
+    if "STI 014" in info["ch_names"]:
+        return ["STI 014"]
+    return []
 
 
 def _format_event_names(event_id):
@@ -642,8 +658,9 @@ class SetRawAnnotations(FixedTransformer):
 
     def transform(self, raw, y=None):
         duration = self.interval[1] - self.interval[0]
-        offset = int(self.interval[0] * raw.info["sfreq"])
-        stim_channels = mne.utils._get_stim_channel(None, raw.info, raise_error=False)
+        sfreq = float(raw.info["sfreq"])
+        offset = int(self.interval[0] * sfreq)
+        stim_channels = _get_stim_channels(raw.info)
         has_annotation_extras = False
 
         # Check for annotation extras before events extraction potentially
@@ -654,7 +671,6 @@ class SetRawAnnotations(FixedTransformer):
         )
         if orig_extras is not None and any(orig_extras):
             has_annotation_extras = True
-            sfreq = raw.info["sfreq"]
             extras_by_sample = {}
             for ann, extra in zip(raw.annotations, orig_extras):
                 sample = int(round(ann["onset"] * sfreq)) + raw.first_samp
@@ -690,18 +706,19 @@ class SetRawAnnotations(FixedTransformer):
                 raw, event_id=self.event_id, verbose=False
             )
         else:
-            events = mne.find_events(raw, shortest_event=0, verbose=False)
+            events = mne.find_events(
+                raw, stim_channel=stim_channels, shortest_event=0, verbose=False
+            )
         events = _unsafe_pick_events(events, include=_get_event_id_values(self.event_id))
         events[:, 0] += offset
         if len(events) != 0:
-            annotations = mne.annotations_from_events(
-                events,
-                raw.info["sfreq"],
-                self.event_desc,
-                first_samp=raw.first_samp,
-                verbose=False,
+            onsets = (events[:, 0] - raw.first_samp) / sfreq
+            durations = np.full(len(events), duration, dtype=float)
+            descriptions = [self.event_desc[int(c)] for c in events[:, 2]]
+            orig_time = raw.annotations.orig_time if raw.annotations else None
+            annotations = mne.Annotations(
+                onsets, durations, descriptions, orig_time=orig_time
             )
-            annotations.set_durations(duration)
 
             # Transfer extras from original annotations to new ones
             if has_annotation_extras:
@@ -785,10 +802,12 @@ class RawToEvents(FixedTransformer):
         return " | ".join(parts)
 
     def _find_events(self, raw):
-        stim_channels = mne.utils._get_stim_channel(None, raw.info, raise_error=False)
+        stim_channels = _get_stim_channels(raw.info)
         if len(stim_channels) > 0:
             # returns empty array if none found
-            events = mne.find_events(raw, shortest_event=0, verbose=False)
+            events = mne.find_events(
+                raw, stim_channel=stim_channels, shortest_event=0, verbose=False
+            )
         else:
             try:
                 events, _ = mne.events_from_annotations(
@@ -910,6 +929,7 @@ class EventsToLabels(FixedTransformer):
     def __init__(self, event_id):
         super().__init__()
         self.event_id = event_id
+        self._inv_events = _compute_events_desc(event_id)
 
     def __repr__(self):
         return "EventsToLabels"
@@ -918,9 +938,8 @@ class EventsToLabels(FixedTransformer):
         return _format_event_names(self.event_id)
 
     def transform(self, events, y=None):
-        inv_events = _compute_events_desc(self.event_id)
-        labels = [inv_events[e] for e in events[:, -1]]
-        return labels
+        inv_events = self._inv_events
+        return [inv_events[e] for e in events[:, -1]]
 
 
 class RawToEpochs(FixedTransformer):
@@ -1020,6 +1039,17 @@ class RawToEpochs(FixedTransformer):
             )
             assert len(picks) == len(self.channels)
 
+        raw_annotations = raw._annotations
+        reject_by_annotation = bool(
+            self.reject_by_annotation
+            and raw_annotations is not None
+            and len(raw_annotations) > 0
+            and any(
+                str(desc).lower().startswith("bad")
+                for desc in raw_annotations.description
+            )
+        )
+
         epochs = mne.Epochs(
             raw,
             events,
@@ -1033,8 +1063,9 @@ class RawToEpochs(FixedTransformer):
             picks=picks,
             event_repeated="drop",
             on_missing="ignore",
-            reject_by_annotation=self.reject_by_annotation,
+            reject_by_annotation=reject_by_annotation,
         )
+        epochs.reject_by_annotation = self.reject_by_annotation
         return epochs
 
 

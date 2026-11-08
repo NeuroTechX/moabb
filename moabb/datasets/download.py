@@ -284,6 +284,28 @@ def _normalize_destination(url: str, root: Path) -> Path:
     return Path(_url_to_local_path(url, root))
 
 
+_MNE_CONFIG_CACHE = (None, None, {})
+
+
+def _fast_get_mne_config(key):
+    """Read MNE config key from os.environ or mtime-cached mne-python.json."""
+    global _MNE_CONFIG_CACHE
+    if key in os.environ:
+        return os.environ[key]
+    try:
+        from mne.utils.config import get_config_path
+
+        cfg_path = get_config_path()
+        st = os.stat(cfg_path)
+        cache_key = (cfg_path, st.st_mtime_ns, st.st_size)
+        if _MNE_CONFIG_CACHE[:2] != cache_key[:2] or _MNE_CONFIG_CACHE[1] != cache_key:
+            with open(cfg_path, encoding="utf-8") as f:
+                _MNE_CONFIG_CACHE = (cfg_path, cache_key, json.load(f))
+        return _MNE_CONFIG_CACHE[2].get(key)
+    except Exception:
+        return get_config(key)
+
+
 def get_dataset_path(sign, path):
     """Returns the dataset path allowing for changes in MNE_DATA config.
 
@@ -305,26 +327,30 @@ def get_dataset_path(sign, path):
         Location of where to look for the data storing location
     """
     sign = sign.upper()
-    key = "MNE_DATASETS_{:s}_PATH".format(sign)
-    if get_config(key) is None:
-        if get_config("MNE_DATA") is None:
-            path_def = Path.home() / "mne_data"
-            logger.info(
-                "MNE_DATA is not already configured. It will be set to "
-                "default location in the home directory - "
-                + str(path_def)
-                + "\nAll datasets will be downloaded to this location, if anything is "
-                "already downloaded, please move manually to this location"
-            )
-            if not path_def.is_dir():
-                path_def.mkdir(parents=True)
-            set_config("MNE_DATA", str(Path.home() / "mne_data"))
+    key = f"MNE_DATASETS_{sign}_PATH"
     get_path_fn = globals().get("_get_path")
     if get_path_fn is None:
         from mne.datasets.utils import _get_path as get_path_fn
 
         globals()["_get_path"] = get_path_fn
-    return get_path_fn(path, key, sign)
+    if path is not None:
+        return get_path_fn(path, key, sign)
+
+    resolved = _fast_get_mne_config(key) or _fast_get_mne_config("MNE_DATA")
+    if resolved is None:
+        path_def = Path.home() / "mne_data"
+        logger.info(
+            "MNE_DATA is not already configured. It will be set to "
+            "default location in the home directory - "
+            + str(path_def)
+            + "\nAll datasets will be downloaded to this location, if anything is "
+            "already downloaded, please move manually to this location"
+        )
+        if not path_def.is_dir():
+            path_def.mkdir(parents=True)
+        resolved = str(path_def)
+        set_config("MNE_DATA", resolved)
+    return get_path_fn(resolved, key, sign)
 
 
 @verbose

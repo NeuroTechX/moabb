@@ -523,64 +523,77 @@ def plot_critical_difference(
     # session identity. Otherwise a pipeline that is missing one session can
     # still produce a subject-level mean and silently enter the rank comparison
     # against pipelines evaluated on the complete subject record.
+    ds_col = selected["dataset"].to_numpy()
+    subj_col = selected["subject"].to_numpy()
+    pipe_col = selected["pipeline"].to_numpy()
+
     if "session" in selected.columns:
         if selected["session"].isna().any():
             raise ValueError("session must not contain missing values")
-        for (dataset, subject), subject_scores in selected.groupby(
-            ["dataset", "subject"], sort=False, observed=True
-        ):
-            session_sets = {
-                pipeline: frozenset(pipeline_scores["session"])
-                for pipeline, pipeline_scores in subject_scores.groupby(
-                    "pipeline", sort=False, observed=True
+        sess_col = selected["session"].to_numpy()
+        block_sessions: dict[tuple, dict] = {}
+        for d, s, p, sess in zip(ds_col, subj_col, pipe_col, sess_col):
+            p_map = block_sessions.setdefault((d, s), {})
+            s_set = p_map.get(p)
+            if s_set is None:
+                p_map[p] = {sess}
+            else:
+                s_set.add(sess)
+        for (dataset, subject), session_sets in block_sessions.items():
+            reference_pipeline, reference_sessions = next(iter(session_sets.items()))
+            mismatched = [
+                pipeline
+                for pipeline, sessions in session_sets.items()
+                if sessions != reference_sessions
+            ]
+            if mismatched:
+                raise ValueError(
+                    "Critical-difference analysis requires the same sessions "
+                    "for every pipeline within each dataset/subject block; "
+                    f"dataset={dataset!r}, subject={subject!r}, "
+                    f"{reference_pipeline!r} differs from {mismatched}."
                 )
-            }
-            if session_sets:
-                reference_pipeline, reference_sessions = next(iter(session_sets.items()))
-                mismatched = [
-                    pipeline
-                    for pipeline, sessions in session_sets.items()
-                    if sessions != reference_sessions
-                ]
-                if mismatched:
-                    raise ValueError(
-                        "Critical-difference analysis requires the same sessions "
-                        "for every pipeline within each dataset/subject block; "
-                        f"dataset={dataset!r}, subject={subject!r}, "
-                        f"{reference_pipeline!r} differs from {mismatched}."
-                    )
 
     if "permutation" in selected.columns:
         if selected["permutation"].isna().any():
             raise ValueError("permutation must not contain missing values")
-        repeat_group = ["dataset", "subject"]
+        perm_col = selected["permutation"].to_numpy()
+        block_perms: dict[tuple, dict] = {}
         if "session" in selected.columns:
-            repeat_group.append("session")
-        for block_key, block_scores in selected.groupby(
-            repeat_group, sort=False, observed=True
-        ):
-            permutation_sets = {
-                pipeline: frozenset(pipeline_scores["permutation"])
-                for pipeline, pipeline_scores in block_scores.groupby(
-                    "pipeline", sort=False, observed=True
+            sess_col = selected["session"].to_numpy()
+            for d, s, sess, p, perm in zip(
+                ds_col, subj_col, sess_col, pipe_col, perm_col
+            ):
+                p_map = block_perms.setdefault((d, s, sess), {})
+                p_set = p_map.get(p)
+                if p_set is None:
+                    p_map[p] = {perm}
+                else:
+                    p_set.add(perm)
+        else:
+            for d, s, p, perm in zip(ds_col, subj_col, pipe_col, perm_col):
+                p_map = block_perms.setdefault((d, s), {})
+                p_set = p_map.get(p)
+                if p_set is None:
+                    p_map[p] = {perm}
+                else:
+                    p_set.add(perm)
+        for block_key, permutation_sets in block_perms.items():
+            reference_pipeline, reference_permutations = next(
+                iter(permutation_sets.items())
+            )
+            mismatched = [
+                pipeline
+                for pipeline, permutations in permutation_sets.items()
+                if permutations != reference_permutations
+            ]
+            if mismatched:
+                raise ValueError(
+                    "Critical-difference analysis requires the same permutations "
+                    "for every pipeline within each repeated-measurement block; "
+                    f"block={block_key!r}, {reference_pipeline!r} differs from "
+                    f"{mismatched}."
                 )
-            }
-            if permutation_sets:
-                reference_pipeline, reference_permutations = next(
-                    iter(permutation_sets.items())
-                )
-                mismatched = [
-                    pipeline
-                    for pipeline, permutations in permutation_sets.items()
-                    if permutations != reference_permutations
-                ]
-                if mismatched:
-                    raise ValueError(
-                        "Critical-difference analysis requires the same permutations "
-                        "for every pipeline within each repeated-measurement block; "
-                        f"block={block_key!r}, {reference_pipeline!r} differs from "
-                        f"{mismatched}."
-                    )
 
     subject_group = ["pipeline", "dataset", "subject"]
     if "session" in selected.columns:
@@ -588,45 +601,46 @@ def plot_critical_difference(
         # average sessions. This makes the documented macro-average literal:
         # a session with more repeat rows cannot receive more subject-level weight.
         selected = (
-            selected.groupby(subject_group + ["session"], sort=False, observed=True)[
-                "score"
-            ]
+            selected.groupby(
+                subject_group + ["session"], sort=False, observed=True, as_index=False
+            )["score"]
             .mean()
-            .reset_index()
-            .groupby(subject_group, sort=False, observed=True)["score"]
+            .groupby(subject_group, sort=False, observed=True, as_index=False)["score"]
             .mean()
-            .reset_index()
         )
     else:
-        selected = (
-            selected.groupby(subject_group, sort=False, observed=True)["score"]
-            .mean()
-            .reset_index()
-        )
+        selected = selected.groupby(
+            subject_group, sort=False, observed=True, as_index=False
+        )["score"].mean()
 
     # A dataset-level block is comparable only if every pipeline was scored on
     # the same subjects. A rectangular dataset-by-pipeline matrix alone is not
     # enough: silently averaging different subject cohorts can bias the ranks.
-    for dataset, dataset_scores in selected.groupby("dataset", sort=False, observed=True):
-        subject_sets = {
-            pipeline: frozenset(pipeline_scores["subject"])
-            for pipeline, pipeline_scores in dataset_scores.groupby(
-                "pipeline", sort=False, observed=True
+    ds_subjs: dict[Any, dict] = {}
+    for d, p, s in zip(
+        selected["dataset"].to_numpy(),
+        selected["pipeline"].to_numpy(),
+        selected["subject"].to_numpy(),
+    ):
+        p_map = ds_subjs.setdefault(d, {})
+        s_set = p_map.get(p)
+        if s_set is None:
+            p_map[p] = {s}
+        else:
+            s_set.add(s)
+    for dataset, subject_sets in ds_subjs.items():
+        reference_pipeline, reference_subjects = next(iter(subject_sets.items()))
+        mismatched = [
+            pipeline
+            for pipeline, subjects in subject_sets.items()
+            if subjects != reference_subjects
+        ]
+        if mismatched:
+            raise ValueError(
+                "Critical-difference analysis requires the same subjects "
+                f"for every pipeline within dataset {dataset!r}; "
+                f"{reference_pipeline!r} differs from {mismatched}."
             )
-        }
-        if subject_sets:
-            reference_pipeline, reference_subjects = next(iter(subject_sets.items()))
-            mismatched = [
-                pipeline
-                for pipeline, subjects in subject_sets.items()
-                if subjects != reference_subjects
-            ]
-            if mismatched:
-                raise ValueError(
-                    "Critical-difference analysis requires the same subjects "
-                    f"for every pipeline within dataset {dataset!r}; "
-                    f"{reference_pipeline!r} differs from {mismatched}."
-                )
 
     scores = (
         selected.groupby(["dataset", "pipeline"], observed=True)["score"]
@@ -1247,16 +1261,15 @@ def emissions_summary(data, order_list=None, pipelines=None):
         return None
 
     # Calculate summary statistics per pipeline
-    summary = data.groupby("pipeline").apply(
-        lambda x: pd.Series(
-            {
-                "avg_score": x["score"].mean(),
-                "std_score": x["score"].std(),
-                "avg_emissions": x["carbon_emission"].mean(),
-                "total_emissions": x["carbon_emission"].sum(),
-                "n_evaluations": len(x),
-            }
-        )
+    grouped = data.groupby("pipeline", sort=True, observed=True)
+    summary = pd.DataFrame(
+        {
+            "avg_score": grouped["score"].mean(),
+            "std_score": grouped["score"].std(),
+            "avg_emissions": grouped["carbon_emission"].mean(),
+            "total_emissions": grouped["carbon_emission"].sum(),
+            "n_evaluations": grouped["score"].count().astype(float),
+        }
     )
 
     # Calculate efficiency metrics
@@ -1370,9 +1383,7 @@ def paired_plot(data, alg1, alg2, chance_level=None):
     min_chance *= 100
     _, theoretical, adjusted = _to_percentage(data, theoretical, adjusted)
 
-    data = data.pivot_table(
-        values="score", columns="pipeline", index=["subject", "dataset"]
-    )
+    data = data.pivot(index=["subject", "dataset"], columns="pipeline", values="score")
     data = data.reset_index()
     data[alg1] = data[alg1] * 100
     data[alg2] = data[alg2] * 100
@@ -1426,20 +1437,22 @@ def summary_plot(sig_df, effect_df, p_threshold=0.05, simplify=True):
         else:
             effect_df.columns = effect_df.columns.map(_simplify_names)
             sig_df.columns = sig_df.columns.map(_simplify_names)
-    annot_df = effect_df.copy().astype(object)
-    for row in annot_df.index:
-        for col in annot_df.columns:
-            if effect_df.loc[row, col] > 0:
-                txt = "{:.2f}\np={:1.0e}".format(
-                    effect_df.loc[row, col], sig_df.loc[row, col]
-                )
+    eff_arr = effect_df.to_numpy()
+    sig_arr = sig_df.to_numpy(copy=True)
+    n_rows, n_cols = eff_arr.shape
+    annot_arr = np.empty((n_rows, n_cols), dtype=object)
+    for r in range(n_rows):
+        for c in range(n_cols):
+            ev = eff_arr[r, c]
+            sv = sig_arr[r, c]
+            if ev > 0:
+                annot_arr[r, c] = f"{ev:.2f}\np={sv:1.0e}"
             else:
-                # we need the effect direction and p-value to coincide.
-                # TODO: current is hack
-                if sig_df.loc[row, col] < p_threshold:
-                    sig_df.loc[row, col] = 1e-110
-                txt = ""
-            annot_df.loc[row, col] = txt
+                if sv < p_threshold:
+                    sig_arr[r, c] = 1e-110
+                annot_arr[r, c] = ""
+    sig_df.iloc[:, :] = sig_arr
+    annot_df = pd.DataFrame(annot_arr, index=effect_df.index, columns=effect_df.columns)
     fig = plt.figure(figsize=(10, 9.5))
     ax = fig.add_subplot(111)
 
@@ -1502,21 +1515,25 @@ def meta_analysis_plot(stats_df, alg1, alg2):  # noqa: C901
         else:
             raise ValueError("insignificant pval {}".format(pval))
 
-    if alg1 not in stats_df.pipe1.unique():  # was assert, now raises properly
+    pipe1_vals = stats_df["pipe1"].to_numpy()
+    pipe2_vals = stats_df["pipe2"].to_numpy()
+    unique_pipes = set(pd.unique(pipe1_vals))
+    if alg1 not in unique_pipes:  # was assert, now raises properly
         raise ValueError(f"algorithm '{alg1}' not found in stats_df")
-    if alg2 not in stats_df.pipe1.unique():  # was assert
+    if alg2 not in unique_pipes:  # was assert
         raise ValueError(f"algorithm '{alg2}' not found in stats_df")
-    df_fw = stats_df.loc[(stats_df.pipe1 == alg1) & (stats_df.pipe2 == alg2)]
-    df_fw = df_fw.sort_values(by="pipe1")
-    df_bk = stats_df.loc[(stats_df.pipe1 == alg2) & (stats_df.pipe2 == alg1)]
-    df_bk = df_bk.sort_values(by="pipe1")
-    dsets = df_fw.dataset.unique()
+    df_fw = stats_df.loc[(pipe1_vals == alg1) & (pipe2_vals == alg2)].sort_values(
+        by="pipe1"
+    )
+    df_bk = stats_df.loc[(pipe1_vals == alg2) & (pipe2_vals == alg1)].sort_values(
+        by="pipe1"
+    )
+    dsets = pd.unique(df_fw["dataset"])
     simplify = True
     unique_ids = [_simplify_names(x) for x in dsets]
     if len(unique_ids) != len(set(unique_ids)):
         log.warning("Dataset names are too similar, turning off name shortening")
         simplify = False
-    ci = []
     fig_height = max(5.5, 1.2 * (len(dsets) + 2.5))
     fig = plt.figure(figsize=(11, fig_height))
     gs = gridspec.GridSpec(1, 5, width_ratios=[1, 1, 1, 1, 0.65], wspace=0.06)
@@ -1530,33 +1547,42 @@ def meta_analysis_plot(stats_df, alg1, alg2):  # noqa: C901
         ax.set_yticklabels(["Meta-effect"] + list(dsets))
     pval_ax = fig.add_subplot(gs[0, -1], sharey=ax)
     plt.setp(pval_ax.get_yticklabels(), visible=False)
-    _min = 0
-    _max = 0
+    _min = 0.0
+    _max = 0.0
+    fw_map = {
+        d: (nsub, smd, p)
+        for d, nsub, smd, p in zip(
+            df_fw["dataset"].to_numpy(),
+            df_fw["nsub"].to_numpy(),
+            df_fw["smd"].to_numpy(),
+            df_fw["p"].to_numpy(),
+        )
+    }
+    bk_p_map = dict(zip(df_bk["dataset"].to_numpy(), df_bk["p"].to_numpy()))
     for ind, d in enumerate(dsets):
-        nsub = df_fw.loc[df_fw.dataset == d, "nsub"].item()
-        t_dof = nsub - 1
-        ci.append(t.ppf(0.95, t_dof) / np.sqrt(nsub))
-        v = df_fw.loc[df_fw.dataset == d, "smd"].item()
+        nsub, v, p_fw = fw_map[d]
+        ci_val = float(t.ppf(0.95, nsub - 1) / np.sqrt(nsub))
         if v > 0:
-            p = df_fw.loc[df_fw.dataset == d, "p"].item()
-            if p < 0.05:
+            if p_fw < 0.05:
                 sig_ind.append(ind)
-                pvals.append(p)
+                pvals.append(p_fw)
         else:
-            p = df_bk.loc[df_bk.dataset == d, "p"].item()
-            if p < 0.05:
+            p_bk = bk_p_map[d]
+            if p_bk < 0.05:
                 sig_ind.append(ind)
-                pvals.append(p)
-        _min = _min if (_min < (v - ci[-1])) else (v - ci[-1])
-        _max = _max if (_max > (v + ci[-1])) else (v + ci[-1])
+                pvals.append(p_bk)
+        _min = _min if (_min < (v - ci_val)) else (v - ci_val)
+        _max = _max if (_max > (v + ci_val)) else (v + ci_val)
         ax.plot(
-            np.array([v - ci[-1], v + ci[-1]]), np.ones((2,)) * (ind + 1), c=MOABB_SKY
+            np.array([v - ci_val, v + ci_val]), np.ones((2,)) * (ind + 1), c=MOABB_SKY
         )
     _range = max(abs(_min), abs(_max)) * 1.25  # extra breathing room
     ax.set_xlim((0 - _range, 0 + _range))
-    final_effect = combine_effects(df_fw["smd"], df_fw["nsub"])
+    fw_smd_arr = df_fw["smd"].to_numpy()
+    fw_nsub_arr = df_fw["nsub"].to_numpy()
+    final_effect = combine_effects(fw_smd_arr, fw_nsub_arr)
     ax.scatter(
-        pd.concat([pd.Series([final_effect]), df_fw["smd"]]),
+        np.concatenate([[final_effect], fw_smd_arr]),
         np.arange(len(dsets) + 1),
         s=np.array([50] + [30] * len(dsets)),
         marker="D",
@@ -1564,7 +1590,7 @@ def meta_analysis_plot(stats_df, alg1, alg2):  # noqa: C901
     )
     for i, p in zip(sig_ind, pvals):
         m, s = _marker(p)
-        ax.scatter(df_fw["smd"].iloc[i], i + 1.4, s=s, marker=m, color=MOABB_CORAL)
+        ax.scatter(fw_smd_arr[i], i + 1.4, s=s, marker=m, color=MOABB_CORAL)
     # pvalues axis stuf
     pval_ax.set_xlim([-0.1, 0.1])
     pval_ax.grid(False)

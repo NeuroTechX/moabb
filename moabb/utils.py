@@ -138,7 +138,17 @@ def verbose(function):
     dec : function
         The decorated function.
     """
-    arg_names = inspect.getfullargspec(function).args
+    spec = inspect.getfullargspec(function)
+    arg_names = spec.args
+    verbose_idx = arg_names.index("verbose") if "verbose" in arg_names else -1
+    verbose_default = None
+    if verbose_idx >= 0 and spec.defaults:
+        default_offset = len(arg_names) - len(spec.defaults)
+        if verbose_idx >= default_offset:
+            verbose_default = spec.defaults[verbose_idx - default_offset]
+    elif "verbose" in (spec.kwonlydefaults or {}):
+        verbose_default = spec.kwonlydefaults["verbose"]
+    moabb_logger = logging.getLogger("moabb")
 
     @functools.wraps(function)
     def wrapper(*args, **kwargs):
@@ -149,25 +159,20 @@ def verbose(function):
             verbose_val = kwargs["verbose"]
 
         # Check positional args
-        elif "verbose" in arg_names:
-            sig = inspect.signature(function)
-            try:
-                bound = sig.bind_partial(*args, **kwargs)
-                bound.apply_defaults()
-                if "verbose" in bound.arguments:
-                    verbose_val = bound.arguments["verbose"]
-            except TypeError as exc:
-                log.debug(
-                    "Failed to bind 'verbose' argument for %s: %s", function.__name__, exc
-                )
+        elif verbose_idx >= 0:
+            if verbose_idx < len(args):
+                verbose_val = args[verbose_idx]
+            else:
+                verbose_val = verbose_default
 
         # Check self.verbose
         if verbose_val is None and len(args) > 0:
-            if hasattr(args[0], "verbose"):
-                verbose_val = getattr(args[0], "verbose", None)
+            verbose_val = getattr(args[0], "verbose", None)
 
-        logger = logging.getLogger("moabb")
-        old_level = logger.level
+        if verbose_val is None:
+            return function(*args, **kwargs)
+
+        old_level = moabb_logger.level
         level = None
 
         if verbose_val is True:
@@ -179,15 +184,15 @@ def verbose(function):
 
         if level is not None:
             try:
-                logger.setLevel(level)
+                moabb_logger.setLevel(level)
             except (TypeError, ValueError) as exc:
-                logger.warning("Failed to set log level %r: %s", level, exc)
+                moabb_logger.warning("Failed to set log level %r: %s", level, exc)
 
         try:
             return function(*args, **kwargs)
         finally:
             if level is not None:
-                logger.setLevel(old_level)
+                moabb_logger.setLevel(old_level)
 
     return wrapper
 

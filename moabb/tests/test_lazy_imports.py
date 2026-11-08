@@ -173,3 +173,41 @@ print("ok")
 """
     )
     assert out == "ok"
+
+
+def test_single_dataset_metadata_lookup_is_lazy():
+    """Looking up metadata for one dataset must not import all 200+ dataset modules."""
+    out = _run_python(
+        """
+import sys
+from moabb.datasets import BNCI2014_001
+from moabb.datasets.metadata import DATASET_METADATA_CATALOG
+
+meta = BNCI2014_001().metadata
+assert meta.acquisition.sampling_rate == 250.0
+assert DATASET_METADATA_CATALOG._catalog is None
+assert "moabb.datasets.physionet_mi" not in sys.modules
+assert "moabb.datasets.schirrmeister2017" not in sys.modules
+print("ok")
+"""
+    )
+    assert out == "ok"
+
+
+def test_import_style_and_chance_level_is_lazy():
+    """Importing style and chance_level must not eagerly import seaborn, pyplot, or scipy.stats."""
+    out = _run_python(
+        """
+import sys
+import moabb.analysis.style as style
+import moabb.analysis.chance_level as cl
+
+assert len(style.get_moabb_palette(3)) == 3
+eager = [
+    m for m in ("seaborn", "matplotlib.pyplot", "scipy.stats")
+    if m in sys.modules
+]
+print(",".join(eager))
+"""
+    )
+    assert out == ""
