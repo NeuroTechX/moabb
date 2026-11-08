@@ -60,42 +60,23 @@ from moabb.utils import aliases_list
 
 _ = mne.set_log_level("CRITICAL")
 NEMAR_ID_PATTERN = r"(nm|on|ds)\d{6}"
-# Datasets without a NEMAR deposit: test fixtures and datasets not on NEMAR.
+# Datasets without a NEMAR deposit: test fixtures only.
 NEMAR_ID_EXEMPT = {
     "FakeDataset",
     "FakeVirtualRealityDataset",
-    # Deposits that exist but are private: their publication was denied, so a
-    # class attribute would only make every load try NEMAR and fall back.
-    # Set ``nemar_id`` once each deposit is published.
-    "Brodu2012",  # nm000366 (licence "free for research use": author consent)
-    "Gueho2026",  # nm000333 (Lenaig2026 alias) (CC BY-NC-ND 4.0: a conversion is an adaptation)
-    "MartinezPeon2025",  # nm000332 (CC BY-NC-SA 4.0: authors' permission)
-    "MIBMPI2024",  # nm000331 (licence/consent evidence requested by NEMAR)
-    "MIND2026",  # nm000337 (acquisition timestamps to coarsen)
-    # The deposit (nm000347) files the epochs under the subjects of the former
-    # upload-order grouping; declare it again once it follows the folders.
-    "HefmiIch2025",
-    # No NEMAR deposit yet; BIDS deposits prepared, not uploaded.
-    "Yagan2023",  # Mendeley Data vyczny2r4w
-    "Wang2026Handwriting",  # figshare 29987758
 }
-# Datasets whose NEMAR deposit is assigned but not yet public (private,
-# pending publication). Their ids are valid and still checked; tracked here
-# so we know which deposits remain to be published.
+# Datasets whose NEMAR deposit is assigned and has publication requested
+# (Status: requested), awaiting NEMAR administrator approval. Set ``nemar_id``
+# on each class once its deposit is published on data.nemar.org.
 NEMAR_ID_PENDING = {
-    # Removed on 2026-10-08: the other 30 deposits listed here were published
-    # on NEMAR and are anonymously reachable.
-    # Removed on 2026-10-05: these 15 deposits were published on NEMAR and are
-    # anonymously reachable (fresh clone + annexed-EDF HTTP 200 against
-    # https://nemar.s3.us-east-2.amazonaws.com/<id>/objects/<key>).
-    #   nm000174 AguileraRodriguez2025, nm000177 Kumar2024, nm000178 BNCI2020_001,
-    #   nm000184 BCIComp2020WalkingERP, nm000220 Beetl2021_A, nm000224 Nguyen2017_SL,
-    #   nm000233 BCIComp2020UpperLimb, nm000252 Nguyen2017_L, nm000257 Nguyen2017_S,
-    #   nm000258 Pressel2016, nm000261 Nguyen2017_V, nm000263 Kaneshiro2015,
-    #   nm000269 Mainsah2025_A, nm000273 Lee2019_SSVEP, nm000274 Beetl2021_B.
-    # Removed on 2026-10-06 (published): nm000292 Vagaja2023.
-    # Removed on 2026-10-17 (published): nm000304 PerezBlanco2026.
-    "Ma2022": "nm000288"
+    "Ma2022": "nm000288",
+    "MIBMPI2024": "nm000331",
+    "MartinezPeon2025": "nm000332",
+    "Gueho2026": "nm000333",
+    "MIND2026": "nm000337",
+    "Brodu2012": "nm000366",
+    "Wang2026Handwriting": "nm000466",
+    "Yagan2023": "nm000569",
 }
 
 
