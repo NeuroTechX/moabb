@@ -40,8 +40,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -60,10 +60,10 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedheader/4.0.6/css/fixedHeader.dataTables.css" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=75c7c72ae941e8b558d8"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
     <script src="../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
@@ -93,7 +93,7 @@
             </script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/tutorials/tutorial_4_adding_a_dataset';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
+        DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://moabb.neurotechx.com/dev/_static/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
@@ -203,7 +203,7 @@
   
     <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation" aria-expanded="false" aria-controls="pst-primary-sidebar-modal">
     <span class="fa-solid fa-bars"></span>
   </button>
   
@@ -342,14 +342,14 @@
 
 <div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
   <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
-    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
   </button>
   <ul class="dropdown-menu dropdown-menu-end">
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
   </ul>
 </div></div>
       
@@ -395,7 +395,7 @@
   
 
   
-    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page" aria-expanded="false" aria-controls="pst-secondary-sidebar-modal">
       <span class="fa-solid fa-outdent"></span>
     </button>
   
@@ -409,7 +409,7 @@
       
       
       
-      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <dialog id="pst-primary-sidebar-modal" tabindex="-1"></dialog>
       <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
@@ -507,14 +507,14 @@
 
 <div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
   <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
-    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
   </button>
   <ul class="dropdown-menu dropdown-menu-end">
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
   </ul>
 </div></div>
         
@@ -663,7 +663,7 @@
     
     <li class="breadcrumb-item breadcrumb-home">
       <a href="../../index.html" class="nav-link" aria-label="Home">
-        <i class="fa-solid fa-home"></i>
+        <i class="fa-solid fa-house"></i>
       </a>
     </li>
     
@@ -857,95 +857,7 @@ The rest of the code follows the steps described in the previous tutorials.</p>
 </span><span class="w">
 </span><span class="nb">print</span><span class="p">(</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">scores</span></a><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
-  0%|                                     | 1.02k/2.77M [00:00&lt;07:42, 5.98kB/s]
-  1%|▌                                     | 41.0k/2.77M [00:00&lt;00:16, 167kB/s]
-  4%|█▎                                    | 98.3k/2.77M [00:00&lt;00:09, 288kB/s]
-  6%|██▎                                    | 164k/2.77M [00:00&lt;00:06, 373kB/s]
-  8%|███                                    | 219k/2.77M [00:00&lt;00:06, 393kB/s]
- 12%|████▌                                  | 324k/2.77M [00:00&lt;00:04, 534kB/s]
- 15%|█████▉                                 | 418k/2.77M [00:00&lt;00:03, 599kB/s]
- 18%|███████                                | 499k/2.77M [00:01&lt;00:03, 608kB/s]
- 21%|████████▏                              | 581k/2.77M [00:01&lt;00:03, 617kB/s]
- 26%|██████████                             | 712k/2.77M [00:01&lt;00:02, 740kB/s]
- 31%|████████████                           | 859k/2.77M [00:01&lt;00:02, 864kB/s]
- 35%|█████████████▌                         | 957k/2.77M [00:01&lt;00:02, 833kB/s]
- 39%|██████████████▋                       | 1.07M/2.77M [00:01&lt;00:01, 848kB/s]
- 42%|████████████████                      | 1.17M/2.77M [00:01&lt;00:01, 822kB/s]
- 46%|█████████████████▍                    | 1.27M/2.77M [00:01&lt;00:01, 805kB/s]
- 49%|██████████████████▊                   | 1.37M/2.77M [00:02&lt;00:01, 792kB/s]
- 54%|████████████████████▎                 | 1.48M/2.77M [00:02&lt;00:01, 818kB/s]
- 57%|█████████████████████▋                | 1.58M/2.77M [00:02&lt;00:01, 797kB/s]
- 61%|███████████████████████               | 1.68M/2.77M [00:02&lt;00:01, 787kB/s]
- 65%|████████████████████████▌             | 1.79M/2.77M [00:02&lt;00:01, 818kB/s]
- 68%|█████████████████████████▉            | 1.89M/2.77M [00:02&lt;00:01, 802kB/s]
- 72%|███████████████████████████▎          | 1.99M/2.77M [00:02&lt;00:00, 790kB/s]
- 75%|████████████████████████████▋         | 2.08M/2.77M [00:02&lt;00:00, 780kB/s]
- 83%|██████████████████████████████▋      | 2.30M/2.77M [00:03&lt;00:00, 1.04MB/s]
- 87%|█████████████████████████████████     | 2.40M/2.77M [00:03&lt;00:00, 973kB/s]
- 90%|██████████████████████████████████▎   | 2.50M/2.77M [00:03&lt;00:00, 904kB/s]
- 94%|███████████████████████████████████▋  | 2.59M/2.77M [00:03&lt;00:00, 848kB/s]
- 97%|████████████████████████████████████▉ | 2.69M/2.77M [00:03&lt;00:00, 820kB/s]
-  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 21.0GB/s]
-
-  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
-  0%|                                     | 1.02k/2.77M [00:00&lt;05:33, 8.28kB/s]
-  1%|▍                                     | 32.8k/2.77M [00:00&lt;00:17, 154kB/s]
-  4%|█▎                                    | 98.3k/2.77M [00:00&lt;00:08, 325kB/s]
-  8%|███                                    | 213k/2.77M [00:00&lt;00:04, 528kB/s]
- 11%|████▍                                  | 311k/2.77M [00:00&lt;00:03, 617kB/s]
- 15%|█████▊                                 | 410k/2.77M [00:00&lt;00:03, 669kB/s]
- 20%|███████▊                               | 556k/2.77M [00:00&lt;00:02, 830kB/s]
- 23%|█████████                              | 640k/2.77M [00:01&lt;00:02, 781kB/s]
- 28%|██████████▊                            | 769k/2.77M [00:01&lt;00:02, 857kB/s]
- 31%|████████████▏                          | 867k/2.77M [00:01&lt;00:02, 832kB/s]
- 35%|█████████████▌                         | 966k/2.77M [00:01&lt;00:02, 813kB/s]
- 41%|███████████████▌                      | 1.13M/2.77M [00:01&lt;00:01, 959kB/s]
- 45%|█████████████████                     | 1.24M/2.77M [00:01&lt;00:01, 947kB/s]
- 50%|██████████████████▉                   | 1.37M/2.77M [00:01&lt;00:01, 978kB/s]
- 53%|████████████████████▏                 | 1.47M/2.77M [00:01&lt;00:01, 915kB/s]
- 58%|█████████████████████▊                | 1.59M/2.77M [00:02&lt;00:01, 919kB/s]
- 62%|███████████████████████▍              | 1.70M/2.77M [00:02&lt;00:01, 915kB/s]
- 66%|█████████████████████████▏            | 1.84M/2.77M [00:02&lt;00:00, 953kB/s]
- 72%|██████████████████████████▌          | 1.98M/2.77M [00:02&lt;00:00, 1.02MB/s]
- 75%|████████████████████████████▋         | 2.08M/2.77M [00:02&lt;00:00, 961kB/s]
- 79%|█████████████████████████████▉        | 2.18M/2.77M [00:02&lt;00:00, 904kB/s]
- 83%|███████████████████████████████▌      | 2.29M/2.77M [00:02&lt;00:00, 904kB/s]
- 87%|█████████████████████████████████     | 2.41M/2.77M [00:02&lt;00:00, 900kB/s]
- 91%|██████████████████████████████████▋   | 2.52M/2.77M [00:03&lt;00:00, 904kB/s]
- 95%|████████████████████████████████████  | 2.62M/2.77M [00:03&lt;00:00, 869kB/s]
- 99%|█████████████████████████████████████▌| 2.74M/2.77M [00:03&lt;00:00, 883kB/s]
-  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 28.2GB/s]
-
-  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
-  1%|▏                                    | 14.3k/2.77M [00:00&lt;00:35, 78.4kB/s]
-  1%|▌                                     | 41.0k/2.77M [00:00&lt;00:18, 144kB/s]
-  4%|█▌                                     | 113k/2.77M [00:00&lt;00:07, 337kB/s]
-  8%|███                                    | 220k/2.77M [00:00&lt;00:05, 482kB/s]
- 13%|█████▏                                 | 366k/2.77M [00:00&lt;00:03, 701kB/s]
- 18%|███████                                | 497k/2.77M [00:00&lt;00:02, 806kB/s]
- 22%|████████▍                              | 595k/2.77M [00:00&lt;00:02, 795kB/s]
- 25%|█████████▊                             | 693k/2.77M [00:01&lt;00:02, 787kB/s]
- 32%|████████████▏                         | 889k/2.77M [00:01&lt;00:01, 1.02MB/s]
- 36%|█████████████▉                         | 992k/2.77M [00:01&lt;00:01, 955kB/s]
- 40%|███████████████▏                      | 1.10M/2.77M [00:01&lt;00:01, 927kB/s]
- 45%|█████████████████▏                    | 1.25M/2.77M [00:01&lt;00:01, 997kB/s]
- 49%|██████████████████▌                   | 1.35M/2.77M [00:01&lt;00:01, 934kB/s]
- 52%|███████████████████▊                  | 1.44M/2.77M [00:01&lt;00:01, 876kB/s]
- 59%|█████████████████████▉               | 1.64M/2.77M [00:01&lt;00:01, 1.08MB/s]
- 64%|███████████████████████▍             | 1.76M/2.77M [00:02&lt;00:00, 1.03MB/s]
- 69%|█████████████████████████▍           | 1.90M/2.77M [00:02&lt;00:00, 1.06MB/s]
- 75%|███████████████████████████▋         | 2.07M/2.77M [00:02&lt;00:00, 1.13MB/s]
- 79%|█████████████████████████████▏       | 2.18M/2.77M [00:02&lt;00:00, 1.05MB/s]
- 83%|███████████████████████████████▍      | 2.28M/2.77M [00:02&lt;00:00, 985kB/s]
- 87%|█████████████████████████████████     | 2.41M/2.77M [00:02&lt;00:00, 984kB/s]
- 92%|██████████████████████████████████▉   | 2.54M/2.77M [00:02&lt;00:00, 998kB/s]
- 97%|███████████████████████████████████▋ | 2.67M/2.77M [00:03&lt;00:00, 1.01MB/s]
-  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 23.7GB/s]
-   score      time  samples  ...         dataset pipeline codecarbon_task_name
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>   score      time  samples  ...         dataset pipeline codecarbon_task_name
 0    1.0  0.009936     40.0  ...  ExampleDataset      MDM
 1    1.0  0.009589     40.0  ...  ExampleDataset      MDM
 2    1.0  0.009699     40.0  ...  ExampleDataset      MDM
@@ -1071,8 +983,7 @@ dataset’s own <code class="docutils literal notranslate"><span class="pre">dat
 <li><p>If a NEMAR download fails at runtime, MOABB emits a warning and
 automatically falls back to <code class="docutils literal notranslate"><span class="pre">data_path</span></code>.</p></li>
 </ul>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 14.421 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  529 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.039 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-tutorials-tutorial-4-adding-a-dataset-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/46d014244b321e934a890e079a5f0042/tutorial_4_adding_a_dataset.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">tutorial_4_adding_a_dataset.ipynb</span></code></a></p>
@@ -1123,7 +1034,7 @@ automatically falls back to <code class="docutils literal notranslate"><span cla
             
             
               
-                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <dialog id="pst-secondary-sidebar-modal" tabindex="-1"></dialog>
                 <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
@@ -1224,8 +1135,8 @@ automatically falls back to <code class="docutils literal notranslate"><span cla
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1251,7 +1162,7 @@ automatically falls back to <code class="docutils literal notranslate"><span cla
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.24.0.
 </p></div>
       
     </div>
