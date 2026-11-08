@@ -241,10 +241,8 @@ class HefmiIch2025(BaseDataset):
            https://doi.org/10.1038/s41597-025-06100-7
     """
 
-    # NEMAR deposit nm000347 files these epochs under the subjects of the
-    # earlier upload-order grouping, so it cannot serve this mapping; declare
-    # it again once the deposit follows the depositor's folders.
-    nemar_id = None
+    nemar_id = "nm000347"
+    nemar_subject_template = "{subject:02d}"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=256.0,

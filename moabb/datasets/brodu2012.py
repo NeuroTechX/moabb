@@ -104,7 +104,7 @@ class Brodu2012(BaseDataset):
             investigators=["Nicolas Brodu", "Fabien Lotte", "Anatole Lecuyer"],
             institution="INRIA Rennes-Bretagne Atlantique",
             country="FR",
-            license="free for research use",
+            license="LGPL-2.1-or-later",
             repository="OpenViBE (Inria)",
             data_url=OPENVIBE_BASE_URL,
             publication_year=2012,
