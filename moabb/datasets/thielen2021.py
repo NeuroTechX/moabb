@@ -29,7 +29,7 @@ Thielen2021_URL = "https://public.data.ru.nl/dcc/DSC_2018.00122_448_v3"
 # Ahmadi, S., Borhanazad, M., Tump, D., Farquhar, J., & Desain, P. (2019). Low channel count montages using sensor
 # tying for VEP-based BCI. Journal of Neural Engineering, 16(6), 066038. DOI: https://doi.org/10.1088/1741-2552/ab4057
 ELECTRODE_MAPPING = {
-    "AF3": "Fpz",
+    "AF3": "Fz",
     "F3": "T7",
     "FC5": "O1",
     "P7": "POz",
@@ -141,9 +141,10 @@ class Thielen2021(BaseDataset):
             channel_types={"eeg": 8},
             montage="custom",
             hardware="Biosemi ActiveTwo",
+            software="BrainStream",
             sensor_type="sintered Ag/AgCl active electrodes",
             reference="CMS/DRL",
-            sensors=["Fpz", "Iz", "O1", "O2", "Oz", "POz", "T7", "T8"],
+            sensors=["Fz", "Iz", "O1", "O2", "Oz", "POz", "T7", "T8"],
             line_freq=50.0,
         ),
         participants=ParticipantMetadata(
@@ -170,9 +171,15 @@ class Thielen2021(BaseDataset):
             mode="offline",
             has_training_test_split=False,
             instructions="Participants maintained fixation at the target cell which was cued in green for 1 s before trial onset. No feedback was given after trials in the offline experiment.",
+            stimulus_presentation={
+                "display": "12.9 inch iPad Pro (Apple Inc.)",
+                "refresh_rate": "60 Hz",
+                "resolution": "1920 x 1080 pixels",
+                "viewing_distance": "60 cm",
+            },
         ),
         documentation=DocumentationMetadata(
-            doi="10.1088/1741-2552/abecef",
+            doi="10.34973/9txv-z787",
             investigators=["J Thielen", "P Marsman", "J Farquhar", "P Desain"],
             institution="Radboud University",
             institution_department="Donders Institute for Brain, Cognition and Behaviour",
@@ -208,7 +215,7 @@ class Thielen2021(BaseDataset):
         signal_processing=SignalProcessingMetadata(
             classifiers=["template-matching", "reconvolution", "CCA"],
             feature_extraction=["encoding model", "event responses", "spatio-temporal"],
-            frequency_bands=None,
+            frequency_bands={"bandpass": [2.0, 30.0]},
             spatial_filters=["CCA"],
         ),
         cross_validation=CrossValidationMetadata(
@@ -225,7 +232,8 @@ class Thielen2021(BaseDataset):
             code_type="modulated Gold codes",
             code_length=126,
             n_targets=20,
-            n_repetitions=None,
+            n_repetitions=15,
+            cue_duration_s=1.0,
         ),
         data_structure=DataStructureMetadata(
             n_trials=100,

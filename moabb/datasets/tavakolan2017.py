@@ -68,7 +68,7 @@ class Tavakolan2017(BaseDataset):
     (80 trials total per session, 4 classes).
 
     Each trial consisted of a 3 s visual cue (during which the subject
-    performed the imagery) followed by a 4-6 s rest interval.  The imagery
+    performed the imagery) followed by a 5 to 7 s rest interval.  The imagery
     interval [0, 3] s after cue onset is used for analysis.
 
     The data was originally deposited on the Dryad Digital Repository [2]_
@@ -121,7 +121,7 @@ class Tavakolan2017(BaseDataset):
             line_freq=60.0,
         ),
         participants=ParticipantMetadata(
-            n_subjects=12, health_status="healthy", species="human"
+            n_subjects=12, health_status="healthy", species="homo sapiens"
         ),
         experiment=ExperimentMetadata(
             events={"rest": 1, "right_hand": 2, "right_elbow_flexion": 3},
@@ -169,6 +169,7 @@ class Tavakolan2017(BaseDataset):
             ethics_approval=[
                 "Office of Research Ethics (#2012s0527), Simon Fraser University"
             ],
+            contact_info=["cmenon@sfu.ca"],
             keywords=[
                 "motor imagery",
                 "EEG",
@@ -204,6 +205,7 @@ class Tavakolan2017(BaseDataset):
         cross_validation=CrossValidationMetadata(
             cv_method="10x10-fold", cv_folds=10, evaluation_type=["within_subject"]
         ),
+        performance={"accuracy_percent": 74.2},
         bci_application=BCIApplicationMetadata(
             applications=["motor_control", "rehabilitation"],
             environment="laboratory",

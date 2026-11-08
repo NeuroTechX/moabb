@@ -120,6 +120,10 @@ class Peterson2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
             hardware="OpenBCI Cyton + Daisy (16-channel) with Electro-Cap System II",
             cap_manufacturer="Electro-Cap International",
             cap_model="Electro-Cap System II",
+            sensor_type="wet",
+            electrode_type="wet",
+            electrode_material="pure tin",
+            impedance_threshold_kohm=5.0,
             reference="left earlobe",
             ground="right earlobe",
             filters=(
@@ -160,17 +164,21 @@ class Peterson2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
         ),
         documentation=DocumentationMetadata(
             senior_author="Ruben Spies",
+            ethics_approval=[
+                "Comité Asesor de Ética y Seguridad en el Trabajo Experimental (CEySTE, CCT-CONICET, Santa Fe, Argentina)"
+            ],
             funding=[
+                "CONICET PIP 2014-2016 No. 11220130100216-CO",
                 "AFOSR/SOARD Grant FA9550-14-1-0130",
                 "UNL CAI+D-UNL 2016 PIC No. 50420150100036LI",
-                "ANPCyT PICT 2015-0586",
+                "Universidad Nacional de Entre Ríos (UNER) PID NOVEL 6215",
             ],
             repository="OpenNeuro",
             doi="10.1016/j.heliyon.2020.e03425",
             investigators=[
                 "Victoria Peterson",
                 "Catalina Maria Galvan",
-                "Hugo Sacha Hernadez",
+                "Hugo Sacha U. Hernández",
                 "Ruben Spies",
             ],
             institution="IMAL, CONICET-UNL",
@@ -208,7 +216,9 @@ class Peterson2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
             n_trials=160,
             n_trials_per_class={"motor_imagery": 80, "rest": 80},
             trials_context=(
-                "Per subject: 4 MI-vs-rest runs x 40 trials (20 MI + 20 rest per run)."
+                "Per subject: 4 MI-vs-rest runs x 40 trials (20 MI + 20 rest per run), "
+                "except Subject 1 (absent from BIDS archive; paper reports 150 trials "
+                "with 30 trials in RUN4) while Subjects 2-10 have 160 trials."
             ),
         ),
         bci_application=BCIApplicationMetadata(

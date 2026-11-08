@@ -411,9 +411,10 @@ class Peters2026(OpenNeuroMirrorMixin, BaseBIDSDataset):
             n_trials=66150,
             n_trials_per_class={"Target": 4109, "NonTarget": 62041},
             trials_context=(
-                "88 calibration runs over 40 visits (9, 10, 9, 6 and 6 per "
-                "subject), 4472 inquiries, 66150 flashes. Per subject: "
-                "P1 901 T / 12973 NT, P2 1100 / 18836, P3 904 / 13026, "
+                "88 calibration runs over 40 visits (6-10 sessions per subject: "
+                "9, 10, 9, 6 and 6 for P1-P5; sessions_per_subject=6 is the "
+                "minimum across subjects), 4472 inquiries, 66150 flashes. Per "
+                "subject: P1 901 T / 12973 NT, P2 1100 / 18836, P3 904 / 13026, "
                 "P4 603 / 8553, P5 601 / 8653; the summary table gives the "
                 "per-subject mean."
             ),

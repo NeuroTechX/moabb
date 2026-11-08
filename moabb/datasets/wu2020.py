@@ -70,7 +70,7 @@ class Wu2020(BaseDataset):
     ----------
     .. [1] Wu, X., Zhang, W., Fu, Z., Cheung, R. T. H., & Chan, R. H. M.
            (2020). An investigation of in-ear sensing for motor task
-           classification. Journal of Neural Engineering, 17(6), 066029.
+           classification. Journal of Neural Engineering, 17(6), 066010.
            https://doi.org/10.1088/1741-2552/abc1b6
     """
 
@@ -81,9 +81,13 @@ class Wu2020(BaseDataset):
             channel_types={"eeg": 122, "misc": 10},
             montage="standard_1005",
             hardware="Neuroscan SynAmps2",
+            software="Curry 7",
+            cap_manufacturer="Compumedics Neuroscan",
+            cap_model="Quik-Cap (Model C190)",
             sensor_type="Ag/AgCl",
             reference="scalp REF",
             ground="scalp GRD",
+            impedance_threshold_kohm={"scalp_eeg": 10.0, "ear_eeg": 50.0},
             filters={"bandpass": [0.5, 100]},
             line_freq=50.0,
         ),
@@ -91,11 +95,11 @@ class Wu2020(BaseDataset):
             n_subjects=6,
             health_status="healthy",
             gender={"female": 4, "male": 2},
-            age_mean=25.0,
+            age_mean=None,
             age_min=22.0,
             age_max=28.0,
-            handedness="right-handed",
-            species="human",
+            handedness="right",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             events=dict(_EVENTS),
@@ -117,7 +121,9 @@ class Wu2020(BaseDataset):
         ),
         documentation=DocumentationMetadata(
             senior_author="Rosa H M Chan",
-            ethics_approval=["Ethics Committee at the City University of Hong Kong"],
+            ethics_approval=[
+                "Ethics Committee at the City University of Hong Kong (Reference number: 2-25-201602_01)"
+            ],
             doi="10.1088/1741-2552/abc1b6",
             investigators=[
                 "Xiaoli Wu",
@@ -131,6 +137,7 @@ class Wu2020(BaseDataset):
             repository="Zenodo",
             data_url=f"https://zenodo.org/records/{_ZENODO_RECORD}",
             publication_year=2020,
+            contact_info=["rosachan@cityu.edu.hk"],
             license="CC-BY-4.0",
         ),
         sessions_per_subject=1,
@@ -150,10 +157,20 @@ class Wu2020(BaseDataset):
         signal_processing=SignalProcessingMetadata(
             classifiers=["EEGNet"],
             feature_extraction=None,
-            frequency_bands=None,
+            frequency_bands={
+                "theta": [4.0, 8.0],
+                "alpha": [8.0, 13.0],
+                "beta": [13.0, 30.0],
+                "low_gamma": [30.0, 38.0],
+                "bandpass": [4.0, 38.0],
+            },
             spatial_filters=None,
         ),
-        cross_validation=CrossValidationMetadata(evaluation_type=["within_subject"]),
+        cross_validation=CrossValidationMetadata(
+            cv_method="5-fold (within-subject) / leave-one-subject-out (cross-subject)",
+            cv_folds=5,
+            evaluation_type=["within_subject", "cross_subject", "transfer"],
+        ),
         bci_application=BCIApplicationMetadata(
             applications=["motor_control"],
             environment="laboratory",

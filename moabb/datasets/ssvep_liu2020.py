@@ -59,15 +59,17 @@ class Liu2020BETA(BaseDataset):
     arranged in a 5x8 QWERTY virtual keyboard. Frequencies ranged from 8.0 to
     15.8 Hz (0.2 Hz step) with initial phases from 0 to 19.5*pi (0.5*pi step).
 
-    Each subject completed 4 blocks of 40 trials. Stimulation duration was 2 s
-    for subjects S1-S15 (experienced) and 3 s for subjects S16-S70 (naive), plus
-    a 0.5 s visual cue. EEG was recorded at 1000 Hz with a Synamps2 system
-    (Neuroscan) using 64 channels in the international 10-10 system, then
-    downsampled to 250 Hz.
+    Each subject completed 4 blocks of 40 trials. All 70 subjects had prior
+    experience from round 1 of the 2018 China BCI Olympics; stimulation
+    duration was 2 s for subjects S1-S15 and 3 s for subjects S16-S70, plus
+    a 0.5 s visual cue and 0.5 s post-stimulus rest. EEG was recorded at
+    1000 Hz with a Synamps2 system (Neuroscan) using 64 channels in the
+    international 10-10 system, then downsampled to 250 Hz.
 
-    Data are stored as 4D matrices [64, 750, 4, 40] corresponding to
-    [channels, time points, block index, target index]. Each epoch is 3 s
-    (750 samples at 250 Hz).
+    Data are stored as 4D matrices [64, 750, 4, 40] (3 s epochs, 750 samples at
+    250 Hz) for S1-S15 and [64, 1000, 4, 40] (4 s epochs, 1000 samples at
+    250 Hz) for S16-S70, corresponding to [channels, time points, block index,
+    target index].
 
     Warnings
     --------
@@ -97,6 +99,7 @@ class Liu2020BETA(BaseDataset):
             line_freq=50.0,
             reference="Cz",
             impedance_threshold_kohm=10,
+            filters={"bandpass_hz": [0.15, 200.0], "notch_hz": 50.0},
         ),
         participants=ParticipantMetadata(
             n_subjects=70,
@@ -106,7 +109,7 @@ class Liu2020BETA(BaseDataset):
             age_min=9,
             age_max=64,
             age_std=7.97,
-            bci_experience="mixed",
+            bci_experience="experienced",
         ),
         experiment=ExperimentMetadata(
             class_labels=[
@@ -159,7 +162,7 @@ class Liu2020BETA(BaseDataset):
             stimulus_modalities=["visual"],
             primary_modality="visual",
             synchronicity="synchronous",
-            mode="offline",
+            mode="online",
             task_type="cued-spelling",
             feedback_type="visual",
             has_training_test_split=False,
@@ -187,11 +190,16 @@ class Liu2020BETA(BaseDataset):
                 "Strategic Priority Research Program of Chinese Academy of Sciences (No. XDB32040200)",
                 "Key Research and Development Program of Guangdong Province (No. 2018B030339001)",
                 "National Natural Science Foundation of China (Grant No. 61431007)",
+                "Doctoral Brain + X Seed Grant Program of Tsinghua University",
             ],
             keywords=["SSVEP", "BCI", "EEG", "benchmark", "JFPM"],
         ),
         preprocessing=PreprocessingMetadata(
             data_state="epoched",
+            preprocessing_applied=True,
+            bandpass=[3.0, 100.0],
+            highpass_hz=3.0,
+            lowpass_hz=100.0,
             downsampled_to_hz=250.0,
             notch_hz=50,
             filter_type="zero-phase FIR",
@@ -203,7 +211,19 @@ class Liu2020BETA(BaseDataset):
         ),
         data_structure=DataStructureMetadata(n_blocks=4, n_trials=160),
         signal_processing=SignalProcessingMetadata(
-            classifiers=["TRCA", "msTRCA", "FBCCA", "CCA"],
+            classifiers=[
+                "TRCA",
+                "msTRCA",
+                "Extended CCA",
+                "m-Extended CCA",
+                "L1MCCA",
+                "ITCCA",
+                "MEC",
+                "CCA",
+                "MSI",
+                "FBCCA",
+                "CVARS",
+            ],
             feature_extraction=["CCA", "TRCA", "FBCCA"],
             frequency_bands={"bandpass": [3.0, 100.0]},
             spatial_filters=["CCA", "TRCA"],

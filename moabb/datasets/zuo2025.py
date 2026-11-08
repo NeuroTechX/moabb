@@ -16,6 +16,7 @@ from . import download as dl
 from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
+    AuxiliaryChannelsMetadata,
     BCIApplicationMetadata,
     CrossValidationMetadata,
     DatasetMetadata,
@@ -24,6 +25,7 @@ from .metadata.schema import (
     ExperimentMetadata,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
+    PreprocessingMetadata,
     SignalProcessingMetadata,
     Tags,
 )
@@ -289,9 +291,13 @@ class Zuo2025(BaseDataset):
             hardware="ZhenTec EEG system",
             reference="CPz",
             ground="FPz",
+            filters="0.5-80 Hz bandpass, 50 Hz notch",
             sensors=list(_CH_NAMES),
             line_freq=50.0,
-            montage="standard_1005",
+            montage="10-10",
+            auxiliary_channels=AuxiliaryChannelsMetadata(
+                has_eog=True, eog_channels=2, eog_type=["horizontal", "vertical"]
+            ),
         ),
         participants=ParticipantMetadata(
             n_subjects=30,
@@ -301,7 +307,7 @@ class Zuo2025(BaseDataset):
             age_max=45,
             health_status="knee pain patients",
             clinical_population="knee_pain",
-            species="human",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             paradigm="imagery",
@@ -353,9 +359,18 @@ class Zuo2025(BaseDataset):
             modality=["Motor"],
             type=["Clinical", "Motor Imagery"],
         ),
+        preprocessing=PreprocessingMetadata(
+            data_state="bandpass and notch filtered",
+            preprocessing_applied=True,
+            bandpass=[0.5, 80.0],
+            highpass_hz=0.5,
+            lowpass_hz=80.0,
+            notch_hz=50.0,
+        ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="motor_imagery",
             imagery_tasks=["left_leg", "right_leg"],
+            cue_duration_s=2.0,
             imagery_duration_s=4.0,
         ),
         data_structure=DataStructureMetadata(
@@ -370,12 +385,14 @@ class Zuo2025(BaseDataset):
             spatial_filters=["CSP", "FBCSP"],
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="10-fold", cv_folds=10, evaluation_type=["within_subject"]
+            cv_method="70/30 train-test split with 10-fold CV",
+            cv_folds=10,
+            evaluation_type=["within_subject"],
         ),
         bci_application=BCIApplicationMetadata(
             applications=["rehabilitation"], environment="clinical", online_feedback=False
         ),
-        data_processed=False,
+        data_processed=True,
         file_format="MAT",
     )
 

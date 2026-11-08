@@ -206,7 +206,6 @@ class BCIComp2020UpperLimb(BaseDataset):
             line_freq=60.0,
         ),
         participants=ParticipantMetadata(
-            gender={"male": 20, "female": 30},
             n_subjects=15,
             health_status="healthy",
             age_min=20,
@@ -216,7 +215,7 @@ class BCIComp2020UpperLimb(BaseDataset):
             # so the per-subject split is unclear. The task is
             # performed on a single right arm, but we leave
             # handedness unset rather than over-claim.
-            species="human",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             events=_EVENTS,
@@ -301,6 +300,7 @@ class BCIComp2020UpperLimb(BaseDataset):
         ),
         data_structure=DataStructureMetadata(
             n_trials=450,
+            n_trials_per_class={"cylindrical": 150, "spherical": 150, "lumbrical": 150},
             trials_context=(
                 "450 trials per subject (150 trials/session x 3 sessions, "
                 "50 per class). 15 subjects, 6750 trials total."

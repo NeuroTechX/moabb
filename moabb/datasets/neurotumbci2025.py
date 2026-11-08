@@ -10,11 +10,15 @@ from moabb.datasets.base import BaseDataset
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
     AuxiliaryChannelsMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
+    DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
+    ParadigmSpecificMetadata,
     ParticipantMetadata,
     PreprocessingMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 
@@ -90,6 +94,7 @@ class NeuroTUMBCI2025(BaseDataset):
             hardware="Smarting mobi (mBrainTrain), 24-channel, wireless (Bluetooth 2.1)",
             cap_manufacturer="mBrainTrain",
             cap_model="Smarting mobi",
+            software="Smarting EEG software / Lab Streaming Layer (PyLSL)",
             reference=None,
             ground=None,
             sensors=NEUROTUMBCI_CHANNELS,
@@ -99,6 +104,7 @@ class NeuroTUMBCI2025(BaseDataset):
         participants=ParticipantMetadata(
             n_subjects=2,
             health_status="one tetraplegic pilot and one able-bodied participant",
+            clinical_population="tetraplegia (1 pilot, P1)",
             species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
@@ -144,6 +150,15 @@ class NeuroTUMBCI2025(BaseDataset):
                 "Enrico A. Fazzi",
             ],
             contact_info=["team@neurotum.com"],
+            funding=[
+                "Freunde der TUM e.V.",
+                "Cybathlon",
+                "mBrainTrain (EEG device donation)",
+            ],
+            ethics_approval=[
+                "Not applicable (self-chosen participation in a championship); "
+                "informed consent obtained from all participants"
+            ],
             institution="Technical University of Munich / neuroTUM e.V.",
             institution_address="Munich, Germany",
             country="DE",
@@ -157,6 +172,46 @@ class NeuroTUMBCI2025(BaseDataset):
         tags=Tags(modality=["Motor"], type=["Motor Imagery"]),
         preprocessing=PreprocessingMetadata(
             data_state="raw", preprocessing_applied=False
+        ),
+        paradigm_specific=ParadigmSpecificMetadata(
+            detected_paradigm="motor_imagery",
+            imagery_tasks=["rest", "left_hand", "right_hand", "feet"],
+            cue_duration_s=1.0,
+            imagery_duration_s=3.0,
+        ),
+        data_structure=DataStructureMetadata(
+            n_trials=910,
+            trials_context=(
+                "190 cued trials across 5 sessions for P1; 720 cued trials "
+                "across 3 sessions for P2 (910 total)"
+            ),
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=[
+                "S4D",
+                "EEGEncoder",
+                "EEGNet",
+                "SVM",
+                "Random Forest",
+                "MLP",
+                "kNN",
+                "AdaBoost",
+            ],
+            feature_extraction=[
+                "Morlet wavelets (8-30 Hz, 2 cycles, decimation 3)",
+                "CSP (6 components)",
+            ],
+            frequency_bands={
+                "bandpass": [4.0, 36.0],
+                "alpha": [8.0, 12.0],
+                "beta": [15.0, 30.0],
+                "morlet": [8.0, 30.0],
+            },
+            spatial_filters=["CSP", "CAR", "ASR"],
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="stratified 80/20 train-test split",
+            evaluation_type=["within_subject"],
         ),
         file_format="XDF",
         abstract="Two-pilot mobile EEG motor imagery dataset (24-channel Smarting "

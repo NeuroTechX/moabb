@@ -115,7 +115,18 @@ class MIBMPI2024(BaseDataset):
             age_min=25.0,
             age_max=35.0,
             gender={"male": 6, "female": 2},
+            sexes=["male", "male", "female", "male", "female", "male", "male", "male"],
             handedness={"right": 7, "left": 1},
+            handedness_list=[
+                "right",
+                "right",
+                "right",
+                "right",
+                "right",
+                "right",
+                "left",
+                "right",
+            ],
             species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
@@ -130,7 +141,8 @@ class MIBMPI2024(BaseDataset):
             ),
             feedback_type="none",
             stimulus_type="cue",
-            stimulus_modalities=["visual"],
+            stimulus_modalities=["visual", "auditory"],
+            primary_modality="visual",
             synchronicity="cue-based",
             mode="offline",
             events={"tap": 1, "swipe": 2},
@@ -156,10 +168,18 @@ class MIBMPI2024(BaseDataset):
                 "Cemal Kose",
             ],
             institution="Karadeniz Technical University",
+            institution_department=(
+                "Department of Software Engineering; Department of Computer Engineering"
+            ),
             country="TR",
             data_url=f"https://zenodo.org/records/{_ZENODO_RECORD}",
             publication_year=2024,
             related_paper_dois=["10.21203/rs.3.rs-4268007/v1"],
+            contact_info=[
+                "cmyilmaz@ktu.edu.tr",
+                "baharhatipoglu@ktu.edu.tr",
+                "ckose@ktu.edu.tr",
+            ],
             keywords=[
                 "motor imagery",
                 "BCI",
@@ -175,13 +195,33 @@ class MIBMPI2024(BaseDataset):
         runs_per_session=1,
         tags=Tags(pathology=["healthy"], modality=["motor"], type=["Motor Imagery"]),
         preprocessing=PreprocessingMetadata(
-            data_state="preprocessed", preprocessing_applied=True
+            data_state="preprocessed",
+            preprocessing_applied=True,
+            highpass_hz=0.16,
+            bandpass=[0.2, 45.0],
+            notch_hz=[50.0, 60.0],
+            filter_type="5th order Sinc + 1st order high-pass",
+            re_reference="average",
+            epoch_window=[-1.0, 2.5],
         ),
         signal_processing=SignalProcessingMetadata(
-            frequency_bands={"mu": [8.0, 12.0], "beta": [12.0, 30.0]}
+            classifiers=["QPDM", "Hard/Soft Voting Ensemble"],
+            feature_extraction=["2-D signal representation (transition points)"],
+            frequency_bands={
+                "FB1": [8.0, 12.0],
+                "FB2": [8.0, 30.0],
+                "FB3": [8.0, 40.0],
+                "FB4": [13.0, 30.0],
+                "FB5": [4.0, 40.0],
+            },
         ),
         cross_validation=CrossValidationMetadata(
-            evaluation_type=["within_subject", "cross_session"]
+            cv_method=(
+                "5-fold cross-validation (on session 1 for hyperparameter tuning; "
+                "session 1 train / session 2 test)"
+            ),
+            cv_folds=5,
+            evaluation_type=["within_subject", "cross_session"],
         ),
         bci_application=BCIApplicationMetadata(
             applications=["brain-mobile phone interface"],
@@ -191,9 +231,11 @@ class MIBMPI2024(BaseDataset):
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
             imagery_tasks=["tap", "swipe"],
+            cue_duration_s=1.0,
             imagery_duration_s=2.5,
         ),
         data_structure=DataStructureMetadata(
+            n_trials=1688,
             n_blocks=1,
             trials_context=(
                 "Two sessions per subject, one run each; 96-120 trials per "

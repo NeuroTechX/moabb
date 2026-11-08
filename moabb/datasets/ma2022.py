@@ -179,9 +179,11 @@ class Ma2022(BaseBIDSDataset):
             health_status="healthy",
             gender={"male": 13, "female": 12},
             age_mean=22.52,
+            age_std=1.12,
             age_min=20,
             age_max=24,
             bci_experience="naive",
+            species="homo sapiens",
             ages=[_DEMOGRAPHICS[i][1] for i in range(1, 26)],
             sexes=[_DEMOGRAPHICS[i][0] for i in range(1, 26)],
         ),
@@ -216,6 +218,7 @@ class Ma2022(BaseBIDSDataset):
                 "Xinxing Xia",
             ],
             senior_author="Banghua Yang",
+            contact_info=["yangbanghua@shu.edu.cn"],
             institution="Shanghai University",
             institution_department=(
                 "School of Mechatronic Engineering and Automation, "
@@ -231,7 +234,9 @@ class Ma2022(BaseBIDSDataset):
                 "(approval number: ECSHSRH 20180101)"
             ],
             funding=[
+                "National Key Research and Development Program of China (No. 2022YFC3601400)",
                 "National Natural Science Foundation of China (No. 61976133)",
+                "Key Research and Development Program of Jiangsu Province (No. BE2022064-1)",
                 "Shanghai Science and Technology Major Project (No. 2021SHZDZX)",
             ],
             keywords=["motor imagery", "EEG", "BCI", "cross-session", "cross-subject"],
@@ -240,6 +245,10 @@ class Ma2022(BaseBIDSDataset):
         runs_per_session=1,
         data_processed=True,
         file_format="EDF",
+        external_links={
+            "figshare": "https://doi.org/10.6084/m9.figshare.19228725.v1",
+            "nemar": "https://nemar.org/dataexplorer/detail?dataset_id=nm000288",
+        },
         preprocessing=PreprocessingMetadata(
             data_state="preprocessed",
             preprocessing_applied=True,
@@ -266,7 +275,8 @@ class Ma2022(BaseBIDSDataset):
             imagery_duration_s=4.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials=11988,
+            n_trials=500,
+            n_trials_per_class={"left_hand": 250, "right_hand": 250},
             trials_context=(
                 "25 subjects x 5 sessions x up to 100 trials "
                 "(74-100 retained per session after bad-segment rejection) "
@@ -285,6 +295,18 @@ class Ma2022(BaseBIDSDataset):
             cv_folds=10,
             evaluation_type=["within_session", "cross_session"],
         ),
+        performance={
+            "within_session_CSP": 0.6423,
+            "within_session_FBCSP": 0.6634,
+            "within_session_EEGNet": 0.7285,
+            "within_session_DeepConvNet": 0.7611,
+            "within_session_FBCNet": 0.7376,
+            "cross_session_CSP": 0.5762,
+            "cross_session_FBCSP": 0.5944,
+            "cross_session_EEGNet": 0.6592,
+            "cross_session_DeepConvNet": 0.6844,
+            "cross_session_FBCNet": 0.6579,
+        },
         bci_application=BCIApplicationMetadata(
             environment="laboratory",
             online_feedback=False,

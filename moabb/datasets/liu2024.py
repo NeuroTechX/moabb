@@ -149,7 +149,7 @@ class Liu2024(BaseDataset):
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
             channel_types={"eeg": 29, "eog": 2},
-            montage="10-10",
+            montage="standard_1005",
             hardware="ZhenTec NT1 wireless multichannel EEG acquisition system",
             cap_manufacturer="Xi'an ZhenTec Intelligence Technology Co., Ltd.",
             cap_model="ZhenTec NT1",
@@ -220,6 +220,7 @@ class Liu2024(BaseDataset):
             feedback_type="none",
             stimulus_type="video and audio",
             stimulus_modalities=["visual", "audio"],
+            primary_modality="visual",
             synchronicity="cue-based",
             mode="offline",
             has_training_test_split=True,

@@ -282,7 +282,11 @@ class Kim2025BetaRange(BaseDataset):
             mode="offline",
             task_type="speller",
             feedback_type="none",
-            has_training_test_split=True,
+            has_training_test_split=False,
+            stimulus_presentation={
+                "SoftwareName": "Psychophysics Toolbox",
+                "SoftwareVersion": "3",
+            },
         ),
         documentation=DocumentationMetadata(
             doi="10.1038/s41597-025-06032-2",
@@ -298,6 +302,11 @@ class Kim2025BetaRange(BaseDataset):
             ethics_approval=[
                 "Institutional Review Board at Gwangju Institute of Science and Technology (20211201-HR-64-02-04)"
             ],
+            funding=[
+                "National Research Foundation of Korea (No. RS-2024-00361688)",
+                "Institute of Information & communications Technology Planning & Evaluation (IITP) (No. 2019-0-01842)",
+            ],
+            contact_info=["scjun@gist.ac.kr"],
             keywords=[
                 "SSVEP",
                 "BCI",
@@ -308,7 +317,9 @@ class Kim2025BetaRange(BaseDataset):
                 "EEG",
             ],
         ),
-        preprocessing=PreprocessingMetadata(data_state="epoched"),
+        preprocessing=PreprocessingMetadata(
+            data_state="epoched", epoch_window=[-2.0, 5.0]
+        ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="ssvep",
             stimulus_frequencies_hz=[14.0 + i * 0.2 for i in range(40)],
@@ -327,7 +338,7 @@ class Kim2025BetaRange(BaseDataset):
             evaluation_type=["within_subject", "cross_subject"],
         ),
         bci_application=BCIApplicationMetadata(
-            environment="lab", online_feedback=None, applications=["speller"]
+            environment="lab", online_feedback=False, applications=["speller"]
         ),
         tags=Tags(pathology=["healthy"], modality=["visual"], type=["perception"]),
         sessions_per_subject=6,

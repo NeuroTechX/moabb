@@ -264,11 +264,14 @@ class Zhang2017(BaseDataset):
             n_subjects=12,
             health_status="healthy",
             gender={"male": 10, "female": 2},
+            age_mean=26.4,
+            age_std=4.58,
+            age_median=26.5,
             age_min=20,
             age_max=33,
             handedness={"right": 11, "left": 1},
             bci_experience="naive",
-            species="human",
+            species="homo sapiens",
             # From paper Table 2 (H01-H12)
             ages=[27, 31, 21, 30, 26, 20, 33, 23, 33, 28, 24, 21],
             sexes=[
@@ -354,6 +357,12 @@ class Zhang2017(BaseDataset):
             data_url="https://doi.org/10.6084/m9.figshare.5579461.v1",
             publication_year=2017,
             senior_author="Carlo Menon",
+            funding=[
+                "Canadian Institutes of Health Research",
+                "Natural Sciences and Engineering Research Council of Canada",
+                "Canada Research Chair, Government of Canada",
+                "China Scholarship Council",
+            ],
             license="CC BY 4.0",
             repository="Figshare",
             keywords=[

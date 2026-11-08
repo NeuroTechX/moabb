@@ -210,7 +210,7 @@ class BCIComp2020WalkingERP(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             line_freq=60.0,
-            hardware="BrainAmp (Brain Products GmbH, Germany)",
+            hardware="actiCap (BrainProducts GmbH, Germany) / cEEGrid (TMSi, USA)",
             sampling_rate=_SFREQ,
             channel_types={
                 "eeg": len(_SCALP_CHANNELS) + len(_EAR_CHANNELS),
@@ -218,10 +218,6 @@ class BCIComp2020WalkingERP(BaseDataset):
                 "misc": len(_IMU_CHANNELS),
             },
             montage="standard_1005",
-            # Amplifier model is not stated in the Track 5 data
-            # description PDF and not clearly documented in the
-            # Frontiers review paper either; left unset rather than
-            # guessed.
             sensors=list(_CH_NAMES),
             auxiliary_channels=AuxiliaryChannelsMetadata(
                 has_eog=True,
@@ -235,7 +231,7 @@ class BCIComp2020WalkingERP(BaseDataset):
             gender={"female": 4, "male": 11},
             age_min=19,
             age_max=32,
-            species="human",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             events=_EVENTS,
@@ -310,6 +306,7 @@ class BCIComp2020WalkingERP(BaseDataset):
         paradigm_specific=ParadigmSpecificMetadata(detected_paradigm="p300"),
         data_structure=DataStructureMetadata(
             n_trials=300,
+            n_trials_per_class={"Target": 60, "NonTarget": 240},
             trials_context=(
                 "15 subjects * 300 trials/subject temporally split "
                 "into 180 training / 60 validation / 60 test."

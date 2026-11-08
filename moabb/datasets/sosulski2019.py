@@ -94,7 +94,7 @@ class Sosulski2019(BaseDataset):
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
             channel_types={"eeg": 31, "eog": 1, "misc": 5},
-            montage="standard_1020",
+            montage="standard_1005",
             hardware="BrainProducts BrainAmp DC",
             sensor_type="passive Ag/AgCl",
             reference="nose",
@@ -178,7 +178,9 @@ class Sosulski2019(BaseDataset):
             instructions="Focus on the target tones (1000 Hz) and ignore the non-target tones (500 Hz). Refrain from blinking and movement as much as possible.",
         ),
         documentation=DocumentationMetadata(
-            doi="10.48550/arXiv.2109.06011",
+            doi="10.6094/UNIFR/154576",
+            associated_paper_doi="10.48550/arXiv.2109.06011",
+            related_paper_dois=["10.48550/arXiv.2109.06011"],
             description="Auditory oddball ERP dataset from 13 healthy subjects. Two sinusoidal tones (target 1000 Hz, non-target 500 Hz) presented at various stimulus onset asynchronies (SOAs, 60-600 ms). 31-channel EEG recorded at 1000 Hz with BrainProducts BrainAmp DC. Raw BrainVision format data.",
             investigators=[
                 "Jan Sosulski",

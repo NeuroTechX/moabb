@@ -11,9 +11,11 @@ from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
     AuxiliaryChannelsMetadata,
     DatasetMetadata,
+    DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
     ParticipantMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 from moabb.datasets.perdikis2018 import _keep_class_cues
@@ -122,7 +124,10 @@ class Alawieh2025(BaseDataset):
         ),
         participants=ParticipantMetadata(
             n_subjects=27,
-            health_status="able-bodied and spinal cord injury",
+            health_status="mixed",
+            age_min=18,
+            age_max=30,
+            gender={"male": 14, "female": 12},
             clinical_population="25 able-bodied, 2 spinal cord injury (SCI)",
             species="homo sapiens",
         ),
@@ -131,7 +136,7 @@ class Alawieh2025(BaseDataset):
             n_classes=2,
             class_labels=["left_hand", "right_hand"],
             trial_duration=4.0,
-            feedback_type="kinesthetic",
+            feedback_type="none",
             synchronicity="cue-based",
             mode="offline",
             events={"left_hand": 1, "right_hand": 2},
@@ -162,11 +167,29 @@ class Alawieh2025(BaseDataset):
             associated_paper_doi="10.1073/pnas.2418920122",
             related_paper_dois=["10.1101/2024.06.10.24308723"],
             institution="The University of Texas at Austin",
+            institution_department="Chandra Family Department of Electrical and Computer Engineering",
+            contact_info=["hussein@utexas.edu", "jose.millan@austin.utexas.edu"],
+            keywords=[
+                "brain–computer interfaces",
+                "motor rehabilitation",
+                "skill learning",
+                "neuromodulation",
+                "spinal cord stimulation",
+            ],
             ethics_approval=[
                 "University of Texas at Austin Institutional Review Board (IRB protocol number: 2020-03-0073; ClinicalTrials.gov NCT05183152)"
             ],
         ),
         sessions_per_subject=1,
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["Riemannian Geometry"],
+            frequency_bands={"mu": [8.0, 13.0], "beta": [13.0, 30.0]},
+        ),
+        data_structure=DataStructureMetadata(
+            n_trials="60-80 per session (3-4 runs of 20 trials)",
+            n_trials_per_class={"left_hand": 10, "right_hand": 10},
+            trials_context="per run (3-4 runs of 20 trials per session)",
+        ),
         tags=Tags(
             pathology=["healthy", "spinal cord injury"],
             modality=["Motor"],

@@ -157,7 +157,7 @@ class Ma2020(BaseDataset):
 
     References
     ----------
-    .. [1] X. Ma, S. Qiu, C. Du, J. Xing, and H. He, "Multi-channel EEG
+    .. [1] X. Ma, S. Qiu, and H. He, "Multi-channel EEG
        recording during motor imagery of different joints from the same limb,"
        Scientific Data, vol. 7, no. 1, p. 191, 2020.
        DOI: 10.1038/s41597-020-0535-2
@@ -171,6 +171,7 @@ class Ma2020(BaseDataset):
             channel_types={"eeg": 62},
             montage="standard_1005",
             hardware="Neuroscan SynAmps2",
+            sensor_type="gel",
             sensors=MA2020_CH_NAMES,
             line_freq=50.0,
             reference="left mastoid",
@@ -191,10 +192,12 @@ class Ma2020(BaseDataset):
             health_status="healthy",
             gender={"male": 18, "female": 7},
             age_mean=25.56,
+            age_std=1.36,
             age_min=23,
             age_max=29,
             handedness={"right": 25},
             bci_experience="naive",
+            species="homo sapiens",
             ages=[d[1] for d in [_DEMOGRAPHICS[i] for i in range(1, 26)]],
             sexes=[d[0] for d in [_DEMOGRAPHICS[i] for i in range(1, 26)]],
             handedness_list=["right"] * 25,
@@ -204,6 +207,7 @@ class Ma2020(BaseDataset):
             events={"right_hand": 1, "right_elbow": 2},
             n_classes=2,
             class_labels=["right_hand", "right_elbow"],
+            trials_per_class={"right_hand": 300, "right_elbow": 300},
             trial_duration=4.0,
             stimulus_type="visual cue",
             stimulus_modalities=["visual"],
@@ -222,14 +226,9 @@ class Ma2020(BaseDataset):
         ),
         documentation=DocumentationMetadata(
             doi="10.1038/s41597-020-0535-2",
-            investigators=[
-                "Xuelin Ma",
-                "Shuang Qiu",
-                "Changde Du",
-                "Junfeng Xing",
-                "Huiguang He",
-            ],
+            investigators=["Xuelin Ma", "Shuang Qiu", "Huiguang He"],
             senior_author="Huiguang He",
+            contact_info=["huiguang.he@ia.ac.cn"],
             institution="Chinese Academy of Sciences",
             country="CN",
             repository="Harvard Dataverse",
@@ -241,9 +240,10 @@ class Ma2020(BaseDataset):
                 "Ethics Committee of the Institute of Automation, Chinese Academy of Sciences"
             ],
             funding=[
-                "National Key Research and Development Plan of China (No. 2017YFB1002502)",
                 "National Natural Science Foundation of China (No. 61976209)",
                 "National Natural Science Foundation of China (No. 61906188)",
+                "Chinese Academy of Sciences (No. ZDBS-LY-JSC013)",
+                "Chinese Academy of Sciences (No. KGFZD-135-19-06)",
             ],
             keywords=["motor imagery", "EEG", "BCI", "same limb", "hand", "elbow"],
         ),
@@ -275,6 +275,7 @@ class Ma2020(BaseDataset):
         cross_validation=CrossValidationMetadata(
             cv_method="5-fold", cv_folds=5, evaluation_type=["within_subject"]
         ),
+        performance={"FBCSP_SVM_accuracy": 0.6715},
         bci_application=BCIApplicationMetadata(
             environment="laboratory",
             online_feedback=False,

@@ -17,9 +17,12 @@ from .metadata.schema import (
     BCIApplicationMetadata,
     CrossValidationMetadata,
     DatasetMetadata,
+    DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
+    ParadigmSpecificMetadata,
     ParticipantMetadata,
+    PreprocessingMetadata,
     SignalProcessingMetadata,
     Tags,
 )
@@ -54,14 +57,14 @@ class Lee2021Mobile(BaseDataset):
     - Session '02': Standing (0 m/s)
     - Session '03': Slow walking (0.8 m/s)
     - Session '04': Fast walking (1.6 m/s)
-    - Session '05': Slight running (2.0 m/s) [subjects 1-18 only]
+    - Session '05': Slight running (2.0 m/s) [subjects 1-19 in ERP, 1-18 in SSVEP except sub-10]
 
     For ERP, session '01' is also available (training, standing only).
 
     Warnings
     --------
-    Not all subjects have session '05' (2.0 m/s running). Subjects 19-24
-    only have sessions 01-04.
+    Not all subjects have session '05' (2.0 m/s running). Subjects 20-24
+    only have sessions 01-04 (and subject 10 lacks SSVEP session 05).
 
     The BIDS events.tsv files have onset in samples (not seconds as BIDS
     requires), so data is loaded via MNE's BrainVision reader directly
@@ -80,7 +83,8 @@ class Lee2021Mobile(BaseDataset):
             sampling_rate=500.0,
             channel_types={"eeg": 46, "eog": 4},
             montage="standard_1005",
-            hardware="BrainAmp (Brain Product GmbH)",
+            hardware="BrainAmp (Brain Product GmbH) + Smarting wireless amplifier (mBrainTrain)",
+            software="MATLAB 2018a, Psychophysics Toolbox, BrainVision, Smarting Android application",
             line_freq=60.0,
             sensor_type="Ag/AgCl",
             electrode_material="Ag/AgCl",
@@ -94,7 +98,7 @@ class Lee2021Mobile(BaseDataset):
         participants=ParticipantMetadata(
             n_subjects=23,
             health_status="healthy",
-            gender={"male": 13, "female": 10},
+            gender={"male": 14, "female": 9},
             age_mean=24.5,
             age_min=19,
             age_max=32,
@@ -156,6 +160,8 @@ class Lee2021Mobile(BaseDataset):
             paradigm="ssvep",
             events={"5.45": 11, "8.57": 12, "12.0": 13},
             n_classes=3,
+            class_labels=["5.45", "8.57", "12.0"],
+            trials_per_class={"5.45": 20, "8.57": 20, "12.0": 20},
             trial_duration=5.0,
             stimulus_type="visual flicker",
             stimulus_modalities=["visual"],
@@ -174,7 +180,10 @@ class Lee2021Mobile(BaseDataset):
             ],
             senior_author="Seong-Whan Lee",
             institution="Korea University",
+            institution_department="Department of Brain and Cognitive Engineering; Department of Artificial Intelligence",
+            institution_address="145 Anam-ro, Seongbuk-gu, Seoul, 02841, South Korea",
             country="KR",
+            contact_info=["ye_lee@korea.ac.kr", "sw.lee@korea.ac.kr"],
             repository="OSF",
             data_url="https://osf.io/r7s9b/",
             license="CC BY 4.0",
@@ -189,9 +198,26 @@ class Lee2021Mobile(BaseDataset):
             ],
             keywords=["SSVEP", "ERP", "mobile BCI", "ear-EEG", "locomotion"],
         ),
+        paradigm_specific=ParadigmSpecificMetadata(
+            detected_paradigm="ssvep",
+            stimulus_frequencies_hz=[5.45, 8.57, 12.0],
+            n_targets=3,
+            soa_ms=7000.0,
+            isi_ms=2000.0,
+        ),
+        data_structure=DataStructureMetadata(
+            n_trials=60,
+            n_trials_per_class={"5.45": 20, "8.57": 20, "12.0": 20},
+            trials_context="60 trials per session (20 per target frequency)",
+        ),
+        preprocessing=PreprocessingMetadata(
+            data_state="raw",
+            preprocessing_applied=False,
+            notes="MOABB loads raw 500 Hz /sourcedata/ BrainVision files (32 scalp-EEG, 4 EOG, 14 ear-EEG).",
+        ),
         signal_processing=SignalProcessingMetadata(
-            classifiers=["rLDA", "CCA"],
-            feature_extraction=["power_over_time_intervals", "CCA"],
+            classifiers=["CCA"],
+            feature_extraction=["canonical_correlation_analysis", "PSD"],
             frequency_bands={
                 "delta": [0.5, 3.5],
                 "theta": [3.5, 7.5],
@@ -201,7 +227,7 @@ class Lee2021Mobile(BaseDataset):
             spatial_filters=None,
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="holdout", evaluation_type=["within_subject"]
+            cv_method="training_free (CCA)", evaluation_type=["within_subject"]
         ),
         bci_application=BCIApplicationMetadata(
             applications=["mobile_BCI"], environment="treadmill"
@@ -512,7 +538,8 @@ class Lee2021Mobile_ERP(Lee2021Mobile):
             sampling_rate=500.0,
             channel_types={"eeg": 46, "eog": 4},
             montage="standard_1005",
-            hardware="BrainAmp (Brain Product GmbH)",
+            hardware="BrainAmp (Brain Product GmbH) + Smarting wireless amplifier (mBrainTrain)",
+            software="MATLAB 2018a, Psychophysics Toolbox, BrainVision, Smarting Android application",
             line_freq=60.0,
             sensor_type="Ag/AgCl",
             electrode_material="Ag/AgCl",
@@ -589,6 +616,7 @@ class Lee2021Mobile_ERP(Lee2021Mobile):
             paradigm="p300",
             events={"Target": 2, "NonTarget": 1},
             n_classes=2,
+            trials_per_class={"Target": 60, "NonTarget": 240},
             trial_duration=1.0,
             stimulus_type="visual oddball",
             stimulus_modalities=["visual"],
@@ -607,7 +635,10 @@ class Lee2021Mobile_ERP(Lee2021Mobile):
             ],
             senior_author="Seong-Whan Lee",
             institution="Korea University",
+            institution_department="Department of Brain and Cognitive Engineering; Department of Artificial Intelligence",
+            institution_address="145 Anam-ro, Seongbuk-gu, Seoul, 02841, South Korea",
             country="KR",
+            contact_info=["ye_lee@korea.ac.kr", "sw.lee@korea.ac.kr"],
             repository="OSF",
             data_url="https://osf.io/r7s9b/",
             license="CC BY 4.0",
@@ -621,6 +652,34 @@ class Lee2021Mobile_ERP(Lee2021Mobile):
                 "IITP No. 2019-0-00079",
             ],
             keywords=["SSVEP", "ERP", "mobile BCI", "ear-EEG", "locomotion"],
+        ),
+        paradigm_specific=ParadigmSpecificMetadata(
+            detected_paradigm="p300", n_targets=2, soa_ms=1000.0, isi_ms=500.0
+        ),
+        data_structure=DataStructureMetadata(
+            n_trials=300,
+            n_trials_per_class={"Target": 60, "NonTarget": 240},
+            trials_context="300 trials per session (60 Target 'OOO', 240 NonTarget 'XXX')",
+        ),
+        preprocessing=PreprocessingMetadata(
+            data_state="raw",
+            preprocessing_applied=False,
+            notes="MOABB loads raw 500 Hz /sourcedata/ BrainVision files (32 scalp-EEG, 4 EOG, 14 ear-EEG).",
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["rLDA"],
+            feature_extraction=["time_interval_averaging"],
+            frequency_bands={
+                "delta": [0.5, 3.5],
+                "theta": [3.5, 7.5],
+                "alpha": [7.5, 12.5],
+                "beta": [12.5, 30.0],
+            },
+            spatial_filters=None,
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="holdout (Session 01 train -> Sessions 02-05 test)",
+            evaluation_type=["within_subject", "cross_session"],
         ),
         bci_application=BCIApplicationMetadata(
             environment="mobile", online_feedback=False

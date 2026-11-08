@@ -496,7 +496,33 @@ def _is_motor_execution(metadata, dataset: BaseDataset | None = None) -> bool:
     if metadata is None:
         return False
     exp = getattr(metadata, "experiment", None)
-    if exp is not None and "execution" in (getattr(exp, "task_type", None) or "").lower():
+    task_type = (getattr(exp, "task_type", None) or "").lower() if exp else ""
+    sdesign = (getattr(exp, "study_design", None) or "").lower() if exp else ""
+    if any(
+        kw in task_type
+        for kw in (
+            "execution",
+            "executed",
+            "attempted",
+            "reaching",
+            "trajectory",
+            "reach-and-grasp",
+            "active movement",
+        )
+    ):
+        return True
+    if (
+        any(
+            kw in sdesign
+            for kw in (
+                "motor execution",
+                "attempted movement",
+                "joystick",
+                "active reaching",
+            )
+        )
+        and "motor imagery" not in sdesign
+    ):
         return True
     ps = _get_paradigm_specific(metadata)
     if (
@@ -509,6 +535,32 @@ def _is_motor_execution(metadata, dataset: BaseDataset | None = None) -> bool:
     return any("execution" in t for t in tag_types) and not any(
         "imagery" in t for t in tag_types
     )
+
+
+def _resolve_mi_task_labels(
+    metadata, dataset: BaseDataset | None = None
+) -> tuple[str, str]:
+    """Return (task_label, cue_task_label) for an imagery-paradigm dataset."""
+    exp = getattr(metadata, "experiment", None) if metadata else None
+    task_type = (getattr(exp, "task_type", None) or "").lower() if exp else ""
+    sdesign = (getattr(exp, "study_design", None) or "").lower() if exp else ""
+    tags = getattr(metadata, "tags", None) if metadata else None
+    tag_types = [t.lower() for t in (getattr(tags, "type", None) or [])]
+    combined = " ".join([task_type, sdesign, *tag_types])
+
+    if any(kw in combined for kw in ("imagined speech", "inner speech", "covert speech")):
+        return "Imagined Speech", "Cue + Speech"
+    if "visual object" in combined or "object recognition" in combined:
+        return "Visual Stimulus", "Visual Stimulus"
+    if "visual imagery" in combined and "motor imagery" not in combined:
+        return "Visual Imagery", "Cue + Visual Imagery"
+    if "attempted" in task_type or (
+        "attempted movement" in sdesign and "motor imagery" not in sdesign
+    ):
+        return "Attempted Movement", "Cue + Attempted"
+    if _is_motor_execution(metadata, dataset):
+        return "Motor Execution", "Cue + ME"
+    return "Motor Imagery", "Cue + MI"
 
 
 def _finalize_mi_timeline(
@@ -541,9 +593,7 @@ def _finalize_mi_timeline(
 def _extract_mi_timeline(metadata, dataset: BaseDataset) -> StimulusTimeline | None:
     ps = _get_paradigm_specific(metadata)
     sp = _get_stim_pres(metadata)
-    is_execution = _is_motor_execution(metadata, dataset)
-    task_label = "Motor Execution" if is_execution else "Motor Imagery"
-    cue_task_label = "Cue + ME" if is_execution else "Cue + MI"
+    task_label, cue_task_label = _resolve_mi_task_labels(metadata, dataset)
 
     cross_onset_s: float | None = None
     beep_s: float | None = None
@@ -907,6 +957,10 @@ def _extract_mi_timeline(metadata, dataset: BaseDataset) -> StimulusTimeline | N
         ]
         return _finalize_mi_timeline(dataset, phases, trial_dur_s)
 
+    if task_label == "Visual Stimulus":
+        phases = [TimelinePhase("Visual Stimulus", 0.0, trial_dur_s, "cue")]
+        return _finalize_mi_timeline(dataset, phases, trial_dur_s)
+
     # Default cue-triggered epoch [0, trial_dur_s] where t=0 is cue/task onset
     cue_d = min(1.0, round(trial_dur_s * 0.2, 2))
     phases = [
@@ -933,6 +987,8 @@ def _extract_ssvep_timeline(metadata, dataset: BaseDataset) -> StimulusTimeline 
         trial_dur_s = float(interval[1] - interval[0])
     if trial_dur_s is None:
         return None
+    if interval is not None:
+        trial_dur_s = max(float(trial_dur_s), float(interval[1]))
 
     if cue_dur_s is None:
         cue_dur_s = 0.5  # common default
@@ -948,7 +1004,16 @@ def _extract_ssvep_timeline(metadata, dataset: BaseDataset) -> StimulusTimeline 
     rest_dur = 0.5 if flicker_dur > 1.0 else 0.0
     flicker_dur -= rest_dur
 
-    freq_label = "Flickering Stimulus"
+    modalities = (
+        [m.lower() for m in (getattr(exp, "stimulus_modalities", None) or [])]
+        if exp
+        else []
+    )
+    sdesign = (getattr(exp, "study_design", None) or "").lower() if exp else ""
+    is_auditory = (
+        bool(modalities) and all(m in ("auditory", "audio") for m in modalities)
+    ) or ("auditory" in sdesign and "visual" not in sdesign)
+    freq_label = "Auditory Stimulus" if is_auditory else "Flickering Stimulus"
     phases.append(TimelinePhase(freq_label, cue_dur_s, flicker_dur, "flicker"))
 
     # Rest
@@ -991,12 +1056,15 @@ def _extract_cvep_timeline(metadata, dataset: BaseDataset) -> StimulusTimeline |
     cue_dur_s = getattr(ps, "cue_duration_s", None) if ps else None
     stim_freqs = getattr(ps, "stimulus_frequencies_hz", None) if ps else None
     trial_dur_s = getattr(exp, "trial_duration", None) if exp else None
+    feedback_type = (getattr(exp, "feedback_type", None) or "").lower() if exp else ""
     interval = getattr(dataset, "interval", None)
 
     if trial_dur_s is None and interval is not None:
         trial_dur_s = float(interval[1] - interval[0])
     if trial_dur_s is None:
         return None
+    if interval is not None:
+        trial_dur_s = max(float(trial_dur_s), float(interval[1]))
 
     if cue_dur_s is None:
         cue_dur_s = 0.5
@@ -1009,7 +1077,7 @@ def _extract_cvep_timeline(metadata, dataset: BaseDataset) -> StimulusTimeline |
     phases.append(TimelinePhase("Cue", 0, cue_dur_s, "cue"))
 
     # Code stimulation block
-    feedback_dur = 0.5  # assume short feedback at end
+    feedback_dur = 0.0 if feedback_type == "none" else 0.5
     stim_dur = trial_dur_s - cue_dur_s - feedback_dur
     if stim_dur < 0.5:
         stim_dur = trial_dur_s - cue_dur_s
@@ -1084,10 +1152,14 @@ def _extract_rstate_timeline(metadata, dataset: BaseDataset) -> StimulusTimeline
                 )
         total = 3 * block_dur
     else:
-        # Generic resting state events
+        # Generic resting state / mental workload condition epochs
         for i, ev in enumerate(events[:3]):
             onset = i * block_dur
-            style = "rest" if i % 2 == 0 else "fixation"
+            style = (
+                "rest"
+                if ev.lower() in ("rs", "rest", "resting", "baseline")
+                else ("cue" if len(events) > 1 else "rest")
+            )
             phases.append(TimelinePhase(ev, onset, block_dur, style))
         total = len(phases) * block_dur
 

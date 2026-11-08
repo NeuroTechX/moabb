@@ -86,6 +86,7 @@ class Chen2017SingleFlicker(BaseDataset):
             channel_types={"eeg": 32},
             montage="biosemi32",
             hardware="BioSemi ActiveTwo",
+            software="Lab Streaming Layer (LSL), MATLAB, Psychophysics Toolbox",
             reference="CMS/DRL",
             line_freq=50.0,
             sensor_type="active",
@@ -101,7 +102,7 @@ class Chen2017SingleFlicker(BaseDataset):
             age_max=32,
         ),
         experiment=ExperimentMetadata(
-            trial_duration=3.5,
+            trial_duration=4.0,
             paradigm="ssvep",
             events={"north": 1, "east": 2, "west": 3, "south": 4},
             n_classes=4,

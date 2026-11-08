@@ -84,10 +84,10 @@ class Pan2025(_PanDataverse):
         participants=ParticipantMetadata(
             n_subjects=10,
             health_status="healthy",
-            gender={"male": 9, "female": 5},
+            gender={"male": 7, "female": 3},
             age_min=22,
             age_max=25,
-            handedness={"right": 12, "left": 2},
+            handedness={"right": 8, "left": 2},
             species="homo sapiens",
         ),
         experiment=ExperimentMetadata(

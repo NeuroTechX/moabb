@@ -12,7 +12,6 @@ from moabb.datasets.base import BaseDataset
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
     BCIApplicationMetadata,
-    CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
@@ -107,6 +106,15 @@ class Lee2022(OpenNeuroMirrorMixin, BaseDataset):
             ages=[75, 48, 78, 83, 77, 79, 55],
             sexes=["male", "female", "female", "female", "male", "male", "female"],
             handedness={"right": 6, "left": 1},
+            handedness_list=[
+                "right",
+                "right",
+                "right",
+                "right",
+                "right",
+                "left",
+                "right",
+            ],
             species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
@@ -114,6 +122,12 @@ class Lee2022(OpenNeuroMirrorMixin, BaseDataset):
             paradigm="imagery",
             n_classes=4,
             class_labels=list(_EVENTS.keys()),
+            trials_per_class={
+                "reaching": 30,
+                "grasping": 30,
+                "lifting": 30,
+                "twisting": 30,
+            },
             trial_duration=15.0,
             study_design=(
                 "Four right-upper-limb MI tasks (reaching, grasping, lifting, "
@@ -155,17 +169,21 @@ class Lee2022(OpenNeuroMirrorMixin, BaseDataset):
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
             imagery_tasks=list(_EVENTS.keys()),
+            cue_duration_s=4.0,
             imagery_duration_s=5.0,
         ),
         data_structure=DataStructureMetadata(
             n_trials=120,
+            n_trials_per_class={
+                "reaching": 30,
+                "grasping": 30,
+                "lifting": 30,
+                "twisting": 30,
+            },
             trials_context=(
                 "7 subjects x 3 runs x 40 trials (10 per class per run); "
                 "30 trials per class per subject."
             ),
-        ),
-        cross_validation=CrossValidationMetadata(
-            cv_method="within_subject", evaluation_type=["within_subject"]
         ),
         bci_application=BCIApplicationMetadata(
             applications=["motor_control", "rehabilitation"],

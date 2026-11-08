@@ -257,7 +257,7 @@ class BNCI2025_001(BNCIBaseDataset):
     - Equipment: BrainAmp (Brain Products GmbH)
     - Channels: 60 EEG + 4 EOG = 64 total channels
     - Sampling rate: 500 Hz
-    - Reference: Common average reference (CAR) across 55 channels
+    - Reference: Right mastoid (offline CAR across 55 channels)
     - EOG placement: Outer canthi, above/below left eye
     - Electrode positions: Measured with ultrasonic device (ELPOS, Zebris)
 
@@ -312,7 +312,7 @@ class BNCI2025_001(BNCIBaseDataset):
             montage="standard_1005",
             sensor_type="EEG",
             hardware="BrainAmp",
-            reference="common average",
+            reference="right mastoid",
             software="EEGLAB",
             filters="50 Hz notch",
             sensors=[
@@ -392,8 +392,8 @@ class BNCI2025_001(BNCIBaseDataset):
             auxiliary_channels=AuxiliaryChannelsMetadata(
                 has_eog=True, eog_channels=4, eog_type=["horizontal", "vertical"]
             ),
-            cap_manufacturer="Zebris Medical GmbH",
-            cap_model="ELPOS",
+            cap_manufacturer=None,
+            cap_model=None,
         ),
         participants=ParticipantMetadata(
             n_subjects=20,
@@ -402,7 +402,7 @@ class BNCI2025_001(BNCIBaseDataset):
             age_std=4.1,
             handedness={"right": 17, "left": 3},
             health_status="Healthy",
-            species="human",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             paradigm="imagery",
@@ -457,8 +457,8 @@ class BNCI2025_001(BNCIBaseDataset):
         ),
         documentation=DocumentationMetadata(
             doi="10.1088/1741-2552/ada0ea",
-            repository="GitHub",
-            data_url="https://github.com/rkobler/eyeartifactcorrection",
+            repository="BNCI Horizon 2020",
+            data_url="https://lampx.tugraz.at/~bci/database/001-2025/",
             investigators=["Nitikorn Srisrisawang", "Gernot R Müller-Putz"],
             senior_author="Gernot R Müller-Putz",
             contact_info=["gernot.mueller@tugraz.at"],
@@ -488,8 +488,8 @@ class BNCI2025_001(BNCIBaseDataset):
         ),
         tags=Tags(pathology=["Healthy"], modality=["Visual"], type=["Motor"]),
         preprocessing=PreprocessingMetadata(
-            data_state="preprocessed with eye artifact correction",
-            preprocessing_applied=True,
+            data_state="raw",
+            preprocessing_applied=False,
             preprocessing_steps=[
                 "low-pass filter at 100 Hz",
                 "notch filter at 50 Hz",
@@ -518,7 +518,7 @@ class BNCI2025_001(BNCIBaseDataset):
             re_reference="common average",
             downsampled_to_hz=200.0,
             epoch_window=[-3.0, 4.0],
-            notes="Frontal channels (AF7, AF3, AFz, AF4, AF8) and EOG removed prior to CAR to reduce residual eye artifacts. Final analysis used 55 channels. Eye blocks recorded separately for SGEYESUB model training. Bad trials rejected based on amplitude >200 µV or standard deviation >5SD. Movement-related bad trials rejected for incorrect direction, no movement, duration <0.2s or >4s, or movement initiated <0.5s after cue stop.",
+            notes="Distributed files are raw 500 Hz 64-channel EEGLAB (.set/.fdt) recordings; listed preprocessing steps are from the paper's offline analysis. Frontal channels (AF7, AF3, AFz, AF4, AF8) and EOG removed prior to CAR to reduce residual eye artifacts. Final analysis used 55 channels. Eye blocks recorded separately for SGEYESUB model training. Bad trials rejected based on amplitude >200 µV or standard deviation >5SD. Movement-related bad trials rejected for incorrect direction, no movement, duration <0.2s or >4s, or movement initiated <0.5s after cue stop.",
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=["sLDA (shrinkage Linear Discriminant Analysis)"],
@@ -567,7 +567,7 @@ class BNCI2025_001(BNCIBaseDataset):
         ),
         sessions_per_subject=1,
         runs_per_session=1,
-        data_processed=True,
+        data_processed=False,
         file_format="EEG (BrainAmp)",
         abstract="Objective. The complicated processes of carrying out a hand reach are still far from fully understood. In order to further the understanding of the kinematics of hand movement, the simultaneous representation of speed, distance, and direction in the brain is explored. Approach. We utilized electroencephalography (EEG) signals and hand position recorded during a four-direction center-out reaching task with either quick or slow speed, near and far distance. Linear models were employed in two modes: decoding and encoding. First, to test the discriminability of speed, distance, and direction. Second, to find the contribution of the cortical sources via the source localization. Additionally, we compared the decoding accuracy when using features obtained from EEG signals and source-localized EEG signals based on the results from the encoding model. Main results. Speed, distance, and direction can be classified better than chance. The accuracy of the speed was also higher than the distance, indicating a stronger representation of the speed than the distance. The speed and distance showed similar significant sources in the central regions related to the movement initiation, while the direction indicated significant sources in the parieto-occipital regions related to the movement preparation. The combination of the features from EEG and source localized signals improved the classification. Significance. Directional and non-directional information are represented in two separate networks. The quick movement resulted in improvement in the direction classification. Our results enhance our understanding of hand movement in the brain and help us make informed decisions when designing an improved paradigm in the future.",
         methodology="Participants performed discrete reaching movements in four directions (up, down, left, right) with two speeds (quick: 0.4-0.8s cue duration, slow: 1.2-2.4s cue duration) and two distances (near: ~5cm/8.7cm actual, far: ~10cm/15.6cm actual). Each trial consisted of outward and inward movements. Visual cue moved from center to target position. Participants waited ≥1s after cue stop before mimicking movement with eyes fixated on cue. Hand position tracked via camera with pink marker on right index finger. 32 conditions (2 speed × 2 distance × 4 direction × 2 inward/outward) with 30 trials per class = 960 trials total per participant. After rejection, ~852 trials remained. EEG processed with EEGLAB on MATLAB R2019b. Signals epoched in two alignments: cue stop aligned (CStp: -3 to 4s) and movement onset aligned (MOn: -3 to 3s). Analysis included MRCP analysis, point-wise classification with instantaneous and windowed (500ms) features, encoding model using GLM, source localization using BEM with ICBM152 template and sLORETA inverse solution via Brainstorm, and source-space classification using data-driven ROIs derived from encoding model. Classification performed with shrinkage LDA. Permutation testing (1000 repetitions) used for significance. FDR controlled using Benjamini-Hochberg procedures.",
@@ -805,8 +805,7 @@ def _load_data_002_2025(
     Parameters
     ----------
     subject : int
-        Subject number (1-2). Note: Only 2 subjects are currently available
-        on the BNCI server.
+        Subject number (1-10).
     path : None | str
         Location of where to look for the BNCI data storing location.
     force_update : bool
@@ -1035,9 +1034,6 @@ class BNCI2025_002(BNCIBaseDataset):
     phases, with varying levels of EEG feedback (0%, 50%, 100%) to evaluate
     the impact of feedback on decoding performance.
 
-    Note: Only 2 of the original 20 participants' data is currently available
-    on the BNCI server.
-
     **Participants**
 
     - 10 able-bodied subjects (5 male, 5 female)
@@ -1081,11 +1077,12 @@ class BNCI2025_002(BNCIBaseDataset):
 
     References
     ----------
-    .. [1] Kobler, R. J., Almeida, I., Sburlea, A. I., & Muller-Putz, G. R.
-           (2022). Continuous 2D trajectory decoding from attempted movement:
-           across-session performance in able-bodied and feasibility in a
-           spinal cord injured participant. Journal of Neural Engineering,
-           19(3), 036005. https://doi.org/10.1088/1741-2552/ac689f
+    .. [1] Kobler, R. J., Pulferer, H. S., Ásgeirsdóttir, B., Mondini, V.,
+           Sburlea, A. I., & Müller-Putz, G. R. (2022). Continuous 2D
+           trajectory decoding from attempted movement: across-session
+           performance in able-bodied and feasibility in a spinal cord
+           injured participant. Journal of Neural Engineering, 19(3), 036005.
+           https://doi.org/10.1088/1741-2552/ac689f
 
     Notes
     -----
@@ -1196,7 +1193,7 @@ class BNCI2025_002(BNCIBaseDataset):
             age_std=5.0,
             handedness={"right": 10},
             bci_experience="naive BCI users in terms of motor decoding; 4 had previous EEG experience",
-            species="human",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             events={"snakerun": 1, "freerun": 2, "eyerun": 3},
@@ -1246,8 +1243,8 @@ class BNCI2025_002(BNCIBaseDataset):
                 "neuroplasticity",
                 "brain-computer interface",
             ],
-            repository="GitHub",
-            data_url="https://github.com/sccn/labstreaminglayer",
+            repository="BNCI Horizon 2020",
+            data_url="https://lampx.tugraz.at/~bci/database/002-2025/",
             license="CC-BY-4.0",
         ),
         tags=Tags(
@@ -1327,7 +1324,7 @@ class BNCI2025_002(BNCIBaseDataset):
         sessions_per_subject=3,
         runs_per_session=3,
         data_processed=True,
-        file_format="gdf",
+        file_format="MAT",
     )
     nemar_id = "nm000170"
 

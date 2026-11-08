@@ -11,6 +11,8 @@ from moabb.datasets.base import BaseDataset
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
     AuxiliaryChannelsMetadata,
+    BCIApplicationMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
@@ -18,6 +20,7 @@ from moabb.datasets.metadata.schema import (
     ParadigmSpecificMetadata,
     ParticipantMetadata,
     PreprocessingMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 
@@ -208,6 +211,9 @@ class Kueper2024(BaseDataset):
             electrode_type="active",
             reference="FCz",
             ground="AFz",
+            software="Presentation (Neurobehavioral Systems, Inc.)",
+            impedance_threshold_kohm=5.0,
+            filters={"highpass_hz": 0.1, "lowpass_hz": 131.0},
             sensors=EEG_CHANNELS,
             line_freq=50.0,
             auxiliary_channels=AuxiliaryChannelsMetadata(has_eog=False),
@@ -258,7 +264,13 @@ class Kueper2024(BaseDataset):
                 "Elsa Andrea Kirchner",
             ],
             institution="German Research Centre for Artificial Intelligence (DFKI)",
+            institution_department="Robotics Innovation Center (DFKI); Institute of Medical Technology Systems (University of Duisburg-Essen)",
             country="DE",
+            contact_info=["elsa.kirchner@uni-due.de"],
+            funding=[
+                "German Federal Ministry of Education and Research (BMBF) within the project EXPECT (Grant number: 01IW20003)",
+                "Open Access Publication Fund of the University of Duisburg-Essen",
+            ],
             data_url="https://doi.org/10.5281/zenodo.17940098",
             publication_year=2024,
             keywords=[
@@ -275,6 +287,11 @@ class Kueper2024(BaseDataset):
         ),
         sessions_per_subject=1,
         runs_per_session=6,
+        contributing_labs=[
+            "German Research Center for Artificial Intelligence (DFKI)",
+            "University of Duisburg-Essen",
+        ],
+        n_contributing_labs=2,
         tags=Tags(modality=["Motor"], type=["Movement Execution"]),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="motor_execution",
@@ -304,6 +321,31 @@ class Kueper2024(BaseDataset):
             lowpass_hz=131.0,
             notes="Hardware-prefiltered by the amplifier to 0.1-131 Hz; no further "
             "preprocessing applied.",
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["MLP", "SVM", "EEGNet"],
+            feature_extraction=["time-domain (xDAWN)", "frequency-domain"],
+            frequency_bands={"mrp": [0.5, 4.0], "erd": [8.0, 30.0]},
+            spatial_filters=["xDAWN"],
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method=(
+                "3-fold historical split (2 sets train / 1 set test within-subject; "
+                "7 subjects train / 1 subject test cross-subject)"
+            ),
+            cv_folds=3,
+            evaluation_type=["within_subject", "cross_subject"],
+        ),
+        performance={
+            "ba_intra_uni": 0.871,
+            "ba_inter_uni": 0.840,
+            "ba_intra_bi": 0.846,
+            "ba_inter_bi": 0.822,
+        },
+        bci_application=BCIApplicationMetadata(
+            applications=["exoskeleton_rehabilitation", "motor_intention_recognition"],
+            environment="shielded_cabin_and_laboratory",
+            online_feedback=False,
         ),
         file_format="BrainVision",
     )

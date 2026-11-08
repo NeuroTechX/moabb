@@ -67,7 +67,7 @@ class Cattan2019_PHMD(BaseDataset):
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
             channel_types={"eeg": 16},
-            montage="standard_1020",
+            montage="standard_1005",
             hardware="g.USBamp",
             sensor_type="wet",
             reference="right earlobe",
@@ -153,6 +153,8 @@ class Cattan2019_PHMD(BaseDataset):
             applications=["vr_ar"], environment="laboratory", online_feedback=False
         ),
         data_structure=DataStructureMetadata(
+            n_trials=10,
+            n_trials_per_class={"off": 5, "on": 5},
             n_blocks=10,
             block_duration_s=60.0,
             trials_context="5 blocks with smartphone switched-off and 5 blocks with smartphone switched-on, randomized sequence",

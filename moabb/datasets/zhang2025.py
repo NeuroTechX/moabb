@@ -116,8 +116,8 @@ class Zhang2025(BaseDataset):
             gender={"female": 6, "male": 9},
             age_min=22,
             age_max=26,
-            handedness="all right-handed",
-            species="human",
+            handedness="right",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             events={"Target": 2, "NonTarget": 1},
@@ -169,7 +169,7 @@ class Zhang2025(BaseDataset):
             trials_context="per session (4 blocks x 8 sequences x 200 images)",
         ),
         signal_processing=SignalProcessingMetadata(
-            classifiers=["HDCA"],
+            classifiers=["HDCA", "SWLDA", "BLDA"],
             feature_extraction=["HDCA"],
             frequency_bands={"ERP_dominant": [0.0, 10.0]},
             spatial_filters=None,

@@ -150,6 +150,44 @@ class TestExtractStimulusTimeline(unittest.TestCase):
             "Handwriting",
         ]
 
+    def test_non_motor_and_execution_task_labels(self):
+        from moabb.analysis.timeline import extract_stimulus_timeline
+        from moabb.datasets import (
+            BNCI2025_001,
+            BNCI2025_002,
+            AguileraRodriguez2025,
+            CastillosCVEP100,
+            Gao2026,
+            Gueho2026,
+            Kaneshiro2015,
+            Wairagkar2018,
+        )
+
+        kaneshiro = extract_stimulus_timeline(Kaneshiro2015())
+        assert [p.label for p in kaneshiro.phases] == ["Visual Stimulus"]
+
+        gao = extract_stimulus_timeline(Gao2026())
+        assert any("Visual Imagery" in p.label for p in gao.phases)
+
+        aguilera = extract_stimulus_timeline(AguileraRodriguez2025())
+        assert any("Imagined Speech" in p.label for p in aguilera.phases)
+
+        wairagkar = extract_stimulus_timeline(Wairagkar2018())
+        assert any("Motor Execution" in p.label for p in wairagkar.phases)
+        assert not any("Motor Imagery" in p.label for p in wairagkar.phases)
+
+        bnci25_1 = extract_stimulus_timeline(BNCI2025_001())
+        assert any("Motor Execution" in p.label for p in bnci25_1.phases)
+
+        bnci25_2 = extract_stimulus_timeline(BNCI2025_002())
+        assert any("Attempted Movement" in p.label for p in bnci25_2.phases)
+
+        gueho = extract_stimulus_timeline(Gueho2026())
+        assert any("Auditory Stimulus" in p.label for p in gueho.phases)
+
+        castillos = extract_stimulus_timeline(CastillosCVEP100())
+        assert "Feedback" not in [p.label for p in castillos.phases]
+
 
 class TestPlotClassBalance(unittest.TestCase):
     """Tests for plot_class_balance."""

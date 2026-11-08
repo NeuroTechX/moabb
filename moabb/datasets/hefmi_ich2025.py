@@ -249,6 +249,7 @@ class HefmiIch2025(BaseDataset):
             channel_types={"eeg": 32},
             montage="biosemi32",
             hardware="g.HIamp (g.tec medical engineering GmbH)",
+            software="E-Prime 3.0",
             filters={},
             sensors=list(_CH_NAMES),
             line_freq=50.0,
@@ -259,8 +260,8 @@ class HefmiIch2025(BaseDataset):
             health_status="mixed (17 healthy, 20 ICH patients)",
             gender={"female": 8, "male": 29},
             age_min=20.0,
-            age_max=65.0,
-            species="human",
+            age_max=68.0,
+            species="homo sapiens",
             handedness={"right": 37},
             clinical_population="intracerebral hemorrhage (ICH)",
         ),
@@ -288,11 +289,16 @@ class HefmiIch2025(BaseDataset):
             funding=[
                 "Major Program (JD) of Hubei Province (2023BAA005)",
                 "Fundamental Research Funds for the Central Universities (YCJJ20251401)",
-                "National Natural Science Foundation of China (92148206)",
+                "Key Research and Development Program of Hubei Province (2024BCB039)",
+                "National Natural Science Foundation of China (92148206, 51505164, 82071330)",
+                "Knowledge Innovation Program of Wuhan - Shuguang Project (2022020801020454)",
+                "Research Categories of China Railway Electrification Bureau Group Co. Ltd. (2021-38)",
+                "Research Fund of Tongji Hospital (2023B01, 2022YBJ003)",
             ],
             ethics_approval=[
                 "Ethics Committee of Tongji Hospital (Approval No. TJ-IRB202412123)"
             ],
+            contact_info=["ppkitty0609@163.com", "taobo@hust.edu.cn", "ddjtzp@163.com"],
             repository="Figshare",
             doi="10.1038/s41597-025-06100-7",
             investigators=[

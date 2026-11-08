@@ -111,6 +111,8 @@ class Chang2025(BaseDataset):
             montage="standard_1005",
             hardware="Neuracle BRK-NSW 2.0",
             sensor_type="Ag/AgCl",
+            software="Neuracle BRK-NSW 2.0 acquisition software / Unity 3D (U3D)",
+            impedance_threshold_kohm=20.0,
             filters={},
             line_freq=50.0,
         ),
@@ -121,7 +123,7 @@ class Chang2025(BaseDataset):
             age_min=20.0,
             age_max=33.0,
             handedness="right-handed",
-            species="human",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             events=dict(_EVENTS),
@@ -144,7 +146,11 @@ class Chang2025(BaseDataset):
         documentation=DocumentationMetadata(
             senior_author="Xuan Liu",
             funding=[
-                "National Natural Science Foundation of China (62366028, 62466032, W2421090)"
+                "National Natural Science Foundation of China (Grant Nos. 62366028, 62466032, W2421090)",
+                "Youth Science and Technology Foundation of Gansu Province (Grant No. 23JRRA864)",
+                "Key Research and Development Plan of Gansu Province (Grant No. 24YFFA055)",
+                "Tianyou Youth Talent Lift Program of Lanzhou Jiaotong University (Grant No. 1520260506)",
+                "Gansu Provincial Department of Education: Excellent Graduate Student 'Innovation Star' Project (Grant No. 2025CXZX-626)",
             ],
             ethics_approval=[
                 "Ethics Committee of Gansu Provincial Maternity and Child-care Hospital ((2023) GSFY Ethics [90])"
@@ -167,7 +173,7 @@ class Chang2025(BaseDataset):
             country="CN",
             data_url="https://figshare.com/articles/dataset/28831730",
             publication_year=2025,
-            license="CC-BY-4.0",
+            license="CC-BY-NC-ND-4.0",
         ),
         sessions_per_subject=4,
         runs_per_session=1,

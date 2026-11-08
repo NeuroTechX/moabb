@@ -10,9 +10,11 @@ from moabb.datasets.base import BaseDataset
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
     DatasetMetadata,
+    DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
     ParticipantMetadata,
+    PreprocessingMetadata,
     Tags,
 )
 
@@ -101,6 +103,7 @@ class MartinezPeon2025(BaseDataset):
             electrode_type="dry",
             reference=None,
             ground=None,
+            filters="none",
             sensors=MARTINEZPEON2025_SENSORS,
         ),
         participants=ParticipantMetadata(
@@ -163,6 +166,21 @@ class MartinezPeon2025(BaseDataset):
         ),
         sessions_per_subject=1,
         runs_per_session=4,
+        preprocessing=PreprocessingMetadata(
+            data_state="raw", preprocessing_applied=False
+        ),
+        data_structure=DataStructureMetadata(
+            n_trials=40,
+            n_trials_per_class={
+                "grip_10": 10,
+                "grip_40": 10,
+                "grip_70": 10,
+                "grip_100": 10,
+            },
+            n_blocks=4,
+            block_duration_s=84.0,
+            trials_context="4 force-level recordings per subject (84 s each), 10 repetitions of 4 s task + 4 s rest per recording",
+        ),
         tags=Tags(modality=["Motor"], type=["Motor Imagery"]),
         file_format="CSV",
     )

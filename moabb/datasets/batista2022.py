@@ -115,7 +115,7 @@ class Batista2022(BaseDataset):
             reference=None,
             ground=None,
             software="BrainVision Recorder",
-            sensors=list(_EEG_CHANNELS),
+            sensors=[*_EEG_CHANNELS, "PPG", "RESP", "ECG", "ACC_X", "ACC_Y", "ACC_Z"],
             line_freq=50.0,
             auxiliary_channels=AuxiliaryChannelsMetadata(
                 other_physiological=["ecg", "respiration", "ppg"]
@@ -124,6 +124,7 @@ class Batista2022(BaseDataset):
         participants=ParticipantMetadata(
             n_subjects=20,
             health_status="healthy",
+            gender={"male": 14, "female": 6},
             age_mean=24.79,
             age_std=3.54,
             bci_experience=None,
@@ -169,6 +170,9 @@ class Batista2022(BaseDataset):
             ],
             institution="Instituto Superior Tecnico, Universidade de Lisboa",
             country="PT",
+            ethics_approval=[
+                "1964 Declaration of Helsinki; written informed consent obtained from all participants"
+            ],
             data_url="https://zenodo.org/records/7664069",
             publication_year=2022,
             keywords=[

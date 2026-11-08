@@ -178,7 +178,7 @@ class PhysionetMI(BaseDataset):
             ],
             line_freq=60.0,
             sensor_type="EEG",
-            montage="standard_1020",
+            montage="standard_1005",
         ),
         participants=ParticipantMetadata(
             n_subjects=109, health_status="healthy", species="human"
@@ -227,7 +227,7 @@ class PhysionetMI(BaseDataset):
         tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Motor Imagery"]),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
-            imagery_tasks=["left_hand", "right_hand", "feet", "rest"],
+            imagery_tasks=["left_hand", "right_hand", "hands", "feet", "rest"],
         ),
         sessions_per_subject=1,
         runs_per_session=6,
