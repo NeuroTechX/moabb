@@ -1003,16 +1003,16 @@
 <h1>moabb.datasets.Pan2025<a class="headerlink" href="#moabb-datasets-pan2025" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="moabb.datasets.Pan2025">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">Pan2025</span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/pan2025.py#L33-L149"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Pan2025" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">Pan2025</span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/pan2025.py#L33-L151"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Pan2025" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_PanDataverse</span></code></p>
 <div class="ds-card" role="region" aria-label="Pan2025 dataset overview">
-  <a class="ds-card-source" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/pan2025.py#L33-L149" target="_blank" rel="noopener">[source]</a>
+  <a class="ds-card-source" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/pan2025.py#L33-L151" target="_blank" rel="noopener">[source]</a>
   <div class="ds-card-head">
     <p class="ds-card-kicker">Dataset Snapshot</p>
     <p class="ds-card-title">Pan2025</p>
     <p class="ds-card-alt-name">Cross-session motor imagery EEG dataset from 10 subjects performing cued left- vs right-hand motor imagery across two sessions.</p>
     <p class="ds-subtitle">Imagery, 2 classes (left_hand vs right_hand)</p>
-    <div class="ds-provenance"><p class="ds-authors"><span class="ds-authors-label">Authors</span><span class="ds-author-name">Lincong Pan</span></p><div class="ds-provenance-meta"><span>🇨🇳 Tianjin University, CN</span><span class="ds-provenance-sep">·</span><span>2025</span></div></div>
+    <div class="ds-provenance"><p class="ds-authors"><span class="ds-authors-label">Authors</span><span class="ds-author-name ds-author-senior">Lincong Pan</span></p><div class="ds-provenance-meta"><span>🇨🇳 Tianjin University, CN</span><span class="ds-provenance-sep">·</span><span>2025</span></div></div>
   </div>
   <div class="ds-stats">
       <span class="ds-chip" style="--chip-color: #1565C0">Imagery</span>
@@ -1139,6 +1139,7 @@ Channel Summary</div>
 <div class="ds-channel-row"><span>EEG</span><strong>28</strong></div>
 <div class="ds-channel-row"><span>Montage</span><strong>10-10</strong></div>
 <div class="ds-channel-row"><span>Sampling</span><strong>250 Hz</strong></div>
+<div class="ds-channel-row"><span>Reference</span><strong>tip of the nose</strong></div>
 <div class="ds-channel-row"><span>Filter</span><strong>{&#x27;bandpass&#x27;: [0.01, 200.0], &#x27;notch&#x27;: 50.0}</strong></div>
 <div class="ds-channel-row"><span>Notch / line</span><strong>50 Hz</strong></div></div></div>
 </div>
@@ -1232,7 +1233,7 @@ Metadata</label><div class="sd-tab-content docutils">
 <p class="admonition-title">Participants</p>
 <ul class="simple">
 <li><p><strong>Population</strong>: healthy</p></li>
-<li><p><strong>Handedness</strong>: {‘right’: 8, ‘left’: 2}</p></li>
+<li><p><strong>Handedness</strong>: {‘right’: 12, ‘left’: 2}</p></li>
 </ul>
 </div>
 <div class="admonition-equipment admonition">
@@ -1240,6 +1241,7 @@ Metadata</label><div class="sd-tab-content docutils">
 <ul class="simple">
 <li><p><strong>Amplifier</strong>: Neuroscan SynAmps2</p></li>
 <li><p><strong>Montage</strong>: 10-10</p></li>
+<li><p><strong>Reference</strong>: tip of the nose</p></li>
 </ul>
 </div>
 <div class="admonition-data-access admonition">
@@ -1270,7 +1272,7 @@ Notes</label><div class="sd-tab-content docutils">
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.Pan2025.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/pan2025.py#L127-L136"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Pan2025.__init__" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/pan2025.py#L129-L138"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Pan2025.__init__" title="Link to this definition">#</a></dt>
 <dd><p>Initialize function for the BaseDataset.</p>
 </dd></dl>
 
