@@ -323,13 +323,10 @@ def _merge_with_dataset(metadata: DatasetMetadata, dataset) -> DatasetMetadata:
         exec_only = bool(
             getattr(dataset, "executed", False) and not getattr(dataset, "imagined", True)
         )
-        if (
-            experiment.paradigm == "imagery"
-            and (
-                paradigm_specific.detected_paradigm == "motor_execution"
-                or "execution" in (experiment.task_type or "").lower()
-                or exec_only
-            )
+        if experiment.paradigm == "imagery" and (
+            paradigm_specific.detected_paradigm == "motor_execution"
+            or "execution" in (experiment.task_type or "").lower()
+            or exec_only
         ):
             detected = "motor_execution"
         else:

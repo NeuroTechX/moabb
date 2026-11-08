@@ -603,10 +603,7 @@ def _extract_mi_timeline(metadata, dataset: BaseDataset) -> StimulusTimeline | N
             if remaining_img_dur > 0:
                 phases.append(
                     TimelinePhase(
-                        task_label,
-                        cue_onset_s + cue_dur_s,
-                        remaining_img_dur,
-                        "imagery",
+                        task_label, cue_onset_s + cue_dur_s, remaining_img_dur, "imagery"
                     )
                 )
         else:
