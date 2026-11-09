@@ -10,6 +10,7 @@ from moabb.datasets.base import BaseDataset
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
     DatasetMetadata,
+    DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
     ParadigmSpecificMetadata,
@@ -152,11 +153,11 @@ class WRCC2023_MI_A(_WRCC2023):
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
             channel_types={"eeg": 59},
-            montage="10-10",
+            montage="standard_1005",
             hardware="Neuracle 64-channel wireless EEG",
             reference=None,
             ground=None,
-            sensors=WRCC2023_CHANNELS,
+            sensors=list(WRCC2023_CHANNELS),
             line_freq=50.0,
         ),
         participants=ParticipantMetadata(
@@ -181,6 +182,7 @@ class WRCC2023_MI_A(_WRCC2023):
             events=dict(WRCC2023_EVENTS),
         ),
         documentation=DocumentationMetadata(
+            senior_author="WRCC2023",
             doi="10.7910/DVN/J9JFES",
             description="MI-A three-class (left hand, right hand, feet) motor "
             "imagery EEG dataset from the 2023 World Robot Contest BCI competition.",
@@ -207,11 +209,17 @@ class WRCC2023_MI_A(_WRCC2023):
         sessions_per_subject=1,
         runs_per_session=90,
         file_format="MAT (v5)",
-        tags=Tags(modality=["Motor"], type=["Motor Imagery"]),
+        tags=Tags(pathology=["stroke", "healthy"], modality=["motor"], type=["imagery"]),
         paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="imagery",
+            detected_paradigm="motor_imagery",
             imagery_tasks=["left_hand", "right_hand", "feet"],
             imagery_duration_s=4.0,
+        ),
+        data_structure=DataStructureMetadata(
+            n_trials=90,
+            n_trials_per_class={"left_hand": 30, "right_hand": 30, "feet": 30},
+            n_blocks=3,
+            trials_context="3 blocks of 30 trials (90 trials per subject)",
         ),
     )
 
@@ -290,18 +298,23 @@ class WRCC2023_MI_B(_WRCC2023):
             class_labels=["left_hand", "right_hand", "feet"],
             trials_per_class={"left_hand": 30, "right_hand": 30, "feet": 30},
             trial_duration=4.0,
-            study_design="Cued three-class motor imagery (left hand, right hand, "
-            "both feet). Each subject file holds 90 interleaved trials, 30 per class.",
+            study_design="Three-class motor imagery (left-hand grasping, "
+            "right-hand grasping, foot hooking). 90 trials per subject, 30 per "
+            "class, each stored as a 4 s imagery epoch.",
+            feedback_type="none",
+            stimulus_type="cue",
             synchronicity="cue-based",
             mode="offline",
             events=dict(WRCC2023_EVENTS),
         ),
         documentation=DocumentationMetadata(
+            senior_author="WRCC2023",
             doi="10.7910/DVN/HFNWRX",
             description="MI-B three-class (left hand, right hand, feet) motor imagery "
             "EEG dataset of the BCI competition at the 2023 World Robot Contest; "
             "9 subjects (2 stroke, 7 healthy).",
             investigators=["WRCC2023"],
+            institution="World Robot Contest (WRCC2023) BCI competition",
             country="CN",
             data_url="https://doi.org/10.7910/DVN/HFNWRX",
             publication_year=2024,
@@ -313,6 +326,7 @@ class WRCC2023_MI_B(_WRCC2023):
                 "brain-computer interface",
                 "EEG",
                 "World Robot Contest",
+                "WRCC2023",
                 "left hand",
                 "right hand",
                 "feet",
@@ -322,8 +336,17 @@ class WRCC2023_MI_B(_WRCC2023):
         sessions_per_subject=1,
         runs_per_session=90,
         file_format="MAT (v5)",
-        tags=Tags(
-            pathology=["stroke", "healthy"], modality=["Motor"], type=["Motor Imagery"]
+        tags=Tags(pathology=["stroke", "healthy"], modality=["motor"], type=["imagery"]),
+        paradigm_specific=ParadigmSpecificMetadata(
+            detected_paradigm="motor_imagery",
+            imagery_tasks=["left_hand", "right_hand", "feet"],
+            imagery_duration_s=4.0,
+        ),
+        data_structure=DataStructureMetadata(
+            n_trials=90,
+            n_trials_per_class={"left_hand": 30, "right_hand": 30, "feet": 30},
+            n_blocks=3,
+            trials_context="3 blocks of 30 trials (90 trials per subject)",
         ),
     )
 
@@ -392,35 +415,65 @@ class WRCC2023_MI_C(_WRCC2023):
         participants=ParticipantMetadata(
             n_subjects=8,
             species="homo sapiens",
-            health_status="mixed: healthy individuals and stroke patients (2 stroke)",
-            clinical_population="stroke",
+            health_status="mixed",
+            clinical_population="stroke (2 of 8 subjects); remaining subjects healthy",
         ),
         experiment=ExperimentMetadata(
+            trial_duration=4.0,
             paradigm="imagery",
             n_classes=3,
             class_labels=["left_hand", "right_hand", "feet"],
             trials_per_class={"left_hand": 30, "right_hand": 30, "feet": 30},
+            study_design="Three-class motor imagery (left-hand grasping, "
+            "right-hand grasping, foot hooking). 90 trials per subject, 30 per "
+            "class, each stored as a 4 s imagery epoch.",
+            feedback_type="none",
+            stimulus_type="cue",
             synchronicity="cue-based",
             mode="offline",
             events=dict(WRCC2023_EVENTS),
         ),
         documentation=DocumentationMetadata(
+            senior_author="WRCC2023",
             doi="10.7910/DVN/G8FBHH",
             description="Three-class (left hand, right hand, feet) motor imagery "
             "EEG dataset from the 2023 World Robot Contest BCI competition (MI-C "
             "track); 8 subjects including 2 stroke patients, 90 trials each.",
             investigators=["WRCC2023"],
-            institution="World Robot Contest (BCI-Controlled Robot Contest)",
+            institution="World Robot Contest (WRCC2023) BCI competition",
             country="CN",
             data_url="https://doi.org/10.7910/DVN/G8FBHH",
             publication_year=2024,
             license="CC0-1.0",
             repository="Harvard Dataverse",
+            keywords=[
+                "motor imagery",
+                "BCI",
+                "brain-computer interface",
+                "EEG",
+                "World Robot Contest",
+                "WRCC2023",
+                "left hand",
+                "right hand",
+                "feet",
+                "stroke",
+            ],
         ),
         sessions_per_subject=1,
         runs_per_session=90,
-        file_format="mat",
-        tags=Tags(modality=["Motor"], type=["Motor Imagery"]),
+        file_format="MAT (v5)",
+        tags=Tags(pathology=["stroke", "healthy"], modality=["motor"], type=["imagery"]),
+        paradigm_specific=ParadigmSpecificMetadata(
+            detected_paradigm="motor_imagery",
+            imagery_tasks=["left_hand", "right_hand", "feet"],
+            imagery_duration_s=4.0,
+        ),
+        data_structure=DataStructureMetadata(
+            n_trials=90,
+            n_trials_per_class={"left_hand": 30, "right_hand": 30, "feet": 30},
+            n_blocks=3,
+            trials_context="3 blocks of 30 trials (90 trials per subject)",
+        ),
     )
 
     def __init__(self):

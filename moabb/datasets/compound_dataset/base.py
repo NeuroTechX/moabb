@@ -1,7 +1,5 @@
 """Build a custom dataset using subjects from other datasets."""
 
-from sklearn.pipeline import Pipeline
-
 from ..base import BaseDataset
 
 
@@ -128,6 +126,8 @@ class CompoundDataset(BaseDataset):
         self.event_id = dataset.event_id
 
         # regenerate the process_pipeline by overriding all `event_id`
+        from sklearn.pipeline import Pipeline
+
         steps = []
         for step in process_pipeline.steps:
             label, op = step

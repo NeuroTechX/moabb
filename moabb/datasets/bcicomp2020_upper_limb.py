@@ -215,7 +215,7 @@ class BCIComp2020UpperLimb(BaseDataset):
             # so the per-subject split is unclear. The task is
             # performed on a single right arm, but we leave
             # handedness unset rather than over-claim.
-            species="human",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             events=_EVENTS,
@@ -238,6 +238,8 @@ class BCIComp2020UpperLimb(BaseDataset):
             mode="offline",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Seong-Whan Lee",
+            ethics_approval=["Korea University Institutional Review Board"],
             doi="10.3389/fnhum.2022.898300",
             investigators=[
                 "Ji-Hoon Jeong",
@@ -298,6 +300,7 @@ class BCIComp2020UpperLimb(BaseDataset):
         ),
         data_structure=DataStructureMetadata(
             n_trials=450,
+            n_trials_per_class={"cylindrical": 150, "spherical": 150, "lumbrical": 150},
             trials_context=(
                 "450 trials per subject (150 trials/session x 3 sessions, "
                 "50 per class). 15 subjects, 6750 trials total."

@@ -1,6 +1,5 @@
 """Meta-analysis functions for MOABB."""
 
-import itertools
 import logging
 
 import numpy as np
@@ -44,11 +43,9 @@ def collapse_session_scores(df):
         Aggregated results, samples are index, columns are pipelines,
         and values are scores
     """
-    return (
-        df.groupby(["pipeline", "dataset", "subject"], sort=False, observed=True)
-        .mean(numeric_only=True)
-        .reset_index()
-    )
+    return df.groupby(
+        ["pipeline", "dataset", "subject"], sort=False, observed=True, as_index=False
+    ).mean(numeric_only=True)
 
 
 def compute_lowest_subject_scores(df, reference_pipeline, percentile=20):
@@ -97,47 +94,47 @@ def compute_lowest_subject_scores(df, reference_pipeline, percentile=20):
         if df[column].isna().any():
             raise ValueError(f"{column} must not contain missing values")
 
-    validated_df = df.copy()
+    validated_df = df[["dataset", "pipeline", "subject"]].copy()
     validated_df["score"] = score_values
     subject_scores = collapse_session_scores(validated_df)
     rows = []
     for dataset, dataset_scores in subject_scores.groupby(
         "dataset", sort=False, observed=True
     ):
-        reference_scores = dataset_scores[
-            dataset_scores["pipeline"] == reference_pipeline
-        ]
-        if reference_scores.empty:
+        pipes_col = dataset_scores["pipeline"].to_numpy()
+        subjs_col = dataset_scores["subject"].to_numpy()
+        scores_col = dataset_scores["score"].to_numpy()
+
+        ref_mask = pipes_col == reference_pipeline
+        if not ref_mask.any():
             raise ValueError(
                 f"reference pipeline {reference_pipeline!r} is missing from "
                 f"dataset {dataset!r}"
             )
 
-        reference_subjects = set(reference_scores["subject"])
+        ref_subjs = subjs_col[ref_mask]
+        ref_scores = scores_col[ref_mask]
+        reference_subjects = set(ref_subjs)
         n_keep = max(1, int(np.ceil(len(reference_subjects) * percentile / 100)))
-        selected_subjects = set(
-            reference_scores.sort_values("score", kind="stable")
-            .head(n_keep)["subject"]
-            .tolist()
+        order_idx = np.argsort(ref_scores, kind="stable")[:n_keep]
+        selected_subjects = set(ref_subjs[order_idx].tolist())
+        sel_mask_all = np.fromiter(
+            (s in selected_subjects for s in subjs_col), dtype=bool, count=len(subjs_col)
         )
 
-        for pipeline, pipeline_scores in dataset_scores.groupby(
-            "pipeline", sort=False, observed=True
-        ):
-            if set(pipeline_scores["subject"]) != reference_subjects:
+        for pipeline in pd.unique(pipes_col):
+            p_mask = pipes_col == pipeline
+            if set(subjs_col[p_mask]) != reference_subjects:
                 raise ValueError(
                     f"pipeline {pipeline!r} in dataset {dataset!r} must contain "
                     f"the same subjects as reference pipeline "
                     f"{reference_pipeline!r}"
                 )
-            selected_scores = pipeline_scores[
-                pipeline_scores["subject"].map(selected_subjects.__contains__)
-            ]
             rows.append(
                 {
                     "dataset": dataset,
                     "pipeline": pipeline,
-                    "score": selected_scores["score"].mean(),
+                    "score": float(scores_col[p_mask & sel_mask_all].mean()),
                     "n_subjects": n_keep,
                 }
             )
@@ -177,36 +174,33 @@ def compute_pvals_wilcoxon(df, order=None):
         if set(order) != set(df.columns):  # was assert, now raises properly
             raise ValueError("provided order does not have all columns of dataframe")
 
-    out = np.zeros((len(df.columns), len(df.columns)))
-    for i in range(len(order)):
-        for j in range(len(order)):
-            if i != j:
-                pipe1 = order[i]
-                pipe2 = order[j]
-                diffs = df.loc[:, pipe1] - df.loc[:, pipe2]
-                if (diffs == 0).all():
-                    # Wilcoxon is undefined when every paired difference is
-                    # zero. Old SciPy raised ValueError here; current SciPy
-                    # returns 1.0 from its exact method but NaN from the normal
-                    # approximation it switches to on larger samples, so the
-                    # result silently depended on the number of subjects. The
-                    # two pipelines are indistinguishable, so the one-tailed
-                    # p-value is 0.5 in both directions, which is what the exact
-                    # method already yields.
-                    out[i, j] = 0.5
-                    continue
-                # One-tailed p-value that pipe1 scores higher than pipe2. The
-                # direction of the signed-rank test is given by its rank sums,
-                # not by the sign of the mean difference, so ask SciPy for the
-                # one-sided test rather than halving the two-sided p-value.
-                p = stats.wilcoxon(
-                    df.loc[:, pipe1], df.loc[:, pipe2], alternative="greater"
-                )[1]
-                # Keep p strictly inside (0, 1) so Stouffer's method stays
-                # finite, as the permutation branch already does. The normal
-                # approximation can underflow to an exact 0, which the one-tailed
-                # flip then turns into an exact 1.
-                out[i, j] = min(max(p, _P_FLOOR), _P_CEIL)
+    order_list = list(order)
+    vals = df[order_list].to_numpy(dtype=float)
+    n_pipes = len(order_list)
+    out = np.zeros((n_pipes, n_pipes))
+    diffs = vals[:, :, None] - vals[:, None, :]
+    eye = np.eye(n_pipes, dtype=bool)
+    zero_diff = (diffs == 0).all(axis=0) & ~eye
+    out[zero_diff] = 0.5
+    active = ~eye & ~zero_diff
+    if active.any():
+        d_act = diffs[:, active]
+        has_zero = (d_act == 0).any(axis=0)
+        if d_act.shape[0] <= 50 and d_act.shape[0] > 1:
+            abs_sorted = np.sort(np.abs(d_act), axis=0)
+            has_ties = (abs_sorted[1:] == abs_sorted[:-1]).any(axis=0)
+        else:
+            has_ties = np.zeros(d_act.shape[1], dtype=bool)
+        batchable = ~has_zero & ~has_ties
+        p_act = np.empty(d_act.shape[1])
+        if batchable.any():
+            p_act[batchable] = stats.wilcoxon(
+                d_act[:, batchable], alternative="greater", axis=0
+            ).pvalue
+        if (~batchable).any():
+            for idx in np.flatnonzero(~batchable):
+                p_act[idx] = stats.wilcoxon(d_act[:, idx], alternative="greater")[1]
+        out[active] = np.clip(p_act, _P_FLOOR, _P_CEIL)
     return out
 
 
@@ -226,16 +220,16 @@ def _pairedttest_exact(data):
     pvals: ndarray of shape (n_pipelines, n_pipelines)
         pvalues
     """
-    out = np.zeros(data.shape[1:], dtype=np.int32)
+    n_subj = data.shape[0]
     true = data.sum(axis=0)
-    nperms = 2 ** data.shape[0]
-    for perm in itertools.product([-1, 1], repeat=data.shape[0]):
-        # turn into numpy array
-        perm = np.array(perm)
-        # multiply permutation by subject dimension and sum over subjects
-        randperm = (data * perm[:, None, None]).sum(axis=0)
-        # compare to true difference (numpy autocasts bool to 0/1)
-        out += randperm >= true
+    nperms = 1 << n_subj
+    bits = (
+        np.arange(nperms, dtype=np.uint32)[:, None]
+        >> np.arange(n_subj - 1, -1, -1, dtype=np.uint32)
+    ) & 1
+    perms = np.where(bits, 1.0, -1.0).astype(data.dtype, copy=False)
+    randperms = (perms @ data.reshape(n_subj, -1)).reshape(nperms, *data.shape[1:])
+    out = (randperms >= true).sum(axis=0, dtype=np.int32)
 
     # Correct for p-values equal to 1
     # as they are invalid p-values for Stouffer's method.
@@ -264,14 +258,13 @@ def _pairedttest_random(data, nperms, seed=None):
         pvalues
     """
     rng = check_random_state(seed)
-    out = np.ones(data.shape[1:], dtype=np.int32)
+    n_subj = data.shape[0]
     true = data.sum(axis=0)
-    for _ in range(nperms):
-        perm = rng.choice([1, -1], size=(data.shape[0],), replace=True)
-        # multiply permutation by subject dimension and sum over subjects
-        randperm = (data * perm[:, None, None]).sum(axis=0)
-        # compare to true difference (numpy autocasts bool to 0/1)
-        out += randperm >= true
+    perms = rng.choice(
+        np.array([1, -1], dtype=data.dtype), size=(nperms, n_subj), replace=True
+    )
+    randperms = (perms @ data.reshape(n_subj, -1)).reshape(nperms, *data.shape[1:])
+    out = 1 + (randperms >= true).sum(axis=0, dtype=np.int32)
 
     # Correct p-values >= 1
     # as they are invalid p-values for Stouffer's method.
@@ -310,13 +303,8 @@ def compute_pvals_perm(df, order=None, seed=None):
         if set(order) != set(df.columns):  # was assert, now raises properly
             raise ValueError("provided order does not have all columns of dataframe")
     # reshape df into matrix (sub, k, k) of differences
-    data = np.zeros((df.shape[0], len(order), len(order)))
-    for i in range(len(order) - 1):
-        for j in range(i + 1, len(order)):
-            pipe1 = order[i]
-            pipe2 = order[j]
-            data[:, i, j] = df.loc[:, pipe1] - df.loc[:, pipe2]
-            data[:, j, i] = df.loc[:, pipe2] - df.loc[:, pipe1]
+    vals = df[list(order)].to_numpy(dtype=float)
+    data = vals[:, :, None] - vals[:, None, :]
     if data.shape[0] > 13:
         p = _pairedttest_random(data, 10000, seed=seed)
     else:
@@ -450,13 +438,10 @@ def compute_pvals_corrected_ttest(df, n_train, n_test, order=None):
         if set(order) != set(df.columns):
             raise ValueError("provided order does not have all columns of dataframe")
     # reshape df into matrix (n_resamples, k, k) of differences
-    data = np.zeros((df.shape[0], len(order), len(order)))
-    for i in range(len(order) - 1):
-        for j in range(i + 1, len(order)):
-            pipe1 = order[i]
-            pipe2 = order[j]
-            data[:, i, j] = df.loc[:, pipe1] - df.loc[:, pipe2]
-            data[:, j, i] = df.loc[:, pipe2] - df.loc[:, pipe1]
+    vals = _validate_finite_scores(
+        df[list(order)], name="corrected t-test score differences"
+    )
+    data = vals[:, :, None] - vals[:, None, :]
     return _corrected_resampled_ttest(data, n_train, n_test)
 
 
@@ -485,27 +470,20 @@ def compute_effect(df, order=None):
         if set(order) != set(df.columns):  # was assert, now raises properly
             raise ValueError("provided order does not have all columns of dataframe")
 
-    out = np.zeros((len(df.columns), len(df.columns)))
-    for i, pipe1 in enumerate(order):
-        for j, pipe2 in enumerate(order):
-            if i != j:
-                # for now it's just the standardized difference
-                diffs = df.loc[:, pipe1] - df.loc[:, pipe2]
-                mean = diffs.mean()
-                # Keep the sample-std (ddof=1) semantics for nonconstant
-                # samples, but treat a nonempty constant difference directly.
-                if (diffs == diffs.iloc[0]).all():
-                    # The paired differences have no spread, so the standardized
-                    # difference is 0/0 when the two pipelines score identically
-                    # and c/0 when they differ by a constant. Identical pipelines
-                    # have no effect, so report 0 rather than the NaN (plus
-                    # RuntimeWarning) that NumPy would produce. A constant offset
-                    # really is an unbounded effect, so keep the sign and make
-                    # the infinity deliberate rather than a division accident.
-                    out[i, j] = 0.0 if mean == 0 else np.copysign(np.inf, mean)
-                else:
-                    std = diffs.std()
-                    out[i, j] = mean / std
+    order_list = list(order)
+    vals = df[order_list].to_numpy(dtype=float)
+    n_pipes = len(order_list)
+    if n_pipes == 0:
+        return np.zeros((0, 0))
+    diffs = vals[:, :, None] - vals[:, None, :]
+    means = diffs.mean(axis=0)
+    is_const = (diffs == diffs[:1, :, :]).all(axis=0)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        stds = diffs.std(axis=0, ddof=1) if vals.shape[0] > 1 else np.zeros_like(means)
+        out = np.where(
+            is_const, np.where(means == 0, 0.0, np.copysign(np.inf, means)), means / stds
+        )
+    np.fill_diagonal(out, 0.0)
     return out
 
 
@@ -525,26 +503,48 @@ def compute_dataset_statistics(df, perm_cutoff=20):
         Table of effect and p-values for each dataset and all pipelines
     """
     df = collapse_session_scores(df)
-    dsets = df.dataset.unique()
-    out = {}
-    for d in dsets:
-        score_data = df[df.dataset == d].pivot(
-            index="subject", values="score", columns="pipeline"
-        )
+    datasets_col = []
+    idx_col = []
+    pipe1_col = []
+    pipe2_col = []
+    p_col = []
+    smd_col = []
+    nsub_col = []
+
+    for d, group in df.groupby("dataset", sort=False, observed=True):
+        score_data = group.pivot(index="subject", values="score", columns="pipeline")
         algs = score_data.columns.tolist()
         if score_data.shape[0] < perm_cutoff:
             p = compute_pvals_perm(score_data, algs)
         else:
             p = compute_pvals_wilcoxon(score_data, algs)
         t = compute_effect(score_data, algs)
-        P = pd.DataFrame(index=pd.Index(algs, name="pipe1"), columns=algs, data=p)
-        T = pd.DataFrame(index=pd.Index(algs, name="pipe1"), columns=algs, data=t)
-        D1 = pd.melt(P.reset_index(), id_vars="pipe1", var_name="pipe2", value_name="p")
-        D2 = pd.melt(T.reset_index(), id_vars="pipe1", var_name="pipe2", value_name="smd")
-        stats_df = D1.merge(D2)
-        stats_df["nsub"] = score_data.shape[0]
-        out[d] = stats_df
-    return pd.concat(out, axis=0, names=["dataset", "index"]).reset_index()
+        n_algs = len(algs)
+        n_pairs = n_algs * n_algs
+        datasets_col.append(np.full(n_pairs, d, dtype=object))
+        idx_col.append(np.arange(n_pairs, dtype=np.int64))
+        pipe1_col.append(np.tile(algs, n_algs))
+        pipe2_col.append(np.repeat(algs, n_algs))
+        p_col.append(p.ravel(order="F"))
+        smd_col.append(t.ravel(order="F"))
+        nsub_col.append(np.full(n_pairs, score_data.shape[0], dtype=np.int64))
+
+    if not datasets_col:
+        return pd.DataFrame(
+            columns=["dataset", "index", "pipe1", "pipe2", "p", "smd", "nsub"]
+        )
+
+    return pd.DataFrame(
+        {
+            "dataset": np.concatenate(datasets_col),
+            "index": np.concatenate(idx_col),
+            "pipe1": np.concatenate(pipe1_col),
+            "pipe2": np.concatenate(pipe2_col),
+            "p": np.concatenate(p_col),
+            "smd": np.concatenate(smd_col),
+            "nsub": np.concatenate(nsub_col),
+        }
+    )
 
 
 def combine_effects(effects, nsubs):
@@ -565,9 +565,9 @@ def combine_effects(effects, nsubs):
     effect: float
         Estimatation of the combined effects
     """
-    W = np.sqrt(nsubs)
+    W = np.sqrt(np.asarray(nsubs, dtype=float))
     W = W / W.sum()
-    return (W * effects).sum()
+    return float(np.dot(W, np.asarray(effects, dtype=float)))
 
 
 def combine_pvalues(p, nsubs):
@@ -591,8 +591,10 @@ def combine_pvalues(p, nsubs):
     if len(p) == 1:
         return p.item()
     else:
-        W = np.sqrt(nsubs)
-        out = stats.combine_pvalues(np.array(p), weights=W, method="stouffer")[1]
+        W = np.sqrt(np.asarray(nsubs, dtype=float))
+        out = stats.combine_pvalues(
+            np.asarray(p, dtype=float), weights=W, method="stouffer"
+        )[1]
         return out
 
 
@@ -618,15 +620,62 @@ def find_significant_differences(df, perm_cutoff=20):
     dfT: :class:`pandas.DataFrame` of shape (n_pipelines, n_pipelines)
         signed standardized mean differences
     """
-    dsets = df.dataset.unique()
-    algs = df.pipe1.unique()
-    nsubs = np.array([df.loc[df.dataset == d, "nsub"].mean() for d in dsets])
+    dsets = pd.unique(df["dataset"])
+    algs = pd.unique(df["pipe1"])
+    n_dsets = len(dsets)
+    n_algs = len(algs)
+    nsubs = (
+        df.groupby("dataset", sort=False, observed=True)["nsub"]
+        .mean()
+        .reindex(dsets)
+        .to_numpy(dtype=float)
+    )
+
+    P = np.full((n_algs, n_algs), np.nan)
+    T = np.full((n_algs, n_algs), np.nan)
+
+    # Fast path for the standard complete grid produced by compute_dataset_statistics
+    n_pairs = n_algs * n_algs
+    full_grid = len(df) == n_dsets * n_pairs
+    if full_grid:
+        dset_to_idx = {d: i for i, d in enumerate(dsets)}
+        alg_to_idx = {a: i for i, a in enumerate(algs)}
+        d_idx = df["dataset"].map(dset_to_idx).to_numpy()
+        p1_idx = df["pipe1"].map(alg_to_idx).to_numpy()
+        p2_idx = df["pipe2"].map(alg_to_idx).to_numpy()
+        if (
+            not np.isnan(d_idx).any()
+            and not np.isnan(p1_idx).any()
+            and not np.isnan(p2_idx).any()
+        ):
+            p_cube = np.full((n_dsets, n_algs, n_algs), np.nan)
+            t_cube = np.full((n_dsets, n_algs, n_algs), np.nan)
+            p_cube[d_idx, p1_idx, p2_idx] = df["p"].to_numpy(dtype=float)
+            t_cube[d_idx, p1_idx, p2_idx] = df["smd"].to_numpy(dtype=float)
+            if not np.isnan(p_cube).any() and not np.isnan(t_cube).any():
+                W = np.sqrt(nsubs)
+                W_norm = W / W.sum()
+                T = np.tensordot(W_norm, t_cube, axes=(0, 0))
+                if n_dsets == 1:
+                    P = p_cube[0].copy()
+                else:
+                    W_denom = np.sqrt(np.sum(W * W))
+                    z = stats.norm.isf(p_cube)
+                    Z = np.tensordot(W, z, axes=(0, 0)) / W_denom
+                    P = stats.norm.sf(Z)
+                np.fill_diagonal(P, np.nan)
+                np.fill_diagonal(T, np.nan)
+                if np.isnan(P[~np.eye(n_algs, dtype=bool)]).any():
+                    log.info("NaN p-value found, turned to 1")
+                    print("NaN")
+                dfP = pd.DataFrame(index=algs, columns=algs, data=P)
+                dfT = pd.DataFrame(index=algs, columns=algs, data=T)
+                return dfP, dfT
+
     P_full = df.pivot_table(values="p", index=["dataset", "pipe1"], columns="pipe2")
     T_full = df.pivot_table(values="smd", index=["dataset", "pipe1"], columns="pipe2")
-    P = np.full((len(algs), len(algs)), np.nan)
-    T = np.full((len(algs), len(algs)), np.nan)
-    for i in range(len(algs)):
-        for j in range(len(algs)):
+    for i in range(n_algs):
+        for j in range(n_algs):
             if i != j:
                 p = P_full.loc[(slice(None), algs[i]), algs[j]]
                 t = T_full.loc[(slice(None), algs[i]), algs[j]]

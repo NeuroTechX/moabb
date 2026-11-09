@@ -1,16 +1,29 @@
 import os
 import re
 import tempfile
+from functools import lru_cache
 from pathlib import Path
 
 import numpy as np
-from mne import Annotations, annotations_from_events, create_info, get_config
+from mne import Annotations, create_info, get_config
 from mne.channels import make_standard_montage
 from mne.io import RawArray
 
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.utils import block_rep
 from moabb.utils import _handle_deprecated_kwargs
+
+
+_NON_ALNUM_RE = re.compile(r"[^A-Za-z0-9]")
+
+
+@lru_cache(maxsize=64)
+def _cached_fake_info(ch_names, ch_types, sfreq):
+    """Build and cache an MNE Info with the colin27_1005 montage applied."""
+    info = create_info(ch_names=list(ch_names), ch_types=list(ch_types), sfreq=sfreq)
+    raw = RawArray(np.zeros((len(ch_names), 1)), info, verbose=False)
+    raw.set_montage(make_standard_montage("colin27_1005"))
+    return raw.info
 
 
 class FakeDataset(BaseDataset):
@@ -124,7 +137,7 @@ class FakeDataset(BaseDataset):
             f"{code}-{paradigm.lower()}-{n_subjects}-{n_sessions}--"
             f"{'-'.join([str(n) for n in self.n_events])}--"
             f"{'-'.join([str(int(n)) for n in self.duration])}--"
-            f"{'-'.join([re.sub('[^A-Za-z0-9]', '', e).lower() for e in event_list])}--"
+            f"{'-'.join([_NON_ALNUM_RE.sub('', e).lower() for e in event_list])}--"
             f"{'-'.join([c.lower() for c in channels])}"
         )
         super().__init__(
@@ -138,8 +151,8 @@ class FakeDataset(BaseDataset):
             selected_sessions=sessions,
             return_all_modalities=return_all_modalities,
         )
-        key = "MNE_DATASETS_{:s}_PATH".format(self.code.upper())
-        temp_dir = get_config(key)
+        key = f"MNE_DATASETS_{self.code.upper()}_PATH"
+        temp_dir = os.environ.get(key) or get_config(key)
         if temp_dir is None or not Path(temp_dir).is_dir():
             temp_dir = tempfile.mkdtemp()
             # Use os.environ instead of mne.set_config to avoid
@@ -178,31 +191,36 @@ class FakeDataset(BaseDataset):
         return events
 
     def _generate_raw(self, n_events, duration):
-        montage = make_standard_montage("colin27_1005")
         sfreq = self.sfreq
-        eeg_data = 2e-5 * np.random.randn(int(duration * sfreq), len(self.channels))
+        n_samples = int(duration * sfreq)
+        n_ch = len(self.channels)
+        eeg_data = 2e-5 * np.random.randn(n_samples, n_ch)
         events = self._generate_events(n_events, duration)
-        ch_types = ["eeg"] * len(self.channels)
+        ch_types = ["eeg"] * n_ch
         ch_names = list(self.channels)
 
         if self.stim:
-            y = np.zeros(eeg_data.shape[0])
-            y[events[:, 0]] = events[:, 2]
-            ch_types += ["stim"]
-            ch_names += ["stim"]
-            eeg_data = np.c_[eeg_data, y]
+            data = np.empty((n_ch + 1, n_samples), dtype=np.float64)
+            data[:n_ch] = eeg_data.T
+            data[n_ch] = 0.0
+            data[n_ch, events[:, 0]] = events[:, 2]
+            ch_types.append("stim")
+            ch_names.append("stim")
+        else:
+            data = np.ascontiguousarray(eeg_data.T)
 
-        info = create_info(ch_names=ch_names, ch_types=ch_types, sfreq=sfreq)
-        raw = RawArray(data=eeg_data.T, info=info, verbose=False)
-        raw.set_montage(montage)
+        info = _cached_fake_info(tuple(ch_names), tuple(ch_types), float(sfreq))
+        raw = RawArray(data=data, info=info, verbose=False)
 
         if self.annotations:
-            event_desc = {v: k for k, v in self.event_id.items()}
             if len(events) != 0:
-                annotations = annotations_from_events(
-                    events, sfreq=sfreq, event_desc=event_desc
+                event_desc = {v: k for k, v in self.event_id.items()}
+                onsets = events[:, 0] / float(sfreq)
+                durations = np.full(
+                    len(events), self.interval[1] - self.interval[0], dtype=float
                 )
-                annotations.set_durations(self.interval[1] - self.interval[0])
+                descriptions = [event_desc[int(c)] for c in events[:, 2]]
+                annotations = Annotations(onsets, durations, descriptions)
             else:
                 annotations = Annotations([], [], [])
             raw.set_annotations(annotations)

@@ -9,10 +9,8 @@ import json
 import zipfile
 from pathlib import Path
 
-import mne_bids
 import pandas as pd
 from mne.channels import get_builtin_montages, make_standard_montage
-from mne_bids import events_file_to_annotation_kwargs
 
 from .base import BaseBIDSDataset
 from .download import data_dl, get_dataset_path
@@ -158,7 +156,7 @@ class Wang2026Handwriting(BaseBIDSDataset):
     Dataset from [1]_.
 
     The dataset contains EEG recordings from 21 healthy, right-handed adults
-    (10 female, 11 male, aged 22-32 years) performing two handwriting-imagery
+    (8 female, 13 male, aged 22-32 years) performing two handwriting-imagery
     tasks:
 
     - **CCS-HI** (Chinese character strokes imagery): five stroke classes
@@ -174,10 +172,10 @@ class Wang2026Handwriting(BaseBIDSDataset):
     to CPz with Fpz as ground, with a 0.1-100 Hz hardware band-pass and no
     software filtering applied before disclosure.
 
-    The subjects split into expert and novice groups by their handwriting
-    imagery performance (see the ``group`` column of the release's
-    ``participants.tsv``), which makes the dataset usable for both
-    within-session and expert/novice transfer analyses.
+    The subjects split into expert (7 with prior BCI experience) and novice
+    (14 BCI-naive) groups based on prior BCI experience (see the ``group``
+    column of the release's ``participants.tsv``), which makes the dataset
+    usable for both within-session and expert/novice transfer analyses.
 
     .. important::
 
@@ -198,7 +196,7 @@ class Wang2026Handwriting(BaseBIDSDataset):
 
     References
     ----------
-    .. [1] F. Wang, Y. Chen, P. Wang, A. Gong, H. Xu, and Y. Fu, "An EEG
+    .. [1] F. Wang, Y. Chen, P. Wang, A. Gong, J. Xu, and Y. Fu, "An EEG
        dataset for handwriting imagery decoding of Chinese character strokes
        and Pinyin single vowels," Scientific Data, 2026.
        DOI: 10.1038/s41597-026-06708-3
@@ -212,39 +210,46 @@ class Wang2026Handwriting(BaseBIDSDataset):
         acquisition=AcquisitionMetadata(
             sampling_rate=_SFREQ,
             channel_types={"eeg": 32},
-            montage="standard_1005",
+            montage="10-10",
             hardware="Neuracle NeuSenW32 32-channel Ag/AgCl cap",
+            software="Neuracle Acquisition Software",
             sensor_type="Ag/AgCl",
             reference="CPz",
             ground="Fpz",
+            impedance_threshold_kohm=10.0,
             sensors=list(WANG2026_CH_NAMES),
             line_freq=50.0,
         ),
         participants=ParticipantMetadata(
             n_subjects=len(_SUBJECT_IDS),
             health_status="healthy",
-            gender={
-                "male": sum(1 for s in _SUBJECT_IDS if _DEMOGRAPHICS[s][0] == "male"),
-                "female": sum(1 for s in _SUBJECT_IDS if _DEMOGRAPHICS[s][0] == "female"),
-            },
+            gender={"male": 13, "female": 8},
             age_mean=sum(_DEMOGRAPHICS[s][1] for s in _SUBJECT_IDS) / len(_SUBJECT_IDS),
-            age_min=min(_DEMOGRAPHICS[s][1] for s in _SUBJECT_IDS),
-            age_max=max(_DEMOGRAPHICS[s][1] for s in _SUBJECT_IDS),
-            handedness={"right": len(_SUBJECT_IDS)},
-            bci_experience="mixed (expert and novice groups)",
+            age_median=25.0,
+            age_std=2.76,
+            age_min=22,
+            age_max=32,
+            handedness={"right": 21},
+            bci_experience="7 with prior BCI experience (expert), 14 BCI-naive (novice)",
             ages=[_DEMOGRAPHICS[s][1] for s in _SUBJECT_IDS],
             sexes=[_DEMOGRAPHICS[s][0] for s in _SUBJECT_IDS],
         ),
         experiment=ExperimentMetadata(
             paradigm="cognitive",
             events=dict(WANG2026_EVENTS),
-            n_classes=5,
+            n_classes=11,
             class_labels=[
                 "horizontal",
                 "vertical",
                 "left_falling",
                 "right_falling",
                 "turning",
+                "a",
+                "o",
+                "e",
+                "i",
+                "u",
+                "v",
             ],
             trial_duration=_TRIAL_DURATION,
             study_design=(
@@ -254,7 +259,7 @@ class Wang2026Handwriting(BaseBIDSDataset):
             ),
             study_domain="communication",
             stimulus_type="visual cue (stroke or vowel to imagine writing)",
-            stimulus_modalities=["visual"],
+            stimulus_modalities=["visual", "auditory"],
             primary_modality="visual",
             synchronicity="synchronous",
             mode="offline",
@@ -274,17 +279,27 @@ class Wang2026Handwriting(BaseBIDSDataset):
                 "Yanxiao Chen",
                 "Peng Wang",
                 "Anmin Gong",
-                "Hui Xu",
+                "Jiaping Xu",
                 "Yunfa Fu",
             ],
             senior_author="Yunfa Fu",
-            institution="Minjiang University",
+            institution="Kunming University of Science and Technology",
+            institution_department="Faculty of Information Engineering and Automation; Brain Cognition and Brain-computer Intelligence Integration Group",
             country="CN",
             repository="figshare",
             data_url="https://doi.org/10.6084/m9.figshare.29987758.v4",
             license="CC-BY-4.0",
             publication_year=2026,
-            funding=["National Natural Science Foundation of China (Grant No. 62376112)"],
+            contact_info=["wf17853537709@163.com", "fyf@ynu.edu.cn"],
+            ethics_approval=(
+                [
+                    "Ethics Committee of Kunming University of Science and Technology (Approval No.: KMUST-MEC-2023-026)"
+                ]
+            ),
+            funding=[
+                "National Natural Science Foundation of China (Grant Nos. 62376112, 82172058, 81771926, 61763022, 62366026, 62006246)",
+                "China Postdoctoral Science Foundation (Grant No. 2023M734315)",
+            ],
             keywords=[
                 "handwriting imagery",
                 "EEG",
@@ -318,6 +333,7 @@ class Wang2026Handwriting(BaseBIDSDataset):
                 "right_falling",
                 "turning",
             ],
+            cue_duration_s=2.8,
             imagery_duration_s=_TRIAL_DURATION,
         ),
         data_structure=DataStructureMetadata(
@@ -330,10 +346,12 @@ class Wang2026Handwriting(BaseBIDSDataset):
             ),
         ),
         signal_processing=SignalProcessingMetadata(
-            classifiers=["EEGNet"], frequency_bands={"mu_beta": [8.0, 30.0]}
+            classifiers=["EEGNet"], frequency_bands={"bandpass": [1.0, 40.0]}
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="10-fold", cv_folds=10, evaluation_type=["within_session"]
+            cv_method="5-fold",
+            cv_folds=5,
+            evaluation_type=["within_session", "cross_session"],
         ),
         bci_application=BCIApplicationMetadata(
             environment="laboratory",
@@ -461,6 +479,8 @@ class Wang2026Handwriting(BaseBIDSDataset):
             else "standard_1005"
         )
         montage = make_standard_montage(montage_name)
+        import mne_bids
+
         data = {}
         for bids_path in bids_paths:
             raw = mne_bids.read_raw_bids(
@@ -522,6 +542,8 @@ class Wang2026Handwriting(BaseBIDSDataset):
             for p in self.bids_paths(subject)
             if int(p.session) == int(session) + 1 and p.task == run
         )
+        from mne_bids import events_file_to_annotation_kwargs
+
         events_file = bids_path.find_matching_sidecar(suffix="events", extension=".tsv")
         annotations = events_file_to_annotation_kwargs(events_file)
         return pd.DataFrame(

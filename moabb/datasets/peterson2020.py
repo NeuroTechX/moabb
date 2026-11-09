@@ -2,8 +2,6 @@
 
 from pathlib import Path
 
-import mne_bids
-
 from ._openneuro_mirror import OpenNeuroMirrorMixin
 from .base import BaseBIDSDataset
 from .bids_interface import StepType
@@ -22,7 +20,6 @@ from .metadata.schema import (
     SignalProcessingMetadata,
     Tags,
 )
-from .preprocessing import FixedPipeline, SetRawAnnotations
 from .utils import stim_channels_with_selected_ids
 
 
@@ -58,12 +55,25 @@ _ANNOT_TO_NAME = {
 PETERSON2020_CACHE_VERSION = "edf-blank-physdim-uv-to-v-v1"
 
 
-class _PetersonSetRawAnnotations(SetRawAnnotations):
-    """Carry the unit repair version into MOABB's raw-cache fingerprint."""
+def _get_peterson_set_raw_annotations():
+    if "_PetersonSetRawAnnotations" not in globals():
+        from .preprocessing import SetRawAnnotations
 
-    def __init__(self, event_id, interval, cache_version):
-        self.cache_version = cache_version
-        super().__init__(event_id, interval)
+        class _PetersonSetRawAnnotations(SetRawAnnotations):
+            """Carry the unit repair version into MOABB's raw-cache fingerprint."""
+
+            def __init__(self, event_id, interval, cache_version):
+                self.cache_version = cache_version
+                super().__init__(event_id, interval)
+
+        globals()["_PetersonSetRawAnnotations"] = _PetersonSetRawAnnotations
+    return globals()["_PetersonSetRawAnnotations"]
+
+
+def __getattr__(name):
+    if name == "_PetersonSetRawAnnotations":
+        return _get_peterson_set_raw_annotations()
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 class Peterson2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
@@ -110,8 +120,12 @@ class Peterson2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
             hardware="OpenBCI Cyton + Daisy (16-channel) with Electro-Cap System II",
             cap_manufacturer="Electro-Cap International",
             cap_model="Electro-Cap System II",
-            reference="left ear lobe",
-            ground="right ear lobe",
+            sensor_type="wet",
+            electrode_type="wet",
+            electrode_material="pure tin",
+            impedance_threshold_kohm=5.0,
+            reference="left earlobe",
+            ground="right earlobe",
             filters=(
                 "paper: 0.5-45 Hz 3rd-order Butterworth band-pass applied in "
                 "OpenViBE during acquisition; BIDS sidecars: n/a"
@@ -121,12 +135,17 @@ class Peterson2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
             line_freq=50.0,
         ),
         participants=ParticipantMetadata(
+            handedness={"right": 12},
+            gender={"male": 8, "female": 4},
+            age_std=3.7,
+            age_mean=25.9,
             n_subjects=10,
             health_status="healthy",
             bci_experience="naive",
             species="human",
         ),
         experiment=ExperimentMetadata(
+            trial_duration=4.0,
             events=dict(_EVENTS),
             paradigm="imagery",
             n_classes=2,
@@ -144,11 +163,22 @@ class Peterson2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
             mode="offline",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Ruben Spies",
+            ethics_approval=[
+                "Comité Asesor de Ética y Seguridad en el Trabajo Experimental (CEySTE, CCT-CONICET, Santa Fe, Argentina)"
+            ],
+            funding=[
+                "CONICET PIP 2014-2016 No. 11220130100216-CO",
+                "AFOSR/SOARD Grant FA9550-14-1-0130",
+                "UNL CAI+D-UNL 2016 PIC No. 50420150100036LI",
+                "Universidad Nacional de Entre Ríos (UNER) PID NOVEL 6215",
+            ],
+            repository="OpenNeuro",
             doi="10.1016/j.heliyon.2020.e03425",
             investigators=[
                 "Victoria Peterson",
                 "Catalina Maria Galvan",
-                "Hugo Sacha Hernadez",
+                "Hugo Sacha U. Hernández",
                 "Ruben Spies",
             ],
             institution="IMAL, CONICET-UNL",
@@ -186,7 +216,9 @@ class Peterson2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
             n_trials=160,
             n_trials_per_class={"motor_imagery": 80, "rest": 80},
             trials_context=(
-                "Per subject: 4 MI-vs-rest runs x 40 trials (20 MI + 20 rest per run)."
+                "Per subject: 4 MI-vs-rest runs x 40 trials (20 MI + 20 rest per run), "
+                "except Subject 1 (absent from BIDS archive; paper reports 150 trials "
+                "with 30 trials in RUN4) while Subjects 2-10 have 160 trials."
             ),
         ),
         bci_application=BCIApplicationMetadata(
@@ -213,11 +245,14 @@ class Peterson2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
         )
 
     def _create_process_pipeline(self):
+        from .preprocessing import FixedPipeline
+
+        cls = _get_peterson_set_raw_annotations()
         return FixedPipeline(
             [
                 (
                     StepType.RAW,
-                    _PetersonSetRawAnnotations(
+                    cls(
                         self.event_id,
                         interval=self.interval,
                         cache_version=PETERSON2020_CACHE_VERSION,
@@ -283,6 +318,8 @@ class Peterson2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
                     verbose=verbose,
                     fname=rel_path,
                 )
+        import mne_bids
+
         mne_bids.make_dataset_description(
             path=bids_root,
             name="Motor Imagery vs Rest - Low-Cost EEG System",

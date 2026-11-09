@@ -11,10 +11,13 @@ from moabb.datasets.base import BaseDataset
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
     DatasetMetadata,
+    DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
+    PreprocessingMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 
@@ -132,6 +135,17 @@ class Wang2025(BaseDataset):
             events=dict(EVENT_ID),
         ),
         documentation=DocumentationMetadata(
+            senior_author="Yueming Wang",
+            ethics_approval=[
+                "Ethics Committee of Zhejiang University (Application No. 2022005)"
+            ],
+            funding=[
+                "Science and Technology Innovation 2030 Major Project (Grant 2022ZD0208605)",
+                "National Natural Science Foundation of China (Grant 62336007)",
+                "Leading Innovative and Entrepreneur Team Introduction Program of Zhejiang (Grant 2023R01005)",
+                "Starry Night Science Fund of Zhejiang University Shanghai Institute for Advanced Study (Grant SN-ZJU-SIAS-002)",
+                "Fundamental Research Funds for the Central Universities (Grant 226-2024-00127)",
+            ],
             doi="10.1109/TNSRE.2025.3591254",
             description="Four-class motor imagery EEG from 15 healthy subjects "
             "(left hand, right hand, tongue, both feet) recorded with 62 channels "
@@ -141,6 +155,7 @@ class Wang2025(BaseDataset):
             country="CN",
             data_url="https://huggingface.co/datasets/Jiaheng-Wang/ZJU-MI-EEG",
             publication_year=2025,
+            contact_info=["lin.yao@zju.edu.cn"],
             keywords=[
                 "motor imagery",
                 "BCI",
@@ -153,11 +168,46 @@ class Wang2025(BaseDataset):
         ),
         sessions_per_subject=2,
         runs_per_session=2,
+        data_processed=True,
         tags=Tags(pathology=["healthy"], modality=["Motor"], type=["Motor Imagery"]),
+        preprocessing=PreprocessingMetadata(
+            data_state="epoched and filtered",
+            preprocessing_applied=True,
+            highpass_hz=0.1,
+            epoch_window=[-1.0, 4.0],
+            notes="High-pass filtered above 0.1 Hz and segmented from -1 s to 4 s relative to cue onset",
+        ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
             imagery_tasks=["left_hand", "right_hand", "tongue", "feet"],
             imagery_duration_s=4.0,
+        ),
+        data_structure=DataStructureMetadata(
+            n_trials=800,
+            n_trials_per_class={
+                "left_hand": 200,
+                "right_hand": 200,
+                "tongue": 200,
+                "feet": 200,
+            },
+            n_blocks=10,
+            trials_context="2 sessions (days) per subject; each session has 240 calibration trials (6 runs x 40 trials) and 160 feedback trials (4 runs x 40 trials) = 400 trials/session, 800 trials/subject",
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=[
+                "IFNet",
+                "FBCSP+SVM",
+                "EEGNet",
+                "FBCNet",
+                "EEG-Conformer",
+                "TSFCNet",
+            ],
+            spatial_filters=["CSP", "FBCSP"],
+            frequency_bands={
+                "low": [4.0, 16.0],
+                "high": [16.0, 40.0],
+                "upper_alpha": [10.0, 13.0],
+            },
         ),
         file_format="MAT",
     )

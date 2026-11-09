@@ -15,6 +15,7 @@ from . import download as dl
 from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
+    AuxiliaryChannelsMetadata,
     BCIApplicationMetadata,
     CrossValidationMetadata,
     DatasetMetadata,
@@ -23,6 +24,7 @@ from .metadata.schema import (
     ExperimentMetadata,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
+    PreprocessingMetadata,
     SignalProcessingMetadata,
     Tags,
 )
@@ -166,12 +168,23 @@ class Jeong2020(BaseDataset):
             channel_types={"eeg": 60, "eog": 4, "emg": 7},
             montage="standard_1005",
             hardware="BrainAmp (BrainProducts GmbH)",
+            cap_manufacturer="BrainProduct GmbH",
+            cap_model="actiCap",
             sensor_type="actiCap",
+            software="BrainVision, MATLAB 2019a",
             reference="FCz",
             ground="Fpz",
-            filters={"highpass": 0.016, "lowpass": 1000},
+            impedance_threshold_kohm=15.0,
+            filters={"highpass": 0.016, "lowpass": 1000, "notch_hz": 60},
             sensors=list(_CH_NAMES_EEG),
             line_freq=60.0,
+            auxiliary_channels=AuxiliaryChannelsMetadata(
+                has_eog=True,
+                eog_channels=4,
+                eog_type=["horizontal", "vertical"],
+                has_emg=True,
+                emg_channels=7,
+            ),
         ),
         participants=ParticipantMetadata(
             n_subjects=25,
@@ -181,7 +194,7 @@ class Jeong2020(BaseDataset):
             age_max=32.0,
             handedness="right-handed",
             bci_experience="naive",
-            species="human",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             events=dict(_ALL_EVENTS),
@@ -251,6 +264,8 @@ class Jeong2020(BaseDataset):
             },
         ),
         documentation=DocumentationMetadata(
+            senior_author="Seong-Whan Lee",
+            repository="Zenodo",
             doi="10.1093/gigascience/giaa098",
             investigators=[
                 "Ji-Hoon Jeong",
@@ -263,7 +278,12 @@ class Jeong2020(BaseDataset):
                 "Seong-Whan Lee",
             ],
             institution="Korea University",
+            institution_department="Department of Brain and Cognitive Engineering; Department of Artificial Intelligence",
+            institution_address="145 Anam-ro, Seongbuk-gu, Seoul 02841, South Korea",
             country="KR",
+            funding=[
+                "Institute for Information and Communications Technology Promotion (IITP) grant (No. 2017-0-00451)"
+            ],
             data_url="https://zenodo.org/records/19021436",
             publication_year=2020,
             license="CC0-1.0",
@@ -271,9 +291,11 @@ class Jeong2020(BaseDataset):
         sessions_per_subject=3,
         runs_per_session=3,
         tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Research"]),
+        preprocessing=PreprocessingMetadata(downsampled_to_hz=1000.0),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
             imagery_tasks=list(_ALL_EVENTS.keys()),
+            cue_duration_s=3.0,
             imagery_duration_s=4.0,
         ),
         data_structure=DataStructureMetadata(
@@ -345,6 +367,15 @@ class Jeong2020(BaseDataset):
                 raw = mne.io.read_raw_brainvision(
                     str(vhdr_path), preload=True, verbose=False
                 )
+                ch_type_map = {}
+                for ch in raw.ch_names:
+                    ch_upper = ch.upper()
+                    if "EOG" in ch_upper:
+                        ch_type_map[ch] = "eog"
+                    elif ch_upper.startswith("EMG"):
+                        ch_type_map[ch] = "emg"
+                if ch_type_map:
+                    raw.set_channel_types(ch_type_map, verbose=False)
 
                 # Remap stimulus markers to unified event codes.
                 self._remap_annotations(raw, task_type)

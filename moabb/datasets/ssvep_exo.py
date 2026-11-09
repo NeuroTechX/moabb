@@ -85,13 +85,17 @@ class Kalunga2016(BaseDataset):
             line_freq=50.0,
         ),
         participants=ParticipantMetadata(
-            n_subjects=12, health_status="healthy", species="human"
+            n_subjects=12,
+            health_status="healthy",
+            age_min=20,
+            age_max=28,
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             events={"13": 2, "17": 4, "21": 3, "rest": 1},
             paradigm="ssvep",
             n_classes=4,
-            class_labels=["13hz", "17hz", "21hz", "rest"],
+            class_labels=["13", "17", "21", "rest"],
             trial_duration=6.0,
             study_design="SSVEP",
             stimulus_type="flickering",
@@ -140,7 +144,7 @@ class Kalunga2016(BaseDataset):
             classifiers=["MDRM", "CCA"], feature_extraction=["Covariance/Riemannian"]
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="bootstrap", evaluation_type=["cross_subject", "cross_session"]
+            cv_method="bootstrap", evaluation_type=["within_subject", "cross_session"]
         ),
         bci_application=BCIApplicationMetadata(
             applications=["assistive_robotics"],
@@ -157,7 +161,7 @@ class Kalunga2016(BaseDataset):
             trials_context="per session",
         ),
         sessions_per_subject=1,
-        runs_per_session=None,
+        runs_per_session=2,
         data_processed=False,
         file_format="fif",
     )

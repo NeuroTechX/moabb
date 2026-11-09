@@ -17,6 +17,7 @@ from . import download as dl
 from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
@@ -24,6 +25,7 @@ from .metadata.schema import (
     ParadigmSpecificMetadata,
     ParticipantMetadata,
     PreprocessingMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 from .utils import build_raw_from_epochs, download_and_extract_subject_zip
@@ -94,7 +96,7 @@ class Pressel2016(BaseDataset):
     concatenated, plus 3 label columns (modality, stimulus, artifact).
 
     By default, only imagined speech trials (modality=1) are loaded.
-    Artifact-flagged trials (artifact=2) are excluded.
+    Artifact-flagged trials (artifact=2) are annotated with BAD_artifact.
 
     .. figure:: /_static/paper_figures/Pressel2016.png
        :alt: Pressel2016 trial structure (Fig. 1 of the SPIE paper) —
@@ -130,6 +132,7 @@ class Pressel2016(BaseDataset):
             channel_types={"eeg": 6},
             montage="standard_1020",
             hardware="Grass 8-18-36 amplifier + DataTranslation DT9816 ADC",
+            software="BCI2000",
             sensors=list(_CH_NAMES),
             reference="left mastoid",
             ground="right mastoid",
@@ -143,7 +146,9 @@ class Pressel2016(BaseDataset):
             n_subjects=15,
             health_status="healthy",
             gender={"female": 7, "male": 8},
-            age_mean=25.0,
+            ages=[24, 28, 24, 25, 24, 25, 25, 25, 24, 26, 25, 28, 25, 25, 24],
+            age_mean=25.13,
+            age_std=1.26,
             age_min=24,
             age_max=28,
             handedness={"right": 14, "left": 1},
@@ -160,8 +165,8 @@ class Pressel2016(BaseDataset):
                 "vowels and 6 directional commands. Two modalities: "
                 "imagined (silent) and pronounced (vocalized)."
             ),
-            stimulus_type="visual cue",
-            stimulus_modalities=["visual"],
+            stimulus_type="visual and auditory cue",
+            stimulus_modalities=["visual", "auditory"],
             primary_modality="visual",
             synchronicity="synchronous",
             mode="offline",
@@ -182,6 +187,7 @@ class Pressel2016(BaseDataset):
             },
         ),
         documentation=DocumentationMetadata(
+            senior_author="H. Leonardo Rufiner",
             doi="10.1117/12.2255697",
             investigators=[
                 "German A. Pressel Coretto",
@@ -196,6 +202,10 @@ class Pressel2016(BaseDataset):
             repository="Zenodo",
             contact_info=["germanpressel@gmail.com"],
             associated_paper_doi="10.1117/12.2255697",
+            funding=[
+                "CONICET PIP 2014-2016 No. 11220130100216-CO",
+                "UNL CAID-UNL 2011 Project No. 525",
+            ],
             keywords=[
                 "imagined speech",
                 "EEG",
@@ -230,8 +240,16 @@ class Pressel2016(BaseDataset):
             imagery_tasks=list(_STIMULUS_MAP.values()),
             imagery_duration_s=4.0,
         ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["Random Forest", "SVM"], feature_extraction=["DWT", "RWE"]
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="10x10-fold cross-validation",
+            cv_folds=10,
+            evaluation_type=["within_subject"],
+        ),
         data_structure=DataStructureMetadata(
-            n_trials="varies (~278-424 clean imagined per subject)",
+            n_trials="varies (467-560 total imagined per subject; ~278-424 clean)",
             trials_context=(
                 "15 subjects, 50 repetitions per word (40 imagined + 10 "
                 "pronounced) before artifact rejection. 10-52% artifact rate "

@@ -19,6 +19,7 @@ from moabb.analysis.plotting import (
     paired_plot,
     plot_critical_difference,
     score_plot,
+    summary_plot,
 )
 from moabb.datasets.utils import dataset_list
 
@@ -78,6 +79,15 @@ def test_distribution_plot():
 def test_paired_plot():
     fig = paired_plot(_make_df(), "P0", "P1", chance_level="auto")
     assert isinstance(fig, Figure)
+
+
+def test_summary_plot_keeps_names_that_shorten_to_the_same_word():
+    names = ["Tangent Space LR", "Tangent Space SVM Grid"]
+    sig = pd.DataFrame([[1.0, 0.01], [0.01, 1.0]], index=names, columns=names)
+    effect = pd.DataFrame([[0.0, 0.5], [-0.5, 0.0]], index=names, columns=names)
+    fig = summary_plot(sig, effect)
+    assert [t.get_text() for t in fig.axes[0].get_xticklabels()] == names
+    plt.close(fig)
 
 
 def test_nemenyi_critical_difference_matches_demsar_2006():

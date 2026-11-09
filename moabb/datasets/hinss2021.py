@@ -78,13 +78,16 @@ class Hinss2021(BaseDataset):
     nemar_id = "nm000343"
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
-            sampling_rate=500.0,
-            channel_types={"eeg": 62},
+            ground=None,
+            sampling_rate=_SFREQ,
+            channel_types={"eeg": 61},
             montage="standard_1020",
             hardware="ActiCHamp (Brain Products Gmbh)",
+            cap_manufacturer="Brain Products GmbH",
+            cap_model="ActiCap",
             sensor_type="active Ag/AgCl",
             reference="Fpz",
-            software=None,
+            software="LabRecorder (LabStreamingLayer), MATLAB v.2021a, PsychToolBox-3",
             filters=None,
             impedance_threshold_kohm=25,
             sensors=[
@@ -155,15 +158,17 @@ class Hinss2021(BaseDataset):
         ),
         participants=ParticipantMetadata(
             n_subjects=15,
-            gender={"female": 11, "male": 18},
-            age_mean=23.9,
+            gender={"female": 6, "male": 9},
+            age_mean=25.0,
+            age_std=3.20,
             handedness=None,
         ),
         experiment=ExperimentMetadata(
+            trial_duration=1.996,
             events={"rs": 1, "easy": 2, "medium": 3, "diff": 4},
             paradigm="rstate",
             n_classes=4,
-            class_labels=["rest", "easy", "medium", "difficult"],
+            class_labels=["rs", "easy", "medium", "diff"],
             study_design="Passive BCI neuroergonomics dataset with resting state and 3 difficulty levels of MATB-II task (easy, medium, difficult). The MOABB loader provides resting state and MATB conditions only.",
             feedback_type="none",
             stimulus_type="visual display",
@@ -209,8 +214,8 @@ class Hinss2021(BaseDataset):
         ),
         tags=Tags(pathology=["Healthy"], modality=["Cognitive"], type=["Research"]),
         preprocessing=PreprocessingMetadata(
-            data_state="raw",
-            preprocessing_applied=False,
+            data_state="epoched",
+            preprocessing_applied=True,
             highpass_hz=None,
             filter_type=None,
             artifact_methods=None,
@@ -234,11 +239,13 @@ class Hinss2021(BaseDataset):
         ),
         paradigm_specific=ParadigmSpecificMetadata(detected_paradigm="rstate"),
         data_structure=DataStructureMetadata(
-            n_trials=90, n_blocks=None, trials_context="total"
+            n_trials=960,
+            n_blocks=None,
+            trials_context="480 2-second epochs per session (30 RS + 150 MATBeasy + 150 MATBmed + 150 MATBdiff) x 2 sessions",
         ),
         sessions_per_subject=2,
         runs_per_session=1,
-        data_processed=False,
+        data_processed=True,
         file_format="set",
     )
 

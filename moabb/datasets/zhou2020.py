@@ -15,6 +15,7 @@ from . import download as dl
 from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
+    AuxiliaryChannelsMetadata,
     BCIApplicationMetadata,
     CrossValidationMetadata,
     DatasetMetadata,
@@ -23,6 +24,7 @@ from .metadata.schema import (
     ExperimentMetadata,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
+    PreprocessingMetadata,
     SignalProcessingMetadata,
     Tags,
 )
@@ -219,13 +221,16 @@ def _make_metadata(cohort=None):
             filters={"bandpass": [0.5, 100], "notch_hz": 50},
             sensors=sensors,
             line_freq=50.0,
+            auxiliary_channels=AuxiliaryChannelsMetadata(
+                has_eog=True, eog_channels=2, eog_type=["horizontal", "vertical"]
+            ),
         ),
         participants=ParticipantMetadata(
             n_subjects=n_subjects,
             health_status="healthy",
-            handedness="right-handed",
+            handedness="right",
             bci_experience="mixed",
-            species="human",
+            species="homo sapiens",
             **demographics,
         ),
         experiment=ExperimentMetadata(
@@ -255,16 +260,34 @@ def _make_metadata(cohort=None):
                 "Yan Han",
                 "Kedi Xu",
             ],
+            senior_author="Kedi Xu",
             institution="Zhejiang University",
             country="CN",
-            repository="Zenodo",
-            data_url=f"https://zenodo.org/records/{_ZENODO_RECORD}",
+            repository="Hugging Face",
+            data_url="https://huggingface.co/datasets/Perun-w/ZJU-MI-EEG",
             publication_year=2021,
+            contact_info=["xukd@zju.edu.cn"],
             license="CC-BY-4.0",
+            ethics_approval=[
+                "Human Research Ethics Committee of The Second Affiliated Hospital of Zhejiang University School of Medicine"
+            ],
+            funding=[
+                "National Key R&D Program of China (2018YFA0701400)",
+                "National Natural Science Foundation of China (31627802, 81873911)",
+                "Zhejiang Lab (2019KE0AD01)",
+            ],
         ),
         sessions_per_subject=7,
         runs_per_session=6,
         tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Research"]),
+        preprocessing=PreprocessingMetadata(
+            data_state="filtered continuous",
+            preprocessing_applied=True,
+            bandpass=[0.5, 100.0],
+            highpass_hz=0.5,
+            lowpass_hz=100.0,
+            notch_hz=50.0,
+        ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
             imagery_tasks=["left_hand", "right_hand", "feet", "rest"],

@@ -20,7 +20,12 @@ log = logging.getLogger(__name__)
 
 def _safe_corrcoef(a, b):
     """Return a finite correlation coefficient for 1D inputs."""
-    corr = np.corrcoef(a, b)[0, 1]
+    a_c = a - a.mean()
+    b_c = b - b.mean()
+    denom = np.sqrt(np.dot(a_c, a_c) * np.dot(b_c, b_c))
+    if denom <= 0 or not np.isfinite(denom):
+        return -1.0
+    corr = float(np.dot(a_c, b_c) / denom)
     return corr if np.isfinite(corr) else -1.0
 
 
@@ -28,28 +33,20 @@ def _normalize_score_matrix(scores):
     """Convert per-class scores to robust row-wise probabilities."""
     scores = np.asarray(scores, dtype=float)
     n_trials, n_classes = scores.shape
-    probas = np.zeros((n_trials, n_classes), dtype=float)
+    if n_trials == 0:
+        return np.zeros((0, n_classes), dtype=float)
     eps = 1e-12
 
-    scores = np.nan_to_num(scores, nan=-np.inf, posinf=-np.inf, neginf=-np.inf)
-    for i, row in enumerate(scores):
-        finite_mask = np.isfinite(row)
-        if not finite_mask.any():
-            probas[i, :] = 1.0 / n_classes
-            continue
-
-        row = row.copy()
-        min_finite = np.min(row[finite_mask])
-        row[~finite_mask] = min_finite
-        row = row - np.min(row) + eps
-        denom = row.sum()
-
-        if not np.isfinite(denom) or denom <= 0:
-            probas[i, :] = 1.0 / n_classes
-        else:
-            probas[i, :] = row / denom
-
-    return probas
+    finite_mask = np.isfinite(scores)
+    any_finite = finite_mask.any(axis=1)
+    safe = np.where(finite_mask, scores, np.inf)
+    min_finite = np.min(safe, axis=1, keepdims=True)
+    min_finite = np.where(any_finite[:, None], min_finite, 0.0)
+    rows = np.where(finite_mask, scores, min_finite)
+    rows = rows - min_finite + eps
+    denom = rows.sum(axis=1, keepdims=True)
+    valid = any_finite[:, None] & np.isfinite(denom) & (denom > 0)
+    return np.where(valid, rows / np.where(valid, denom, 1.0), 1.0 / n_classes)
 
 
 def _infer_label_frequencies(X, y, classes, freq_map=None):
@@ -159,22 +156,63 @@ def _infer_label_frequencies(X, y, classes, freq_map=None):
 def _build_sinusoidal_references(class_freqs, n_harmonics, signal_length, n_times):
     """Build harmonic sine/cosine reference matrices for each class label."""
     times = np.linspace(0, signal_length, n_times)
+    h_idx = np.arange(1, n_harmonics + 1, dtype=float)[:, None]
+    base_phases = (2.0 * np.pi * h_idx) * times[None, :]
     references = {}
     for class_label, freq in class_freqs.items():
-        harmonics = []
-        for harmonic_idx in range(1, n_harmonics + 1):
-            phase = 2 * np.pi * freq * harmonic_idx * times
-            harmonics.extend([np.sin(phase), np.cos(phase)])
-        references[class_label] = np.array(harmonics)
+        phases = float(freq) * base_phases
+        ref = np.empty((2 * n_harmonics, n_times), dtype=float)
+        ref[0::2, :] = np.sin(phases)
+        ref[1::2, :] = np.cos(phases)
+        references[class_label] = ref
     return references
 
 
 def _score_matrix_from_trials(X, classes, score_trial_fn):
     """Compute class-score matrix for all trials in ``X``."""
-    scores = np.zeros((len(X), len(classes)))
-    for trial_idx, trial in enumerate(X):
+    X_trials = X.get_data(copy=False) if isinstance(X, BaseEpochs) else X
+    scores = np.zeros((len(X_trials), len(classes)))
+    for trial_idx, trial in enumerate(X_trials):
         scores[trial_idx, :] = score_trial_fn(trial)
     return scores
+
+
+def _fb_corr_scores(
+    X, sfreq, n_fbands, n_classes, peaks, one_hot, templates, weights, is_ensemble
+):
+    """Compute filterbank correlation array of shape (n_trials, n_fbands, n_classes)."""
+    X_data = X.get_data(copy=False) if isinstance(X, BaseEpochs) else np.asarray(X)
+    if X_data.ndim == 2:
+        X_data = X_data[np.newaxis, ...]
+    n_trials = X_data.shape[0]
+    corr_array = np.zeros((n_trials, n_fbands, n_classes))
+
+    for band_n in range(n_fbands):
+        X_filter = filterbank(X_data, sfreq, band_n, peaks)
+        if X_filter.ndim == 2:
+            X_filter = X_filter[np.newaxis, ...]
+        X_T = np.swapaxes(X_filter, 1, 2)
+        if is_ensemble:
+            w_ens = np.squeeze(weights[band_n, :, :]).T
+            X_proj = np.dot(X_T, w_ens).reshape(n_trials, -1)
+            X_c = X_proj - X_proj.mean(axis=1, keepdims=True)
+            X_norm = np.linalg.norm(X_c, axis=1)
+
+        for _freq, k in one_hot.items():
+            template = np.squeeze(templates[k, band_n, :, :])
+            if is_ensemble:
+                w = w_ens
+            else:
+                w = np.squeeze(weights[band_n, k, :]).T
+                X_proj = np.dot(X_T, w).reshape(n_trials, -1)
+                X_c = X_proj - X_proj.mean(axis=1, keepdims=True)
+                X_norm = np.linalg.norm(X_c, axis=1)
+
+            t_vec = np.dot(template.T, w).ravel()
+            t_c = t_vec - t_vec.mean()
+            corr_array[:, band_n, k] = (X_c @ t_c) / (X_norm * np.linalg.norm(t_c))
+
+    return corr_array
 
 
 def _predict_labels_from_scores(scores, classes):
@@ -183,12 +221,64 @@ def _predict_labels_from_scores(scores, classes):
     return [classes[int(class_idx)] for class_idx in winners]
 
 
+def _cca_qr_basis(M):
+    """Orthonormal column basis of centered (n_samples, n_features) matrix."""
+    M_c = M - M.mean(axis=0, keepdims=True)
+    norms = np.linalg.norm(M_c, axis=0)
+    nz = norms > 0
+    if not np.any(nz):
+        return None
+    Q, R = np.linalg.qr(M_c[:, nz], mode="reduced")
+    if R.size == 0:
+        return None
+    diag = np.abs(np.diag(R))
+    max_d = diag.max()
+    if max_d <= 0 or not np.isfinite(max_d):
+        return None
+    keep = diag > (max_d * 1e-12)
+    return Q[:, keep] if np.any(keep) else None
+
+
+def _cca_max_corr_from_qr(Q_x, Q_y):
+    """Largest canonical correlation between two orthonormal column bases."""
+    if Q_x is None or Q_y is None:
+        return -1.0
+    s = linalg.svdvals(Q_x.T @ Q_y)
+    if s.size == 0 or not np.isfinite(s[0]):
+        return -1.0
+    return float(np.clip(s[0], 0.0, 1.0))
+
+
 def _cca_trial_scores(cca, trial, references, classes):
     """Compute per-class CCA correlation scores for one trial."""
+    Q_x = _cca_qr_basis(trial.T)
+    if Q_x is None:
+        return np.full(len(classes), -1.0)
     scores = np.zeros(len(classes))
     for class_idx, class_label in enumerate(classes):
-        S_x, S_y = cca.fit_transform(trial.T, references[class_label].T)
-        scores[class_idx] = _safe_corrcoef(S_x.ravel(), S_y.ravel())
+        Q_y = _cca_qr_basis(references[class_label].T)
+        scores[class_idx] = _cca_max_corr_from_qr(Q_x, Q_y)
+    return scores
+
+
+def _cca_scores_from_trials(X, classes, references, whiten=False):
+    """Vectorized CCA score matrix across all trials and classes using shared reference QR."""
+    X_trials = X.get_data(copy=False) if isinstance(X, BaseEpochs) else X
+    n_trials = len(X_trials)
+    n_classes = len(classes)
+    if n_trials == 0:
+        return np.zeros((0, n_classes))
+    if whiten:
+        X_trials = _whitening(X_trials)
+    ref_qrs = [_cca_qr_basis(references[cls].T) for cls in classes]
+    scores = np.empty((n_trials, n_classes), dtype=float)
+    for t_idx in range(n_trials):
+        Q_x = _cca_qr_basis(X_trials[t_idx].T)
+        if Q_x is None:
+            scores[t_idx, :] = -1.0
+            continue
+        for c_idx, Q_y in enumerate(ref_qrs):
+            scores[t_idx, c_idx] = _cca_max_corr_from_qr(Q_x, Q_y)
     return scores
 
 
@@ -197,28 +287,86 @@ def _signed_squared_fusion(correlations):
     return sum(np.sign(corr) * (corr**2) for corr in correlations)
 
 
+def _cca_corr_and_x_weight(X_c, Q_x, R_x, nz_x, Q_y):
+    """Return (r, w_x) for 1-component CCA between centered X_c (T, C) and Q_y (T, K)."""
+    if Q_x is None or Q_y is None:
+        return -1.0, np.zeros((X_c.shape[1], 1))
+    M = Q_x.T @ Q_y
+    U, s, _ = linalg.svd(M, full_matrices=False)
+    if s.size == 0 or not np.isfinite(s[0]):
+        return -1.0, np.zeros((X_c.shape[1], 1))
+    r = float(np.clip(s[0], 0.0, 1.0))
+    w_nz = linalg.lstsq(R_x, U[:, :1])[0]
+    w_x = np.zeros((X_c.shape[1], 1), dtype=float)
+    w_x[nz_x] = w_nz
+    return r, w_x
+
+
 def _ecca_trial_scores(trial, classes, templates, references, template_weights):
     """Compute eCCA fused scores for one trial across all classes."""
+    X_T = trial.T
+    X_c = X_T - X_T.mean(axis=0, keepdims=True)
+    norms_x = np.linalg.norm(X_c, axis=0)
+    nz_x = norms_x > 0
+    if np.any(nz_x):
+        Q_x, R_x = np.linalg.qr(X_c[:, nz_x], mode="reduced")
+    else:
+        Q_x, R_x = None, None
+
     scores = np.zeros(len(classes))
     for class_idx, class_label in enumerate(classes):
         template = templates[class_label]
         reference = references[class_label]
 
-        cca_xy = CCA(n_components=1)
-        S_x, S_y = cca_xy.fit_transform(trial.T, reference.T)
-        r1 = _safe_corrcoef(S_x.ravel(), S_y.ravel())
-        w_xy = cca_xy.x_weights_
+        Q_ref = _cca_qr_basis(reference.T)
+        r1, w_xy = _cca_corr_and_x_weight(X_c, Q_x, R_x, nz_x, Q_ref)
 
-        cca_xt = CCA(n_components=1)
-        S_x2, S_y2 = cca_xt.fit_transform(trial.T, template.T)
-        r2 = _safe_corrcoef(S_x2.ravel(), S_y2.ravel())
+        Q_tpl = _cca_qr_basis(template.T)
+        r2 = _cca_max_corr_from_qr(Q_x, Q_tpl)
 
-        r3 = _safe_corrcoef((trial.T @ w_xy).ravel(), (template.T @ w_xy).ravel())
+        r3 = _safe_corrcoef((X_T @ w_xy).ravel(), (template.T @ w_xy).ravel())
         w_template = template_weights[class_label]
-        r4 = _safe_corrcoef(
-            (trial.T @ w_template).ravel(), (template.T @ w_template).ravel()
-        )
+        r4 = _safe_corrcoef((X_T @ w_template).ravel(), (template.T @ w_template).ravel())
         scores[class_idx] = _signed_squared_fusion([r1, r2, r3, r4])
+    return scores
+
+
+def _ecca_scores_from_trials(X, classes, templates, references, template_weights):
+    """Vectorized eCCA score matrix with precomputed reference and template QR bases."""
+    X_trials = X.get_data(copy=False) if isinstance(X, BaseEpochs) else X
+    n_trials = len(X_trials)
+    n_classes = len(classes)
+    if n_trials == 0:
+        return np.zeros((0, n_classes))
+
+    ref_qrs = [_cca_qr_basis(references[cls].T) for cls in classes]
+    tpl_qrs = [_cca_qr_basis(templates[cls].T) for cls in classes]
+    tpl_Ts = [templates[cls].T for cls in classes]
+    w_tpls = [template_weights[cls] for cls in classes]
+    tpl_proj_r4 = [(tpl_T @ w_t).ravel() for tpl_T, w_t in zip(tpl_Ts, w_tpls)]
+
+    scores = np.empty((n_trials, n_classes), dtype=float)
+    for t_idx in range(n_trials):
+        X_T = X_trials[t_idx].T
+        X_c = X_T - X_T.mean(axis=0, keepdims=True)
+        norms_x = np.linalg.norm(X_c, axis=0)
+        nz_x = norms_x > 0
+        if np.any(nz_x):
+            Q_x, R_x = np.linalg.qr(X_c[:, nz_x], mode="reduced")
+        else:
+            Q_x, R_x = None, None
+
+        for c_idx in range(n_classes):
+            r1, w_xy = _cca_corr_and_x_weight(X_c, Q_x, R_x, nz_x, ref_qrs[c_idx])
+            r2 = _cca_max_corr_from_qr(Q_x, tpl_qrs[c_idx])
+            r3 = _safe_corrcoef((X_T @ w_xy).ravel(), (tpl_Ts[c_idx] @ w_xy).ravel())
+            r4 = _safe_corrcoef((X_T @ w_tpls[c_idx]).ravel(), tpl_proj_r4[c_idx])
+            scores[t_idx, c_idx] = (
+                np.sign(r1) * r1 * r1
+                + np.sign(r2) * r2 * r2
+                + np.sign(r3) * r3 * r3
+                + np.sign(r4) * r4 * r4
+            )
     return scores
 
 
@@ -384,11 +532,7 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
         check_is_fitted(
             self, ["freqs_", "classes_", "one_hot_", "slen_", "le_", "class_freqs_"]
         )
-        scores = _score_matrix_from_trials(
-            X,
-            self.classes_,
-            lambda trial: _cca_trial_scores(self.cca, trial, self.Yf, self.classes_),
-        )
+        scores = _cca_scores_from_trials(X, self.classes_, self.Yf)
         return _predict_labels_from_scores(scores, self.classes_)
 
     def predict_proba(self, X):
@@ -408,11 +552,7 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
         check_is_fitted(
             self, ["freqs_", "classes_", "one_hot_", "slen_", "le_", "class_freqs_"]
         )
-        scores = _score_matrix_from_trials(
-            X,
-            self.classes_,
-            lambda trial: _cca_trial_scores(self.cca, trial, self.Yf, self.classes_),
-        )
+        scores = _cca_scores_from_trials(X, self.classes_, self.Yf)
         return _normalize_score_matrix(scores)
 
 
@@ -598,7 +738,62 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
         # Get data shape
         n_trials, n_channels, n_samples = data.shape
 
-        X = np.concatenate((data, data), axis=1)
+        if self.estimator in ("scm", "lwf", "oas") and n_channels > 1:
+            data_c = data.astype(float) - np.mean(data, axis=-1, keepdims=True)
+            sum_x = data_c.sum(axis=0)
+            S_scm = (
+                sum_x @ sum_x.T - np.einsum("tcs,tds->cd", data_c, data_c)
+            ) / n_samples
+            UX = (
+                data.transpose(1, 0, 2)
+                .reshape(n_channels, n_samples * n_trials)
+                .astype(float)
+            )
+            UX -= np.mean(UX, axis=1, keepdims=True)
+            if self.estimator == "scm":
+                Q = (UX @ UX.T) / (n_samples * n_trials)
+                return S_scm, Q
+
+            # For isotropic shrinkage (lwf, oas) on stacked 2*n_channels [x_i; x_j],
+            # the off-diagonal block of (1 - s_{ij}) * C_scm + s_{ij} * mu * I is
+            # exact (1 - s_{ij}) * (x_i @ x_j.T / n_samples), since I is zero off-diagonal.
+            p = 2 * n_channels
+            C_trials = np.einsum("tcs,tds->tcd", data_c, data_c) / n_samples
+            tr_C = np.trace(C_trials, axis1=1, axis2=2)
+            tr_C2_diag = np.einsum("tcd,tcd->t", C_trials, C_trials)
+            Cross_all = np.einsum("ics,jds->ijcd", data_c, data_c) / n_samples
+            off_fro2 = 2.0 * np.einsum("ijcd,ijcd->ij", Cross_all, Cross_all)
+            tr_S_pair = tr_C[:, None] + tr_C[None, :]
+            tr_S2_pair = tr_C2_diag[:, None] + tr_C2_diag[None, :] + off_fro2
+
+            if self.estimator == "oas":
+                alpha = 1.0 - 2.0 / p
+                beta = (n_samples + 1.0 - 2.0 / p) * (p - 1.0)
+                num = alpha * tr_S2_pair + tr_S_pair * tr_S_pair
+                den = beta * (tr_S2_pair - (tr_S_pair * tr_S_pair) / p)
+                shrink = np.where(den == 0, 1.0, np.minimum(num / den, 1.0))
+            else:
+                X2 = data_c * data_c
+                Cross2_all = np.einsum("ics,jds->ijcd", X2, X2)
+                sum_X2_t = np.einsum("tcs,tds->t", X2, X2)
+                sum_X2_pair = (
+                    sum_X2_t[:, None]
+                    + sum_X2_t[None, :]
+                    + 2.0 * np.einsum("ijcd->ij", Cross2_all)
+                )
+                b_hat2 = (sum_X2_pair / n_samples - n_samples * tr_S2_pair) / (
+                    n_samples * n_samples
+                )
+                d_hat2 = tr_S2_pair - (tr_S_pair * tr_S_pair) / p
+                shrink = np.where(d_hat2 == 0, 0.0, np.clip(b_hat2 / d_hat2, 0.0, 1.0))
+
+            weights_pair = 1.0 - shrink
+            np.fill_diagonal(weights_pair, 0.0)
+            S = np.einsum("ij,ijcd->cd", weights_pair, Cross_all)
+            Q = np.squeeze(
+                Covariances(estimator=self.estimator).fit_transform(UX[np.newaxis, ...])
+            )
+            return S, Q
 
         # Initialize S matrix
         S = np.zeros((n_channels, n_channels))
@@ -635,10 +830,11 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
                     S = S + cov + cov
 
         # Concatenate all the trials
-        UX = np.empty((n_channels, n_samples * n_trials))
-
-        for trial_n in range(n_trials):
-            UX[:, trial_n * n_samples : (trial_n + 1) * n_samples] = data[trial_n, :, :]
+        UX = (
+            data.transpose(1, 0, 2)
+            .reshape(n_channels, n_samples * n_trials)
+            .astype(float)
+        )
 
         # Mean centering
         UX -= np.mean(UX, 1)[:, None]
@@ -655,23 +851,24 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
         # Get data shape
         n_trials, n_channels, n_samples = data.shape
 
-        X = np.concatenate((data, data), axis=1)
-
         # Concatenate all the trials
-        UX = np.empty((n_channels, n_samples * n_trials))
+        UX = (
+            data.transpose(1, 0, 2)
+            .reshape(n_channels, n_samples * n_trials)
+            .astype(float)
+        )
+        UX -= np.mean(UX, axis=1, keepdims=True)
 
-        for trial_n in range(n_trials):
-            UX[:, trial_n * n_samples : (trial_n + 1) * n_samples] = data[trial_n, :, :]
-
-        # Mean centering
-        UX -= np.mean(UX, 1)[:, None]
-
-        # Compute empirical variance of all data (to be bounded)
-        cov = Covariances(estimator=self.estimator).fit_transform(UX[np.newaxis, ...])
-        Q = np.squeeze(cov)
-
-        cov = Covariances(estimator=self.estimator).fit_transform(X)
-        S = cov[:, :n_channels, n_channels:] + cov[:, n_channels:, :n_channels]
+        if self.estimator == "scm":
+            Q = (UX @ UX.T) / (n_samples * n_trials)
+            data_c = data - np.mean(data, axis=-1, keepdims=True)
+            S = (2.0 / n_samples) * np.einsum("tcs,tds->tcd", data_c, data_c)
+        else:
+            X = np.concatenate((data, data), axis=1)
+            cov = Covariances(estimator=self.estimator).fit_transform(UX[np.newaxis, ...])
+            Q = np.squeeze(cov)
+            cov = Covariances(estimator=self.estimator).fit_transform(X)
+            S = cov[:, :n_channels, n_channels:] + cov[:, n_channels:, :n_channels]
 
         # Symmetrize, shrink, and trace-normalize so that the Riemannian /
         # log-Euclidean mean operates on well-conditioned SPD matrices.
@@ -757,19 +954,13 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
         self.templates_ = np.zeros((self.n_classes, self.n_fbands, n_channels, n_samples))
         self.weights_ = np.zeros((self.n_fbands, self.n_classes, n_channels))
 
-        for freq, k in self.one_hot_.items():
-            mask = y == freq
-            X_cal = X[mask]  # Select data with boolean mask
-
-            # Filterbank approach
-            for band_n in range(self.n_fbands):
-                # Filter the data and compute TRCA
-                X_filter = filterbank(
-                    X_cal.get_data(copy=False), self.sfreq_, band_n, self.peaks_
-                )
+        X_data = X.get_data(copy=False)
+        class_masks = {k: (y == freq) for freq, k in self.one_hot_.items()}
+        for band_n in range(self.n_fbands):
+            X_filter_all = filterbank(X_data, self.sfreq_, band_n, self.peaks_)
+            for k, mask in class_masks.items():
+                X_filter = X_filter_all[mask]
                 w_best, _ = self._compute_trca(X_filter)
-
-                # Get template by averaging trials and take the best filter for this band
                 self.templates_[k, band_n, :, :] = np.mean(X_filter, axis=0)
                 self.weights_[band_n, k, :] = w_best
 
@@ -818,46 +1009,23 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
                 "Call 'fit' with appropriate arguments before using this method."
             )
 
-        # Initialize pred array
-        y_pred = []
-
-        for x in X:
-            # Initialize correlations array
-            corr_array = np.zeros((self.n_fbands, self.n_classes))
-
-            # Filter the data in the corresponding band
-            for band_n in range(self.n_fbands):
-                X_filter = filterbank(x, self.sfreq_, band_n, self.peaks_)
-
-                # Compute correlation with all the templates and bands
-                for _freq, k in self.one_hot_.items():
-                    # Get the corresponding template
-                    template = np.squeeze(self.templates_[k, band_n, :, :])
-
-                    if self.is_ensemble:
-                        w = np.squeeze(
-                            self.weights_[band_n, :, :]
-                        ).T  # (n_classes, n_channel)
-                    else:
-                        w = np.squeeze(
-                            # self.weights_[band_n, class_idx, :]
-                            self.weights_[band_n, k, :]
-                        ).T  # (n_channel,)
-
-                    # Compute 2D correlation of spatially filtered testdata with ref
-                    r = np.corrcoef(
-                        np.dot(X_filter.T, w).flatten(), np.dot(template.T, w).flatten()
-                    )
-                    corr_array[band_n, k] = r[0, 1]
-
-            # Fusion for the filterbank analysis
-            self.rho = np.dot(self.fb_coefs, corr_array)
-
-            # Select the maximal value and append to predictions
-            self.tau = np.argmax(self.rho)
-            y_pred.append(self.one_inv_[self.tau])
-
-        return y_pred
+        corr_array = _fb_corr_scores(
+            X,
+            self.sfreq_,
+            self.n_fbands,
+            self.n_classes,
+            self.peaks_,
+            self.one_hot_,
+            self.templates_,
+            self.weights_,
+            self.is_ensemble,
+        )
+        rhos = np.tensordot(corr_array, self.fb_coefs, axes=([1], [0]))
+        taus = np.argmax(rhos, axis=1)
+        if len(rhos):
+            self.rho = rhos[-1]
+            self.tau = taus[-1]
+        return [self.one_inv_[tau] for tau in taus]
 
     def predict_proba(self, X):
         """Make predictions on unseen data with the associated probabilities.
@@ -902,45 +1070,21 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
                 "This SSVEP_TRCA instance is not fitted yet. "
                 "Call 'fit' with appropriate arguments before using this method."
             )
-        n_trials = len(X)
 
-        # Initialize pred array
-        y_pred = np.zeros((n_trials, self.n_classes))
-
-        for trial_n, X_test in enumerate(X):
-            # Initialize correlations array
-            corr_array = np.zeros((self.n_fbands, self.n_classes))
-
-            # Filter the data in the corresponding band
-            for band_n in range(self.n_fbands):
-                X_filter = filterbank(X_test, self.sfreq_, band_n, self.peaks_)
-
-                # Compute correlation with all the templates and bands
-                for _freq, k in self.one_hot_.items():
-                    # Get the corresponding template
-                    template = np.squeeze(self.templates_[k, band_n, :, :])
-
-                    if self.is_ensemble:
-                        w = np.squeeze(
-                            self.weights_[band_n, :, :]
-                        ).T  # (n_class, n_channel)
-                    else:
-                        w = np.squeeze(self.weights_[band_n, k, :]).T  # (n_channel,)
-
-                    # Compute 2D correlation of spatially filtered testdata with ref
-                    r = np.corrcoef(
-                        np.dot(X_filter.T, w).flatten(), np.dot(template.T, w).flatten()
-                    )
-                    corr_array[band_n, k] = r[0, 1]
-
-            normalized_coefs = self.fb_coefs / (np.sum(self.fb_coefs))
-            # Fusion for the filterbank analysis
-            rho = np.dot(normalized_coefs, corr_array)
-
-            rho /= sum(rho)
-            y_pred[trial_n] = rho
-
-        return y_pred
+        corr_array = _fb_corr_scores(
+            X,
+            self.sfreq_,
+            self.n_fbands,
+            self.n_classes,
+            self.peaks_,
+            self.one_hot_,
+            self.templates_,
+            self.weights_,
+            self.is_ensemble,
+        )
+        normalized_coefs = np.asarray(self.fb_coefs) / np.sum(self.fb_coefs)
+        rhos = np.tensordot(corr_array, normalized_coefs, axes=([1], [0]))
+        return rhos / np.sum(rhos, axis=1, keepdims=True)
 
 
 def _whitening(X):
@@ -949,19 +1093,24 @@ def _whitening(X):
     Parameters
     ----------
     X : numpy.ndarray
-        EEG signal data, of shape ``(n_channels, n_samples)``.
+        EEG signal data, of shape ``(n_channels, n_samples)`` or
+        ``(n_trials, n_channels, n_samples)``.
     """
-    n_channels, n_samples = X.shape
-    X_white = X.copy()
+    if X.ndim == 3:
+        X_white = X - np.mean(X, axis=2, keepdims=True)
+        C = covariances(X_white, estimator="sch")
+        eig_val, eig_vec = np.linalg.eigh(C)
+        V = (np.abs(eig_val) ** -0.5)[:, :, np.newaxis] * np.swapaxes(eig_vec, 1, 2)
+        return V @ X_white
 
-    X_white = X_white - np.mean(X_white, axis=1, keepdims=True)
+    n_channels, n_samples = X.shape
+    X_white = X - np.mean(X, axis=1, keepdims=True)
     C = covariances(X_white.reshape((1, n_channels, n_samples)), estimator="sch")[
         0
     ]  # Shrunk covariance matrix
     eig_val, eig_vec = linalg.eigh(C)
     V = (np.abs(eig_val) ** -0.5)[:, np.newaxis] * eig_vec.T
-    X_white = V @ X_white
-    return X_white
+    return V @ X_white
 
 
 class SSVEP_MsetCCA(BaseEstimator, ClassifierMixin):
@@ -1159,7 +1308,7 @@ class SSVEP_MsetCCA(BaseEstimator, ClassifierMixin):
 
             # Whiten signals for this class
             if self.n_jobs == 1:
-                X_white = np.array([_whitening(X_i) for X_i in X_class])
+                X_white = _whitening(X_class)
             else:
                 X_white = np.array(
                     Parallel(n_jobs=self.n_jobs)(
@@ -1168,14 +1317,14 @@ class SSVEP_MsetCCA(BaseEstimator, ClassifierMixin):
                 )
 
             # Stack whitened trials: shape (n_channels * n_trials_class, n_times)
-            Y = X_white.transpose(1, 0, 2).reshape(n_channels * n_trials_class, n_times)
+            Y = X_white.reshape(n_trials_class * n_channels, n_times)
 
             # Compute R (total covariance) and S (within-trial block diagonal)
             R = Y @ Y.T
-
-            # Block diagonal mask for within-trial covariance
-            mask = np.kron(np.eye(n_trials_class), np.ones((n_channels, n_channels)))
-            S = R * mask
+            S = np.zeros_like(R)
+            for t_idx in range(n_trials_class):
+                sl = slice(t_idx * n_channels, (t_idx + 1) * n_channels)
+                S[sl, sl] = R[sl, sl]
 
             # Solve generalized eigenvalue problem: (R - S) w = lambda * S * w
             # This finds spatial filters that maximize between-trial correlation
@@ -1230,13 +1379,7 @@ class SSVEP_MsetCCA(BaseEstimator, ClassifierMixin):
             )
 
         class_indices = np.arange(len(self.classes_))
-        scores = _score_matrix_from_trials(
-            X,
-            self.classes_,
-            lambda trial: _cca_trial_scores(
-                self.cca, _whitening(trial), self.Ym, class_indices
-            ),
-        )
+        scores = _cca_scores_from_trials(X, class_indices, self.Ym, whiten=True)
         return _predict_labels_from_scores(scores, self.classes_)
 
     def predict_proba(self, X):
@@ -1263,13 +1406,7 @@ class SSVEP_MsetCCA(BaseEstimator, ClassifierMixin):
             )
 
         class_indices = np.arange(len(self.classes_))
-        scores = _score_matrix_from_trials(
-            X,
-            self.classes_,
-            lambda trial: _cca_trial_scores(
-                self.cca, _whitening(trial), self.Ym, class_indices
-            ),
-        )
+        scores = _cca_scores_from_trials(X, class_indices, self.Ym, whiten=True)
         return _normalize_score_matrix(scores)
 
 
@@ -1369,10 +1506,10 @@ class SSVEP_itCCA(BaseEstimator, ClassifierMixin):
         self.one_hot_ = {label: idx for idx, label in enumerate(self.classes_)}
         self.templates_ = {}
 
+        X_data = X.get_data(copy=False)
         for class_label in self.classes_:
             mask = y == class_label
-            X_f = X[mask].get_data(copy=False)
-            self.templates_[class_label] = np.mean(X_f, axis=0)
+            self.templates_[class_label] = np.mean(X_data[mask], axis=0)
 
         return self
 
@@ -1390,13 +1527,7 @@ class SSVEP_itCCA(BaseEstimator, ClassifierMixin):
             Predicted labels.
         """
         check_is_fitted(self, ["freqs_", "classes_", "one_hot_", "le_", "templates_"])
-        scores = _score_matrix_from_trials(
-            X,
-            self.classes_,
-            lambda trial: _cca_trial_scores(
-                self.cca, trial, self.templates_, self.classes_
-            ),
-        )
+        scores = _cca_scores_from_trials(X, self.classes_, self.templates_)
         return _predict_labels_from_scores(scores, self.classes_)
 
     def predict_proba(self, X):
@@ -1414,13 +1545,7 @@ class SSVEP_itCCA(BaseEstimator, ClassifierMixin):
             of shape ``(n_trials, n_classes)``.
         """
         check_is_fitted(self, ["freqs_", "classes_", "one_hot_", "le_", "templates_"])
-        scores = _score_matrix_from_trials(
-            X,
-            self.classes_,
-            lambda trial: _cca_trial_scores(
-                self.cca, trial, self.templates_, self.classes_
-            ),
-        )
+        scores = _cca_scores_from_trials(X, self.classes_, self.templates_)
         return _normalize_score_matrix(scores)
 
 
@@ -1552,11 +1677,11 @@ class SSVEP_eCCA(BaseEstimator, ClassifierMixin):
         self.class_freqs_ = _infer_label_frequencies(X, y, self.classes_, self.freq_map)
         self.templates_, self.Yf, self.w_template_ = {}, {}, {}
 
+        X_data = X.get_data(copy=False)
         for class_label in self.classes_:
             # Individual template
             mask = y == class_label
-            X_f = X[mask].get_data(copy=False)
-            self.templates_[class_label] = np.mean(X_f, axis=0)
+            self.templates_[class_label] = np.mean(X_data[mask], axis=0)
         self.Yf = _build_sinusoidal_references(
             self.class_freqs_, self.n_harmonics, self.slen_, n_times
         )
@@ -1595,12 +1720,8 @@ class SSVEP_eCCA(BaseEstimator, ClassifierMixin):
                 "class_freqs_",
             ],
         )
-        scores = _score_matrix_from_trials(
-            X,
-            self.classes_,
-            lambda trial: _ecca_trial_scores(
-                trial, self.classes_, self.templates_, self.Yf, self.w_template_
-            ),
+        scores = _ecca_scores_from_trials(
+            X, self.classes_, self.templates_, self.Yf, self.w_template_
         )
         return _predict_labels_from_scores(scores, self.classes_)
 
@@ -1632,12 +1753,8 @@ class SSVEP_eCCA(BaseEstimator, ClassifierMixin):
                 "class_freqs_",
             ],
         )
-        scores = _score_matrix_from_trials(
-            X,
-            self.classes_,
-            lambda trial: _ecca_trial_scores(
-                trial, self.classes_, self.templates_, self.Yf, self.w_template_
-            ),
+        scores = _ecca_scores_from_trials(
+            X, self.classes_, self.templates_, self.Yf, self.w_template_
         )
         return _normalize_score_matrix(scores)
 
@@ -1728,12 +1845,13 @@ class SSVEP_TRCA_R(BaseEstimator, ClassifierMixin):
 
     def _build_reference(self, freq, n_samples, sfreq):
         """Build sinusoidal reference signal for a given frequency."""
-        t = np.arange(n_samples) / sfreq
-        yf = []
-        for h in range(1, self.n_harmonics + 1):
-            yf.append(np.sin(2 * np.pi * freq * h * t))
-            yf.append(np.cos(2 * np.pi * freq * h * t))
-        return np.array(yf)
+        t = np.arange(n_samples, dtype=float) / sfreq
+        h = np.arange(1, self.n_harmonics + 1, dtype=float)[:, None]
+        phases = (2.0 * np.pi * freq) * h * t[None, :]
+        yf = np.empty((2 * self.n_harmonics, n_samples), dtype=float)
+        yf[0::2, :] = np.sin(phases)
+        yf[1::2, :] = np.cos(phases)
+        return yf
 
     def _project_orthogonal(self, X, Y):
         """Project X into orthogonal complement of Y.
@@ -1750,9 +1868,10 @@ class SSVEP_TRCA_R(BaseEstimator, ClassifierMixin):
         X_proj : numpy.ndarray
             Projected data, same shape as X.
         """
-        YtY_inv = np.linalg.inv(Y @ Y.T)
-        P = Y.T @ YtY_inv @ Y  # (n_samples, n_samples)
-        return X - X @ P
+        # Avoid forming the (n_samples, n_samples) projection matrix P:
+        # X @ Y.T @ (Y @ Y.T)^{-1} @ Y is O(T * C * K * S) instead of O(T * C * S^2).
+        YtY_inv_Y = np.linalg.solve(Y @ Y.T, Y)  # (2*n_harmonics, n_samples)
+        return X - (X @ Y.T) @ YtY_inv_Y
 
     def _compute_trca(self, data):
         """Compute TRCA spatial filters."""
@@ -1761,16 +1880,12 @@ class SSVEP_TRCA_R(BaseEstimator, ClassifierMixin):
 
         n_trials, n_channels, n_samples = data.shape
 
-        S = np.zeros((n_channels, n_channels))
-        for trial_i in range(n_trials - 1):
-            x1 = np.squeeze(data[trial_i, :, :])
-            x1 = x1 - np.mean(x1, axis=1, keepdims=True)
-            for trial_j in range(trial_i + 1, n_trials):
-                x2 = np.squeeze(data[trial_j, :, :])
-                x2 = x2 - np.mean(x2, axis=1, keepdims=True)
-                S = S + x1 @ x2.T + x2 @ x1.T
+        data_c = data - np.mean(data, axis=-1, keepdims=True)
+        sum_x = data_c.sum(axis=0)
+        diag_cov = np.einsum("tcs,tds->cd", data_c, data_c)
+        S = sum_x @ sum_x.T - diag_cov
 
-        UX = np.concatenate([data[t, :, :] for t in range(n_trials)], axis=1)
+        UX = data.transpose(1, 0, 2).reshape(n_channels, n_samples * n_trials)
         UX = UX - np.mean(UX, axis=1, keepdims=True)
         Q = UX @ UX.T
 
@@ -1814,19 +1929,17 @@ class SSVEP_TRCA_R(BaseEstimator, ClassifierMixin):
         self.templates_ = np.zeros((self.n_classes, self.n_fbands, n_channels, n_samples))
         self.weights_ = np.zeros((self.n_fbands, self.n_classes, n_channels))
 
-        for freq, k in self.one_hot_.items():
-            mask = y == freq
-            X_cal = X[mask]
-            freq_val = float(freq)
-
-            for band_n in range(self.n_fbands):
-                X_filter = filterbank(
-                    X_cal.get_data(copy=False), self.sfreq_, band_n, self.peaks_
-                )
-                # Build reference and project
-                Y_ref = self._build_reference(freq_val, n_samples, self.sfreq_)
-                X_proj = self._project_orthogonal(X_filter, Y_ref)
-
+        X_data = X.get_data(copy=False)
+        class_masks = {k: (y == freq) for freq, k in self.one_hot_.items()}
+        Y_refs = {
+            k: self._build_reference(float(freq), n_samples, self.sfreq_)
+            for freq, k in self.one_hot_.items()
+        }
+        for band_n in range(self.n_fbands):
+            X_filter_all = filterbank(X_data, self.sfreq_, band_n, self.peaks_)
+            for k, mask in class_masks.items():
+                X_filter = X_filter_all[mask]
+                X_proj = self._project_orthogonal(X_filter, Y_refs[k])
                 w_best, _ = self._compute_trca(X_proj)
                 self.templates_[k, band_n, :, :] = np.mean(X_filter, axis=0)
                 self.weights_[band_n, k, :] = w_best
@@ -1865,25 +1978,19 @@ class SSVEP_TRCA_R(BaseEstimator, ClassifierMixin):
                 "Call 'fit' with appropriate arguments before using this method."
             )
 
-        y_pred = []
-        for x in X:
-            corr_array = np.zeros((self.n_fbands, self.n_classes))
-            for band_n in range(self.n_fbands):
-                X_filter = filterbank(x, self.sfreq_, band_n, self.peaks_)
-                for _freq, k in self.one_hot_.items():
-                    template = np.squeeze(self.templates_[k, band_n, :, :])
-                    if self.is_ensemble:
-                        w = np.squeeze(self.weights_[band_n, :, :]).T
-                    else:
-                        w = np.squeeze(self.weights_[band_n, k, :]).T
-                    r = np.corrcoef(
-                        np.dot(X_filter.T, w).flatten(), np.dot(template.T, w).flatten()
-                    )
-                    corr_array[band_n, k] = r[0, 1]
-            rho = np.dot(self.fb_coefs, corr_array)
-            tau = np.argmax(rho)
-            y_pred.append(self.one_inv_[tau])
-        return y_pred
+        corr_array = _fb_corr_scores(
+            X,
+            self.sfreq_,
+            self.n_fbands,
+            self.n_classes,
+            self.peaks_,
+            self.one_hot_,
+            self.templates_,
+            self.weights_,
+            self.is_ensemble,
+        )
+        rhos = np.tensordot(corr_array, self.fb_coefs, axes=([1], [0]))
+        return [self.one_inv_[tau] for tau in np.argmax(rhos, axis=1)]
 
     def predict_proba(self, X):
         """Predict class probabilities.
@@ -1916,28 +2023,21 @@ class SSVEP_TRCA_R(BaseEstimator, ClassifierMixin):
                 "This SSVEP_TRCA_R instance is not fitted yet. "
                 "Call 'fit' with appropriate arguments before using this method."
             )
-        n_trials = len(X)
-        y_pred = np.zeros((n_trials, self.n_classes))
 
-        for trial_n, X_test in enumerate(X):
-            corr_array = np.zeros((self.n_fbands, self.n_classes))
-            for band_n in range(self.n_fbands):
-                X_filter = filterbank(X_test, self.sfreq_, band_n, self.peaks_)
-                for _freq, k in self.one_hot_.items():
-                    template = np.squeeze(self.templates_[k, band_n, :, :])
-                    if self.is_ensemble:
-                        w = np.squeeze(self.weights_[band_n, :, :]).T
-                    else:
-                        w = np.squeeze(self.weights_[band_n, k, :]).T
-                    r = np.corrcoef(
-                        np.dot(X_filter.T, w).flatten(), np.dot(template.T, w).flatten()
-                    )
-                    corr_array[band_n, k] = r[0, 1]
-            normalized_coefs = self.fb_coefs / (np.sum(self.fb_coefs))
-            rho = np.dot(normalized_coefs, corr_array)
-            rho /= sum(rho)
-            y_pred[trial_n] = rho
-        return y_pred
+        corr_array = _fb_corr_scores(
+            X,
+            self.sfreq_,
+            self.n_fbands,
+            self.n_classes,
+            self.peaks_,
+            self.one_hot_,
+            self.templates_,
+            self.weights_,
+            self.is_ensemble,
+        )
+        normalized_coefs = np.asarray(self.fb_coefs) / np.sum(self.fb_coefs)
+        rhos = np.tensordot(corr_array, normalized_coefs, axes=([1], [0]))
+        return rhos / np.sum(rhos, axis=1, keepdims=True)
 
 
 class SSVEP_SSCOR(BaseEstimator, ClassifierMixin):
@@ -2032,24 +2132,16 @@ class SSVEP_SSCOR(BaseEstimator, ClassifierMixin):
         n_trials, n_channels, n_samples = data.shape
 
         # Normalize each trial: mean-center and unit-variance per channel
-        data_norm = np.copy(data)
-        for t in range(n_trials):
-            data_norm[t] = data_norm[t] - np.mean(data_norm[t], axis=1, keepdims=True)
-            norms = np.linalg.norm(data_norm[t], axis=1, keepdims=True)
-            norms[norms == 0] = 1.0
-            data_norm[t] = data_norm[t] / norms
+        data_norm = data - np.mean(data, axis=-1, keepdims=True)
+        norms = np.linalg.norm(data_norm, axis=-1, keepdims=True)
+        norms[norms == 0] = 1.0
+        data_norm = data_norm / norms
 
         # S matrix: sum of cross-trial correlation matrices
-        S = np.zeros((n_channels, n_channels))
-        for trial_i in range(n_trials - 1):
-            x1 = data_norm[trial_i]
-            for trial_j in range(trial_i + 1, n_trials):
-                x2 = data_norm[trial_j]
-                S = S + x1 @ x2.T + x2 @ x1.T
-
-        # Q matrix: pooled variance from normalized data
-        UX = np.concatenate([data_norm[t] for t in range(n_trials)], axis=1)
-        Q = UX @ UX.T
+        # Q matrix: pooled variance from already-centered normalized data
+        sum_x = data_norm.sum(axis=0)
+        Q = np.einsum("tcs,tds->cd", data_norm, data_norm)
+        S = sum_x @ sum_x.T - Q
 
         lambdas, W = linalg.eig(S, Q, left=True, right=False)
         arr1inds = lambdas.argsort()
@@ -2091,13 +2183,12 @@ class SSVEP_SSCOR(BaseEstimator, ClassifierMixin):
         self.templates_ = np.zeros((self.n_classes, self.n_fbands, n_channels, n_samples))
         self.weights_ = np.zeros((self.n_fbands, self.n_classes, n_channels))
 
-        for freq, k in self.one_hot_.items():
-            mask = y == freq
-            X_cal = X[mask]
-            for band_n in range(self.n_fbands):
-                X_filter = filterbank(
-                    X_cal.get_data(copy=False), self.sfreq_, band_n, self.peaks_
-                )
+        X_data = X.get_data(copy=False)
+        class_masks = {k: (y == freq) for freq, k in self.one_hot_.items()}
+        for band_n in range(self.n_fbands):
+            X_filter_all = filterbank(X_data, self.sfreq_, band_n, self.peaks_)
+            for k, mask in class_masks.items():
+                X_filter = X_filter_all[mask]
                 w_best, _ = self._compute_sscor(X_filter)
                 self.templates_[k, band_n, :, :] = np.mean(X_filter, axis=0)
                 self.weights_[band_n, k, :] = w_best
@@ -2136,25 +2227,19 @@ class SSVEP_SSCOR(BaseEstimator, ClassifierMixin):
                 "Call 'fit' with appropriate arguments before using this method."
             )
 
-        y_pred = []
-        for x in X:
-            corr_array = np.zeros((self.n_fbands, self.n_classes))
-            for band_n in range(self.n_fbands):
-                X_filter = filterbank(x, self.sfreq_, band_n, self.peaks_)
-                for _freq, k in self.one_hot_.items():
-                    template = np.squeeze(self.templates_[k, band_n, :, :])
-                    if self.is_ensemble:
-                        w = np.squeeze(self.weights_[band_n, :, :]).T
-                    else:
-                        w = np.squeeze(self.weights_[band_n, k, :]).T
-                    r = np.corrcoef(
-                        np.dot(X_filter.T, w).flatten(), np.dot(template.T, w).flatten()
-                    )
-                    corr_array[band_n, k] = r[0, 1]
-            rho = np.dot(self.fb_coefs, corr_array)
-            tau = np.argmax(rho)
-            y_pred.append(self.one_inv_[tau])
-        return y_pred
+        corr_array = _fb_corr_scores(
+            X,
+            self.sfreq_,
+            self.n_fbands,
+            self.n_classes,
+            self.peaks_,
+            self.one_hot_,
+            self.templates_,
+            self.weights_,
+            self.is_ensemble,
+        )
+        rhos = np.tensordot(corr_array, self.fb_coefs, axes=([1], [0]))
+        return [self.one_inv_[tau] for tau in np.argmax(rhos, axis=1)]
 
     def predict_proba(self, X):
         """Predict class probabilities.
@@ -2187,28 +2272,21 @@ class SSVEP_SSCOR(BaseEstimator, ClassifierMixin):
                 "This SSVEP_SSCOR instance is not fitted yet. "
                 "Call 'fit' with appropriate arguments before using this method."
             )
-        n_trials = len(X)
-        y_pred = np.zeros((n_trials, self.n_classes))
 
-        for trial_n, X_test in enumerate(X):
-            corr_array = np.zeros((self.n_fbands, self.n_classes))
-            for band_n in range(self.n_fbands):
-                X_filter = filterbank(X_test, self.sfreq_, band_n, self.peaks_)
-                for _freq, k in self.one_hot_.items():
-                    template = np.squeeze(self.templates_[k, band_n, :, :])
-                    if self.is_ensemble:
-                        w = np.squeeze(self.weights_[band_n, :, :]).T
-                    else:
-                        w = np.squeeze(self.weights_[band_n, k, :]).T
-                    r = np.corrcoef(
-                        np.dot(X_filter.T, w).flatten(), np.dot(template.T, w).flatten()
-                    )
-                    corr_array[band_n, k] = r[0, 1]
-            normalized_coefs = self.fb_coefs / (np.sum(self.fb_coefs))
-            rho = np.dot(normalized_coefs, corr_array)
-            rho /= sum(rho)
-            y_pred[trial_n] = rho
-        return y_pred
+        corr_array = _fb_corr_scores(
+            X,
+            self.sfreq_,
+            self.n_fbands,
+            self.n_classes,
+            self.peaks_,
+            self.one_hot_,
+            self.templates_,
+            self.weights_,
+            self.is_ensemble,
+        )
+        normalized_coefs = np.asarray(self.fb_coefs) / np.sum(self.fb_coefs)
+        rhos = np.tensordot(corr_array, normalized_coefs, axes=([1], [0]))
+        return rhos / np.sum(rhos, axis=1, keepdims=True)
 
 
 class SSVEP_TDCA(BaseEstimator, ClassifierMixin):
@@ -2306,21 +2384,21 @@ class SSVEP_TDCA(BaseEstimator, ClassifierMixin):
         if X.ndim == 2:
             n_channels, n_samples = X.shape
             n_samples_aug = n_samples - self.n_delay + 1
-            X_aug = np.zeros((n_channels * self.n_delay, n_samples_aug))
-            for d in range(self.n_delay):
-                X_aug[d * n_channels : (d + 1) * n_channels, :] = X[
-                    :, d : d + n_samples_aug
-                ]
-            return X_aug
+            s0, s1 = X.strides
+            view = np.lib.stride_tricks.as_strided(
+                X, shape=(self.n_delay, n_channels, n_samples_aug), strides=(s1, s0, s1)
+            )
+            return view.reshape(n_channels * self.n_delay, n_samples_aug).copy()
         elif X.ndim == 3:
             n_trials, n_channels, n_samples = X.shape
             n_samples_aug = n_samples - self.n_delay + 1
-            X_aug = np.zeros((n_trials, n_channels * self.n_delay, n_samples_aug))
-            for d in range(self.n_delay):
-                X_aug[:, d * n_channels : (d + 1) * n_channels, :] = X[
-                    :, :, d : d + n_samples_aug
-                ]
-            return X_aug
+            s0, s1, s2 = X.strides
+            view = np.lib.stride_tricks.as_strided(
+                X,
+                shape=(n_trials, self.n_delay, n_channels, n_samples_aug),
+                strides=(s0, s2, s1, s2),
+            )
+            return view.reshape(n_trials, n_channels * self.n_delay, n_samples_aug).copy()
         else:
             raise ValueError("X must be 2D or 3D.")
 
@@ -2364,39 +2442,24 @@ class SSVEP_TDCA(BaseEstimator, ClassifierMixin):
         )
         self.weights_ = np.zeros((self.n_fbands, self.n_components, n_aug_channels))
 
+        X_data = X.get_data(copy=False)
+        class_masks = {k: (y == freq) for freq, k in self.one_hot_.items()}
         for band_n in range(self.n_fbands):
-            # Collect augmented data per class
-            class_data = {}
-            class_means = {}
+            X_filter_all = filterbank(X_data, self.sfreq_, band_n, self.peaks_)
+            X_aug_all = self._augment_data(X_filter_all)
 
-            for freq, k in self.one_hot_.items():
-                mask = y == freq
-                X_cal = X[mask]
-                X_filter = filterbank(
-                    X_cal.get_data(copy=False), self.sfreq_, band_n, self.peaks_
-                )
-                X_aug = self._augment_data(X_filter)
-                class_data[k] = X_aug
-                class_means[k] = np.mean(X_aug, axis=0)
-
-            # Global mean
-            all_data = np.concatenate(list(class_data.values()), axis=0)
-            global_mean = np.mean(all_data, axis=0)
-
-            # Between-class scatter
+            global_mean = np.mean(X_aug_all, axis=0)
             S_b = np.zeros((n_aug_channels, n_aug_channels))
-            for k, mean_k in class_means.items():
-                n_k = class_data[k].shape[0]
-                diff = mean_k - global_mean
-                S_b += n_k * (diff @ diff.T)
+            S_w = np.einsum("tcs,tds->cd", X_aug_all, X_aug_all)
 
-            # Within-class scatter
-            S_w = np.zeros((n_aug_channels, n_aug_channels))
-            for k, data_k in class_data.items():
-                mean_k = class_means[k]
-                for t in range(data_k.shape[0]):
-                    diff = data_k[t] - mean_k
-                    S_w += diff @ diff.T
+            for k, mask in class_masks.items():
+                X_aug = X_aug_all[mask]
+                n_k = X_aug.shape[0]
+                mean_k = np.mean(X_aug, axis=0)
+                self.templates_[k, band_n, :, :] = mean_k
+                diff_b = mean_k - global_mean
+                S_b += n_k * (diff_b @ diff_b.T)
+                S_w -= n_k * (mean_k @ mean_k.T)
 
             # Regularize S_w
             S_w += np.eye(n_aug_channels) * 1e-6
@@ -2411,11 +2474,32 @@ class SSVEP_TDCA(BaseEstimator, ClassifierMixin):
 
             self.weights_[band_n, :, :] = W[:, : self.n_components].T
 
-            # Build templates in augmented space
-            for k, mean_k in class_means.items():
-                self.templates_[k, band_n, :, :] = mean_k
-
         return self
+
+    def _tdca_corr_scores(self, X):
+        X_data = X.get_data(copy=False) if isinstance(X, BaseEpochs) else np.asarray(X)
+        if X_data.ndim == 2:
+            X_data = X_data[np.newaxis, ...]
+        n_trials = X_data.shape[0]
+        corr_array = np.zeros((n_trials, self.n_fbands, self.n_classes))
+
+        for band_n in range(self.n_fbands):
+            X_filter = filterbank(X_data, self.sfreq_, band_n, self.peaks_)
+            if X_filter.ndim == 2:
+                X_filter = X_filter[np.newaxis, ...]
+            X_aug = self._augment_data(X_filter)
+            w = self.weights_[band_n, :, :]  # (n_components, n_aug_channels)
+            X_proj = np.matmul(w, X_aug).reshape(n_trials, -1)
+            X_c = X_proj - X_proj.mean(axis=1, keepdims=True)
+            X_norm = np.linalg.norm(X_c, axis=1)
+
+            for _freq, k in self.one_hot_.items():
+                template = self.templates_[k, band_n, :, :]
+                t_vec = (w @ template).ravel()
+                t_c = t_vec - t_vec.mean()
+                corr_array[:, band_n, k] = (X_c @ t_c) / (X_norm * np.linalg.norm(t_c))
+
+        return corr_array
 
     def predict(self, X):
         """Predict class labels.
@@ -2449,24 +2533,9 @@ class SSVEP_TDCA(BaseEstimator, ClassifierMixin):
                 "Call 'fit' with appropriate arguments before using this method."
             )
 
-        y_pred = []
-        for x in X:
-            corr_array = np.zeros((self.n_fbands, self.n_classes))
-            for band_n in range(self.n_fbands):
-                X_filter = filterbank(x, self.sfreq_, band_n, self.peaks_)
-                X_aug = self._augment_data(X_filter)
-
-                w = self.weights_[band_n, :, :]  # (n_components, n_aug_channels)
-
-                for _freq, k in self.one_hot_.items():
-                    template = self.templates_[k, band_n, :, :]
-                    r = np.corrcoef((w @ X_aug).flatten(), (w @ template).flatten())
-                    corr_array[band_n, k] = r[0, 1]
-
-            rho = np.dot(self.fb_coefs, corr_array)
-            tau = np.argmax(rho)
-            y_pred.append(self.one_inv_[tau])
-        return y_pred
+        corr_array = self._tdca_corr_scores(X)
+        rhos = np.tensordot(corr_array, self.fb_coefs, axes=([1], [0]))
+        return [self.one_inv_[tau] for tau in np.argmax(rhos, axis=1)]
 
     def predict_proba(self, X):
         """Predict class probabilities.
@@ -2499,24 +2568,8 @@ class SSVEP_TDCA(BaseEstimator, ClassifierMixin):
                 "This SSVEP_TDCA instance is not fitted yet. "
                 "Call 'fit' with appropriate arguments before using this method."
             )
-        n_trials = len(X)
-        y_pred = np.zeros((n_trials, self.n_classes))
 
-        for trial_n, X_test in enumerate(X):
-            corr_array = np.zeros((self.n_fbands, self.n_classes))
-            for band_n in range(self.n_fbands):
-                X_filter = filterbank(X_test, self.sfreq_, band_n, self.peaks_)
-                X_aug = self._augment_data(X_filter)
-
-                w = self.weights_[band_n, :, :]
-
-                for _freq, k in self.one_hot_.items():
-                    template = self.templates_[k, band_n, :, :]
-                    r = np.corrcoef((w @ X_aug).flatten(), (w @ template).flatten())
-                    corr_array[band_n, k] = r[0, 1]
-
-            normalized_coefs = self.fb_coefs / (np.sum(self.fb_coefs))
-            rho = np.dot(normalized_coefs, corr_array)
-            rho /= sum(rho)
-            y_pred[trial_n] = rho
-        return y_pred
+        corr_array = self._tdca_corr_scores(X)
+        normalized_coefs = np.asarray(self.fb_coefs) / np.sum(self.fb_coefs)
+        rhos = np.tensordot(corr_array, normalized_coefs, axes=([1], [0]))
+        return rhos / np.sum(rhos, axis=1, keepdims=True)

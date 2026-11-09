@@ -56,7 +56,7 @@ class Rodrigues2017(BaseDataset):
     EEG signals were acquired using a standard research grade amplifier
     (g.USBamp, g.tec, Schiedlberg, Austria) and the EC20 cap equipped with 16
     wet electrodes (EasyCap, Herrsching am Ammersee, Germany), placed according
-    to the 10-20 international system. The reference was placed on the
+    to the 10-10 international system. The reference was placed on the
     right earlobe and the ground at the AFz scalp location.
     We acquired the data with no digital filter and a sampling frequency of 512Hz
     was used.
@@ -93,7 +93,7 @@ class Rodrigues2017(BaseDataset):
         acquisition=AcquisitionMetadata(
             sampling_rate=512.0,
             channel_types={"eeg": 16},
-            montage="standard_1020",
+            montage="standard_1005",
             hardware="g.tec g.USBamp",
             sensor_type="wet electrodes",
             reference="right earlobe",
@@ -125,12 +125,54 @@ class Rodrigues2017(BaseDataset):
         participants=ParticipantMetadata(
             n_subjects=19,
             health_status="healthy",
-            gender={"female": 7, "male": 13},
+            gender={"female": 7, "male": 12},
             age_mean=25.8,
             age_std=5.27,
             age_median=25.5,
             age_min=19,
             age_max=44,
+            ages=[
+                27,
+                23,
+                44,
+                26,
+                26,
+                26,
+                19,
+                19,
+                26,
+                25,
+                22,
+                22,
+                33,
+                24,
+                25,
+                26,
+                28,
+                24,
+                26,
+            ],
+            sexes=[
+                "male",
+                "male",
+                "male",
+                "male",
+                "male",
+                "male",
+                "male",
+                "male",
+                "female",
+                "female",
+                "male",
+                "male",
+                "male",
+                "male",
+                "female",
+                "female",
+                "female",
+                "female",
+                "female",
+            ],
         ),
         experiment=ExperimentMetadata(
             events={"closed": 1, "open": 2},
@@ -159,6 +201,12 @@ class Rodrigues2017(BaseDataset):
             repository="Zenodo",
             data_url="https://doi.org/10.5281/zenodo.2348891",
             license="CC-BY-4.0",
+            keywords=[
+                "Electroencephalography (EEG)",
+                "occipital dominant rhythm",
+                "alpha waves",
+                "experimentation",
+            ],
             how_to_acknowledge=(
                 "Please cite: Cattan, Rodrigues & Congedo (2018). "
                 "EEG Alpha Waves Dataset. GIPSA-lab Research Report. "
@@ -200,7 +248,7 @@ class Rodrigues2017(BaseDataset):
             code="Rodrigues2017",
             interval=[0, 10],
             paradigm="rstate",
-            doi="https://doi.org/10.5281/zenodo.2348892",
+            doi="10.5281/zenodo.2348891",
             selected_subjects=subjects,
             selected_sessions=sessions,
         )

@@ -8,7 +8,6 @@ from typing import List, Optional
 import mne
 import numpy as np
 from mne.datasets import fetch_dataset
-from mne_bids import BIDSPath, get_entity_vals, read_raw_bids
 
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.download import get_dataset_path
@@ -142,7 +141,7 @@ class RomaniBF2025ERP(BaseDataset):
             sensor_type="EEG",
             reference="right mastoid",
             ground="left mastoid",
-            software=None,
+            software="BrainForm (Unity 2022.3 + Unicorn SDK)",
             sensors=["Fz", "C3", "Cz", "C4", "Pz", "PO7", "Oz", "PO8"],
             line_freq=50.0,
             cap_manufacturer="g.tec",
@@ -155,15 +154,15 @@ class RomaniBF2025ERP(BaseDataset):
             gender={"female": 10, "male": 12},
             age_mean=21.87,
             age_std=3.22,
-            bci_experience="naive",
+            bci_experience="mixed",
             species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             events={"Target": 1, "NonTarget": 2},
             paradigm="p300",
             n_classes=2,
-            class_labels=["target", "non-target"],
-            trial_duration=0.9,
+            class_labels=["Target", "NonTarget"],
+            trial_duration=1.1,
             study_design="Within-subject study with two main sessions separated by visual texture swap (counterbalanced). Each session: calibration, tutorial, practice run with Complex Task (5 targets) and Speller Task (10 targets). Optional free-play third session for 16 participants.",
             feedback_type="visual",
             stimulus_type="flickering",
@@ -193,8 +192,8 @@ class RomaniBF2025ERP(BaseDataset):
             senior_author="Luca Turchet",
             institution_address="38122, Trento, Italy",
             institution_department=None,
-            associated_paper_doi=None,
-            related_paper_dois=["10.48550/arXiv.2509.23247"],
+            associated_paper_doi="10.48550/arXiv.2510.10169",
+            related_paper_dois=["10.48550/arXiv.2509.23247", "10.5281/zenodo.17225966"],
             keywords=[
                 "Brain-Computer Interfaces",
                 "Event-Related Potentials",
@@ -556,6 +555,8 @@ class RomaniBF2025ERP(BaseDataset):
                 logging.warning(f"No EEG EDF found for {ses_name}")
                 continue
 
+            from mne_bids import BIDSPath, read_raw_bids
+
             ses_name = ses_name.replace("ses-", "")
             bids_path = BIDSPath(
                 subject=subject_label,
@@ -660,6 +661,8 @@ class RomaniBF2025ERP(BaseDataset):
         subjects : List[str]
             e.g. ["P01", "P02", "P03"]
         """
+        from mne_bids import get_entity_vals
+
         subject_labels = get_entity_vals(root=self.data_folder, entity_key="subject")
         subjects = []
 

@@ -3,7 +3,6 @@
 import logging
 from pathlib import Path
 
-import mne_bids
 import numpy as np
 
 from ._openneuro_mirror import OpenNeuroMirrorMixin
@@ -84,7 +83,35 @@ class Daly2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
             line_freq=50.0,
         ),
         participants=ParticipantMetadata(
-            n_subjects=18, health_status="healthy", species="human"
+            gender={"male": 14, "female": 4},
+            age_max=28,
+            age_min=18,
+            age_std=2.7,
+            age_mean=21.7,
+            ages=[23, 24, 28, 20, 19, 26, 20, 23, 23, 21, 21, 23, 21, 18, 19, 19, 19, 24],
+            sexes=[
+                "male",
+                "female",
+                "male",
+                "male",
+                "male",
+                "female",
+                "male",
+                "male",
+                "female",
+                "male",
+                "male",
+                "male",
+                "male",
+                "male",
+                "male",
+                "female",
+                "male",
+                "male",
+            ],
+            n_subjects=18,
+            health_status="healthy",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             events=dict(_EVENTS),
@@ -107,6 +134,8 @@ class Daly2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
             mode="online",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Slawomir J. Nasuto",
+            repository="OpenNeuro",
             doi="10.18112/openneuro.ds002720.v1.0.1",
             investigators=[
                 "Ian Daly",
@@ -203,6 +232,8 @@ class Daly2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
         return {"0": runs}
 
     def _read_raw_bids(self, bids_path):
+        import mne_bids
+
         raw = mne_bids.read_raw_bids(
             bids_path, extra_params=self._get_read_extra_params(None), verbose=False
         )
@@ -211,6 +242,8 @@ class Daly2020(OpenNeuroMirrorMixin, BaseBIDSDataset):
 
     def _download_subject(self, subject, path, force_update, update_path, verbose) -> str:
         """Download the subject's BIDS files from OpenNeuro S3, return BIDS root."""
+        import mne_bids
+
         mirror_root = self._mirror_root(subject, path, force_update, update_path, verbose)
         if mirror_root is not None:
             return mirror_root

@@ -17,14 +17,10 @@ import warnings
 from pathlib import Path, PurePosixPath
 from urllib.parse import urlparse
 
-import nemar
 import pandas as pd
 import requests
-from httpx import TransportError
 from mne import get_config, set_config
-from mne.datasets.utils import _get_path
 from mne.utils import _url_to_local_path, verbose, warn
-from nemar.errors import NemarError, SelectionError
 from pooch import file_hash, retrieve
 from pooch.downloaders import choose_downloader
 from pooch.utils import unique_file_name
@@ -32,6 +28,34 @@ from requests.exceptions import HTTPError
 
 
 logger = logging.getLogger(__name__)
+
+
+def _nemar_deps():
+    g = globals()
+    if "nemar" not in g or "NemarError" not in g:
+        import nemar as _nemar
+        from httpx import TransportError as _TransportError
+        from nemar.errors import NemarError as _NemarError
+        from nemar.errors import SelectionError as _SelectionError
+
+        g.setdefault("nemar", _nemar)
+        g.setdefault("NemarError", _NemarError)
+        g.setdefault("SelectionError", _SelectionError)
+        g.setdefault("TransportError", _TransportError)
+    return g["nemar"], g["NemarError"], g["SelectionError"], g["TransportError"]
+
+
+def __getattr__(name):
+    if name in ("nemar", "NemarError", "SelectionError", "TransportError"):
+        _nemar_deps()
+        return globals()[name]
+    if name == "_get_path":
+        from mne.datasets.utils import _get_path as _mne_get_path
+
+        globals()["_get_path"] = _mne_get_path
+        return _mne_get_path
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
 
 #: Local directory mirroring the upstream files of the dataset whose loader is
 #: currently executing (its NEMAR sourcedata store), or None. Set by
@@ -260,6 +284,28 @@ def _normalize_destination(url: str, root: Path) -> Path:
     return Path(_url_to_local_path(url, root))
 
 
+_MNE_CONFIG_CACHE = (None, None, {})
+
+
+def _fast_get_mne_config(key):
+    """Read MNE config key from os.environ or mtime-cached mne-python.json."""
+    global _MNE_CONFIG_CACHE
+    if key in os.environ:
+        return os.environ[key]
+    try:
+        from mne.utils.config import get_config_path
+
+        cfg_path = get_config_path()
+        st = os.stat(cfg_path)
+        cache_key = (cfg_path, st.st_mtime_ns, st.st_size)
+        if _MNE_CONFIG_CACHE[:2] != cache_key[:2] or _MNE_CONFIG_CACHE[1] != cache_key:
+            with open(cfg_path, encoding="utf-8") as f:
+                _MNE_CONFIG_CACHE = (cfg_path, cache_key, json.load(f))
+        return _MNE_CONFIG_CACHE[2].get(key)
+    except Exception:
+        return get_config(key)
+
+
 def get_dataset_path(sign, path):
     """Returns the dataset path allowing for changes in MNE_DATA config.
 
@@ -281,21 +327,30 @@ def get_dataset_path(sign, path):
         Location of where to look for the data storing location
     """
     sign = sign.upper()
-    key = "MNE_DATASETS_{:s}_PATH".format(sign)
-    if get_config(key) is None:
-        if get_config("MNE_DATA") is None:
-            path_def = Path.home() / "mne_data"
-            logger.info(
-                "MNE_DATA is not already configured. It will be set to "
-                "default location in the home directory - "
-                + str(path_def)
-                + "\nAll datasets will be downloaded to this location, if anything is "
-                "already downloaded, please move manually to this location"
-            )
-            if not path_def.is_dir():
-                path_def.mkdir(parents=True)
-            set_config("MNE_DATA", str(Path.home() / "mne_data"))
-    return _get_path(path, key, sign)
+    key = f"MNE_DATASETS_{sign}_PATH"
+    get_path_fn = globals().get("_get_path")
+    if get_path_fn is None:
+        from mne.datasets.utils import _get_path as get_path_fn
+
+        globals()["_get_path"] = get_path_fn
+    if path is not None:
+        return get_path_fn(path, key, sign)
+
+    resolved = _fast_get_mne_config(key) or _fast_get_mne_config("MNE_DATA")
+    if resolved is None:
+        path_def = Path.home() / "mne_data"
+        logger.info(
+            "MNE_DATA is not already configured. It will be set to "
+            "default location in the home directory - "
+            + str(path_def)
+            + "\nAll datasets will be downloaded to this location, if anything is "
+            "already downloaded, please move manually to this location"
+        )
+        if not path_def.is_dir():
+            path_def.mkdir(parents=True)
+        resolved = str(path_def)
+        set_config("MNE_DATA", resolved)
+    return get_path_fn(resolved, key, sign)
 
 
 @verbose
@@ -626,8 +681,9 @@ def nemar_dl(
     # nemar-py re-fetch the requested subject. Do not delete ``target_dir``
     # here: it is the shared BIDS root, and ``download()`` calls this once per
     # subject, so removing it would wipe subjects fetched in earlier iterations.
+    nemar_mod, NemarError, _SelectionError, TransportError = _nemar_deps()
     try:
-        nemar.download(
+        nemar_mod.download(
             dataset=nemar_id,
             target_dir=target_dir,
             subject=subject,
@@ -668,8 +724,9 @@ def _sourcedata_files_for_subject(target_dir, nemar_id, subject, force_update):
     """
     provenance = target_dir / SOURCEDATA_PROVENANCE
     if force_update or not provenance.is_file():
+        nemar_mod, NemarError, SelectionError, TransportError = _nemar_deps()
         try:
-            nemar.download(
+            nemar_mod.download(
                 dataset=nemar_id,
                 target_dir=target_dir,
                 scope="sourcedata",
@@ -699,9 +756,10 @@ def _sourcedata_files_for_subject(target_dir, nemar_id, subject, force_update):
     if not files:
         known = sorted(
             {
-                str(entry["subject"])
+                label
                 for entry in record.get("files") or []
-                if isinstance(entry, dict) and entry.get("subject")
+                if isinstance(entry, dict)
+                for label in _entry_subjects(entry)
             }
         )
         raise NemarDownloadError(
@@ -735,23 +793,57 @@ def _sourcedata_store_holds_data(target_dir):
     return False
 
 
+def _entry_records_subjects(entry):
+    """Whether a provenance entry carries a subject field at all."""
+    return "subject" in entry or "subjects" in entry
+
+
+def _entry_subjects(entry):
+    """The subject labels a provenance entry is filed under, as strings.
+
+    A file is usually one subject's (``"subject": "3"``), but some upstream
+    files hold several subjects' recordings -- Zheng2020's ``G{g}D{1,2}.mat``
+    each carry both members of pair ``g`` (MOABB subjects ``2g-1`` and
+    ``2g``). Such an entry lists them all, either in ``"subjects"`` (the form
+    deposits use, see below) or as a list in ``"subject"``; the file then
+    belongs to the selection of every subject listed.
+
+    Deposits write the list in ``"subjects"`` and leave ``"subject"`` out of
+    those entries: MOABB releases up to 1.7.2 read only ``"subject"``, so a
+    manifest whose entries have no ``"subject"`` key at all is, for them, one
+    that predates the field and is fetched whole -- what they already did for
+    such a deposit. A list in ``"subject"`` (or ``"subject": null`` on every
+    entry) would instead match no subject there and fail the NEMAR fetch.
+
+    An empty set means the entry belongs to no subject: shared by every
+    subject's load.
+    """
+    labels = set()
+    for key in ("subject", "subjects"):
+        value = entry.get(key)
+        values = value if isinstance(value, (list, tuple)) else [value]
+        labels.update(str(v) for v in values if v not in (None, ""))
+    return labels
+
+
 def _manifest_subject_files(record, subject):
     """The files a provenance record attributes to ``subject``.
 
     ``None`` when the manifest predates the ``subject`` field and so cannot
     answer per subject; an empty list when it can answer but knows nothing
-    about this subject. Names are returned raw -- callers that feed them to a
-    glob escape them themselves.
+    about this subject. An entry filed under several subjects (see
+    :func:`_entry_subjects`) belongs to each of them. Names are returned raw --
+    callers that feed them to a glob escape them themselves.
     """
     entries = [entry for entry in (record.get("files") or []) if isinstance(entry, dict)]
-    if not any("subject" in entry for entry in entries):
+    if not any(_entry_records_subjects(entry) for entry in entries):
         return None
     candidates = subject if isinstance(subject, (list, tuple, set)) else [subject]
     wanted = {str(candidate) for candidate in candidates}
     return [
         entry["file"]
         for entry in entries
-        if entry.get("file") and str(entry.get("subject")) in wanted
+        if entry.get("file") and _entry_subjects(entry) & wanted
     ]
 
 
@@ -759,17 +851,17 @@ def _manifest_shared_files(record):
     """The files a per-subject provenance record attributes to no subject.
 
     Only meaningful once the manifest records subjects at all: then an entry
-    whose ``subject`` is missing or empty is shared by every subject's load
-    (Brandl2020's ``mnt.mat`` montage, Dreyer2023's ``performance.csv``).
-    Names are returned raw.
+    whose ``subject`` is missing or empty (and that lists no ``subjects``) is
+    shared by every subject's load (Brandl2020's ``mnt.mat`` montage,
+    Dreyer2023's ``performance.csv``). Names are returned raw.
     """
     entries = [entry for entry in (record.get("files") or []) if isinstance(entry, dict)]
-    if not any("subject" in entry for entry in entries):
+    if not any(_entry_records_subjects(entry) for entry in entries):
         return []
     return [
         entry["file"]
         for entry in entries
-        if entry.get("file") and entry.get("subject") in (None, "")
+        if entry.get("file") and not _entry_subjects(entry)
     ]
 
 
@@ -977,11 +1069,7 @@ def seed_loader_cache(target_dir, subject, path=None):
         else:
             # Files no subject owns (montages, shared tables) serve every
             # subject's load; placed whenever the store holds them.
-            files = files + [
-                entry["file"]
-                for entry in entries
-                if entry.get("file") and entry.get("subject") in (None, "")
-            ]
+            files = files + _manifest_shared_files(record)
         cache_root = _loader_cache_root(record, path)
     except (OSError, ValueError, AttributeError, TypeError):
         return 0
@@ -1111,8 +1199,9 @@ def nemar_sourcedata_dl(
         f"NEMAR dataset {nemar_id} published no {what} -- the original "
         "distribution is not mirrored there."
     )
+    nemar_mod, NemarError, SelectionError, TransportError = _nemar_deps()
     try:
-        nemar.download(
+        nemar_mod.download(
             dataset=nemar_id,
             target_dir=target_dir,
             scope="sourcedata",

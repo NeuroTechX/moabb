@@ -14,9 +14,8 @@ import pandas as pd
 from joblib import Parallel, delayed
 from sklearn import config_context
 from sklearn.base import BaseEstimator, clone
-from sklearn.frozen import FrozenEstimator
 from sklearn.metrics import accuracy_score, roc_auc_score
-from sklearn.model_selection import LeaveOneOut, StratifiedKFold, cross_val_predict
+from sklearn.model_selection import StratifiedKFold
 from sklearn.preprocessing import LabelEncoder
 from sklearn.utils.metadata_routing import get_routing_for_object
 
@@ -72,8 +71,8 @@ RESULT_COLUMNS = frozenset(
 def _score_trialwise(estimator, X, y, scoring):
     """Score a fitted estimator from isolated, one-trial predictions.
 
-    ``FrozenEstimator`` prevents refitting on target data and ``LeaveOneOut``
-    makes every prediction fold contain exactly one target trial.
+    Calls the prediction method on single-trial slices ``X[i : i + 1]`` so
+    every prediction sees exactly one target trial without refitting.
     """
     if scoring not in ("accuracy", "roc_auc"):
         raise TypeError(
@@ -83,14 +82,17 @@ def _score_trialwise(estimator, X, y, scoring):
         )
 
     if scoring == "accuracy":
-        method = "predict"
+        fn = estimator.predict
     elif hasattr(estimator, "decision_function"):
-        method = "decision_function"
+        fn = estimator.decision_function
     else:
-        method = "predict_proba"
+        fn = estimator.predict_proba
 
-    response = cross_val_predict(
-        FrozenEstimator(estimator), X, y, cv=LeaveOneOut(), method=method
+    n_trials = len(X)
+    response = (
+        np.concatenate([fn(X[i : i + 1]) for i in range(n_trials)], axis=0)
+        if n_trials
+        else np.empty(0)
     )
     if scoring == "accuracy":
         score = accuracy_score(y, response)
@@ -213,27 +215,32 @@ def _evaluate_fold(
     # Fit the encoder on source labels only. Target labels never influence the
     # training representation.
     if not mne_labels:
-        le = LabelEncoder().fit(y[train_idx])
-        y_train = le.transform(y[train_idx])
+        le = LabelEncoder()
+        y_train = le.fit_transform(y[train_idx])
         y_test = le.transform(y[test_idx])
     else:
         y_train = y[train_idx]
         y_test = y[test_idx]
 
-    inner_cv = StratifiedKFold(3, shuffle=True, random_state=random_state)
-    grid_clf, is_search = _grid_search_static(
-        param_grid=param_grid,
-        name=pipeline_name,
-        grid_clf=clone(pipeline),
-        inner_cv=inner_cv,
-        scoring=scoring,
-        n_jobs=config["n_jobs_grid"],
-        optuna=config["optuna"],
-        time_out=config["time_out"],
-    )
+    cloned_pipe = clone(pipeline)
+    if param_grid is not None and pipeline_name in param_grid:
+        inner_cv = StratifiedKFold(3, shuffle=True, random_state=random_state)
+        cvclf, is_search = _grid_search_static(
+            param_grid=param_grid,
+            name=pipeline_name,
+            grid_clf=cloned_pipe,
+            inner_cv=inner_cv,
+            scoring=scoring,
+            n_jobs=config["n_jobs_grid"],
+            optuna=config["optuna"],
+            time_out=config["time_out"],
+        )
+    else:
+        cvclf, is_search = cloned_pipe, False
 
-    cvclf = clone(grid_clf) if is_search else grid_clf
-    nchan = _get_nchan(X)
+    nchan = config.get("nchan")
+    if nchan is None:
+        nchan = _get_nchan(X)
 
     # Set up emissions tracker
     tracker = None
@@ -256,21 +263,36 @@ def _evaluate_fold(
     # Any metadata column (``device``, ``dataset``, ``subject``...) of the
     # training trials can be requested as fit metadata, e.g.
     # ``step.set_fit_request(device=True)``; only requested keys are passed.
-    fit_params = {col: metadata[col].to_numpy()[train_idx] for col in metadata.columns}
-    if split_metadata is not None and "calibration_size" in split_metadata:
-        fit_params["subjects"] = metadata["subject"].to_numpy()[train_idx]
-        if X_calib is not None:
-            if y_calib is None:
-                fit_params["X_target_unlabeled"] = X_calib
-            else:
-                fit_params["X_target_labeled"] = X_calib
-                fit_params["y_target_labeled"] = y_calib
-    if fit_params:
+    requested = config.get("requested_fit_params")
+    if requested is None or is_search:
+        candidate_keys = set(metadata.columns)
+        if split_metadata is not None and "calibration_size" in split_metadata:
+            candidate_keys.add("subjects")
+            if X_calib is not None:
+                if y_calib is None:
+                    candidate_keys.add("X_target_unlabeled")
+                else:
+                    candidate_keys.update(("X_target_labeled", "y_target_labeled"))
         with config_context(enable_metadata_routing=True):
-            requested = get_routing_for_object(cvclf).consumes("fit", set(fit_params))
-        fit_params = {
-            name: value for name, value in fit_params.items() if name in requested
-        }
+            requested = get_routing_for_object(cvclf).consumes("fit", candidate_keys)
+
+    fit_params = {}
+    if requested:
+        for col in metadata.columns:
+            if col in requested:
+                fit_params[col] = metadata[col].to_numpy()[train_idx]
+        if split_metadata is not None and "calibration_size" in split_metadata:
+            if "subjects" in requested:
+                fit_params["subjects"] = metadata["subject"].to_numpy()[train_idx]
+            if X_calib is not None:
+                if y_calib is None:
+                    if "X_target_unlabeled" in requested:
+                        fit_params["X_target_unlabeled"] = X_calib
+                else:
+                    if "X_target_labeled" in requested:
+                        fit_params["X_target_labeled"] = X_calib
+                    if "y_target_labeled" in requested:
+                        fit_params["y_target_labeled"] = y_calib
 
     # Fit model
     task_name = None
@@ -279,8 +301,11 @@ def _evaluate_fold(
         task_name = str(uuid4())
         tracker.start_task(task_name)
     t_start = perf_counter()
-    with config_context(enable_metadata_routing=True):
-        cvclf.fit(X[train_idx], y_train, **fit_params)
+    if fit_params:
+        with config_context(enable_metadata_routing=True):
+            cvclf.fit(X[train_idx], y_train, **fit_params)
+    else:
+        cvclf.fit(X[train_idx], y_train)
     duration = perf_counter() - t_start
     if tracker is not None:
         emissions_data = tracker.stop_task()
@@ -318,33 +343,41 @@ def _evaluate_fold(
 
     # Build score groups. Cross-subject folds can contain multiple held-out
     # subjects when using GroupKFold or another custom grouped splitter.
-    test_meta = metadata.iloc[test_idx]
-    test_sessions = test_meta["session"].to_numpy()
-    test_subjects = test_meta["subject"].to_numpy()
     score_groups = []
 
-    if score_per_subject:
-        selected_subjects = (
-            np.asarray(score_subjects)
-            if score_subjects is not None
-            else np.unique(test_subjects)
-        )
-        for group_subject in selected_subjects:
-            subject_mask = test_subjects == group_subject
-            if score_per_session:
-                for group_session in np.unique(test_sessions[subject_mask]):
-                    mask = subject_mask & (test_sessions == group_session)
+    if score_per_subject or score_per_session:
+        test_meta = metadata.iloc[test_idx]
+        test_sessions = test_meta["session"].to_numpy()
+        if score_per_subject:
+            test_subjects = test_meta["subject"].to_numpy()
+            selected_subjects = (
+                np.asarray(score_subjects)
+                if score_subjects is not None
+                else np.unique(test_subjects)
+            )
+            for group_subject in selected_subjects:
+                subject_mask = test_subjects == group_subject
+                if score_per_session:
+                    for group_session in np.unique(test_sessions[subject_mask]):
+                        mask = subject_mask & (test_sessions == group_session)
+                        score_groups.append(
+                            (test_idx[mask], y_test[mask], group_subject, group_session)
+                        )
+                else:
                     score_groups.append(
-                        (test_idx[mask], y_test[mask], group_subject, group_session)
+                        (
+                            test_idx[subject_mask],
+                            y_test[subject_mask],
+                            group_subject,
+                            session,
+                        )
                     )
-            else:
+        else:
+            for group_session in np.unique(test_sessions):
+                mask = test_sessions == group_session
                 score_groups.append(
-                    (test_idx[subject_mask], y_test[subject_mask], group_subject, session)
+                    (test_idx[mask], y_test[mask], subject, group_session)
                 )
-    elif score_per_session:
-        for group_session in np.unique(test_sessions):
-            mask = test_sessions == group_session
-            score_groups.append((test_idx[mask], y_test[mask], subject, group_session))
     else:
         score_groups = [(test_idx, y_test, subject, session)]
 
@@ -915,15 +948,39 @@ class BaseEvaluation(ABC):
         """Build a flat list of fold tasks for parallel execution."""
         tasks = []
         config = self._build_eval_config(param_grid)
+        if X is not None:
+            config["nchan"] = _get_nchan(X)
         fold_preview = self._preview_splits(splitter, y, metadata)
 
+        candidate_keys = set(metadata.columns) | {
+            "subjects",
+            "X_target_unlabeled",
+            "X_target_labeled",
+            "y_target_labeled",
+        }
+        pipeline_routing = {}
+        with config_context(enable_metadata_routing=True):
+            for name, clf in pipelines.items():
+                pipeline_routing[name] = frozenset(
+                    get_routing_for_object(clf).consumes("fit", candidate_keys)
+                )
+
+        needs_df_validation = (
+            type(self)._validate_test_fold_metadata
+            is not BaseEvaluation._validate_test_fold_metadata
+        )
+        session_col = metadata["session"].to_numpy()
+        subject_col = metadata["subject"].to_numpy()
+
         for cv_ind, train_idx, calib_idx, test_idx, split_meta in fold_preview:
-            test_meta = metadata.iloc[test_idx]
-            self._validate_test_fold_metadata(test_meta)
-            session = test_meta["session"].iloc[0]
+            if needs_df_validation:
+                self._validate_test_fold_metadata(metadata.iloc[test_idx])
+            elif len(test_idx) == 0:
+                raise ValueError("Cross-validation split produced an empty test fold.")
+            session = session_col[test_idx[0]]
 
             if self._score_per_subject:
-                test_subjects = np.unique(test_meta["subject"].to_numpy())
+                test_subjects = np.unique(subject_col[test_idx])
                 pipeline_subjects = {
                     name: [
                         subject
@@ -938,7 +995,7 @@ class BaseEvaluation(ABC):
                     if subjects
                 ]
             else:
-                subject = test_meta["subject"].iloc[0]
+                subject = subject_col[test_idx[0]]
                 if subject not in work_plan:
                     continue
                 task_specs = [
@@ -952,6 +1009,7 @@ class BaseEvaluation(ABC):
                 else:
                     task_param_grid = None
                 task_config["param_grid"] = task_param_grid
+                task_config["requested_fit_params"] = pipeline_routing.get(name)
                 tasks.append(
                     {
                         "config": task_config,
@@ -1160,13 +1218,9 @@ class BaseEvaluation(ABC):
         self.cv = dataset_splitter
 
         if work_plan is None:
-            work_plan = {}
-            for subject in dataset.subject_list:
-                run_pipes = self.results.not_yet_computed(
-                    pipelines, dataset, subject, process_pipeline
-                )
-                if run_pipes:
-                    work_plan[subject] = run_pipes
+            work_plan = self.results.batch_not_yet_computed(
+                pipelines, dataset, dataset.subject_list, process_pipeline
+            )
 
         if not work_plan:
             return None
@@ -1221,51 +1275,84 @@ class BaseEvaluation(ABC):
         if not fold_results:
             return []
 
-        df = pd.DataFrame(fold_results)
+        all_score_cols = ["score"]
+        seen_score_cols = {"score"}
+        for res in fold_results:
+            for k in res:
+                if k not in seen_score_cols and k.startswith("score_"):
+                    seen_score_cols.add(k)
+                    all_score_cols.append(k)
         for col in score_cols or ():
-            if col not in df.columns:
-                df[col] = np.nan
-        group_keys = ["subject", "session", "pipeline"]
-        score_cols = [c for c in df.columns if c == "score" or c.startswith("score_")]
-        agg_ops = dict.fromkeys(score_cols + ["time"], "mean")
-        if "n_samples_test" in df.columns:
-            agg_ops["n_samples_test"] = "mean"
-        if "n_classes" in df.columns:
-            agg_ops["n_classes"] = "max"
+            if col not in seen_score_cols and (
+                col == "score" or col.startswith("score_")
+            ):
+                seen_score_cols.add(col)
+                all_score_cols.append(col)
 
-        # Error folds may lack score_* columns; fill with their "score" fallback
-        for col in score_cols:
-            if col != "score":
-                df[col] = df[col].fillna(df["score"])
+        groups = defaultdict(list)
+        for res in fold_results:
+            groups[(res["subject"], res["session"], res["pipeline"])].append(res)
 
-        has_carbon = "carbon_emission" in df.columns
-
-        # A single error fold may put a non-numeric value (e.g. "failed") in an
-        # aggregation column, making pandas infer the whole column as object and
-        # mean() raise. Coerce so bad folds become NaN and are skipped by mean.
-        for col in agg_ops:
-            if df[col].dtype == object:
-                df[col] = pd.to_numeric(df[col], errors="coerce")
-
-        grouped = df.groupby(group_keys, sort=False)
-        agg_df = grouped.agg(agg_ops)
+        def _to_float(v):
+            if v is None or isinstance(v, (bool, np.bool_)):
+                return math.nan
+            try:
+                f = float(v)
+                return math.nan if math.isnan(f) else f
+            except (TypeError, ValueError):
+                return math.nan
 
         results = []
-        for key, sub_df in grouped:
-            template = sub_df.iloc[0].to_dict()
+        for rows in groups.values():
+            template = dict(rows[0])
             template["n_samples"] = template.get("n_samples_total", template["n_samples"])
-            for col in agg_ops:
-                value = agg_df.loc[key, col]
-                if col in {"n_samples_test", "n_classes"} and pd.notna(value):
-                    value = int(value)
-                template[col] = value
+
+            for col in all_score_cols:
+                vals = []
+                for r in rows:
+                    v = r.get(col)
+                    if v is None or (isinstance(v, float) and math.isnan(v)):
+                        v = r.get("score")
+                    fv = _to_float(v)
+                    if not math.isnan(fv):
+                        vals.append(fv)
+                template[col] = sum(vals) / len(vals) if vals else np.nan
+
+            t_vals = [fv for r in rows if not math.isnan(fv := _to_float(r.get("time")))]
+            template["time"] = sum(t_vals) / len(t_vals) if t_vals else np.nan
+
+            if "n_samples_test" in template:
+                nst_vals = [
+                    fv
+                    for r in rows
+                    if not math.isnan(fv := _to_float(r.get("n_samples_test")))
+                ]
+                template["n_samples_test"] = (
+                    int(sum(nst_vals) / len(nst_vals)) if nst_vals else np.nan
+                )
+
+            if "n_classes" in template:
+                nc_vals = [
+                    fv
+                    for r in rows
+                    if not math.isnan(fv := _to_float(r.get("n_classes")))
+                ]
+                template["n_classes"] = int(max(nc_vals)) if nc_vals else np.nan
+
+            has_carbon = any("carbon_emission" in r for r in rows)
             if has_carbon:
-                template["carbon_emission"] = sub_df["carbon_emission"].sum()
+                c_vals = [
+                    fv
+                    for r in rows
+                    if not math.isnan(fv := _to_float(r.get("carbon_emission")))
+                ]
+                template["carbon_emission"] = sum(c_vals) if c_vals else 0.0
                 template["codecarbon_task_name"] = ""
+            else:
+                template.pop("codecarbon_task_name", None)
+
             template.pop("n_samples_total", None)
             template.pop("is_error", None)
-            if not has_carbon:
-                template.pop("codecarbon_task_name", None)
             results.append(template)
         return results
 

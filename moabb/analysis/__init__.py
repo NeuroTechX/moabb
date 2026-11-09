@@ -1,42 +1,10 @@
 import importlib
+import importlib.util
 import logging
 import os
 import platform
 from datetime import datetime
 
-from mne.utils import _open_lock
-
-from moabb.analysis.chance_level import (  # noqa: F401
-    adjusted_chance_level,
-    chance_by_chance,
-)
-from moabb.analysis.meta_analysis import (  # noqa: E501
-    compute_dataset_statistics,
-    find_significant_differences,
-)
-from moabb.analysis.results import Results  # noqa: F401
-from moabb.analysis.style import MOABB_PALETTE, apply_moabb_style  # noqa: F401
-from moabb.analysis.timeline import (  # noqa: F401
-    class_balance_svg,
-    plot_class_balance,
-    plot_session_structure,
-    plot_stimulus_timeline,
-    session_structure_svg,
-    stimulus_timeline_svg,
-)
-
-
-try:
-    import plotly  # noqa: F401
-
-    from moabb.analysis.neural_signatures import (  # noqa: F401
-        generate_neural_signature,
-        neural_signature_html,
-    )
-
-    del plotly
-except ImportError:
-    pass
 
 log = logging.getLogger(__name__)
 
@@ -60,6 +28,14 @@ def analyze(results, out_path, name="analysis", plot=False):
 
     Either path or results is necessary
     """
+    from mne.utils import _open_lock
+
+    from moabb.analysis import plotting as plt
+    from moabb.analysis.meta_analysis import (
+        compute_dataset_statistics,
+        find_significant_differences,
+    )
+
     # input checks #
     if not isinstance(out_path, str):
         raise ValueError("Given out_path argument is not string")
@@ -67,8 +43,6 @@ def analyze(results, out_path, name="analysis", plot=False):
         raise IOError("Given directory does not exist")
     else:
         analysis_path = os.path.join(out_path, name)
-
-    from moabb.analysis import plotting as plt
 
     unique_ids = [plt._simplify_names(x) for x in results.pipeline.unique()]
     simplify = True
@@ -101,25 +75,50 @@ def analyze(results, out_path, name="analysis", plot=False):
 # who reaches this package for something else -- ``moabb.datasets`` imports
 # ``moabb.analysis.results`` for ``get_digest``, so an eager import here
 # restyled the figures of every caller who merely imported a dataset.
-_PLOTTING_EXPORTS = (
-    "codecarbon_plot",
-    "distribution_plot",
-    "emissions_summary",
-    "plot_critical_difference",
-)
+_LAZY_IMPORTS = {
+    "adjusted_chance_level": ".chance_level",
+    "chance_by_chance": ".chance_level",
+    "compute_dataset_statistics": ".meta_analysis",
+    "find_significant_differences": ".meta_analysis",
+    "Results": ".results",
+    "MOABB_PALETTE": ".style",
+    "apply_moabb_style": ".style",
+    "class_balance_svg": ".timeline",
+    "plot_class_balance": ".timeline",
+    "plot_session_structure": ".timeline",
+    "plot_stimulus_timeline": ".timeline",
+    "session_structure_svg": ".timeline",
+    "stimulus_timeline_svg": ".timeline",
+    "codecarbon_plot": ".plotting",
+    "distribution_plot": ".plotting",
+    "emissions_summary": ".plotting",
+    "plot_critical_difference": ".plotting",
+}
+
+if importlib.util.find_spec("plotly") is not None:
+    _LAZY_IMPORTS["generate_neural_signature"] = ".neural_signatures"
+    _LAZY_IMPORTS["neural_signature_html"] = ".neural_signatures"
 
 
 def __getattr__(name):
-    # ``plotting`` itself is included: the eager import used to bind it as an
-    # attribute of this package, so ``moabb.analysis.plotting`` resolved without
-    # the caller importing the submodule. Dropping that would be a break.
-    if name == "plotting" or name in _PLOTTING_EXPORTS:
-        # import_module, not ``from . import plotting``: the latter falls back to
-        # getattr on this package, which re-enters __getattr__ forever.
+    if name == "plotting":
         plotting = importlib.import_module("moabb.analysis.plotting")
-        return plotting if name == "plotting" else getattr(plotting, name)
+        globals()[name] = plotting
+        return plotting
+    if name in _LAZY_IMPORTS:
+        mod = importlib.import_module(_LAZY_IMPORTS[name], __name__)
+        val = getattr(mod, name)
+        globals()[name] = val
+        return val
+    try:
+        mod = importlib.import_module(f".{name}", __name__)
+        globals()[name] = mod
+        return mod
+    except ModuleNotFoundError as exc:
+        if exc.name != f"{__name__}.{name}":
+            raise
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 def __dir__():
-    return sorted(set(globals()) | set(_PLOTTING_EXPORTS) | {"plotting"})
+    return sorted(set(globals()) | set(_LAZY_IMPORTS) | {"plotting"})

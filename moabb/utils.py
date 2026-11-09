@@ -14,8 +14,6 @@ import warnings
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import filelock
-import h5py
 import numpy as np
 from docstring_inheritance import NumpyDocstringInheritanceInitMeta
 from mne import get_config, set_config
@@ -28,6 +26,16 @@ if TYPE_CHECKING:
     from moabb.paradigms.base import BaseProcessing
 
 log = logging.getLogger(__name__)
+
+
+def __getattr__(name):
+    if name in ("filelock", "h5py"):
+        import importlib
+
+        mod = importlib.import_module(name)
+        globals()[name] = mod
+        return mod
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 def _handle_deprecated_kwargs(kwargs, renames, class_name):
@@ -130,7 +138,17 @@ def verbose(function):
     dec : function
         The decorated function.
     """
-    arg_names = inspect.getfullargspec(function).args
+    spec = inspect.getfullargspec(function)
+    arg_names = spec.args
+    verbose_idx = arg_names.index("verbose") if "verbose" in arg_names else -1
+    verbose_default = None
+    if verbose_idx >= 0 and spec.defaults:
+        default_offset = len(arg_names) - len(spec.defaults)
+        if verbose_idx >= default_offset:
+            verbose_default = spec.defaults[verbose_idx - default_offset]
+    elif "verbose" in (spec.kwonlydefaults or {}):
+        verbose_default = spec.kwonlydefaults["verbose"]
+    moabb_logger = logging.getLogger("moabb")
 
     @functools.wraps(function)
     def wrapper(*args, **kwargs):
@@ -141,25 +159,20 @@ def verbose(function):
             verbose_val = kwargs["verbose"]
 
         # Check positional args
-        elif "verbose" in arg_names:
-            sig = inspect.signature(function)
-            try:
-                bound = sig.bind_partial(*args, **kwargs)
-                bound.apply_defaults()
-                if "verbose" in bound.arguments:
-                    verbose_val = bound.arguments["verbose"]
-            except TypeError as exc:
-                log.debug(
-                    "Failed to bind 'verbose' argument for %s: %s", function.__name__, exc
-                )
+        elif verbose_idx >= 0:
+            if verbose_idx < len(args):
+                verbose_val = args[verbose_idx]
+            else:
+                verbose_val = verbose_default
 
         # Check self.verbose
         if verbose_val is None and len(args) > 0:
-            if hasattr(args[0], "verbose"):
-                verbose_val = getattr(args[0], "verbose", None)
+            verbose_val = getattr(args[0], "verbose", None)
 
-        logger = logging.getLogger("moabb")
-        old_level = logger.level
+        if verbose_val is None:
+            return function(*args, **kwargs)
+
+        old_level = moabb_logger.level
         level = None
 
         if verbose_val is True:
@@ -171,15 +184,15 @@ def verbose(function):
 
         if level is not None:
             try:
-                logger.setLevel(level)
+                moabb_logger.setLevel(level)
             except (TypeError, ValueError) as exc:
-                logger.warning("Failed to set log level %r: %s", level, exc)
+                moabb_logger.warning("Failed to set log level %r: %s", level, exc)
 
         try:
             return function(*args, **kwargs)
         finally:
             if level is not None:
-                logger.setLevel(old_level)
+                moabb_logger.setLevel(old_level)
 
     return wrapper
 
@@ -443,6 +456,9 @@ def _open_lock_hdf5(path, *args, **kwargs):
         ``h5py.File``.
 
     """
+    import filelock
+    import h5py
+
     lock_timeout = float(os.environ.get("MOABB_HDF5_LOCK_TIMEOUT", "30"))
     allow_unlocked = os.environ.get("MOABB_ALLOW_UNLOCKED_HDF5", "").lower() in (
         "1",

@@ -16,12 +16,12 @@ import mne
 import numpy as np
 import pandas as pd
 import tqdm
-from mne_bids import BIDSPath, read_raw_bids
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
+    AuxiliaryChannelsMetadata,
     DatasetMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
@@ -136,11 +136,77 @@ class ErpCore2021(BaseDataset):
     """
 
     METADATA = DatasetMetadata(
-        acquisition=AcquisitionMetadata(sampling_rate=1024.0, channel_types={"eeg": 30}),
-        participants=ParticipantMetadata(n_subjects=40),
-        experiment=ExperimentMetadata(paradigm="p300"),
+        acquisition=AcquisitionMetadata(
+            sampling_rate=1024.0,
+            channel_types={"eeg": 30, "eog": 3},
+            montage="standard_1020",
+            hardware="Biosemi ActiveTwo",
+            sensor_type="active Ag/AgCl",
+            reference="CMS/DRL (PO1/PO2); single-ended recording",
+            ground="CMS/DRL (PO1/PO2)",
+            software="Presentation (Neurobehavioral Systems)",
+            filters="fifth-order sinc low-pass filter, half-power cutoff at 204.8 Hz",
+            line_freq=60.0,
+            sensors=[
+                "FP1",
+                "F3",
+                "F7",
+                "FC3",
+                "C3",
+                "C5",
+                "P3",
+                "P7",
+                "P9",
+                "PO7",
+                "PO3",
+                "O1",
+                "Oz",
+                "Pz",
+                "CPz",
+                "FP2",
+                "Fz",
+                "F4",
+                "F8",
+                "FC4",
+                "FCz",
+                "Cz",
+                "C4",
+                "C6",
+                "P4",
+                "P8",
+                "P10",
+                "PO8",
+                "PO4",
+                "O2",
+                "HEOG_left",
+                "HEOG_right",
+                "VEOG_lower",
+            ],
+            auxiliary_channels=AuxiliaryChannelsMetadata(
+                has_eog=True, eog_channels=3, eog_type=["horizontal", "vertical"]
+            ),
+        ),
+        participants=ParticipantMetadata(
+            n_subjects=40,
+            health_status="healthy",
+            gender={"female": 25, "male": 15},
+            age_mean=21.5,
+            age_std=2.87,
+            age_min=18,
+            age_max=30,
+            handedness={"right": 38, "left": 2},
+            species="homo sapiens",
+        ),
+        experiment=ExperimentMetadata(
+            paradigm="p300",
+            n_classes=2,
+            class_labels=["Target", "NonTarget"],
+            events={"Target": 1, "NonTarget": 2},
+            trial_duration=1.0,
+        ),
         documentation=DocumentationMetadata(
             doi="10.1016/j.neuroimage.2020.117465",
+            associated_paper_doi="10.1016/j.neuroimage.2020.117465",
             data_url="https://doi.org/10.18115/D5JW4R",
             investigators=[
                 "Emily S. Kappenman",
@@ -149,9 +215,40 @@ class ErpCore2021(BaseDataset):
                 "Andrew X. Stewart",
                 "Steven J. Luck",
             ],
+            senior_author="Steven J. Luck",
+            institution="San Diego State University; University of California, Davis",
+            institution_department="Department of Psychology",
+            institution_address="San Diego, CA, 92120, USA",
+            country="US",
+            contact_info=["emily.kappenman@sdsu.edu"],
+            ethics_approval=[
+                "Approved by the Institutional Review Board at the University of California, Davis"
+            ],
+            funding=["NIH R01MH087450", "NIH R25MH080794"],
+            acknowledgements=(
+                "We thank Mike Blank and David Woods at Neurobehavioral Systems, Inc. "
+                "for providing professional programming of the tasks in Presentation. "
+                "Programming, data analysis, and manuscript preparation were made possible "
+                "by NIH grants R01MH087450 and R25MH080794."
+            ),
+            how_to_acknowledge=(
+                "Please cite: Kappenman et al. (2021). ERP CORE: An open resource "
+                "for human event-related potential research. NeuroImage, 225, 117465. "
+                "https://doi.org/10.1016/j.neuroimage.2020.117465"
+            ),
+            keywords=[
+                "Event-related potentials",
+                "EEG",
+                "Data quality",
+                "Open science",
+                "Reproducibility",
+            ],
             publication_year=2021,
-            repository="ERP CORE",
+            repository="Osf",
+            license="CC-BY-4.0",
         ),
+        sessions_per_subject=1,
+        runs_per_session=1,
     )
 
     def __init__(
@@ -177,10 +274,10 @@ class ErpCore2021(BaseDataset):
             interval = (-0.2, 0.8)
             events = {"Target": 1, "NonTarget": 2}
         elif task == "ERN":
-            interval = (-0.8, 0.2)
+            interval = (-0.6, 0.4)
             events = {"Target": 1, "NonTarget": 2}
         elif task == "LRP":
-            interval = (-0.6, 0.4)
+            interval = (-0.8, 0.2)
             events = {"Target": 1, "NonTarget": 2}
         else:
             raise ValueError(f"Unknown task {task}")
@@ -221,17 +318,19 @@ class ErpCore2021(BaseDataset):
             warnings.simplefilter("ignore")
 
             # Read the subject's raw data and set the montage
+            from mne_bids import read_raw_bids
+
             raw = read_raw_bids(bids_path=file_path, verbose=False)
             raw.load_data()  # Preload the data because read_raw_bids does not load it
             raw = raw.set_montage("colin27_1020", match_case=False)
 
+        raw = self.handle_events_reading(events_path, raw)
+
         # Shift the stimulus event codes forward in time
         # to account for the LCD monitor delay
         # (26 ms on our monitor, as measured with a photosensor).
-        if self.task != "MMN":
+        if self.task in ("N170", "N2pc", "N400", "P3"):
             raw.annotations.onset = raw.annotations.onset + 0.026
-
-        raw = self.handle_events_reading(events_path, raw)
 
         # There is only one session
         sessions = {"0": {"0": raw}}
@@ -276,6 +375,8 @@ class ErpCore2021(BaseDataset):
         )
 
         # Create a BIDSPath object for the subject
+        from mne_bids import BIDSPath
+
         bids_path = BIDSPath(
             subject=f"{subject:03d}",
             task=task,
@@ -710,7 +811,6 @@ class ErpCore2021_N2pc(ErpCore2021):
             return "Stimulus - target pink, target right, gap at bottom"
 
     def encoding(self, events_df):
-
         # Drop rows corresponding to the responses
         events_df.drop(events_df[events_df["value"].isin([201, 202])].index, inplace=True)
 
@@ -812,7 +912,6 @@ class ErpCore2021_P3(ErpCore2021):
             return "Stimulus - block target D, trial stimulus E"
 
     def encoding(self, events_df):
-
         # Drop rows corresponding to the responses
         events_df.drop(events_df[events_df["value"].isin([201, 202])].index, inplace=True)
 
@@ -886,7 +985,6 @@ class ErpCore2021_N400(ErpCore2021):
             return "Stimulus - target word, unrelated word pair, list 2"
 
     def encoding(self, events_df):
-
         # Drop rows corresponding to the responses
         events_df.drop(
             events_df[events_df["value"].isin([111, 112, 121, 122, 201, 202])].index,
@@ -1038,7 +1136,6 @@ class ErpCore2021_LRP(ErpCore2021):
             return "Response - right, incompatible flankers, target left"
 
     def encoding(self, events_df):
-
         # Check the first two rows if both are 'Response'
         if (
             events_df.iloc[0]["trial_type"] == "response"

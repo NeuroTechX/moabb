@@ -12,10 +12,10 @@ import subprocess
 import tarfile
 import warnings
 import zipfile
+from functools import lru_cache
 from pathlib import Path
 
 import mne
-import mne_bids
 import numpy as np
 from mne import create_info
 from mne.channels import make_standard_montage
@@ -30,28 +30,54 @@ from moabb.utils import aliases_list
 
 logger = logging.getLogger(__name__)
 
-dataset_list = []
-dataset_dict = {}
+_dataset_list = []
+_dataset_dict = {}
+_dataset_meta = {}
 
 
 def _init_dataset():
     # Recompute dataset registries on each call to avoid duplicate accumulation
     # from repeated initialization in long-lived test sessions.
-    dataset_list.clear()
-    dataset_dict.clear()
+    _dataset_list.clear()
+    _dataset_dict.clear()
+    globals()["dataset_list"] = _dataset_list
+    globals()["dataset_dict"] = _dataset_dict
 
     for ds in inspect.getmembers(db, inspect.isclass):
         if issubclass(ds[1], BaseDataset):
-            dataset_list.append(ds[1])
+            _dataset_list.append(ds[1])
 
-    deprecated_names = list(zip(*aliases_list))[0] if aliases_list else ()
+    deprecated_names = set(list(zip(*aliases_list))[0]) if aliases_list else set()
     dataset_class = {
         dataset.__name__: dataset
-        for dataset in dataset_list
+        for dataset in _dataset_list
         if dataset.__name__ not in deprecated_names
     }
 
-    dataset_dict.update(dataset_class)
+    _dataset_dict.update(dataset_class)
+
+
+def _get_dataset_search_meta(type_d):
+    meta = _dataset_meta.get(type_d)
+    if meta is None:
+        d = type_d()
+        meta = (
+            d.paradigm,
+            d.n_sessions,
+            len(d.subject_list),
+            d.interval,
+            dict(d.event_id),
+        )
+        _dataset_meta[type_d] = meta
+        return meta, d
+    return meta, None
+
+
+def __getattr__(name):
+    if name in ("dataset_list", "dataset_dict"):
+        _init_dataset()
+        return globals()[name]
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 def dataset_search(  # noqa: C901
@@ -90,13 +116,10 @@ def dataset_search(  # noqa: C901
     channels: list of str
         list or set of channels
     """
-    if len(dataset_list) == 0:
+    if not globals().get("dataset_list") or not globals().get("dataset_dict"):
         _init_dataset()
 
-    if not dataset_dict:
-        _init_dataset()
-
-    deprecated_names = list(zip(*aliases_list))[0] if aliases_list else ()
+    deprecated_names = set(list(zip(*aliases_list))[0]) if aliases_list else set()
 
     channels = set(channels)
     out_data = []
@@ -117,40 +140,45 @@ def dataset_search(  # noqa: C901
             f"got '{paradigm}'"
         )
 
-    for type_d in dataset_list:
+    for type_d in globals()["dataset_list"]:
         if type_d.__name__ in deprecated_names:
             continue
 
-        d = type_d()
+        (d_paradigm, d_n_sessions, d_n_subjects, d_interval, d_event_id), d = (
+            _get_dataset_search_meta(type_d)
+        )
+
+        if multi_session and d_n_sessions < 2:
+            continue
+
+        if d_n_subjects < min_subjects:
+            continue
+
+        if paradigm is not None and paradigm != d_paradigm:
+            continue
+
+        if interval is not None and d_interval[1] - d_interval[0] < interval:
+            continue
+
         skip_dataset = False
-        if multi_session and d.n_sessions < 2:
-            continue
-
-        if len(d.subject_list) < min_subjects:
-            continue
-
-        if paradigm is not None and paradigm != d.paradigm:
-            continue
-
-        if interval is not None and d.interval[1] - d.interval[0] < interval:
-            continue
-
         keep_event_dict = {}
         if events is None:
-            keep_event_dict = d.event_id.copy()
+            keep_event_dict = d_event_id.copy()
         else:
             n_events = 0
             for e in events:
                 if n_classes is not None:
                     if n_events == n_classes:
                         break
-                if e in d.event_id.keys():
-                    keep_event_dict[e] = d.event_id[e]
+                if e in d_event_id:
+                    keep_event_dict[e] = d_event_id[e]
                     n_events += 1
                 else:
                     if has_all_events:
                         skip_dataset = True
         if keep_event_dict and not skip_dataset:
+            if d is None:
+                d = type_d()
             if len(channels) > 0:
                 s1 = d.get_data([1])[1]
                 sess1 = s1[list(s1.keys())[0]]
@@ -243,7 +271,9 @@ def _download_all(update_path=True, verbose=None):
     """
 
     # iterate over dataset
-    for ds in dataset_list:
+    if not globals().get("dataset_list"):
+        _init_dataset()
+    for ds in globals()["dataset_list"]:
         # call download
         ds().download(update_path=True, verbose=verbose, accept=True)
 
@@ -437,6 +467,8 @@ def bids_metainfo(bids_path: Path) -> dict:
     """
     json_data = {}
 
+    import mne_bids
+
     paths = mne_bids.find_matching_paths(root=bids_path, datatypes="eeg")
 
     for path in paths:
@@ -504,6 +536,17 @@ def safe_extract_tar(tf: tarfile.TarFile, dest_dir: Path, members=None):
             raise ValueError(f"Unsafe TAR member {member.name!r}: links are not allowed.")
 
     tf.extractall(dest_dir, members=selected)
+
+
+@lru_cache(maxsize=64)
+def _cached_epochs_raw_info(ch_names, ch_types, sfreq, montage_name):
+    ch_names_full = list(ch_names) + ["STI"]
+    ch_types_full = list(ch_types) + ["stim"]
+    info = create_info(ch_names_full, sfreq, ch_types_full)
+    raw_tmp = RawArray(np.zeros((len(ch_names_full), 1)), info, verbose=False)
+    montage = make_standard_montage(montage_name)
+    raw_tmp.set_montage(montage, on_missing="ignore")
+    return raw_tmp.info
 
 
 def build_raw_from_epochs(
@@ -599,31 +642,24 @@ def build_raw_from_epochs(
             f"onset_sample ({onset_sample}) must be between 0 and {n_samples - 1}."
         )
 
-    # De-mean and scale each trial in-place (callers pass freshly created arrays)
-    data = data - data.mean(axis=2, keepdims=True)
-    data *= scale
-
-    # Build stim channel
-    stim = np.zeros((n_trials, 1, n_samples))
-    stim[:, 0, onset_sample] = event_ids
-
-    # Combine EEG + stim, add zero-padding buffers
-    combined = np.concatenate([data, stim], axis=1)
     n_total_ch = n_channels + 1
+    buf = max(0, int(buffer_samples))
+    trial_len = n_samples + 2 * buf
 
-    if buffer_samples > 0:
-        buff = np.zeros((n_trials, n_total_ch, buffer_samples))
-        combined = np.concatenate([buff, combined, buff], axis=2)
+    # Allocate final (n_total_ch, n_trials, trial_len) buffer once (zeros serve as padding + stim)
+    continuous_3d = np.zeros((n_total_ch, n_trials, trial_len), dtype=np.float64)
+    eeg_slice = continuous_3d[:n_channels, :, buf : buf + n_samples]
+    np.subtract(
+        data.transpose(1, 0, 2), data.mean(axis=2).T[:, :, np.newaxis], out=eeg_slice
+    )
+    eeg_slice *= scale
+    continuous_3d[n_channels, :, buf + onset_sample] = event_ids
+    continuous = continuous_3d.reshape(n_total_ch, -1)
 
-    # Flatten trials into continuous data: (n_trials, n_ch, n_time) -> (n_ch, n_trials*n_time)
-    continuous = combined.transpose(1, 0, 2).reshape(n_total_ch, -1)
-
-    ch_names_full = list(ch_names) + ["STI"]
-    ch_types_full = list(ch_types) + ["stim"]
-    info = create_info(ch_names_full, sfreq, ch_types_full)
+    info = _cached_epochs_raw_info(
+        tuple(ch_names), tuple(ch_types), float(sfreq), montage_name
+    )
     raw = RawArray(data=continuous, info=info, verbose=False)
-    montage = make_standard_montage(montage_name)
-    raw.set_montage(montage, on_missing="ignore")
     return raw
 
 
@@ -860,11 +896,17 @@ class _BaseDatasetPlotter:
 
         from moabb.analysis.plotting import _get_dataset_parameters, get_dataset_area
 
+        if datasets is None and not globals().get("dataset_list"):
+            _init_dataset()
         self.datasets = datasets = (
             datasets
             if datasets is not None
             else sorted(
-                [dataset() for dataset in dataset_list if "Fake" not in dataset.__name__],
+                [
+                    dataset()
+                    for dataset in globals()["dataset_list"]
+                    if "Fake" not in dataset.__name__
+                ],
                 key=lambda x: x.__class__.__name__,
             )
         )

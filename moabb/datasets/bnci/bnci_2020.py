@@ -204,7 +204,9 @@ class BNCI2020_001(BNCIBaseDataset):
     - Sampling rate: 256 Hz (all systems)
     - Reference: Earlobe (right for gel, left for water/dry)
     - Ground: AFz (gel/water), left earlobe (dry)
-    - Filters: 0.3-100 Hz bandpass (3rd-4th order Butterworth)
+    - Filters: 0.01-100 Hz 8th-order Chebyshev bandpass + 50 Hz notch (gel);
+      DC-coupled anti-aliasing low-pass at 80 Hz (water and dry); 0.3-60 Hz
+      4th-order Butterworth bandpass applied during offline analysis
 
     **Experimental Procedure**
 
@@ -261,7 +263,7 @@ class BNCI2020_001(BNCIBaseDataset):
             sensor_type="Gel-based active electrodes",
             reference="right earlobe",
             ground="AFz",
-            software=None,
+            software="TOBI Signal server (gel-based) / Bitbrain proprietary software (water-based and dry)",
             filters="8th order Chebyshev filter from 0.01 to 100 Hz, 50 Hz notch",
             sensors=[
                 "C1",
@@ -358,16 +360,16 @@ class BNCI2020_001(BNCIBaseDataset):
             bci_experience=None,
             sexes=None,
             handedness_list=None,
-            species="human",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             paradigm="imagery",
             task_type="reach-and-grasp",
-            events={"palmar_grasp": 1, "lateral_grasp": 2, "rest": 3},
-            n_classes=2,
-            class_labels=["palmar_grasp", "lateral_grasp"],
+            events={"palmar_grasp": 503587, "lateral_grasp": 503588, "rest": 768},
+            n_classes=3,
+            class_labels=["palmar_grasp", "lateral_grasp", "rest"],
             trials_per_class={"palmar_grasp": 80, "lateral_grasp": 80},
-            trial_duration=None,
+            trial_duration=5.0,
             tasks=[
                 "reach-and-grasp toward jar (palmar grasp)",
                 "reach-and-grasp toward spoon (lateral grasp)",
@@ -403,11 +405,14 @@ class BNCI2020_001(BNCIBaseDataset):
             senior_author="Gernot R. Müller-Putz",
             contact_info=["gernot.mueller@tugraz.at"],
             associated_paper_doi="10.3389/fnins.2020.00849",
-            funding=["Horizon 2020 Project MoreGrasp"],
+            funding=[
+                "EU Horizon 2020 Project MoreGrasp (643955)",
+                "ERC-Cog2015 681231 'Feel Your Reach'",
+            ],
             institution_address="Graz, Austria",
             institution_department="Institute of Neural Engineering",
             ethics_approval=["Medical University of Graz (EK: 30-439 ex 17/18)"],
-            acknowledgements=None,
+            acknowledgements="We want to thank the research and development team of Bitbrain explicitly for providing measurement equipment for the water-based and dry-electrodes system and the great collaboration in the course of the MoreGrasp festival in 2018.",
             how_to_acknowledge=None,
             keywords=[
                 "electroencephalogram",
@@ -766,12 +771,14 @@ class BNCI2020_002(BNCIBaseDataset):
 
     - Binary communication task: attend left (red cross) for "no",
       attend right (green cross) for "yes"
-    - 120 statements presented, subjects respond by covert attention shift
+    - 168 trials presented across 7 blocks of 24 trials (2 calibration blocks =
+      48 trials + 5 online blocks = 120 trials), subjects respond by covert
+      attention shift
     - Each trial: 10 visual stimuli presentations
     - Stimulus parameters tested:
         - Four symbol sizes: 0.45, 0.90, 1.36, 1.81 degrees visual angle
         - Five eccentricities: 4, 5.5, 7, 8.5, 10 degrees visual angle
-    - Inter-stimulus interval: ~175 ms
+    - Inter-stimulus interval: 600 ms (jittered by 0-250 ms; SOA = 850 ms + jitter)
     - Online accuracy: 88.5% (+/- 7.8%)
 
     **Event Codes**
@@ -784,7 +791,7 @@ class BNCI2020_002(BNCIBaseDataset):
     **Data Organization**
 
     - 1 session per subject
-    - 120 trials per subject, each with 10 stimulus presentations
+    - 168 trials per subject (48 calibration + 120 online), each with 10 stimulus presentations
     - Trial duration: 16 seconds (4000 samples at 250 Hz)
     - Data stored in MAT format with fields:
         - bciexp.data: EEG data (channels x samples x trials)
@@ -794,8 +801,8 @@ class BNCI2020_002(BNCIBaseDataset):
 
     References
     ----------
-    .. [1] Reichert, C., Tellez-Ceja, I. F., Schwenker, F., Rusnac, A.-L.,
-           Curio, G., Aust, L., & Hinrichs, H. (2020). Impact of Stimulus Features
+    .. [1] Reichert, C., Tellez Ceja, I. F., Sweeney-Reed, C. M., Heinze, H.-J.,
+           Hinrichs, H., & Dürschmid, S. (2020). Impact of Stimulus Features
            on the Performance of a Gaze-Independent Brain-Computer Interface
            Based on Covert Spatial Attention Shifts. Frontiers in Neuroscience,
            14, 591777. https://doi.org/10.3389/fnins.2020.591777
@@ -882,15 +889,15 @@ class BNCI2020_002(BNCIBaseDataset):
             age_max=38.0,
             handedness=None,
             bci_experience=None,
-            species="human",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
-            paradigm="covert spatial attention",
-            task_type="binary decision",
-            events={"green_cross_yes": 1, "red_cross_no": 2},
+            paradigm="p300",
+            task_type="covert_spatial_attention",
+            events={"NonTarget": 1, "Target": 2},
             n_classes=2,
-            class_labels=["yes", "no"],
-            trial_duration=None,
+            class_labels=["NonTarget", "Target"],
+            trial_duration=16.0,
             feedback_type="visual (yes/no text)",
             stimulus_type="colored crosses (green + and red x)",
             stimulus_modalities=["visual"],
@@ -989,7 +996,11 @@ class BNCI2020_002(BNCIBaseDataset):
             online_feedback=True,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="p300", n_targets=2, n_repetitions=10, soa_ms=850.0
+            detected_paradigm="p300",
+            n_targets=2,
+            n_repetitions=10,
+            isi_ms=600.0,
+            soa_ms=850.0,
         ),
         data_structure=DataStructureMetadata(
             n_trials=24, n_blocks=7, trials_context="per_block"

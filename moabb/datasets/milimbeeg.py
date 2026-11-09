@@ -114,7 +114,9 @@ class MILimbEEG(BaseDataset):
             sensor_type="dry",
             electrode_type="dry",
             reference="neutral ear (monopolar)",
-            ground=None,
+            ground="both earlobes (two ground references)",
+            software="OpenBCI GUI, Lab Streaming Layer (LSL), Python (pylsl)",
+            filters="5-50 Hz active bandpass, 60 Hz notch",
             sensors=CHANNELS,
             line_freq=60.0,
             auxiliary_channels=AuxiliaryChannelsMetadata(has_eog=False, has_emg=False),
@@ -124,8 +126,8 @@ class MILimbEEG(BaseDataset):
             health_status="mixed",
             clinical_population=(
                 "mostly healthy; 2 amputees (both upper limbs; right lower limb "
-                "below the knee), 1 hydrocephalus after ventricular infarct, "
-                "18 post-COVID-19"
+                "below the knee), 1 Infantile Cerebral Palsy (ICP) due to "
+                "ventricular infarction with hydrocephalus, 18 post-COVID-19"
             ),
             gender={"female": 31, "male": 29},
             age_mean=36.0,
@@ -136,6 +138,16 @@ class MILimbEEG(BaseDataset):
             paradigm="imagery",
             n_classes=8,
             class_labels=list(EVENTS.keys()),
+            trials_per_class={
+                "beo": 1,
+                "clh": 5,
+                "crh": 5,
+                "dlf": 5,
+                "plf": 5,
+                "drf": 5,
+                "prf": 5,
+                "rest": 31,
+            },
             trial_duration=4.0,
             study_design=(
                 "Upper- and lower-limb motor execution and motor imagery. Per "
@@ -151,7 +163,13 @@ class MILimbEEG(BaseDataset):
             events=EVENTS,
         ),
         documentation=DocumentationMetadata(
+            senior_author="Kleber Gonzalez",
+            ethics_approval=[
+                "Institutional Review Board of the Smart Data Analysis Systems "
+                "Group (SDAS Group, Meeting minutes IBR-SG-2022-001)"
+            ],
             doi="10.1016/j.dib.2023.109540",
+            related_paper_dois=["10.17632/x8psbz3f6x.2"],
             description=(
                 "Over 8,680 four-second EEG recordings from 60 volunteers "
                 "performing and imagining upper- and lower-limb movements, "
@@ -190,6 +208,7 @@ class MILimbEEG(BaseDataset):
             highpass_hz=5.0,
             lowpass_hz=50.0,
             bandpass=[5.0, 50.0],
+            notch_hz=60.0,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="motor_imagery",
@@ -197,11 +216,22 @@ class MILimbEEG(BaseDataset):
             imagery_duration_s=4.0,
         ),
         data_structure=DataStructureMetadata(
+            n_trials=62,
+            n_trials_per_class={
+                "beo": 1,
+                "clh": 5,
+                "crh": 5,
+                "dlf": 5,
+                "plf": 5,
+                "drf": 5,
+                "prf": 5,
+                "rest": 31,
+            },
             trials_context=(
                 "Per repetition and per activity type (execution/imagery): 1 "
                 "baseline-eyes-open, 5 trials each of 6 limb movements, and 31 "
                 "rest trials (62 files); only the imagery files are loaded here."
-            )
+            ),
         ),
         file_format="CSV",
         contributing_labs=["ESPOL", "Hospital General Luis Vernaza"],

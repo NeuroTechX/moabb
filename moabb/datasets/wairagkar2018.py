@@ -133,13 +133,15 @@ class Wairagkar2018(BaseDataset):
             age_std=4.0,
             handedness={"right": 12, "left": 2},
             bci_experience="naive",
-            species="human",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             events={"right_hand": 1, "rest": 2, "left_hand": 3},
             paradigm="imagery",
+            task_type="motor execution",
             n_classes=3,
             class_labels=["right_hand", "rest", "left_hand"],
+            trials_per_class={"right_hand": 40, "left_hand": 40, "rest": 40},
             trial_duration=6.0,
             study_design=(
                 "Asynchronous voluntary finger tapping: right tap, "
@@ -155,8 +157,17 @@ class Wairagkar2018(BaseDataset):
                 "Participants were asked to tap their index finger at a "
                 "self-chosen time within a 10-second window after the cue"
             ),
+            stimulus_presentation={
+                "SoftwareName": "MATLAB Simulink R2014a (BioSig toolbox)"
+            },
         ),
         documentation=DocumentationMetadata(
+            funding=[
+                "University of Reading International Research Studentship (GS14-46)"
+            ],
+            ethics_approval=[
+                "Ethics Committee of the School of Systems Engineering, University of Reading, UK"
+            ],
             doi="10.1371/journal.pone.0193722",
             investigators=[
                 "Maitreyee Wairagkar",
@@ -169,6 +180,7 @@ class Wairagkar2018(BaseDataset):
             data_url="https://researchdata.reading.ac.uk/117/",
             publication_year=2018,
             senior_author="Slawomir J. Nasuto",
+            contact_info=["m.n.wairagkar@pgr.reading.ac.uk"],
             license="CC-BY-4.0",
             repository="University of Reading Research Data Archive",
         ),
@@ -189,12 +201,17 @@ class Wairagkar2018(BaseDataset):
             highpass_hz=0.5,
             lowpass_hz=60.0,
             notch_hz=50.0,
+            filter_type="Butterworth",
+            filter_order=4,
+            artifact_methods=["ICA"],
         ),
         paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="imagery", imagery_tasks=["right_hand", "left_hand", "rest"]
+            detected_paradigm="motor_execution",
+            imagery_tasks=["right_hand", "left_hand", "rest"],
         ),
         data_structure=DataStructureMetadata(
             n_trials=1665,
+            n_trials_per_class={"right_hand": 40, "left_hand": 40, "rest": 40},
             trials_context=(
                 "14 subjects x 120 trials (40 per condition), except "
                 "subject 2 with 105 trials (35 per condition)"

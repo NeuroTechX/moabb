@@ -13,6 +13,7 @@ from . import download as dl
 from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
+    AuxiliaryChannelsMetadata,
     BCIApplicationMetadata,
     CrossValidationMetadata,
     DatasetMetadata,
@@ -74,18 +75,27 @@ class Wang2021Combined(BaseDataset):
             sampling_rate=1000.0,
             channel_types={"eeg": 31, "eog": 2},
             montage="standard_1005",
-            hardware="eego mylab (ANT Neuro)",
+            hardware="32 Ag/AgCl electrode cap (ANT Neuro)",
             reference="M1 (left mastoid)",
             ground="between Fz and FPz",
             filters={"bandpass": [0.05, 100.0]},
             line_freq=50.0,
             impedance_threshold_kohm=5.0,
             electrode_material="Ag/AgCl",
+            auxiliary_channels=AuxiliaryChannelsMetadata(
+                has_eog=True, eog_channels=2, eog_type=["horizontal", "vertical"]
+            ),
         ),
         participants=ParticipantMetadata(
-            n_subjects=8, health_status="healthy", handedness="right"
+            n_subjects=8,
+            health_status="healthy",
+            age_mean=21.6,
+            age_min=19,
+            age_max=26,
+            handedness="right",
         ),
         experiment=ExperimentMetadata(
+            class_labels=["14.17", "12.14", "9.44", "7.73"],
             paradigm="ssvep",
             events={"14.17": 1, "12.14": 2, "9.44": 3, "7.73": 4},
             n_classes=4,
@@ -124,7 +134,7 @@ class Wang2021Combined(BaseDataset):
             license="CC BY 4.0",
             publication_year=2021,
             contact_info=["zjzhang@zju.edu.cn"],
-            funding=["National Natural Science Foundation of China (31371039)"],
+            funding=["National Natural Science Foundation of China Grant 31371039"],
             ethics_approval=[
                 "Institutional review board, Department of Psychology and Behavioral Sciences, Zhejiang University"
             ],
@@ -133,18 +143,19 @@ class Wang2021Combined(BaseDataset):
             detected_paradigm="ssvep", stimulus_frequencies_hz=[14.17, 12.14, 9.44, 7.73]
         ),
         data_structure=DataStructureMetadata(
+            n_trials=240,
             n_blocks=2,
             trials_context="Each design (one-to-two and one-to-one) comprised 120 trials, 20 of which contained probes; the paper reports 20 participants (10 per experiment) but the Zenodo archive holds 8.",
         ),
         runs_per_session=2,
         signal_processing=SignalProcessingMetadata(
-            classifiers=None,
-            feature_extraction=None,
+            classifiers=["CCA"],
+            feature_extraction=["FFT", "CCA"],
             frequency_bands=None,
             spatial_filters=None,
         ),
         cross_validation=CrossValidationMetadata(evaluation_type=None),
-        bci_application=BCIApplicationMetadata(environment="lab", online_feedback=None),
+        bci_application=BCIApplicationMetadata(environment="lab", online_feedback=False),
         tags=Tags(pathology=["healthy"], modality=["visual"], type=["perception"]),
         file_format="CNT",
     )

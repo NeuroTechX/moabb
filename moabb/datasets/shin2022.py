@@ -101,7 +101,7 @@ class Shin2022(BaseDataset):
             channel_types={"eeg": 16},
             sensor_type="dry",
             hardware="g.tec g.Nautilus RESEARCH (16 channel)",
-            software="BCI2000",
+            software="BCI2000, g.RECORDER",
             reference="unknown",
             line_freq=60.0,
             cap_manufacturer="g.tec medical engineering GmbH",
@@ -110,7 +110,13 @@ class Shin2022(BaseDataset):
             filters="broadband (online 0.5-30 Hz filter disabled at source)",
         ),
         participants=ParticipantMetadata(
-            n_subjects=10, health_status="healthy", species="human"
+            n_subjects=10,
+            health_status="healthy",
+            age_mean=23.8,
+            age_std=3.4,
+            gender={"female": 6, "male": 4},
+            handedness={"right": 9, "left": 1},
+            species="human",
         ),
         experiment=ExperimentMetadata(
             events={"right_hand": 1, "left_hand": 2},
@@ -137,6 +143,8 @@ class Shin2022(BaseDataset):
             ),
         ),
         documentation=DocumentationMetadata(
+            ethics_approval=["Institutional Review Board of Carnegie Mellon University"],
+            funding=["NIH AT009263", "NIH EB021027", "DARPA HR001118S0029-N3-FP-019"],
             doi="10.3389/fnhum.2022.951591",
             investigators=["Hyonyoung Shin", "Daniel Suma", "Bin He"],
             senior_author="Bin He",

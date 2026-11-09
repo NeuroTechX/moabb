@@ -60,42 +60,20 @@ from moabb.utils import aliases_list
 
 _ = mne.set_log_level("CRITICAL")
 NEMAR_ID_PATTERN = r"(nm|on|ds)\d{6}"
-# Datasets without a NEMAR deposit: test fixtures and datasets not on NEMAR.
-NEMAR_ID_EXEMPT = {
-    "FakeDataset",
-    "FakeVirtualRealityDataset",
-    # Deposits that exist but are private: their publication was denied, so a
-    # class attribute would only make every load try NEMAR and fall back.
-    # Set ``nemar_id`` once each deposit is published.
-    "Brodu2012",  # nm000366 (licence "free for research use": author consent)
-    "Gueho2026",  # nm000333 (Lenaig2026 alias) (CC BY-NC-ND 4.0: a conversion is an adaptation)
-    "MartinezPeon2025",  # nm000332 (CC BY-NC-SA 4.0: authors' permission)
-    "MIBMPI2024",  # nm000331 (licence/consent evidence requested by NEMAR)
-    "MIND2026",  # nm000337 (acquisition timestamps to coarsen)
-    # The deposit (nm000347) files the epochs under the subjects of the former
-    # upload-order grouping; declare it again once it follows the folders.
-    "HefmiIch2025",
-    # No NEMAR deposit yet; BIDS deposits prepared, not uploaded.
-    "Yagan2023",  # Mendeley Data vyczny2r4w
-    "Wang2026Handwriting",  # figshare 29987758
-}
-# Datasets whose NEMAR deposit is assigned but not yet public (private,
-# pending publication). Their ids are valid and still checked; tracked here
-# so we know which deposits remain to be published.
+# Datasets without a NEMAR deposit: test fixtures only.
+NEMAR_ID_EXEMPT = {"FakeDataset", "FakeVirtualRealityDataset"}
+# Datasets whose NEMAR deposit is assigned and has publication requested
+# (Status: requested), awaiting NEMAR administrator approval. Set ``nemar_id``
+# on each class once its deposit is published on data.nemar.org.
 NEMAR_ID_PENDING = {
-    # Removed on 2026-10-08: the other 30 deposits listed here were published
-    # on NEMAR and are anonymously reachable.
-    # Removed on 2026-10-05: these 15 deposits were published on NEMAR and are
-    # anonymously reachable (fresh clone + annexed-EDF HTTP 200 against
-    # https://nemar.s3.us-east-2.amazonaws.com/<id>/objects/<key>).
-    #   nm000174 AguileraRodriguez2025, nm000177 Kumar2024, nm000178 BNCI2020_001,
-    #   nm000184 BCIComp2020WalkingERP, nm000220 Beetl2021_A, nm000224 Nguyen2017_SL,
-    #   nm000233 BCIComp2020UpperLimb, nm000252 Nguyen2017_L, nm000257 Nguyen2017_S,
-    #   nm000258 Pressel2016, nm000261 Nguyen2017_V, nm000263 Kaneshiro2015,
-    #   nm000269 Mainsah2025_A, nm000273 Lee2019_SSVEP, nm000274 Beetl2021_B.
-    # Removed on 2026-10-06 (published): nm000292 Vagaja2023.
-    # Removed on 2026-10-17 (published): nm000304 PerezBlanco2026.
-    "Ma2022": "nm000288"
+    "Ma2022": "nm000288",
+    "MIBMPI2024": "nm000331",
+    "MartinezPeon2025": "nm000332",
+    "Gueho2026": "nm000333",
+    "MIND2026": "nm000337",
+    "Brodu2012": "nm000366",
+    "Wang2026Handwriting": "nm000466",
+    "Yagan2023": "nm000569",
 }
 
 
@@ -209,7 +187,7 @@ class Test_Datasets:
         dataset = FakeDataset(paradigm=paradigm)
 
         # Save cache:
-        with caplog.at_level(logging.INFO):
+        with caplog.at_level(logging.INFO, logger="moabb"):
             _ = dataset.get_data(
                 subjects=[1],
                 cache_config={
@@ -231,7 +209,7 @@ class Test_Datasets:
 
         # Load cache:
         caplog.clear()
-        with caplog.at_level(logging.INFO):
+        with caplog.at_level(logging.INFO, logger="moabb"):
             _ = dataset.get_data(
                 subjects=[1],
                 cache_config={
@@ -251,7 +229,7 @@ class Test_Datasets:
 
         # Overwrite cache:
         caplog.clear()
-        with caplog.at_level(logging.INFO):
+        with caplog.at_level(logging.INFO, logger="moabb"):
             _ = dataset.get_data(
                 subjects=[1],
                 cache_config={
@@ -523,6 +501,7 @@ class Test_Datasets:
         assert len(set(labels)) == len(dataset.subject_list) == 17
 
     def test_download_falls_back_from_nemar(self, monkeypatch, tmp_path):
+        monkeypatch.setattr("moabb.datasets.base.get_download_provider", lambda: "auto")
         dataset = FakeDataset(n_subjects=1)
         dataset.nemar_id = "nm000001"
         fallback_calls = []
@@ -546,6 +525,7 @@ class Test_Datasets:
         assert fallback_calls == [(1, tmp_path, True, None, None)]
 
     def test_download_without_nemar_id_uses_fallback(self, monkeypatch, tmp_path):
+        monkeypatch.setattr("moabb.datasets.base.get_download_provider", lambda: "auto")
         dataset = FakeDataset(n_subjects=1)
         dataset.nemar_id = None
         nemar_calls = []
@@ -1309,6 +1289,8 @@ class TestBIDSDataset:
 
     @pytest.mark.filterwarnings("ignore:Converting data files to EDF.*:RuntimeWarning")
     def test_local_bids_dataset(self, cached_dataset_root, caplog):
+        from moabb.analysis.plotting import _get_dataset_parameters
+
         with caplog.at_level(logging.WARNING):
             dataset = LocalBIDSDataset(
                 cached_dataset_root,
@@ -1316,6 +1298,25 @@ class TestBIDSDataset:
                 interval=[0, 3],
                 paradigm="imagery",
             )
+        assert dataset._summary_table == {
+            "#Subj": 2,
+            "#Chan": 3,
+            "#Classes": 2,
+            "#Trials / class": 60,
+            "Trials length (s)": 3.0,
+            "Freq (Hz)": 128,
+            "#Sessions": 2,
+            "#Runs": 1,
+            "Total_trials": 240,
+        }
+        assert _get_dataset_parameters(dataset) == (
+            "LocalBIDSDataset",
+            "imagery",
+            2,
+            2,
+            120,
+            3.0,
+        )
         # raw data
         raw_data = dataset.get_data()
         assert raw_data.keys() == {"1", "2"}
@@ -1915,7 +1916,7 @@ def test_lee2024_data_path_downloads_the_real_upstream_inventory(tmp_path, monke
         json.dumps({"files": [{"file": "Dat_sub01/sub01_Testing1.mat"}]})
     )
     dataset = Lee2024_DL()
-    monkeypatch.setattr(dataset, "_sourcedata_store", lambda: store)
+    monkeypatch.setattr(dataset, "_sourcedata_store", lambda *args, **kwargs: store)
     monkeypatch.setattr(
         Lee2024, "_upstream_tree", classmethod(lambda cls: pytest.fail("tree used"))
     )

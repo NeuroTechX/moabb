@@ -7,7 +7,6 @@ import zipfile
 from pathlib import Path
 
 import mne
-from mne_bids import find_matching_paths
 
 from moabb.datasets import download as dl
 from moabb.datasets.metadata.schema import (
@@ -21,6 +20,7 @@ from moabb.datasets.metadata.schema import (
     ExperimentMetadata,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 
@@ -124,6 +124,7 @@ class Thapa2025(BaseDataset):
             channel_types={"eeg": 31, "eog": 4, "misc": 4},
             montage="standard_1020",
             hardware="Brain Products actiCHamp Plus (actiCAP snap, gel-based active electrodes)",
+            software="BrainVision Recorder Version 1.23.0003 (Brain Products)",
             cap_manufacturer="Brain Products",
             cap_model="actiCAP snap",
             electrode_type="active",
@@ -144,10 +145,63 @@ class Thapa2025(BaseDataset):
             n_subjects=23,
             health_status="healthy",
             gender={"female": 8, "male": 15},
+            age_mean=20.74,
+            age_std=1.72,
             age_min=18.0,
             age_max=24.0,
+            ages=[
+                21,
+                18,
+                19,
+                21,
+                22,
+                18,
+                21,
+                22,
+                19,
+                23,
+                18,
+                19,
+                20,
+                23,
+                19,
+                20,
+                22,
+                21,
+                24,
+                21,
+                22,
+                21,
+                23,
+            ],
+            sexes=[
+                "female",
+                "female",
+                "male",
+                "male",
+                "male",
+                "male",
+                "female",
+                "male",
+                "female",
+                "male",
+                "female",
+                "male",
+                "female",
+                "male",
+                "male",
+                "male",
+                "male",
+                "male",
+                "male",
+                "male",
+                "female",
+                "male",
+                "female",
+            ],
             handedness="right",
-            species="human",
+            handedness_list=["right"] * 23,
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             events=dict(_EVENTS),
@@ -167,8 +221,22 @@ class Thapa2025(BaseDataset):
             primary_modality="auditory",
             synchronicity="self-paced",
             mode="offline",
+            stimulus_presentation={
+                "audio_start_cue": "0 s (audio 'start' cue)",
+                "self_paced_execution": "0-12 s (freewill reach & grasp of chosen cup Tgt1-Tgt4)",
+                "audio_end_cue": "12 s (audio 'end' cue)",
+                "break_return_cup": "12-19 s (7 s break; return cup and rest)",
+                "epoch_window": "[0, 4] s locked to accelerometer movement onset",
+            },
         ),
         documentation=DocumentationMetadata(
+            funding=[
+                "College of Engineering Research Mini Grant Program",
+                "Dr. Jihye Bae's Start Up Funds provided by the Department of Electrical and Computer Engineering at the University of Kentucky",
+            ],
+            ethics_approval=[
+                "University of Kentucky Institutional Review Board (IRB protocol #57031)"
+            ],
             doi="10.1038/s41597-025-06039-9",
             description=(
                 "A large EEG database of freewill reaching and grasping tasks "
@@ -184,6 +252,7 @@ class Thapa2025(BaseDataset):
             data_url="https://doi.org/10.6084/m9.figshare.28632599",
             publication_year=2025,
             license="CC-BY-4.0",
+            contact_info=["jihye.bae@uky.edu"],
             keywords=[
                 "EEG",
                 "reach and grasp",
@@ -198,18 +267,32 @@ class Thapa2025(BaseDataset):
         # 3 sessions: 5 subjects}, summing to 49 sessions (see docstring).
         sessions_per_subject=1,
         runs_per_session=5,
-        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Research"]),
+        tags=Tags(
+            pathology=["Healthy"],
+            modality=["Motor"],
+            type=["Motor Execution", "Research"],
+        ),
         paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="imagery", n_targets=4
+            detected_paradigm="motor_execution", n_targets=4
         ),
         data_structure=DataStructureMetadata(
             n_trials=6808, trials_context="6808 trials across 23 subjects and 49 sessions"
         ),
-        cross_validation=CrossValidationMetadata(
-            evaluation_type=["within_subject", "cross_session"]
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["LSVM"],
+            feature_extraction=["ERP", "time-domain amplitude"],
+            frequency_bands={"bandpass": [0.1, 30.0]},
         ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="5-fold stratified cross-validation",
+            cv_folds=5,
+            evaluation_type=["within_session"],
+        ),
+        performance={"accuracy_percent": 90.6},
         bci_application=BCIApplicationMetadata(
-            applications=["motor_control"], environment="laboratory"
+            applications=["motor_control"],
+            environment="laboratory",
+            online_feedback=False,
         ),
         file_format="BrainVision (BIDS)",
         data_processed=False,
@@ -286,6 +369,8 @@ class Thapa2025(BaseDataset):
         # combination with ``fpath.exists()``. Only the headers: without an
         # extension filter the run's ``_eeg.eeg``/``_eeg.vmrk`` match too, and
         # read_raw_brainvision refuses them.
+        from mne_bids import find_matching_paths
+
         return find_matching_paths(
             root=root,
             subjects=subj,

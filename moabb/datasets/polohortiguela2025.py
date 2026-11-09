@@ -12,6 +12,7 @@ from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
     AuxiliaryChannelsMetadata,
     DatasetMetadata,
+    DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
     ParticipantMetadata,
@@ -103,12 +104,14 @@ class PoloHortiguela2025(BaseDataset):
             trial_duration=4.0,
             study_design="Kinesthetic motor imagery of ankle dorsiflexion/plantarflexion alternated with relaxation, with a static or motion lower-limb exoskeleton.",
             stimulus_type="auditory",
-            stimulus_modalities=["audio"],
+            stimulus_modalities=["auditory"],
+            primary_modality="auditory",
             synchronicity="cue-based",
             mode="offline",
             events={"rest": 1, "motor_imagery": 2},
         ),
         documentation=DocumentationMetadata(
+            senior_author="Jose M. Azorin",
             doi="10.5281/zenodo.14672334",
             description="Open-loop EEG dataset of lower-limb (ankle dorsiflexion/plantarflexion) kinesthetic motor imagery versus relaxation from six healthy participants, recorded with a static and a motion exoskeleton model.",
             investigators=[
@@ -134,10 +137,15 @@ class PoloHortiguela2025(BaseDataset):
         runs_per_session=11,
         sessions=list(CONDITIONS.keys()),
         tags=Tags(pathology=["healthy"], modality=["motor"], type=["imagery"]),
+        data_structure=DataStructureMetadata(
+            n_blocks=11,
+            block_duration_s=78.0,
+            trials_context="Per subject and session (static, motion): 11 continuous repetitions, each lasting 78 s (15 s baseline, 15 s relaxation, 28 s ankle dorsiflexion/plantarflexion motor imagery, 15 s relaxation, 5 s return).",
+        ),
         file_format="MAT",
     )
 
-    def __init__(self):
+    def __init__(self, subjects=None, sessions=None):
         super().__init__(
             subjects=list(range(1, 6 + 1)),
             sessions_per_subject=2,
@@ -146,6 +154,8 @@ class PoloHortiguela2025(BaseDataset):
             interval=[0, 4],
             paradigm="imagery",
             doi="10.5281/zenodo.14672334",
+            selected_subjects=subjects,
+            selected_sessions=sessions,
         )
 
     def data_path(

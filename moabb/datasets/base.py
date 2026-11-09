@@ -3,23 +3,22 @@
 from __future__ import annotations
 
 import abc
+import json
 import logging
 import re
 import traceback
 import warnings
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
-from functools import cached_property
+from functools import cached_property, lru_cache
 from inspect import signature
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, Union
 from urllib.parse import quote
 
-import mne_bids
 import numpy as np
 import pandas as pd
 from joblib import Parallel, delayed
-from mne_bids import events_file_to_annotation_kwargs
 
 from moabb.datasets.bids_interface import (
     _FORMAT_EXTENSION_MAP,
@@ -38,12 +37,11 @@ from moabb.datasets.download import (
     nemar_store,
     seed_loader_cache,
 )
-from moabb.datasets.preprocessing import FixedPipeline, SetRawAnnotations
 from moabb.utils import get_download_provider
 
 
 if TYPE_CHECKING:
-    pass
+    import mne_bids
 
 
 log = logging.getLogger(__name__)
@@ -66,30 +64,558 @@ _RAW_EXTENSIONS = [
 ]
 
 
-def get_summary_table(paradigm: str, dir_name: str | None = None):
+def get_summary_table(
+    paradigm: str,
+    dir_name: str | None = None,
+    from_metadata: bool = False,
+    bids_roots: Mapping[str, str | Path] | None = None,
+):
+    if from_metadata or bids_roots is not None:
+        return generate_summary_table(paradigm=paradigm, bids_roots=bids_roots)
     if dir_name is None:
         dir_name = Path(__file__).parent
     path = Path(dir_name) / f"summary_{paradigm}.csv"
-    df = pd.read_csv(path, header=0, index_col="Dataset", skipinitialspace=True)
-    return df
+    return pd.read_csv(path, header=0, index_col="Dataset", skipinitialspace=True)
 
 
-_summary_table_imagery = get_summary_table("imagery")
-_summary_table_cognitive = get_summary_table("cognitive")
-_summary_table_p300 = get_summary_table("p300")
-_summary_table_ssvep = get_summary_table("ssvep")
-_summary_table_cvep = get_summary_table("cvep")
-_summary_table_rstate = get_summary_table("rstate")
+_SUMMARY_TABLES = {
+    p: get_summary_table(p)
+    for p in (
+        "imagery",
+        "cognitive",
+        "imagined_speech",
+        "p300",
+        "ssvep",
+        "cvep",
+        "rstate",
+    )
+}
+_SUMMARY_COLUMNS_BY_PARADIGM = {k: list(df.columns) for k, df in _SUMMARY_TABLES.items()}
 _summary_table = pd.concat(
-    [
-        _summary_table_imagery,
-        _summary_table_cognitive,
-        _summary_table_p300,
-        _summary_table_ssvep,
-        _summary_table_cvep,
-        _summary_table_rstate,
-    ]
+    [df for k, df in _SUMMARY_TABLES.items() if k != "imagined_speech"]
 )
+_summary_table_dict = {
+    idx: {col: val for col, val in zip(_summary_table.columns, row) if pd.notna(val)}
+    for idx, row in zip(_summary_table.index, _summary_table.to_numpy())
+}
+
+_TARGET_KEYS = {"target", "t", "oddball", "deviant", "rare"}
+_NONTARGET_KEYS = {"nontarget", "non_target", "nt", "standard", "frequent"}
+
+
+def _clean_num(val: Any) -> Any:
+    if isinstance(val, (int, np.integer)) and not isinstance(val, bool):
+        return int(val)
+    if isinstance(val, (float, np.floating)):
+        f = float(val)
+        return int(f) if f.is_integer() else round(f, 6)
+    return val
+
+
+def _instantiate_for_summary(dataset_or_cls: Any) -> Any:
+    if isinstance(dataset_or_cls, type):
+        try:
+            kw = (
+                {"accept": True}
+                if "accept" in signature(dataset_or_cls).parameters
+                else {}
+            )
+            return dataset_or_cls(**kw)
+        except Exception:
+            return None
+    return dataset_or_cls
+
+
+def _norm_label(k: Any) -> str:
+    return str(k).strip().lower().replace("-", "_").replace(" ", "_")
+
+
+def _pack_summary_row(
+    paradigm: str,
+    n_subj: Any,
+    n_chan: Any,
+    n_classes: Any,
+    per_class: Any,
+    nt_val: Any,
+    t_val: Any,
+    trial_len: Any,
+    sfreq: Any,
+    n_sessions: Any,
+    n_runs: Any,
+    *,
+    total_trials: Any = None,
+    n_trials_raw: Any = None,
+    pspec: Any = None,
+    dstruct: Any = None,
+) -> dict[str, Any]:
+    nt_t = (
+        f"{_clean_num(nt_val)} NT / {_clean_num(t_val)} T"
+        if nt_val is not None and t_val is not None
+        else None
+    )
+    if paradigm == "p300":
+        if nt_t:
+            tpc: Any = nt_t
+        elif isinstance(n_trials_raw, str) and (
+            "NT" in n_trials_raw
+            or "All" in n_trials_raw
+            or n_trials_raw.strip().lower().startswith("varies")
+        ):
+            tpc = n_trials_raw.strip()
+        elif isinstance(per_class, (int, float)):
+            tpc = f"{_clean_num(per_class)} All"
+        else:
+            tpc = "varies NT / T"
+    else:
+        tpc = per_class
+    if total_trials is None:
+        total_trials = (
+            int(round(n_subj * n_classes * per_class))
+            if isinstance(per_class, (int, float))
+            and isinstance(n_subj, int)
+            and isinstance(n_classes, int)
+            else "varies"
+        )
+    freqs = getattr(pspec, "stimulus_frequencies_hz", None)
+    values = {
+        "#Subj": n_subj,
+        "#Chan": n_chan,
+        "#Classes": n_classes,
+        "#Trials / class": tpc,
+        "#Blocks / class": getattr(dstruct, "n_blocks", None)
+        or (per_class if isinstance(per_class, (int, float)) else 1),
+        "Trials length (s)": _clean_num(trial_len) if paradigm == "rstate" else trial_len,
+        "Freq (Hz)": _clean_num(sfreq) if sfreq is not None else None,
+        "#Sessions": n_sessions,
+        "#Runs": n_runs,
+        "Total_trials": total_trials,
+        "#Trial classes": getattr(pspec, "n_targets", None) or n_classes,
+        "#Epochs classes": n_classes or 2,
+        "#Epochs / class": nt_t or (tpc if paradigm == "cvep" else "varies"),
+        "Codes": getattr(pspec, "code_type", None) or "varies",
+        "Presentation rate (Hz)": _clean_num(freqs[0]) if freqs else "varies",
+    }
+    cols = _SUMMARY_COLUMNS_BY_PARADIGM.get(
+        paradigm, _SUMMARY_COLUMNS_BY_PARADIGM["imagery"]
+    )
+    return {c: values[c] for c in cols if values.get(c) is not None}
+
+
+def summary_row_from_metadata(
+    dataset_or_cls: Any = None,
+    metadata: Any = None,
+    attrs: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Build a dataset summary row from ``DatasetMetadata`` and class/instance attributes."""
+    ds = _instantiate_for_summary(dataset_or_cls)
+    metadata = (
+        metadata
+        or getattr(ds, "metadata", None)
+        or getattr(dataset_or_cls, "METADATA", None)
+        or (attrs or {}).get("METADATA")
+    )
+    exp, acq, part, prep, dstruct, pspec = (
+        getattr(metadata, a, None)
+        for a in (
+            "experiment",
+            "acquisition",
+            "participants",
+            "preprocessing",
+            "data_structure",
+            "paradigm_specific",
+        )
+    )
+    p = (
+        getattr(ds, "paradigm", None)
+        or (attrs or {}).get("paradigm")
+        or getattr(exp, "paradigm", None)
+        or "imagery"
+    )
+    paradigm = "p300" if p == "erp" else p
+    n_subj = (
+        len(ds.all_subjects)
+        if getattr(ds, "all_subjects", None)
+        else getattr(part, "n_subjects", None)
+    )
+    n_chan = (
+        (getattr(acq, "channel_types", None) or {}).get(
+            "eeg", getattr(acq, "n_channels", None)
+        )
+        if acq
+        else None
+    )
+    sfreq = (
+        getattr(acq, "sampling_rate", None)
+        or getattr(prep, "downsampled_to_hz", None)
+        or getattr(ds, "sfreq", None)
+    )
+    n_sessions = (
+        getattr(ds, "n_sessions", None)
+        or getattr(metadata, "sessions_per_subject", None)
+        or 1
+    )
+    n_runs = (
+        getattr(metadata, "runs_per_session", None) or getattr(ds, "n_runs", None) or 1
+    )
+    event_id = getattr(ds, "event_id", None) or getattr(exp, "events", None) or {}
+    n_classes = (
+        len(event_id)
+        or getattr(exp, "n_classes", None)
+        or len(getattr(exp, "class_labels", None) or [])
+        or None
+    )
+    interval, dur = (
+        getattr(ds, "interval", None),
+        getattr(exp, "trial_duration", None)
+        or getattr(dstruct, "block_duration_s", None),
+    )
+    trial_len = (
+        round(float(dur), 6)
+        if paradigm == "cvep" and dur is not None
+        else (
+            round(float(interval[1] - interval[0]), 6)
+            if interval is not None and len(interval) == 2
+            else (round(float(dur), 6) if dur is not None else None)
+        )
+    )
+    tpc_dict = getattr(dstruct, "n_trials_per_class", None) or getattr(
+        exp, "trials_per_class", None
+    )
+    n_trials_raw = getattr(dstruct, "n_trials", None)
+    nt_val = t_val = None
+    per_class: Any = "varies"
+
+    def _num_vals(d: Mapping) -> list[float]:
+        return [
+            float(v)
+            for v in d.values()
+            if isinstance(v, (int, float, np.number)) and not isinstance(v, bool)
+        ]
+
+    if isinstance(tpc_dict, Mapping):
+        for k, v in tpc_dict.items():
+            if isinstance(v, (int, float, np.number)) and not isinstance(v, bool):
+                if _norm_label(k) in _NONTARGET_KEYS:
+                    nt_val = v
+                elif _norm_label(k) in _TARGET_KEYS:
+                    t_val = v
+        nums = _num_vals(tpc_dict)
+        if nums:
+            per_class = _clean_num(round(sum(nums) / len(nums), 2))
+    elif isinstance(n_classes, int) and n_classes > 0:
+        if isinstance(n_trials_raw, (int, float, np.number)) and not isinstance(
+            n_trials_raw, bool
+        ):
+            per_class = _clean_num(round(float(n_trials_raw) / n_classes, 2))
+        elif isinstance(n_trials_raw, Mapping) and (nums := _num_vals(n_trials_raw)):
+            per_class = _clean_num(round(sum(nums) / n_classes, 2))
+
+    return _pack_summary_row(
+        paradigm,
+        n_subj,
+        n_chan,
+        n_classes,
+        per_class,
+        nt_val,
+        t_val,
+        trial_len,
+        sfreq,
+        n_sessions,
+        n_runs,
+        n_trials_raw=n_trials_raw,
+        pspec=pspec,
+        dstruct=dstruct,
+    )
+
+
+def summary_row_from_bids(bids_root: str | Path, dataset: Any = None) -> dict[str, Any]:
+    """Build a dataset summary row from BIDS events (``*_events.tsv``) and sidecars."""
+    import mne
+    import mne_bids
+
+    bids_root, ds = Path(bids_root), _instantiate_for_summary(dataset)
+    p = getattr(ds, "paradigm", None) or "imagery"
+    paradigm, event_id, interval = (
+        ("p300" if p == "erp" else p),
+        getattr(ds, "event_id", None),
+        getattr(ds, "interval", None),
+    )
+    search_params = (
+        ds._get_path_search_params(None)
+        if isinstance(ds, BaseBIDSDataset)
+        else {"extensions": _RAW_EXTENSIONS}
+    )
+    bids_paths = mne_bids.find_matching_paths(
+        root=bids_root, ignore_json=True, **search_params
+    ) or mne_bids.find_matching_paths(
+        root=bids_root, suffixes=["events"], extensions=[".tsv"], ignore_json=True
+    )
+    subjects = sorted({bp.subject for bp in bids_paths if bp.subject is not None})
+    if not subjects and (bids_root / "participants.tsv").exists():
+        subjects = [
+            str(s)
+            for s in pd.read_csv(bids_root / "participants.tsv", sep="\t").get(
+                "participant_id", []
+            )
+        ]
+    n_subj = len(subjects) or (
+        len(ds.all_subjects) if getattr(ds, "all_subjects", None) else 0
+    )
+
+    ses_counts, run_counts = [], []
+    for sub in subjects:
+        sub_paths = [bp for bp in bids_paths if bp.subject == sub]
+        sessions = sorted({bp.session or "0" for bp in sub_paths})
+        ses_counts.append(len(sessions))
+        run_counts.extend(
+            len({bp.run or "0" for bp in sub_paths if (bp.session or "0") == ses})
+            for ses in sessions
+        )
+
+    def _fmt_counts(counts: list[int], default: int = 1) -> Any:
+        if not counts:
+            return default
+        med = int(round(float(np.median(counts))))
+        return (
+            med if min(counts) == max(counts) else f"{med} ({min(counts)}-{max(counts)})"
+        )
+
+    n_sessions = _fmt_counts(ses_counts, getattr(ds, "n_sessions", 1) or 1)
+    n_runs = _fmt_counts(run_counts, 1)
+
+    def _sidecar(suffix: str, ext: str):
+        return (
+            bids_paths[0].find_matching_sidecar(
+                suffix=suffix, extension=ext, on_error="ignore"
+            )
+            if bids_paths
+            else None
+        ) or next(bids_root.rglob(f"*_{suffix}{ext}"), None)
+
+    ch_tsv, eeg_json = _sidecar("channels", ".tsv"), _sidecar("eeg", ".json")
+    n_chan = sfreq = None
+    if ch_tsv is not None and Path(ch_tsv).exists():
+        ch_df = pd.read_csv(ch_tsv, sep="\t")
+        if "type" in ch_df.columns:
+            t_up = ch_df["type"].astype(str).str.upper()
+            n_chan = int((t_up == "EEG").sum()) or int((t_up != "STIM").sum())
+        else:
+            n_chan = len(ch_df)
+    if eeg_json is not None and Path(eeg_json).exists():
+        info_json = json.loads(Path(eeg_json).read_text(encoding="utf-8"))
+        sfreq = info_json.get("SamplingFrequency")
+        if n_chan is None and "EEGChannelCount" in info_json:
+            n_chan = int(info_json["EEGChannelCount"])
+    if (
+        (n_chan is None or sfreq is None)
+        and bids_paths
+        and bids_paths[0].fpath.exists()
+        and bids_paths[0].extension != ".tsv"
+    ):
+        raw = mne_bids.read_raw_bids(bids_paths[0], verbose="ERROR")
+        sfreq = sfreq or raw.info["sfreq"]
+        if n_chan is None:
+            ch_types = raw.get_channel_types()
+            # ponytail: name heuristic when _channels.tsv is absent; upgrade if BIDS sidecar is added
+            n_chan = sum(
+                1
+                for ch, t in zip(raw.ch_names, ch_types)
+                if t == "eeg" and not any(k in ch.upper() for k in ("EOG", "EMG", "ECG"))
+            ) or sum(1 for t in ch_types if t != "stim")
+
+    valid_labels = {str(k) for k in event_id} if event_id else None
+    code_to_label = {
+        str(c): str(k)
+        for k, v in (event_id or {}).items()
+        for c in (v if isinstance(v, (list, tuple)) else [v])
+    }
+    subj_counts: dict[str, dict[str, int]] = {}
+    durations: list[float] = []
+    seen: set[tuple[str, Path]] = set()
+
+    for bp in bids_paths:
+        sub = str(bp.subject or "1")
+        ev_fpath = (
+            bp.fpath
+            if bp.suffix == "events" and bp.extension == ".tsv"
+            else bp.find_matching_sidecar(
+                suffix="events", extension=".tsv", on_error="ignore"
+            )
+        )
+        if ev_fpath is not None and Path(ev_fpath).exists():
+            ev_path = Path(ev_fpath).resolve()
+            if (sub, ev_path) in seen:
+                continue
+            seen.add((sub, ev_path))
+            ev_df = pd.read_csv(ev_path, sep="\t")
+            col = next(
+                (c for c in ("trial_type", "stim_type", "value") if c in ev_df.columns),
+                None,
+            )
+            labels_s = (
+                ev_df[col].astype(str) if col is not None else pd.Series([], dtype=str)
+            )
+            if valid_labels is not None:
+                if not labels_s.isin(valid_labels).any():
+                    if callable(getattr(ds, "encoding", None)):
+                        cats, mapping = ds.encoding(events_df=ev_df)
+                        labels_s = (
+                            pd.Series(cats, index=ev_df.index).map(mapping).astype(str)
+                        )
+                    elif "value" in ev_df.columns:
+                        mapped = ev_df["value"].astype(str).map(code_to_label)
+                        if len(ev_df) and (mapped.notna().sum() / len(ev_df)) >= 0.5:
+                            labels_s = mapped
+                mask = labels_s.isin(valid_labels)
+            else:
+                mask = (
+                    labels_s.notna()
+                    & ~labels_s.isin(["n/a", "nan", "None", ""])
+                    & ~labels_s.str.upper().str.startswith(("BAD", "EDGE"))
+                )
+            sub_dict = subj_counts.setdefault(sub, {})
+            for lbl, cnt in labels_s[mask].value_counts().items():
+                sub_dict[str(lbl)] = sub_dict.get(str(lbl), 0) + int(cnt)
+            if "duration" in ev_df.columns:
+                d_vals = pd.to_numeric(ev_df.loc[mask, "duration"], errors="coerce")
+                durations.extend(float(d) for d in d_vals.dropna() if float(d) > 0)
+        elif bp.fpath.exists() and bp.extension != ".tsv":
+            raw = mne_bids.read_raw_bids(bp, verbose="ERROR")
+            evs, ev_map = mne.events_from_annotations(
+                raw, event_id=event_id, verbose=False
+            )
+            inv_map = {v: k for k, v in ev_map.items()}
+            sub_dict = subj_counts.setdefault(sub, {})
+            for code in evs[:, 2]:
+                lbl = inv_map.get(int(code), str(code))
+                sub_dict[lbl] = sub_dict.get(lbl, 0) + 1
+
+    observed = sorted({lbl for c in subj_counts.values() for lbl in c})
+    n_classes = len(event_id) if event_id else len(observed)
+    total_trials = int(sum(sum(c.values()) for c in subj_counts.values())) or "varies"
+    class_names = list(event_id.keys()) if event_id else observed
+    t_keys = [k for k in class_names if _norm_label(k) in _TARGET_KEYS]
+    nt_keys = [k for k in class_names if _norm_label(k) in _NONTARGET_KEYS]
+
+    def _med_keys(keys: list[str]):
+        return (
+            int(
+                round(
+                    float(
+                        np.median(
+                            [sum(c.get(k, 0) for k in keys) for c in subj_counts.values()]
+                        )
+                    )
+                )
+            )
+            if t_keys and nt_keys and subj_counts
+            else None
+        )
+
+    nt_val, t_val = _med_keys(nt_keys), _med_keys(t_keys)
+    per_class = (
+        _clean_num(
+            round(
+                float(
+                    np.median([sum(c.values()) / n_classes for c in subj_counts.values()])
+                ),
+                2,
+            )
+        )
+        if subj_counts and n_classes > 0
+        else "varies"
+    )
+    trial_len = (
+        round(float(interval[1] - interval[0]), 6)
+        if interval is not None and len(interval) == 2
+        else (round(float(np.median(durations)), 6) if durations else None)
+    )
+    return _pack_summary_row(
+        paradigm,
+        n_subj,
+        n_chan,
+        n_classes,
+        per_class,
+        nt_val,
+        t_val,
+        trial_len,
+        sfreq,
+        n_sessions,
+        n_runs,
+        total_trials=total_trials,
+    )
+
+
+def build_summary_row(
+    dataset_or_cls: Any, bids_root: str | Path | None = None
+) -> dict[str, Any]:
+    """Generate a dataset summary row combining class ``METADATA`` and optional BIDS data."""
+    row = summary_row_from_metadata(dataset_or_cls)
+    bids_root = bids_root or getattr(dataset_or_cls, "bids_root", None)
+    if bids_root is not None and Path(bids_root).exists():
+        bids_row = summary_row_from_bids(bids_root, dataset=dataset_or_cls)
+        meta_s, bids_s = row.get("#Subj"), bids_row.get("#Subj")
+        if isinstance(meta_s, int) and isinstance(bids_s, int) and 0 < bids_s < meta_s:
+            bids_row["#Subj"] = meta_s
+            if isinstance(bids_row.get("Total_trials"), int):
+                bids_row["Total_trials"] = int(
+                    round(bids_row["Total_trials"] * (meta_s / bids_s))
+                )
+        row.update(bids_row)
+    return row
+
+
+def generate_summary_table(
+    paradigm: str | None = None,
+    datasets: Sequence[Any] | None = None,
+    bids_roots: Mapping[str, str | Path] | None = None,
+) -> pd.DataFrame:
+    """Generate a summary ``DataFrame`` dynamically from dataset ``METADATA`` and BIDS roots."""
+    if datasets is None:
+        from moabb.datasets.utils import dataset_list
+        from moabb.utils import aliases_list
+
+        deprecated = {old for old, _, _ in aliases_list} if aliases_list else set()
+        datasets = [
+            c
+            for c in dataset_list
+            if "Fake" not in c.__name__ and c.__name__ not in deprecated
+        ]
+
+    rows: dict[str, dict[str, Any]] = {}
+    for item in datasets:
+        name = item.__name__ if isinstance(item, type) else type(item).__name__
+        ds = _instantiate_for_summary(item)
+        meta = getattr(ds, "metadata", None) or getattr(item, "METADATA", None)
+        ds_p = (
+            getattr(ds, "paradigm", None)
+            or (meta.experiment.paradigm if meta and meta.experiment else None)
+            or "imagery"
+        )
+        if paradigm is not None and (
+            (
+                paradigm == "imagined_speech"
+                and name not in _SUMMARY_TABLES["imagined_speech"].index
+            )
+            or (paradigm != "imagined_speech" and ds_p != paradigm)
+        ):
+            continue
+        b_root = (bids_roots or {}).get(name) or getattr(ds, "bids_root", None)
+        row = build_summary_row(ds or item, bids_root=b_root)
+        curated = _summary_table_dict.get(name, {})
+        if b_root is None:
+            for col, val in list(row.items()):
+                if isinstance(val, str) and val.startswith("varies") and col in curated:
+                    row[col] = curated[col]
+        rows[name] = row
+
+    df = pd.DataFrame.from_dict(rows, orient="index")
+    df.index.name = "Dataset"
+    if paradigm in _SUMMARY_COLUMNS_BY_PARADIGM:
+        df = df.reindex(
+            columns=[c for c in _SUMMARY_COLUMNS_BY_PARADIGM[paradigm] if c in df.columns]
+        )
+    return df
 
 
 @dataclass
@@ -179,16 +705,23 @@ def apply_step(pipeline, obj):
         raise error
 
 
+_CAMEL_KEBAB_RE = re.compile(r"[a-zA-Z0-9\-]+")
+_ABBREV_SUB_RE = re.compile(r"([A-Za-z])")
+_SESSION_RUN_RE = re.compile(r"([0-9]+)(|[a-zA-Z]+[a-zA-Z0-9]*)")
+_UNIT_SUFFIX_RE = re.compile(r"( ?\((\w+)\))$")
+
+
 def is_camel_kebab_case(name: str):
     """Check if a string is in CamelCase but can also contain dashes."""
-    return re.fullmatch(r"[a-zA-Z0-9\-]+", name) is not None
+    return _CAMEL_KEBAB_RE.fullmatch(name) is not None
 
 
+@lru_cache(maxsize=512)
 def is_abbrev(abbrev_name: str, full_name: str):
     """Check if abbrev_name is an abbreviation of full_name,
     i.e. ifthe characters in abbrev_name are all in full_name
     and in the same order. They must share the same capital letters."""
-    pattern = re.sub(r"([A-Za-z])", r"\1[a-z0-9\-]*", re.escape(abbrev_name))
+    pattern = _ABBREV_SUB_RE.sub(r"\1[a-z0-9\-]*", re.escape(abbrev_name))
     return re.fullmatch(pattern, full_name) is not None
 
 
@@ -224,12 +757,13 @@ constraint_message = (
 
 
 def check_session_names(data):
-    pattern = session_run_pattern()
     for _subject, sessions in data.items():
         indexes = []
         for session in sessions.keys():
-            match = re.fullmatch(pattern, session)
-            if not isinstance(session, str) or not match:
+            match = (
+                _SESSION_RUN_RE.fullmatch(session) if isinstance(session, str) else None
+            )
+            if not match:
                 raise ValueError(
                     f"Session {constraint_message} Found key {session!r} instead. "
                     f"If you used cache, you may need to erase it using overwrite=True."
@@ -242,13 +776,12 @@ def check_session_names(data):
 
 
 def check_run_names(data):
-    pattern = session_run_pattern()
     for _subject, sessions in data.items():
         for _session, runs in sessions.items():
             indexes = []
             for run in runs.keys():
-                match = re.fullmatch(pattern, run)
-                if not isinstance(run, str) or not match:
+                match = _SESSION_RUN_RE.fullmatch(run) if isinstance(run, str) else None
+                if not match:
                     raise ValueError(
                         f"Run {constraint_message} Found key {run!r} instead. "
                         f"If you used cache, you may need to erase it using overwrite=True."
@@ -261,18 +794,18 @@ def check_run_names(data):
 
 
 def _transfer_unit(key: str, value: str):
-    pattern = r"( ?\((\w+)\))$"
-    match = re.search(pattern, key)
+    match = _UNIT_SUFFIX_RE.search(key)
     if match:
         suffix, unit = match.groups()
         return key[: -len(suffix)], f"{value} {unit}"
     return key, value
 
 
-def format_row(row: pd.Series, horizontal: bool = True):
+def format_row(row: pd.Series | dict, horizontal: bool = True):
     tab_prefix = " " * 8
     tab_sep = "="
-    row = row[~row.isna()]
+    if not isinstance(row, dict):
+        row = row[~row.isna()]
 
     def to_int(x):
         try:
@@ -537,12 +1070,14 @@ class MetaclassDataset(abc.ABCMeta):
         doc = attrs.get("__doc__", "") or ""
         insert_blocks = []
 
-        try:
-            row = _summary_table.loc[name]
-            row_str, row = format_row(row, horizontal=False)
+        row = _summary_table_dict.get(name)
+        if row is None and attrs.get("METADATA") is not None:
+            row = summary_row_from_metadata(None, metadata=attrs["METADATA"], attrs=attrs)
+        if row is not None and len(row) > 0:
+            row_str, _ = format_row(row, horizontal=False)
             insert_blocks.append(row_str)
-            attrs["_summary_table"] = row.to_dict()
-        except KeyError:
+            attrs["_summary_table"] = dict(row)
+        else:
             log.debug(
                 f"No description found for dataset {name}. "
                 f"Complete the appropriate moabb/datasets/summary_*.csv file"
@@ -800,6 +1335,8 @@ class BaseDataset(metaclass=MetaclassDataset):
             return None
 
     def _create_process_pipeline(self):
+        from moabb.datasets.preprocessing import FixedPipeline, SetRawAnnotations
+
         return FixedPipeline(
             [(StepType.RAW, SetRawAnnotations(self.event_id, interval=self.interval))]
         )
@@ -923,16 +1460,25 @@ class BaseDataset(metaclass=MetaclassDataset):
             if subject not in self.subject_list:
                 raise ValueError("Invalid subject {:d} given".format(subject))
 
-        self._prefetch_nemar_sourcedata(
-            self._subjects_without_cache(subjects, cache_config, process_pipeline)
-        )
-
-        results = Parallel(n_jobs=n_jobs)(
-            delayed(self._get_selected_subject_data)(
-                subject, cache_config, process_pipeline, str_sessions, pat
+        if self.nemar_id is not None:
+            self._prefetch_nemar_sourcedata(
+                self._subjects_without_cache(subjects, cache_config, process_pipeline)
             )
-            for subject in subjects
-        )
+
+        if n_jobs in (1, None):
+            results = [
+                self._get_selected_subject_data(
+                    subject, cache_config, process_pipeline, str_sessions, pat
+                )
+                for subject in subjects
+            ]
+        else:
+            results = Parallel(n_jobs=n_jobs)(
+                delayed(self._get_selected_subject_data)(
+                    subject, cache_config, process_pipeline, str_sessions, pat
+                )
+                for subject in subjects
+            )
         data = dict(zip(subjects, results))
         check_subject_names(data)
         check_session_names(data)
@@ -963,6 +1509,8 @@ class BaseDataset(metaclass=MetaclassDataset):
         """Return subjects whose source data must be loaded."""
         if not cache_config.use:
             return subjects
+
+        from moabb.datasets.preprocessing import FixedPipeline
 
         steps = list(process_pipeline.steps)
         missing = []
@@ -1240,7 +1788,7 @@ class BaseDataset(metaclass=MetaclassDataset):
             return 0
         return seed_loader_cache(store.parent, self._nemar_subject_ids(subject))
 
-    def _sourcedata_store(self):
+    def _sourcedata_store(self, path=None):
         """Local NEMAR sourcedata store to serve this dataset's loads from.
 
         None when the dataset has no deposit or the provider is pinned to
@@ -1248,7 +1796,7 @@ class BaseDataset(metaclass=MetaclassDataset):
         """
         if self.nemar_id is None or get_download_provider() == "upstream":
             return None
-        return nemar_store(self.code, self.nemar_id) / "sourcedata"
+        return nemar_store(self.code, self.nemar_id, path=path) / "sourcedata"
 
     def sourcedata_path(self, subject=None, path=None, force_update=False, verbose=None):
         """Get the dataset's *original* pre-BIDS distribution from NEMAR.
@@ -1324,6 +1872,8 @@ class BaseDataset(metaclass=MetaclassDataset):
             for key, value in (self.nemar_bids_filters or {}).items():
                 if key in plural_filters:
                     search_params[plural_filters[key]] = value
+            import mne_bids
+
             bids_paths = mne_bids.find_matching_paths(**search_params)
             if not bids_paths:
                 raise NemarDownloadError(
@@ -1504,6 +2054,8 @@ class BaseDataset(metaclass=MetaclassDataset):
         then eventually saves or overwrites the cache version depending on the
         parameters.
         """
+        from moabb.datasets.preprocessing import FixedPipeline
+
         steps = list(process_pipeline.steps)
         overwrite_requested = (
             cache_config.overwrite_raw
@@ -1707,6 +2259,10 @@ class BaseDataset(metaclass=MetaclassDataset):
 
         return None
 
+    def get_summary_row(self, bids_root: str | Path | None = None) -> dict[str, Any]:
+        """Generate a summary table row for this dataset from metadata and/or BIDS."""
+        return build_summary_row(self, bids_root=bids_root)
+
 
 class BaseBIDSDataset(BaseDataset):
     """Abstract BIDS dataset class.
@@ -1784,6 +2340,8 @@ class BaseBIDSDataset(BaseDataset):
     def bids_paths(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ) -> list[mne_bids.BIDSPath]:
+        import mne_bids
+
         root = self._download_subject(subject, path, force_update, update_path, verbose)
         return mne_bids.find_matching_paths(
             root=root, ignore_json=True, **self._get_path_search_params(subject)
@@ -1796,6 +2354,8 @@ class BaseBIDSDataset(BaseDataset):
         return [bids_path.fpath for bids_path in bids_paths]
 
     def _get_single_subject_data(self, subject):
+        import mne_bids
+
         bids_paths = self.bids_paths(subject)
         data = {}
         for bids_path in bids_paths:
@@ -1863,6 +2423,8 @@ class BaseBIDSDataset(BaseDataset):
             return None
 
         # Use official mne-bids API — handles n/a filtering, stim_type compat, etc.
+        from mne_bids import events_file_to_annotation_kwargs
+
         annot_kwargs = events_file_to_annotation_kwargs(events_fname)
 
         # Build DataFrame from API output
@@ -1939,6 +2501,8 @@ class LocalBIDSDataset(BaseBIDSDataset):
         unit_factor=1e6,
         return_all_modalities=False,
     ):
+        import mne_bids
+
         self.bids_root = bids_root
         self.path_search_params = path_search_params
         self.read_extra_params = read_extra_params
@@ -1975,6 +2539,7 @@ class LocalBIDSDataset(BaseBIDSDataset):
             unit_factor,
             return_all_modalities=return_all_modalities,
         )
+        self._summary_table = summary_row_from_bids(self.bids_root, dataset=self)
 
     def _download_subject(self, subject, path, force_update, update_path, verbose):
         return self.bids_root

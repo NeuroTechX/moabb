@@ -226,7 +226,7 @@ class Ofner2017(BaseDataset):
             line_freq=50.0,
             montage="standard_1005",
             auxiliary_channels=AuxiliaryChannelsMetadata(
-                has_emg=False, other_physiological=None
+                has_eog=True, eog_channels=3, has_emg=False, other_physiological=None
             ),
         ),
         participants=ParticipantMetadata(
@@ -238,7 +238,7 @@ class Ofner2017(BaseDataset):
             age_min=22.0,
             age_max=40.0,
             handedness={"right": 14, "left": 1},
-            species="human",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             events={
@@ -253,18 +253,20 @@ class Ofner2017(BaseDataset):
             paradigm="imagery",
             n_classes=7,
             class_labels=[
-                "elbow_flexion",
-                "elbow_extension",
-                "forearm_supination",
-                "forearm_pronation",
-                "hand_open",
-                "hand_close",
+                "right_elbow_flexion",
+                "right_elbow_extension",
+                "right_supination",
+                "right_pronation",
+                "right_hand_close",
+                "right_hand_open",
                 "rest",
             ],
-            trial_duration=None,
+            trial_duration=3.0,
             study_design="Trial-based paradigm with sustained movements/motor imagery. Each trial: fixation cross at 0s, cue presentation at 2s, sustained movement/MI execution. Subjects performed both movement execution (ME) and motor imagery (MI) in separate sessions.",
             feedback_type="none",
             stimulus_type="visual cue",
+            stimulus_modalities=["visual", "auditory"],
+            primary_modality="visual",
             synchronicity="synchronous",
             mode="offline",
             instructions="Subjects were instructed to execute sustained movements in ME session and perform kinesthetic motor imagery in MI session. For rest class, subjects were instructed to avoid any movement and to stay in the starting position.",
@@ -355,7 +357,7 @@ class Ofner2017(BaseDataset):
                 "hand_close",
             ],
             cue_duration_s=None,
-            imagery_duration_s=None,
+            imagery_duration_s=3.0,
         ),
         data_structure=DataStructureMetadata(
             n_trials=420,

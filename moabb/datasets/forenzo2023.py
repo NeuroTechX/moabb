@@ -88,8 +88,10 @@ class Forenzo2023(BaseDataset):
     By default, only the **MI** task (left-right axis) runs are loaded,
     yielding a standard 2-class left/right hand motor imagery dataset.
 
-    Each MI run contains 5 trials of 60 seconds each (continuous pursuit
-    paradigm with cursor control).
+    Each run contains 25 discrete target-hit cursor control trials (up to
+    6 seconds of cursor feedback per trial). 1D (``LR`` and ``UD``) runs
+    were recorded in Sessions 1-2 (3 runs per session) and 2D runs in
+    Sessions 3-5 (6 runs per session).
 
     Parameters
     ----------
@@ -101,10 +103,10 @@ class Forenzo2023(BaseDataset):
 
     References
     ----------
-    .. [1] Forenzo, D., & He, B. (2024). Integrating simultaneous motor
-           imagery and spatial attention for EEG-BCI control. IEEE Trans.
-           Biomed. Eng., 71(1), 282-294.
-           https://doi.org/10.1109/TBME.2023.3298957
+    .. [1] Forenzo, D., Liu, Y., Kim, J., Ding, Y., Yoon, T., & He, B.
+           (2024). Integrating simultaneous motor imagery and spatial
+           attention for EEG-BCI control. IEEE Trans. Biomed. Eng.,
+           71(1), 282-294. https://doi.org/10.1109/TBME.2023.3298957
     """
 
     nemar_id = "nm000209"
@@ -116,6 +118,8 @@ class Forenzo2023(BaseDataset):
             hardware="Neuroscan Quik-Cap 64-ch, SynAmps 2/RT",
             sensor_type="Ag/AgCl",
             reference="between Cz and CPz",
+            software="BCI2000",
+            impedance_threshold_kohm=5.0,
             filters={"lowpass": 200, "notch_hz": 60},
             line_freq=60.0,
         ),
@@ -126,7 +130,7 @@ class Forenzo2023(BaseDataset):
             age_mean=25.5,
             handedness="right-handed (24 of 25)",
             bci_experience="mixed (19 naive, 6 experienced)",
-            species="human",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             events=dict(_MI_EVENTS),
@@ -139,14 +143,26 @@ class Forenzo2023(BaseDataset):
                 "overt spatial attention (OSA), and combined (MIOSA) tasks"
             ),
             feedback_type="cursor",
-            stimulus_type="continuous pursuit",
+            stimulus_type="discrete target-hit cursor control",
             stimulus_modalities=["visual"],
             primary_modality="visual",
             synchronicity="synchronous",
             mode="online",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Bin He",
+            contact_info=["bhe1@andrew.cmu.edu"],
+            ethics_approval=["Institutional Review Board of Carnegie Mellon University"],
+            funding=[
+                "NIH AT009263",
+                "NIH MH114233",
+                "NIH EB029354",
+                "NIH NS124564",
+                "NIH NS131069",
+            ],
+            repository="KiltHub (Figshare)",
             doi="10.1109/TBME.2023.3298957",
+            associated_paper_doi="10.1109/TBME.2023.3298957",
             investigators=[
                 "Dylan Forenzo",
                 "Yixuan Liu",
@@ -160,6 +176,13 @@ class Forenzo2023(BaseDataset):
             country="US",
             data_url="https://kilthub.cmu.edu/articles/dataset/23677098",
             publication_year=2023,
+            keywords=[
+                "Brain-computer interface",
+                "EEG",
+                "Motor imagery",
+                "Overt spatial attention",
+                "Cursor control",
+            ],
             license="CC-BY-4.0",
         ),
         sessions_per_subject=5,
@@ -171,8 +194,8 @@ class Forenzo2023(BaseDataset):
             imagery_duration_s=6.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials=1875,
-            trials_context="25 subjects x 5 sessions x 3 MI runs x 5 trials",
+            n_trials=75,
+            trials_context="per_subject for 1D LR MI (2 sessions x 3 runs x 25 trials = 150 trials across both classes, 75 per class; 450 trials per subject across all 5 sessions including 2D runs)",
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=["linear_classifier"],

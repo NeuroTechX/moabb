@@ -75,8 +75,8 @@ class Pan2025(_PanDataverse):
             channel_types={"eeg": 28},
             montage="10-10",
             hardware="Neuroscan SynAmps2",
-            reference=None,
-            ground=None,
+            reference="tip of the nose",
+            ground="forehead",
             sensors=PAN2023_CHANNELS,
             filters={"bandpass": [0.01, 200.0], "notch": 50.0},
             line_freq=50.0,
@@ -84,7 +84,7 @@ class Pan2025(_PanDataverse):
         participants=ParticipantMetadata(
             n_subjects=10,
             health_status="healthy",
-            gender={"female": 3, "male": 7},
+            gender={"male": 7, "female": 3},
             age_min=22,
             age_max=25,
             handedness={"right": 8, "left": 2},
@@ -107,6 +107,8 @@ class Pan2025(_PanDataverse):
             events={"left_hand": 1, "right_hand": 2},
         ),
         documentation=DocumentationMetadata(
+            senior_author="Lincong Pan",
+            ethics_approval=["Ethics Committee of Tianjin University (TJUE-2021-062)"],
             doi="10.7910/DVN/GH74ZG",
             description="Cross-session motor imagery EEG dataset from 10 subjects "
             "performing cued left- vs right-hand motor imagery across two sessions.",

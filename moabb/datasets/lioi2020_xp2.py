@@ -4,7 +4,6 @@ import logging
 from pathlib import Path
 from types import MappingProxyType
 
-import mne_bids
 import requests
 
 from ._openneuro_mirror import OpenNeuroMirrorMixin
@@ -12,6 +11,7 @@ from .base import BaseBIDSDataset
 from .download import get_dataset_path
 from .metadata.schema import (
     AcquisitionMetadata,
+    AuxiliaryChannelsMetadata,
     BCIApplicationMetadata,
     CrossValidationMetadata,
     DatasetMetadata,
@@ -138,13 +138,19 @@ class Lioi2020_XP2(OpenNeuroMirrorMixin, BaseBIDSDataset):
             cap_model="BrainCap MR",
             reference="FCz",
             ground="AFz",
+            impedance_threshold_kohm=20.0,
             sensors=list(_CH_NAMES),
             line_freq=50.0,
+            auxiliary_channels=AuxiliaryChannelsMetadata(other_physiological=["ecg"]),
         ),
         participants=ParticipantMetadata(
+            age_std=9.96,
+            age_mean=36.47,
             n_subjects=17,
             health_status="healthy",
-            species="human",
+            handedness="right",
+            bci_experience="naive",
+            species="homo sapiens",
             gender={"male": 9, "female": 8},
             age_min=26.0,
             age_max=66.0,
@@ -166,11 +172,17 @@ class Lioi2020_XP2(OpenNeuroMirrorMixin, BaseBIDSDataset):
             feedback_type="EEG-fMRI",
             stimulus_type="visual",
             stimulus_modalities=["visual"],
+            primary_modality="visual",
             synchronicity="synchronous",
             mode="online",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Christian Barillot",
+            contact_info=["giulia.lioi@inria.fr"],
+            ethics_approval=["Comité de Protection des Personnes Ouest V"],
+            repository="OpenNeuro",
             doi="10.1038/s41597-020-0498-3",
+            related_paper_dois=["10.3389/fnhum.2017.00193", "10.1101/862375"],
             investigators=list(_AUTHORS),
             institution="Univ Rennes, Inria, CNRS, Inserm, IRISA",
             country="FR",
@@ -187,7 +199,8 @@ class Lioi2020_XP2(OpenNeuroMirrorMixin, BaseBIDSDataset):
             imagery_duration_s=20.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials=1360,
+            n_trials=80,
+            n_trials_per_class={"rest": 40, "right_hand": 40},
             trials_context=(
                 "Per subject: 5 runs x (8 rest + 8 right_hand) 20 s blocks = 80 "
                 "blocks (40 per class); 17 subjects -> 1360 blocks. The paper "
@@ -281,6 +294,8 @@ class Lioi2020_XP2(OpenNeuroMirrorMixin, BaseBIDSDataset):
                 Path(bids_path.root) / f"task-{bids_path.task}_events.tsv"
             )
 
+        import mne_bids
+
         key_by_entity = {(task, run): key for task, run, key in self._run_plan(subject)}
         result = {}
         for bids_path in bids_paths:
@@ -313,6 +328,8 @@ class Lioi2020_XP2(OpenNeuroMirrorMixin, BaseBIDSDataset):
         mirror_root = self._mirror_root(subject, path, force_update, update_path, verbose)
         if mirror_root is not None:
             return mirror_root
+
+        import mne_bids
 
         sid = self._sid(subject)
         bids_root = Path(get_dataset_path("Lioi2020-XP2", path)) / "MNE-lioi2020-xp2-data"

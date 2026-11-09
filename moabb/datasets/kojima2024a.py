@@ -56,7 +56,7 @@ class Kojima2024A(BaseDataset):
 
     Each participant completed 1 session consisting of 6 runs.
     Each run lasted approximately 5 minutes.
-    In each run, all deviant stimuli (D1--D4) were presented approximately 60 times.
+    In each run, all deviant stimuli (D1--D3) were presented approximately 60 times.
 
     .. figure:: /_static/paper_figures/Kojima2024.png
        :alt: Kojima2024 ASME-BCI — three auditory streams with oddball
@@ -78,7 +78,7 @@ class Kojima2024A(BaseDataset):
           TP10, P7, P5, P3, P1, Pz, P2, P4, P6, P8, PO7, PO3, POz, PO4, PO8,
           O1, Oz, O2
 
-          EEG signals were referenced to the right mastoid and grounded to the left mastoid.
+          EEG signals were referenced to the right earlobe and grounded to the left earlobe.
 
         - EOG was recorded using 2 electrodes (vEOG and hEOG), placed above/below and
           lateral to one eye.
@@ -216,16 +216,16 @@ class Kojima2024A(BaseDataset):
                 "female",
             ],
             handedness_list=None,
-            species="human",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             paradigm="p300",
             task_type="auditory selective attention",
-            events={"S1": 1, "D1": 2, "S2": 3, "D2": 4, "S3": 5, "D3": 6},
-            n_classes=3,
-            class_labels=["Stream 1", "Stream 2", "Stream 3"],
+            events={"Target": 1, "NonTarget": 0},
+            n_classes=2,
+            class_labels=["Target", "NonTarget"],
             trials_per_class=None,
-            trial_duration=None,
+            trial_duration=1.7,
             tasks=["attend to Stream 1", "attend to Stream 2", "attend to Stream 3"],
             study_design="within-subject",
             study_domain="auditory BCI",
@@ -263,9 +263,9 @@ class Kojima2024A(BaseDataset):
             investigators=["Simon Kojima", "Shin'ichiro Kanoh"],
             institution="Shibaura Institute of Technology",
             country="JP",
-            repository="Harvard Dataverse",
+            repository="Harvard dataverse",
             data_url="https://doi.org/10.7910/DVN/MQOVEY",
-            license="Creative Commons Attribution License",
+            license="CC0-1.0",
             publication_year=2024,
             senior_author="Shin'ichiro Kanoh",
             contact_info=["nb21106@shibaura-it.ac.jp"],
@@ -335,6 +335,9 @@ class Kojima2024A(BaseDataset):
         performance={
             "description": "Classification accuracy over 80% for 5 subjects, over 75% for 9 subjects",
             "metric": "MCC (Matthews correlation coefficient)",
+            "accuracy_percent": 79.0,
+            "mcc": 0.50,
+            "itr_bits_per_min": 5.12,
         },
         bci_application=BCIApplicationMetadata(
             applications=["communication"],
@@ -349,7 +352,7 @@ class Kojima2024A(BaseDataset):
             code_length=None,
             n_targets=3,
             n_repetitions=None,
-            isi_ms=None,
+            isi_ms=30.0,
             soa_ms=180.0,
             imagery_tasks=None,
             cue_duration_s=None,
@@ -367,7 +370,6 @@ class Kojima2024A(BaseDataset):
     )
 
     def __init__(self, subjects=None, sessions=None, *, return_all_modalities=False):
-
         self.n_channels = 64
 
         super().__init__(
@@ -384,7 +386,6 @@ class Kojima2024A(BaseDataset):
         )
 
     def _get_files_list(self, subject, manifest):
-
         subject_id = self.convert_subject_to_subject_id(subject)
 
         manifest_files = manifest["datasetVersion"]["files"]

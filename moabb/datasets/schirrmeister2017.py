@@ -225,9 +225,11 @@ class Schirrmeister2017(BaseDataset):
         ),
         experiment=ExperimentMetadata(
             paradigm="imagery",
+            task_type="executed movement (left hand finger-tapping, right hand finger-tapping, feet toe-clenching, rest)",
             n_classes=4,
-            class_labels=["left_hand", "right_hand", "feet", "rest"],
+            class_labels=["right_hand", "left_hand", "rest", "feet"],
             study_design="Executed movements including left hand (sequential finger-tapping), right hand (sequential finger-tapping), feet (repetitive toe clenching), and rest conditions",
+            feedback_type="none",
             stimulus_type="visual",
             stimulus_modalities=["visual"],
             primary_modality="visual",
@@ -294,11 +296,7 @@ class Schirrmeister2017(BaseDataset):
         ),
         sessions_per_subject=1,
         runs_per_session=2,
-        tags=Tags(
-            pathology=["Healthy"],
-            modality=["Motor"],
-            type=["Motor Imagery", "Motor Execution"],
-        ),
+        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Motor Execution"]),
         preprocessing=PreprocessingMetadata(
             data_state=None,
             preprocessing_applied=None,
@@ -327,8 +325,8 @@ class Schirrmeister2017(BaseDataset):
         ),
         performance={
             "FBCSP_accuracy_percent": 91.2,
-            "Deep_ConvNet_accuracy_percent": 89.3,
-            "Shallow_ConvNet_accuracy_percent": 92.5,
+            "Deep_ConvNet_accuracy_percent": 92.5,
+            "Shallow_ConvNet_accuracy_percent": 89.3,
         },
         bci_application=BCIApplicationMetadata(
             applications=["motor_control"],

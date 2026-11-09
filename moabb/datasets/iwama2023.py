@@ -21,6 +21,7 @@ from .metadata.schema import (
     ExperimentMetadata,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 from .utils import stim_channels_with_selected_ids
@@ -91,7 +92,7 @@ class Iwama2023(OpenNeuroMirrorMixin, BaseBIDSDataset):
         participants=ParticipantMetadata(
             n_subjects=30,
             health_status="healthy",
-            species="human",
+            species="homo sapiens",
             gender={"male": 25, "female": 5},
             handedness="right-handed",
             age_mean=21.23,
@@ -119,7 +120,15 @@ class Iwama2023(OpenNeuroMirrorMixin, BaseBIDSDataset):
             mode="online",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Junichi Ushiba",
+            funding=["JST Moonshot R&D (grant number JPMJMS2012)"],
+            ethics_approval=[
+                "Ethics Committee of the Faculty of Science and Technology, Keio University (IRB: 2020-38, 2021-74)"
+            ],
+            contact_info=["ushiba@bio.keio.ac.jp"],
+            repository="OpenNeuro",
             doi="10.1038/s41597-023-02260-6",
+            associated_paper_doi="10.18112/openneuro.ds004444.v1.0.0",
             investigators=[
                 "Seitaro Iwama",
                 "Masumi Morishige",
@@ -129,6 +138,7 @@ class Iwama2023(OpenNeuroMirrorMixin, BaseBIDSDataset):
                 "Junichi Ushiba",
             ],
             institution="Keio University",
+            institution_department="Department of Biosciences and Informatics, Faculty of Science and Technology; Graduate School of Science and Technology",
             country="JP",
             data_url="https://openneuro.org/datasets/ds004444",
             publication_year=2023,
@@ -141,6 +151,12 @@ class Iwama2023(OpenNeuroMirrorMixin, BaseBIDSDataset):
             detected_paradigm="imagery",
             imagery_tasks=["right_hand", "rest"],
             imagery_duration_s=6.0,
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["Random Forest"],
+            feature_extraction=["short-term Fourier transform (STFT) spectral power"],
+            frequency_bands={"alpha": [8.0, 13.0], "beta": [14.0, 30.0]},
+            spatial_filters=["Large Laplacian"],
         ),
         data_structure=DataStructureMetadata(
             n_trials=20,

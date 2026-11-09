@@ -116,13 +116,13 @@ class WithinSessionEvaluation(BaseEvaluation):
         process_pipeline,
         postprocess_pipeline,
     ):
+        work_plan = self.results.batch_not_yet_computed(
+            pipelines, dataset, dataset.subject_list, process_pipeline
+        )
         # Progress Bar at subject level
         for subject in tqdm(dataset.subject_list, desc=f"{dataset.code}-WithinSession"):
             # check if we already have result for this subject/pipeline
-            # we might need a better granularity, if we query the DB
-            run_pipes = self.results.not_yet_computed(
-                pipelines, dataset, subject, process_pipeline
-            )
+            run_pipes = work_plan.get(subject, {})
             if len(run_pipes) == 0:
                 continue
 
@@ -338,13 +338,12 @@ class CrossSessionEvaluation(BaseEvaluation):
             raise AssertionError(
                 f"Dataset '{dataset.code}' is not appropriate for {self.__class__.__name__}: {reason}"
             )
-            # Progressbar at subject level
+        work_plan = self.results.batch_not_yet_computed(
+            pipelines, dataset, dataset.subject_list, process_pipeline
+        )
         for subject in tqdm(dataset.subject_list, desc=f"{dataset.code}-CrossSession"):
             # check if we already have result for this subject/pipeline
-            # we might need a better granularity, if we query the DB
-            run_pipes = self.results.not_yet_computed(
-                pipelines, dataset, subject, process_pipeline
-            )
+            run_pipes = work_plan.get(subject, {})
             if len(run_pipes) == 0:
                 log.info(f"Subject {subject} already processed")
                 continue

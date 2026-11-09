@@ -134,15 +134,21 @@ class Yagan2023(BaseDataset):
             channel_types={"eeg": 32},
             montage="10-20",
             hardware=_HARDWARE,
+            reference="TP9 and TP10 (mastoids)",
+            ground="Fpz",
+            filters={"bandpass": [0.5, 100.0], "notch": 50.0},
             sensors=_CH_NAMES,
             line_freq=50.0,
         ),
-        participants=ParticipantMetadata(n_subjects=18, health_status="healthy"),
+        participants=ParticipantMetadata(
+            n_subjects=18, health_status="healthy", species="homo sapiens"
+        ),
         experiment=ExperimentMetadata(
+            trial_duration=1.2,
             paradigm="p300",
             events={"Target": 2, "NonTarget": 1},
             n_classes=2,
-            class_labels=["target", "non-target"],
+            class_labels=["Target", "NonTarget"],
             stimulus_type="row-column speller",
             stimulus_modalities=["visual"],
             primary_modality="visual",
@@ -158,6 +164,7 @@ class Yagan2023(BaseDataset):
         ),
         documentation=DocumentationMetadata(
             doi="10.1016/j.dsp.2023.103950",
+            associated_paper_doi="10.1016/j.dsp.2023.103950",
             investigators=[
                 "Mehmet Yağan",
                 "Serkan Musellim",
@@ -173,6 +180,7 @@ class Yagan2023(BaseDataset):
             data_url="https://doi.org/10.17632/vyczny2r4w.1",
             license="CC-BY-4.0",
             publication_year=2023,
+            ethics_approval=["Sabanci University Research Ethics Council (SUREC)"],
             keywords=["P300", "ERP", "BCI", "speller", "row-column paradigm"],
         ),
         sessions_per_subject=1,

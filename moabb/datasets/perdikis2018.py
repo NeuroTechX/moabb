@@ -105,6 +105,7 @@ class Perdikis2018(BaseDataset):
             sensor_type="Ag/AgCl",
             reference=None,
             ground=None,
+            filters={"bandpass": [0.1, 100.0], "notch": 50.0},
             sensors=list(_EEG_CHANNELS),
             line_freq=50.0,
         ),
@@ -112,7 +113,15 @@ class Perdikis2018(BaseDataset):
             n_subjects=2,
             health_status="spinal cord injury",
             clinical_population="tetraplegia (chronic spinal cord injury)",
-            bci_experience="experienced",
+            bci_experience="mixed (P1 experienced, P2 naive at training onset)",
+            gender={"male": 2},
+            sexes=["male", "male"],
+            ages=[48, 30],
+            age_mean=39.0,
+            age_std=9.0,
+            age_min=30.0,
+            age_max=48.0,
+            handedness={"right": 2},
             species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
@@ -131,6 +140,11 @@ class Perdikis2018(BaseDataset):
             instructions="Perform the cued kinesthetic motor imagery (both-hands, both-feet, or rest) to control the BrainRunners avatar.",
         ),
         documentation=DocumentationMetadata(
+            ethics_approval=[
+                "Cantonal Committee of Vaud for ethics in human research (CER-VD protocol PB_2017-00295 / 20/15 CCVEM)"
+            ],
+            funding=["Swiss National Center of Competence in Research (NCCR) Robotics"],
+            contact_info=["serafeim.perdikis@epfl.ch", "jose.millan@epfl.ch"],
             doi="10.5281/zenodo.841764",
             description="EEG recordings and application logs from the two tetraplegic pilots of team Brain Tweakers (CNBI, EPFL) during longitudinal motor-imagery BCI training and the Cybathlon 2016 BCI race; this loader exposes the cue-based offline calibration runs (both-hands / both-feet / rest).",
             investigators=[
@@ -166,7 +180,17 @@ class Perdikis2018(BaseDataset):
             data_state="raw", preprocessing_applied=False
         ),
         signal_processing=SignalProcessingMetadata(
-            frequency_bands={"mu": [8.0, 12.0], "beta": [12.0, 30.0]}
+            classifiers=["Gaussian classifier"],
+            feature_extraction=[
+                "PSD (Welch, 4-48 Hz in 2 Hz bands)",
+                "CVA / Fisher score",
+            ],
+            frequency_bands={
+                "mu": [8.0, 12.0],
+                "beta": [12.0, 30.0],
+                "psd_range": [4.0, 48.0],
+            },
+            spatial_filters=["Laplacian"],
         ),
         cross_validation=CrossValidationMetadata(evaluation_type=["within_subject"]),
         bci_application=BCIApplicationMetadata(

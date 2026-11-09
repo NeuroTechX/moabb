@@ -5,7 +5,6 @@ import zipfile
 from pathlib import Path
 
 from mne.channels import make_standard_montage
-from mne_bids import BIDSPath, get_entity_vals, read_raw_bids
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
@@ -145,9 +144,12 @@ class NeBULA2025(BaseDataset):
             montage="standard_1005",
             hardware="Brain Products actiCHamp (128-channel actiCAP)",
             cap_manufacturer="Brain Products",
+            cap_model="actiCAP 128-channel",
             sensor_type="active electrodes",
             reference="FCz",
             ground="Fpz",
+            impedance_threshold_kohm=25.0,
+            software="BrainVision Recorder",
             line_freq=50.0,
             sensors=list(_CH_NAMES),
             auxiliary_channels=AuxiliaryChannelsMetadata(has_emg=True, emg_channels=11),
@@ -164,11 +166,13 @@ class NeBULA2025(BaseDataset):
             species="human",
         ),
         experiment=ExperimentMetadata(
+            trial_duration=2.0,
             events=dict(_EVENTS),
             paradigm="imagery",
             task_type="motor execution",
             n_classes=3,
             class_labels=list(_EVENTS.keys()),
+            trials_per_class={"reach_1": 30, "reach_2": 30, "reach_3": 30},
             study_design=(
                 "Standardized right-arm reaching to one of three illuminated "
                 "targets (three movement types), performed under three "
@@ -187,38 +191,39 @@ class NeBULA2025(BaseDataset):
             ),
         ),
         documentation=DocumentationMetadata(
+            senior_author="Marianna Semprini",
+            ethics_approval=["CER Liguria: 784/2022 - DB id 12044"],
             doi="10.1038/s41597-025-05042-4",
+            related_paper_dois=["10.6084/m9.figshare.27301629"],
             description=(
                 "NeBULA: high-density EEG and surface EMG recorded during a "
                 "standardized upper-limb reaching task under three robotic "
                 "assistance levels, for neuromechanical biomarker research."
             ),
             investigators=[
-                "Federica Garro",
-                "Elisa Fenoglio",
-                "Ilaria Ceroni",
-                "Iryna Forsiuk",
-                "Michela Canepa",
-                "Marta Mozzon",
-                "Alessandro Bruschi",
-                "Fabio Zippo",
+                "Florencia Garro",
+                "Elena Fenoglio",
+                "Indya Ceroni",
+                "Inna Forsiuk",
+                "Michele Canepa",
+                "Michael Mozzon",
+                "Agnese Bruschi",
+                "Francesco Zippo",
                 "Matteo Laffranchi",
                 "Lorenzo De Michieli",
                 "Stefano Buccelli",
                 "Michela Chiappalone",
                 "Marianna Semprini",
             ],
+            contact_info=["florencia.garro@iit.it", "marianna.semprini@iit.it"],
             institution="Istituto Italiano di Tecnologia",
             institution_address="Via Morego 30, Genova, Italy",
             institution_department="Rehab Technologies",
             country="IT",
             repository="Figshare",
-            data_url="https://doi.org/10.1038/s41597-025-05042-4",
+            data_url="https://doi.org/10.6084/m9.figshare.27301629",
             publication_year=2025,
-            funding=[
-                "Istituto Nazionale Assicurazione Infortuni sul Lavoro (INAIL), "
-                "project grant PR19-RR-P2"
-            ],
+            funding=["INAIL Project grant number PR19-RR-P2"],
             license="CC-BY-4.0",
         ),
         sessions_per_subject=1,
@@ -229,6 +234,7 @@ class NeBULA2025(BaseDataset):
         ),
         data_structure=DataStructureMetadata(
             n_trials=90,
+            n_trials_per_class={"reach_1": 30, "reach_2": 30, "reach_3": 30},
             trials_context=(
                 "~10 trials per movement type per assistance-level run "
                 "(3 classes x 3 runs per subject)."
@@ -295,6 +301,8 @@ class NeBULA2025(BaseDataset):
             subject, path=path, force_update=force_update, verbose=verbose
         )
 
+        from mne_bids import BIDSPath, get_entity_vals
+
         tasks = get_entity_vals(root / f"sub-{subject:02d}", "task")
         return [
             BIDSPath(
@@ -312,6 +320,8 @@ class NeBULA2025(BaseDataset):
 
     def _get_single_subject_data(self, subject):
         """Return the data of a single subject as {session: {run: raw}}."""
+        from mne_bids import read_raw_bids
+
         bids_paths = self.data_path(subject)
         montage = make_standard_montage("colin27_1005")
 

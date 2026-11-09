@@ -10,7 +10,10 @@ We can convert at the Raw, Epochs or Array level.
 #
 # License: BSD (3-clause)
 
+from __future__ import annotations
+
 import abc
+import contextlib
 import csv
 import datetime
 import json
@@ -21,30 +24,41 @@ import warnings
 from collections import OrderedDict
 from dataclasses import dataclass
 from enum import Enum
+from functools import cached_property
 from pathlib import Path
 from typing import TYPE_CHECKING, Dict, Type
 
 import mne
-import mne_bids
-
-
-try:
-    from mne_bids._fileio import _open_lock as _bids_lock
-except ImportError:  # pragma: no cover - defensive fallback
-    import contextlib
-
-    @contextlib.contextmanager
-    def _bids_lock(_path):
-        yield
-
-
 from numpy import load as np_load
 from numpy import save as np_save
 
 import moabb
-from moabb.analysis.results import get_digest
 from moabb.datasets import download as dl
 from moabb.datasets._channel_pick import pick_channels_for_modalities
+
+
+if TYPE_CHECKING:
+    import mne_bids
+
+
+@contextlib.contextmanager
+def _bids_lock(path):
+    try:
+        from mne_bids._fileio import _open_lock
+    except ImportError:  # pragma: no cover - defensive fallback
+        yield
+        return
+    with _open_lock(path):
+        yield
+
+
+def __getattr__(name):
+    if name == "mne_bids":
+        import mne_bids as val
+
+        globals()["mne_bids"] = val
+        return val
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 if TYPE_CHECKING:
@@ -2248,9 +2262,11 @@ class BIDSInterfaceBase(abc.ABC):
         # TODO: add dataset kwargs
         return self.process_pipeline
 
-    @property
+    @cached_property
     def desc(self):
         """Return the description of the processing pipeline."""
+        from moabb.analysis.results import get_digest
+
         return get_digest(self.processing_params)
 
     def __repr__(self):
@@ -2262,7 +2278,7 @@ class BIDSInterfaceBase(abc.ABC):
             f"suffix-{self._suffix} desc-{desc_str}"
         )
 
-    @property
+    @cached_property
     def root(self):
         """Return the root path of the BIDS dataset."""
         return get_bids_root(self.dataset.code, self.path)
@@ -2303,6 +2319,8 @@ class BIDSInterfaceBase(abc.ABC):
         subject folder of the BIDS structure. This property allows loading
         caches that were created with the old path.
         """
+        import mne_bids
+
         return mne_bids.BIDSPath(
             root=self.root,
             subject=subject_moabb_to_bids(self.subject),
@@ -2314,6 +2332,8 @@ class BIDSInterfaceBase(abc.ABC):
 
     def erase(self):
         """Erase the cache of the subject if it exists."""
+        import mne_bids
+
         log.info("Starting erasing cache of %s...", repr(self))
 
         if not self.root.exists():
@@ -2381,17 +2401,12 @@ class BIDSInterfaceBase(abc.ABC):
 
         If the cache is not present, returns None.
         """
-        log.info("Attempting to retrieve cache of %s...", repr(self))
+        log.info("Attempting to retrieve cache of %s...", self)
         code_dir = self.root / "code"
-        code_dir.mkdir(parents=True, exist_ok=True)
-
-        # Ensure the legacy BIDSPath directory exists for mne_bids compatibility
-        self._legacy_lock_file.mkdir(exist_ok=True)
-
         paths = self._cache_paths()
 
         if not paths:
-            log.info("No cache found at %s.", str(code_dir))
+            log.info("No cache found at %s.", code_dir)
             return None
 
         sessions_data = {}
@@ -2400,16 +2415,23 @@ class BIDSInterfaceBase(abc.ABC):
             session = sessions_data.setdefault(session_moabb, {})
             run = self._load_file(path, preload=preload)
             session[run_bids_to_moabb(path)] = run
-        log.info("Finished reading cache of %s", repr(self))
+        log.info("Finished reading cache of %s", self)
         return sessions_data
 
     def _cache_paths(self):
+        sub_str = subject_moabb_to_bids(self.subject)
+        subject_dir = self.root / f"sub-{sub_str}"
+        if not subject_dir.is_dir():
+            return []
+
+        import mne_bids
+
         legacy_lock_exists = (
             self._migration_lock_file.exists() or self._legacy_lock_file.fpath.exists()
         )
         paths = mne_bids.find_matching_paths(
             root=self.root,
-            subjects=subject_moabb_to_bids(self.subject),
+            subjects=sub_str,
             descriptions=self.desc,
             extensions=self._extension,
             check=self._check,
@@ -2437,6 +2459,8 @@ class BIDSInterfaceBase(abc.ABC):
 
         The type of the ``run`` object can vary (see the subclases).
         """
+        import mne_bids
+
         log.info("Starting caching %s", repr(self))
         mne_bids.BIDSPath(root=self.root).mkdir(exist_ok=True)
 
@@ -2560,12 +2584,16 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
         return "eeg"
 
     def _load_file(self, bids_path, preload):
+        import mne_bids
+
         raw = mne_bids.read_raw_bids(
             bids_path, extra_params={"preload": preload}, verbose=self.verbose
         )
         return raw
 
     def _write_file(self, bids_path, raw):
+        import mne_bids
+
         if not raw.annotations:
             raise ValueError(
                 "Raw object must have annotations to be saved in BIDS format."
@@ -2693,7 +2721,7 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
 
         # FiducialsCoordinates is RECOMMENDED in coordsystem.json — add if missing
         FIFF = mne.io.constants.FIFF
-        coordsystem_files = list(bids_path.root.rglob("*_coordsystem.json"))
+        coordsystem_files = list(bids_path.directory.glob("*_coordsystem.json"))
         for cs_path in coordsystem_files:
             with open(cs_path, encoding="utf-8") as f:
                 cs = json.load(f)

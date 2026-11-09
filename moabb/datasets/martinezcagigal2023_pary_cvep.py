@@ -13,10 +13,16 @@ from moabb.datasets.base import BaseDataset
 from moabb.datasets.bson_loader import load_bson
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
+    BCIApplicationMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
+    DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
+    ParadigmSpecificMetadata,
     ParticipantMetadata,
+    SignalProcessingMetadata,
+    Tags,
 )
 from moabb.datasets.utils import (
     add_stim_channel_epoch,
@@ -182,6 +188,27 @@ class MartinezCagigal2023Pary(BaseDataset):
         acquisition=AcquisitionMetadata(
             sampling_rate=256.0,
             channel_types={"eeg": 16},
+            sensors=[
+                "Fz",
+                "F3",
+                "F4",
+                "Cz",
+                "C3",
+                "C4",
+                "CPz",
+                "Pz",
+                "P3",
+                "P4",
+                "POz",
+                "PO7",
+                "PO8",
+                "Oz",
+                "I1",
+                "I2",
+            ],
+            sensor_type="active",
+            montage="standard_1005",
+            line_freq=50.0,
             reference="earlobe",
             ground="AFz",
             hardware="g.USBamp (g.tec)",
@@ -193,11 +220,100 @@ class MartinezCagigal2023Pary(BaseDataset):
             gender={"male": 11, "female": 5},
             age_mean=28.8,
             age_std=5.0,
+            species="homo sapiens",
         ),
-        experiment=ExperimentMetadata(paradigm="cvep"),
+        experiment=ExperimentMetadata(
+            trial_duration=5.25,
+            events={
+                "0.0": 100,
+                "1.0": 101,
+                "2.0": 102,
+                "3.0": 103,
+                "4.0": 104,
+                "5.0": 105,
+                "6.0": 106,
+                "7.0": 107,
+                "8.0": 108,
+                "9.0": 109,
+                "10.0": 110,
+            },
+            class_labels=[
+                "0.0",
+                "1.0",
+                "2.0",
+                "3.0",
+                "4.0",
+                "5.0",
+                "6.0",
+                "7.0",
+                "8.0",
+                "9.0",
+                "10.0",
+            ],
+            n_classes=11,
+            paradigm="cvep",
+            task_type="cvep_speller",
+            study_design=(
+                "Within-subject evaluation of 5 p-ary m-sequence bases (2, 3, 5, 7, 11) "
+                "encoded with grayscale shades in a 16-command circular-shifting c-VEP speller."
+            ),
+            feedback_type="visual",
+            stimulus_type="p-ary m-sequence grayscale luminance flash",
+            stimulus_modalities=["visual"],
+            primary_modality="visual",
+            synchronicity="synchronous",
+            mode="both",
+            has_training_test_split=True,
+        ),
         sessions_per_subject=5,
         runs_per_session=8,
+        file_format="BSON (MEDUSA)",
+        data_processed=False,
+        paradigm_specific=ParadigmSpecificMetadata(
+            detected_paradigm="cvep",
+            code_type="p-ary m-sequence (bases 2, 3, 5, 7, 11)",
+            code_length=63,
+            n_targets=16,
+            n_repetitions=10,
+        ),
+        data_structure=DataStructureMetadata(
+            n_trials=310,
+            n_blocks=5,
+            trials_context=(
+                "5 base conditions x 62 trials per condition (30 calibration trials across "
+                "6 runs + 32 online test trials across 2 runs), each trial comprising 10 "
+                "cycles of the p-ary m-sequence at 120 Hz."
+            ),
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["CCA"],
+            feature_extraction=["canonical_correlation_analysis"],
+            frequency_bands={
+                "fb1": [1.0, 60.0],
+                "fb2": [12.0, 60.0],
+                "fb3": [30.0, 60.0],
+            },
+            spatial_filters=["CCA"],
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="calibration-then-test", evaluation_type=["within_subject"]
+        ),
+        performance={
+            "accuracy_base2": 97.66,
+            "accuracy_base3": 96.48,
+            "accuracy_base5": 95.31,
+            "accuracy_base7": 91.21,
+            "accuracy_base11": 94.14,
+            "itr_base2_bits_per_min": 67.24,
+            "itr_base11_bits_per_min": 50.25,
+        },
+        bci_application=BCIApplicationMetadata(
+            applications=["speller"], environment="laboratory", online_feedback=True
+        ),
+        tags=Tags(pathology=["Healthy"], modality=["Visual"], type=["c-VEP"]),
         documentation=DocumentationMetadata(
+            repository="UVaDOC (University of Valladolid)",
+            license="CC-BY-NC-SA-4.0",
             doi="10.71569/025s-eq10",
             associated_paper_doi="10.1016/j.eswa.2023.120815",
             related_paper_dois=["10.1088/1741-2552/ac38cf", "10.1016/j.cmpb.2023.107357"],
@@ -215,13 +331,28 @@ class MartinezCagigal2023Pary(BaseDataset):
             institution_department="Biomedical Engineering Group, ETSIT",
             institution_address="Paseo de Belén, 15, 47011, Valladolid, Spain",
             country="ES",
-            contact_info=["victor.martinez@gib.tel.uva.es"],
+            contact_info=[
+                "victor.martinez@gib.tel.uva.es",
+                "eduardo.santamaria@gib.tel.uva.es",
+                "sergio.perez@gib.tel.uva.es",
+                "diego.marcos@gib.tel.uva.es",
+                "selene.moreno@gib.tel.uva.es",
+                "robhor@tel.uva.es",
+            ],
             ethics_approval=[
                 "Approved by the local ethics committee; all participants provided informed consent"
             ],
             funding=[
-                "Ministerio de Ciencia e Innovación/Agencia Estatal de Investigación and ERDF (TED2021-129915B-I00, RTC2019-007350-1, PID2020-115468RB-I00)",
+                "Ministerio de Ciencia e Innovación/Agencia Estatal de Investigación, NextGenerationEU and ERDF (TED2021-129915B-I00, RTC2019-007350-1, PID2020-115468RB-I00)",
                 "CIBER-BBN through Instituto de Salud Carlos III",
+                "Junta de Castilla y León and European Social Fund (predoctoral grants of D. Marcos-Martínez and S. Moreno-Calderón)",
+            ],
+            keywords=[
+                "Brain-computer interfaces (BCI)",
+                "Code-modulated visual evoked potentials (c-VEP)",
+                "Visual fatigue",
+                "Non-binary sequences",
+                "P-ary m-sequences",
             ],
             acknowledgements=(
                 "This study was partially funded by Ministerio de Ciencia e Innovación/Agencia "

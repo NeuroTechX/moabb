@@ -32,6 +32,26 @@ log = logging.getLogger(__name__)
 GIGA_URL = "https://s3.ap-northeast-1.wasabisys.com/gigadb-datasets/live/pub/10.5524/100001_101000/100295/mat_data/"
 
 
+def _demean_blocks(stream, event):
+    """Demean each tiled trial block by its own pre-cue (fixation) period.
+
+    The GigaDB files store each class as a stream of tiled trial blocks that
+    all start with the fixation period, so the first cue sample also gives the
+    fixation length of every block. Each block (from its fixation start to the
+    next block's fixation start) is shifted by the mean of its own fixation
+    period, so the pre-cue segment is zero-mean in every trial whatever
+    happens after the cue.
+    """
+    onsets = np.flatnonzero(event)
+    starts = onsets - onsets[0]
+    edges = np.append(starts, stream.shape[1])
+    out = np.empty(stream.shape, dtype=float)
+    for start, cue, stop in zip(edges[:-1], onsets, edges[1:]):
+        block = stream[:, start:stop]
+        out[:, start:stop] = block - block[:, : cue - start].mean(axis=1, keepdims=True)
+    return out
+
+
 class Cho2017(BaseDataset):
     """Motor Imagery dataset from Cho et al 2017.
 
@@ -62,6 +82,25 @@ class Cho2017(BaseDataset):
     accuracy over one run and gave the subject feedback to increase motivation.
     Between each run, a maximum 4-minute break was given depending on
     the subject's demands.
+
+    **Data layout**
+
+    The GigaDB files are not continuous recordings: each class is stored as
+    its own stream of 100 (or 120) tiled 7-s trial blocks (2 s fixation, cue
+    at 2 s, 5 s stored after the cue). MOABB concatenates the left-hand
+    stream, 500 zero samples and the right-hand stream into one ``Raw``, and
+    removes from each block the mean of its own 2-s fixation period. Some
+    participants make a sustained horizontal eye movement toward the imagined
+    hand that starts about 0.5 s after the cue and lasts to the end of the
+    stored block, so every block is "flat, then a class-locked deviation".
+    The per-block demeaning keeps the unfiltered pre-cue segment
+    (``fmin=None``) class-neutral, but with ``fmin`` below a few Hz (e.g.
+    0.1-1 Hz) the band-pass filter spreads part of that deviation into the
+    samples before the cue: the pre-cue segment is then not class-neutral
+    and can decode the class. The default ``fmin=8`` of the motor-imagery
+    paradigms is not affected. With a low ``fmin``, pass a pre-cue baseline to the paradigm
+    (e.g. ``baseline=(-1, 0)`` with ``tmin=-1``), and do not use the pre-cue
+    interval as a neutral baseline or null window (:gh:`1340`).
 
     References
     ----------
@@ -163,17 +202,19 @@ class Cho2017(BaseDataset):
             age_std=3.86,
             handedness={"right": 50, "both": 2},
             bci_experience="collected via questionnaire (0 = no, number = how many times)",
-            species="human",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             paradigm="imagery",
             n_classes=2,
-            class_labels=["right_hand", "left_hand"],
+            class_labels=["left_hand", "right_hand"],
             trial_duration=3.0,
+            task_type="left_right_hand",
             study_design="motor imagery",
             stimulus_type="visual instruction",
             stimulus_modalities=["visual"],
             primary_modality="visual",
+            synchronicity="synchronous",
             mode="offline",
             feedback_type="none",
             instructions="Subjects were asked to imagine kinesthetic finger movements (touching index, middle, ring, and little finger to thumb within 3 seconds)",
@@ -196,7 +237,7 @@ class Cho2017(BaseDataset):
             country="KR",
             repository="GigaDB",
             data_url="http://dx.doi.org/10.5524/100295",
-            license="CC-BY-4.0",
+            license="CC0-1.0",
             publication_year=2017,
             contact_info=[
                 "scjun@gist.ac.kr",
@@ -267,7 +308,7 @@ class Cho2017(BaseDataset):
         data_structure=DataStructureMetadata(
             n_trials="100 or 120 per class (200-240 total)",
             trials_context="per_class",
-            n_blocks="5 or 6",
+            n_blocks=5,
         ),
         data_processed=False,
         file_format=".mat (MATLAB)",
@@ -314,10 +355,11 @@ class Cho2017(BaseDataset):
         ch_names = eeg_ch_names + emg_ch_names + ["Stim"]
         ch_types = ["eeg"] * 64 + ["emg"] * 4 + ["stim"]
         montage = make_standard_montage("colin27_1005")
-        imagery_left = data.imagery_left - data.imagery_left.mean(axis=1, keepdims=True)
-        imagery_right = data.imagery_right - data.imagery_right.mean(
-            axis=1, keepdims=True
-        )
+        # Demean each tiled block by its own fixation period, not each class
+        # stream as a whole: a per-stream mean puts a class-dependent offset on
+        # the pre-cue segment of every block (gh-1340).
+        imagery_left = _demean_blocks(data.imagery_left, data.imagery_event)
+        imagery_right = _demean_blocks(data.imagery_right, data.imagery_event)
 
         eeg_data_l = np.vstack([imagery_left * 1e-6, data.imagery_event])
         eeg_data_r = np.vstack([imagery_right * 1e-6, data.imagery_event * 2])
@@ -328,8 +370,10 @@ class Cho2017(BaseDataset):
             [eeg_data_l, np.zeros((eeg_data_l.shape[0], 500)), eeg_data_r]
         )
         log.warning(
-            "Trials demeaned and stacked with zero buffer to create "
-            "continuous data -- edge effects present"
+            "Trials demeaned by their pre-cue period and stacked per class with "
+            "a zero buffer to create continuous data -- edge effects present; "
+            "with fmin below a few Hz the pre-cue segment is not class-neutral "
+            "(see the Cho2017 docstring)"
         )
 
         info = create_info(ch_names=ch_names, ch_types=ch_types, sfreq=data.srate)

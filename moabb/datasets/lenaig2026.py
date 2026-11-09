@@ -164,31 +164,37 @@ class Gueho2026(BaseDataset):
             software="OpenVIBE",
             line_freq=50,
             montage="standard_1020",
+            sensors=list(_CH_NAMES_EEG.values()),
             impedance_threshold_kohm=10,
         ),
         participants=ParticipantMetadata(
-            n_subjects=48, gender={"male": 24, "female": 24}, age_max=63, age_min=18
+            n_subjects=24, gender={"male": 12, "female": 12}, age_max=63, age_min=18
         ),
         experiment=ExperimentMetadata(
-            events=_EVENT_DICT,
+            events={"Sinus": 4, "Silence": 8},
             paradigm="ssvep",
             n_classes=2,
-            class_labels=["Stimulus", "Silence"],
-            # 10 repetitions per condition (5 conditions: Sinus, BrownNoise,
-            # Cicada, Cat, Silence) per the dataset description above; the
-            # schema declares ``trials_per_class`` as Dict[str, int], not a
-            # bare int -- bids_interface._build_readme's
-            # ``_format_dict(exp.trials_per_class)`` crashes with
-            # ``AttributeError: 'int' object has no attribute 'items'``
-            # otherwise (hit on a real end-to-end convert).
-            trials_per_class={"Stimulus": 10, "Silence": 10},
+            class_labels=["Sinus", "Silence"],
+            # 10 repetitions per condition per run x 2 runs = 20 trials per condition
+            # (5 conditions: Sinus, BrownNoise, Cicada, Cat, Silence) per the
+            # dataset description above; the schema declares ``trials_per_class``
+            # as Dict[str, int], not a bare int.
+            trials_per_class={"Sinus": 20, "Silence": 20},
             trial_duration=10,
-            feedback_type="auditory",
+            feedback_type="none",
+            stimulus_type=(
+                "40 Hz amplitude-modulated auditory stimuli (pure tone, "
+                "brownian noise, cicada song, cat's purr) and silence"
+            ),
+            stimulus_modalities=["auditory"],
+            primary_modality="auditory",
+            synchronicity="synchronous",
             mode="offline",
             has_training_test_split=False,
         ),
         documentation=DocumentationMetadata(
             doi=_DOI,
+            associated_paper_doi=_DOI,
             repository="Zenodo",
             data_url=f"https://doi.org/{_DATA_DOI}",
             license="CC-BY-NC-ND-4.0",
@@ -201,6 +207,14 @@ class Gueho2026(BaseDataset):
                 "Cyril Plapous",
                 "Patrick Hénaff",
                 "Rozenn Nicol",
+            ],
+            senior_author="Rozenn Nicol",
+            contact_info=[
+                "lenaig.gueho@orange.com",
+                "laurent.bougrain@loria.fr",
+                "cyril.plapous@orange.com",
+                "patrick.henaff@loria.fr",
+                "rozenn.nicol@orange.com",
             ],
             publication_year=2026,
         ),

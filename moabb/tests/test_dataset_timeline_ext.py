@@ -94,3 +94,22 @@ def test_header_html_quickstart_button_reveals_code_panel():
     assert "from moabb.datasets import SampleDataset" in text
     assert "dataset = SampleDataset()" in text
     assert "data = dataset.get_data(subjects=[7])" in text
+
+
+def test_thapa2025_renders_motor_execution_label():
+    from moabb.datasets import Thapa2025
+
+    info = ext._get_dataset_info(Thapa2025)
+    assert info["is_motor_execution"] is True
+
+    html = ext._make_header_html(
+        "Thapa2025",
+        info,
+        live_citations=False,
+        pageview_counts={},
+        pageview_rank={},
+        pageview_meta={},
+    )
+    assert "Motor Execution, 4 classes" in html
+    assert ">Motor Execution</span>" in html
+    assert ">Imagery</span>" not in html

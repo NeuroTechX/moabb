@@ -225,6 +225,7 @@ class GrosseWentrup2009(BaseDataset):
             paradigm="imagery",
             n_classes=2,
             class_labels=["right_hand", "left_hand"],
+            trials_per_class={"left_hand": 150, "right_hand": 150},
             trial_duration=10,
             feedback_type="none",
             stimulus_type="arrow_cue",
@@ -251,6 +252,7 @@ class GrosseWentrup2009(BaseDataset):
             },
         ),
         documentation=DocumentationMetadata(
+            data_url="https://zenodo.org/records/1217449",
             doi="10.1109/TBME.2008.2009768",
             investigators=[
                 "Moritz Grosse-Wentrup",
@@ -286,7 +288,11 @@ class GrosseWentrup2009(BaseDataset):
         signal_processing=SignalProcessingMetadata(
             classifiers=["Logistic Regression"],
             feature_extraction=["CSP", "Beamforming", "Laplacian", "Bandpower"],
-            frequency_bands={"analyzed_range": [7.0, 30.0]},
+            frequency_bands={
+                "analyzed_range": [7.0, 30.0],
+                "filter_bank_range": [1.0, 41.0],
+                "beta": [25.0, 35.0],
+            },
             spatial_filters=["CSP", "Beamforming", "Laplacian"],
         ),
         cross_validation=CrossValidationMetadata(
@@ -303,7 +309,11 @@ class GrosseWentrup2009(BaseDataset):
             cue_duration_s=7.0,
             imagery_duration_s=7.0,
         ),
-        data_structure=DataStructureMetadata(n_trials=150, trials_context="per_class"),
+        data_structure=DataStructureMetadata(
+            n_trials=300,
+            n_trials_per_class={"left_hand": 150, "right_hand": 150},
+            trials_context="per_subject (150 trials per condition)",
+        ),
         sessions_per_subject=1,
         runs_per_session=1,
         data_processed=True,

@@ -15,6 +15,7 @@ from . import download as dl
 from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
+    AuxiliaryChannelsMetadata,
     BCIApplicationMetadata,
     CrossValidationMetadata,
     DatasetMetadata,
@@ -53,9 +54,9 @@ _AGES = [
     39, 53, 64, 50, 55, 55, 41,
 ]
 _SEXES = [
-    "M", "M", "M", "M", "M", "M", "M", "M", "M", "M",
-    "M", "M", "F", "M", "F", "F", "M", "M", "M", "M",
-    "M", "M", "F", "M", "M", "M", "M",
+    "male", "male", "male", "male", "male", "male", "male", "male", "male", "male",
+    "male", "male", "female", "male", "female", "female", "male", "male", "male", "male",
+    "male", "male", "female", "male", "male", "male", "male",
 ]
 # fmt: on
 
@@ -104,23 +105,32 @@ class Liu2025(BaseDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            channel_types={"eeg": 60, "ecg": 1, "eog": 4},
+            channel_types={"eeg": 59, "ecg": 1, "eog": 4},
             montage="standard_1020",
             hardware="NeuSen W (Neuracle, Inc.)",
             sensor_type="Ag/AgCl",
+            impedance_threshold_kohm=10.0,
             filters={"notch": 50.0},
             line_freq=50.0,
+            auxiliary_channels=AuxiliaryChannelsMetadata(
+                has_eog=True,
+                eog_channels=4,
+                eog_type=["horizontal", "vertical"],
+                other_physiological=["ecg"],
+            ),
         ),
         participants=ParticipantMetadata(
             n_subjects=27,
             health_status="stroke (recovery phase)",
             gender={"male": 23, "female": 4},
+            age_mean=51.44,
+            age_std=9.31,
             age_min=33.0,
             age_max=68.0,
             ages=_AGES,
             sexes=_SEXES,
             handedness="mixed",
-            species="human",
+            species="homo sapiens",
             clinical_population="stroke",
         ),
         experiment=ExperimentMetadata(
@@ -142,6 +152,22 @@ class Liu2025(BaseDataset):
             mode="offline",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Dong Ming",
+            ethics_approval=[
+                "Ethics Committee of Tianjin Huanhu Hospital (IEC-B-013-V3.0)"
+            ],
+            funding=[
+                "National Key R&D Program of China (2023YFC3603800, 2023YFC3603802)",
+                "National Natural Science Foundation of China (62273251)",
+                "Research Project of State Key Laboratory of Mechanical System and Vibration (MSV202418)",
+                "Tianjin Science and Technology Plan Project (21JCYBJC00420, 21JCYBJC00520)",
+            ],
+            contact_info=[
+                "ryanliu@tju.edu.cn",
+                "wywjl2009@hotmail.com",
+                "richardming@tju.edu.cn",
+            ],
+            repository="Zenodo",
             doi=_DOI,
             investigators=[
                 "Yuan Liu",
@@ -155,6 +181,7 @@ class Liu2025(BaseDataset):
                 "Dong Ming",
             ],
             institution="Tianjin University",
+            institution_department="Academy of Medical Engineering and Translational Medicine",
             country="CN",
             data_url=f"https://zenodo.org/records/{_ZENODO_RECORD}",
             publication_year=2025,
@@ -166,8 +193,17 @@ class Liu2025(BaseDataset):
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
             imagery_tasks=list(_EVENTS.keys()),
+            cue_duration_s=1.0,
             imagery_duration_s=5.0,
         ),
+        performance={
+            "accuracy_percent": 80.50,
+            "Pre_accuracy": 78.92,
+            "IES_accuracy": 80.57,
+            "SES_accuracy": 82.41,
+            "Post_accuracy": 80.95,
+            "Follow_accuracy": 80.52,
+        },
         data_structure=DataStructureMetadata(
             n_trials=80,
             trials_context=(
@@ -267,6 +303,13 @@ class Liu2025(BaseDataset):
                     raw = mne.io.read_raw_brainvision(
                         str(vhdr), preload=True, verbose="ERROR"
                     )
+                    ch_type_map = {
+                        ch: ("ecg" if ch.upper() == "ECG" else "eog")
+                        for ch in raw.ch_names
+                        if ch.upper() in ("ECG", "HEOR", "HEOL", "VEOU", "VEOL")
+                    }
+                    if ch_type_map:
+                        raw.set_channel_types(ch_type_map, verbose=False)
 
                     # Map BrainVision stimulus annotations to event names.
                     # BV format: "Stimulus/S  3" -> "gait_imagery"

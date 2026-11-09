@@ -82,7 +82,7 @@ class MIND2026(BaseDataset):
     60 s eyes-open rest, a 60 s eyes-closed rest, and 40 MI trials: 20 trials
     using codes 4/5 followed by 20 trials using codes 6/7. Each MI trial lasted
     27 s: a 2 s synchronous visual+auditory cue at 0 s, a 10 s motor-imagery
-    execution period, and a 10 s post-imagery rest. Participants performed 120
+    execution period, and a 15 s post-imagery inter-trial rest. Participants performed 120
     MI trials in total (30 per class), for 3,600 EEG/fNIRS trials across the
     cohort.
 
@@ -130,20 +130,25 @@ class MIND2026(BaseDataset):
 
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
+            ground="forehead (GND)",
+            reference="parietal region (REF)",
             sampling_rate=1000.0,
             channel_types={"eeg": 64},
             montage="10-20",
-            hardware="Neuroscan SynAmps (64-channel Ag/AgCl, 10-20)",
+            hardware="Neuroscan SynAmps2 wireless",
+            cap_manufacturer="Neuroscan",
             sensor_type="Ag/AgCl",
             electrode_type="wet",
+            impedance_threshold_kohm=10.0,
             line_freq=50.0,
         ),
         participants=ParticipantMetadata(
+            handedness={"right": 30},
             n_subjects=30,
             health_status="healthy",
-            gender={"female": 12, "male": 18},
-            age_min=19.0,
-            age_max=25.0,
+            gender={"male": 18, "female": 12},
+            age_min=19,
+            age_max=25,
             species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
@@ -158,7 +163,7 @@ class MIND2026(BaseDataset):
                 "with simultaneous EEG and fNIRS recording. Three blocks per "
                 "subject; each block: 60 s eyes-open rest, 60 s eyes-closed "
                 "rest, 40 MI trials. Each 27 s trial: 2 s synchronous "
-                "visual+auditory cue, 10 s MI execution, 10 s post-imagery rest."
+                "visual+auditory cue, 10 s MI execution, 15 s post-imagery inter-trial rest."
             ),
             feedback_type="none",
             stimulus_type="visual instruction animation and auditory cue",
@@ -166,6 +171,10 @@ class MIND2026(BaseDataset):
             primary_modality="visual",
             synchronicity="synchronous",
             mode="offline",
+            stimulus_presentation={
+                "SoftwareName": "E-Prime (E-Studio)",
+                "SoftwareVersion": "3.0",
+            },
             instructions=(
                 "Participants continuously imagined the cued directional upper-"
                 "limb movement, mentally repeating it 2-4 times over the 10 s "
@@ -173,6 +182,8 @@ class MIND2026(BaseDataset):
             ),
         ),
         documentation=DocumentationMetadata(
+            senior_author="Ziyu Jia",
+            associated_paper_doi="10.48550/arXiv.2602.04299",
             doi=MIND2026_DOI,
             description=(
                 "Multimodal fNIRS-EEG dataset for four-class directional "
@@ -190,6 +201,14 @@ class MIND2026(BaseDataset):
                 "Shifan Jia",
                 "Li Duan",
                 "Ziyu Jia",
+            ],
+            institution=(
+                "Beijing Jiaotong University; Institute of Automation, "
+                "Chinese Academy of Sciences"
+            ),
+            contact_info=["duanli@bjtu.edu.cn", "jia.ziyu@outlook.com"],
+            ethics_approval=[
+                "Approved by the Ethics Committee / Institutional Review Board (IRB)"
             ],
             country="CN",
             repository="ScienceDB",
@@ -223,12 +242,16 @@ class MIND2026(BaseDataset):
             ),
         ),
         signal_processing=SignalProcessingMetadata(
-            classifiers=None,
-            feature_extraction=None,
-            frequency_bands=None,
-            spatial_filters=None,
+            classifiers=["sLDA (Sparse Linear Discriminant Analysis)"],
+            feature_extraction=["FBCSP", "ERD/ERS", "ERSP"],
+            frequency_bands={"alpha": [8.0, 12.0], "beta": [13.0, 30.0]},
+            spatial_filters=["FBCSP"],
         ),
-        cross_validation=CrossValidationMetadata(evaluation_type=["within_subject"]),
+        cross_validation=CrossValidationMetadata(
+            cv_method="10x5-fold cross-validation",
+            cv_folds=5,
+            evaluation_type=["within_subject"],
+        ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
             imagery_tasks=list(_EVENTS.keys()),

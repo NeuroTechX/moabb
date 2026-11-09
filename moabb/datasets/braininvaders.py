@@ -106,7 +106,7 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
             run_name = "0"
             # fmt: off
             chnames = [
-                'Fp1', 'Fp2', 'F3', 'AFz', 'F4', 'T7', 'Cz', 'T8', 'P7',
+                'Fp1', 'Fp2', 'F5', 'AFz', 'F6', 'T7', 'Cz', 'T8', 'P7',
                 'P3', 'Pz', 'P4', 'P8', 'O1', 'Oz', 'O2', 'STI 014'
             ]
             # fmt: on
@@ -554,9 +554,11 @@ class BI2012(BaseDataset):
             age_min=21,
             age_max=31,
             bci_experience="half played games occasionally (around 4.5 hours a week)",
-            species="human",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
+            trial_duration=1.0,
+            task_type="brain_invaders",
             paradigm="p300",
             study_design="longitudinal and transversal design with training-test mode of operation",
             feedback_type="visual (game interface)",
@@ -666,7 +668,7 @@ class BI2012(BaseDataset):
             code="BrainInvaders2012",
             interval=[0, 1],
             paradigm="p300",
-            doi="https://doi.org/10.5281/zenodo.2649006",
+            doi="10.5281/zenodo.2649006",
             selected_subjects=subjects,
             selected_sessions=sessions,
             return_all_modalities=return_all_modalities,
@@ -720,7 +722,7 @@ class BI2013a(BaseDataset):
     must be used for quantifying the performance of classification methods
     (e.g., balanced accuracy, AUC methods, etc).
 
-    Data were acquired with a Nexus (TMSi, The Netherlands) EEG amplifier:
+    Data were acquired with a g.USBamp (g.tec, Schiedlberg, Austria) EEG amplifier:
 
     * Sampling Frequency: 512 samples per second
     * Digital Filter: no
@@ -728,7 +730,7 @@ class BI2013a(BaseDataset):
       FP1, FP2, F5, AFz, F6, T7, Cz, T8, P7, P3, Pz, P4, P8, O1, Oz, O2
       according to the 10/20 international system.
     * Reference: left ear-lobe.
-    * Ground: N/A.
+    * Ground: FZ.
 
     :Principal Investigators: Erwan Vaineau, Dr. Alexandre Barachant
     :Scientific Supervisor:  Dr. Marco Congedo
@@ -797,7 +799,7 @@ class BI2013a(BaseDataset):
             age_std=4.46,
             age_min=20.0,
             age_max=30.0,
-            species="human",
+            species="homo sapiens",
             bci_experience="volunteers recruited via flyers and university mailing list",
         ),
         experiment=ExperimentMetadata(
@@ -806,7 +808,7 @@ class BI2013a(BaseDataset):
             events={"Target": 33285, "NonTarget": 33286},
             n_classes=2,
             class_labels=["Target", "NonTarget"],
-            trial_duration=None,
+            trial_duration=1.0,
             study_design="compare P300-based BCI with and without adaptive calibration using Riemannian geometry; randomised order of runs (adaptive vs non-adaptive)",
             feedback_type="visual (Brain Invaders video game interface)",
             stimulus_type="visual flashes",
@@ -934,7 +936,7 @@ class BI2013a(BaseDataset):
             code="BrainInvaders2013a",
             interval=[0, 1],
             paradigm="p300",
-            doi="https://doi.org/10.5281/zenodo.2669187",
+            doi="10.5281/zenodo.1494163",
             selected_subjects=subjects,
             selected_sessions=sessions,
             return_all_modalities=return_all_modalities,
@@ -1031,20 +1033,22 @@ class BI2014a(BaseDataset):
         ),
         participants=ParticipantMetadata(
             n_subjects=64,
-            gender={"male": 49, "female": 22},
+            gender={"male": 43, "female": 21},
             age_mean=23.55,
             age_std=3.13,
+            age_min=19.0,
+            age_max=35.0,
             health_status="healthy",
             bci_experience="57 were naïve BCI participants",
             handedness="not specified",
-            species="human",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             paradigm="p300",
             task_type="oddball",
             n_classes=2,
-            class_labels=["Target", "Non-Target"],
-            trial_duration=None,
+            class_labels=["Target", "NonTarget"],
+            trial_duration=1.0,
             study_design="calibration-less P300-based BCI system with dry electrodes; screening session for potential candidates for a broader multi-user BCI study",
             feedback_type="visual",
             stimulus_type="visual flashes",
@@ -1146,7 +1150,7 @@ class BI2014a(BaseDataset):
             code="BrainInvaders2014a",
             interval=[0, 1],
             paradigm="p300",
-            doi="https://doi.org/10.5281/zenodo.3266222",
+            doi="10.5281/zenodo.3266223",
             selected_subjects=subjects,
             selected_sessions=sessions,
             return_all_modalities=return_all_modalities,
@@ -1255,8 +1259,10 @@ class BI2014b(BaseDataset):
             gender={"male": 24, "female": 14},
             age_mean=24.10,
             age_std=3.09,
+            age_min=19.0,
+            age_max=35.0,
             bci_experience="not naïve users - selected on the basis of their individual score during a preliminary session of Brain Invaders",
-            species="human",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             paradigm="p300",
@@ -1264,7 +1270,7 @@ class BI2014b(BaseDataset):
             events={"Target": 2, "NonTarget": 1},
             n_classes=2,
             class_labels=["Target", "NonTarget"],
-            trial_duration=None,
+            trial_duration=1.0,
             study_design="multi-user/hyperscanning experiment with three randomized conditions (Solo1, Solo2, Collaboration). Subjects played in pairs. Solo conditions used a control design where non-playing participant focused on unanimated cross to prevent stimulus observation while EEG was recorded (to correct for fake inter-brain synchrony).",
             study_domain="inter-brain synchrony in collaborative BCI",
             feedback_type="visual",
@@ -1362,7 +1368,7 @@ class BI2014b(BaseDataset):
             code="BrainInvaders2014b",
             interval=[0, 1],
             paradigm="p300",
-            doi="https://doi.org/10.5281/zenodo.3267301",
+            doi="10.5281/zenodo.3267301",
             selected_subjects=subjects,
             selected_sessions=sessions,
             return_all_modalities=return_all_modalities,
@@ -1470,11 +1476,14 @@ class BI2015a(BaseDataset):
             gender={"male": 31, "female": 12},
             age_mean=23.70,
             age_std=3.19,
+            age_min=18.0,
+            age_max=32.0,
             health_status="healthy",
             bci_experience="mostly students and young researchers",
             species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
+            trial_duration=1.0,
             events={"Target": 2, "NonTarget": 1},
             paradigm="p300",
             study_design="calibration-less P300-based BCI with modulation of flash duration; three game sessions (9 levels each) with different flash durations (110ms, 80ms, 50ms); resting state and eyes closed recorded before and after sessions; subjects instructed to limit eye blinks, head movements and face muscular contractions",
@@ -1484,7 +1493,7 @@ class BI2015a(BaseDataset):
             mode="online",
             stimulus_type="oddball paradigm on grid of 36 symbols (1 Target, 35 Non-Target) flashed pseudo-randomly",
             n_classes=2,
-            class_labels=["Target", "Non-Target"],
+            class_labels=["Target", "NonTarget"],
             synchronicity="synchronous",
             task_type="target detection",
             instructions="destroy target symbol within 8 attempts; aliens move slowly and regularly according to predefined path to maintain attention",
@@ -1562,7 +1571,7 @@ class BI2015a(BaseDataset):
             code="BrainInvaders2015a",
             interval=[0, 1],
             paradigm="p300",
-            doi="https://doi.org/10.5281/zenodo.3266929",
+            doi="10.5281/zenodo.3266930",
             selected_subjects=subjects,
             selected_sessions=sessions,
             return_all_modalities=return_all_modalities,
@@ -1671,9 +1680,10 @@ class BI2015b(BaseDataset):
             filters="no digital filter applied",
         ),
         participants=ParticipantMetadata(
-            n_subjects=44, health_status="Healthy", species="human"
+            n_subjects=44, health_status="Healthy", species="homo sapiens"
         ),
         experiment=ExperimentMetadata(
+            trial_duration=1.0,
             paradigm="p300",
             events={"Target": 2, "NonTarget": 1},
             n_classes=2,
@@ -1759,7 +1769,7 @@ class BI2015b(BaseDataset):
             code="BrainInvaders2015b",
             interval=[0, 1],
             paradigm="p300",
-            doi="https://doi.org/10.5281/zenodo.3267307",
+            doi="10.5281/zenodo.3267307",
             selected_subjects=subjects,
             selected_sessions=sessions,
             return_all_modalities=return_all_modalities,
@@ -1797,7 +1807,7 @@ class Cattan2019_VR(BaseDataset):
 
     Parameters
     ----------
-    virtual_reality: bool (default False)
+    virtual_reality: bool (default True)
         if True, return runs corresponding to P300 experiment on virtual reality.
     screen_display: bool (default True)
         if True, return runs corresponding to P300 experiment on personal computer.
@@ -1864,8 +1874,8 @@ class Cattan2019_VR(BaseDataset):
             paradigm="p300",
             events={"Target": 2, "NonTarget": 1},
             n_classes=2,
-            class_labels=["target", "non_target"],
-            trial_duration=None,
+            class_labels=["Target", "NonTarget"],
+            trial_duration=1.0,
             study_design="randomized session order (PC vs VR); limit eye blinks, head movements and face muscular contractions",
             feedback_type="visual",
             stimulus_type="flashing white crosses in 6x6 matrix",
@@ -1937,7 +1947,7 @@ class Cattan2019_VR(BaseDataset):
             online_feedback=False,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="p300", n_targets=1, n_repetitions=12
+            detected_paradigm="p300", n_targets=1, n_repetitions=5
         ),
         data_structure=DataStructureMetadata(
             n_trials={"target": 120, "non_target": 600},
@@ -1978,7 +1988,7 @@ class Cattan2019_VR(BaseDataset):
             code="Cattan2019-VR",  # before: "VR-P300"
             interval=[0, 1.0],
             paradigm="p300",
-            doi="https://doi.org/10.5281/zenodo.2605204",
+            doi="10.5281/zenodo.2605204",
             selected_subjects=subjects,
             selected_sessions=sessions,
             return_all_modalities=return_all_modalities,

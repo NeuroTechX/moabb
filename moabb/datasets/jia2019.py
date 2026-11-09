@@ -13,6 +13,7 @@ from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
     CrossValidationMetadata,
     DatasetMetadata,
+    DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
     ParadigmSpecificMetadata,
@@ -111,12 +112,14 @@ class Jia2019(BaseDataset):
             line_freq=50.0,
         ),
         participants=ParticipantMetadata(
+            gender=None,
             n_subjects=15,
             health_status="stroke",
             clinical_population="stroke",
             species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
+            trial_duration=6.8,
             events=dict(_EVENTS),
             paradigm="imagery",
             n_classes=2,
@@ -131,6 +134,7 @@ class Jia2019(BaseDataset):
             mode="offline",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Tianyu Jia",
             doi="10.6084/m9.figshare.7636301",
             description=(
                 "EEG from 15 stroke patients performing left- vs right-hand motor "
@@ -160,6 +164,12 @@ class Jia2019(BaseDataset):
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery", imagery_tasks=["left_hand", "right_hand"]
+        ),
+        data_structure=DataStructureMetadata(
+            n_trials=80,
+            n_trials_per_class={"left_hand": 40, "right_hand": 40},
+            n_blocks=2,
+            trials_context="2 blocks (DATA1, DATA2) x 20 trials per class = 80 trials per subject (1,200 total across 15 subjects)",
         ),
         cross_validation=CrossValidationMetadata(evaluation_type=["within_subject"]),
         file_format="MAT",

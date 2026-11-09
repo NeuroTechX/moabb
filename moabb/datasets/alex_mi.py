@@ -78,10 +78,13 @@ class AlexMI(BaseDataset):
                 "P8",
             ],
             line_freq=50.0,
-            sensor_type="EEG",
+            sensor_type="wet",
         ),
         participants=ParticipantMetadata(
-            n_subjects=8, health_status="healthy", species="human"
+            n_subjects=8,
+            health_status="healthy",
+            bci_experience="mixed",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             events={"right_hand": 2, "feet": 3, "rest": 4},
@@ -126,7 +129,7 @@ class AlexMI(BaseDataset):
         ),
         sessions_per_subject=1,
         runs_per_session=1,
-        data_processed=True,
+        data_processed=False,
         file_format="fif",
         tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Research"]),
         preprocessing=PreprocessingMetadata(re_reference="earlobe"),
@@ -154,12 +157,10 @@ class AlexMI(BaseDataset):
             spatial_filters=["CSP", "Geodesic filtering"],
         ),
         cross_validation=CrossValidationMetadata(
-            cv_method="cross-validation", evaluation_type=["within_session"]
+            cv_method="k-fold", cv_folds=30, evaluation_type=["within_session"]
         ),
         bci_application=BCIApplicationMetadata(
-            applications=["motor_control"],
-            environment="laboratory",
-            online_feedback=False,
+            applications=["motor_control"], environment="office", online_feedback=False
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",

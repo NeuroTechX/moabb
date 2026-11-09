@@ -143,21 +143,32 @@ _EXPERIMENT_CONFIGS = {
 def _make_metadata(experiment):
     """Build DatasetMetadata for a given experiment."""
     config = _EXPERIMENT_CONFIGS[experiment]
+    display_env = (
+        "AR display (Microsoft HoloLens 1)" if experiment == "AC" else "LCD display"
+    )
+    n_trials_str = (
+        "30 testing blocks per subject"
+        if not config["has_training"]
+        else "50 training + 30 testing blocks per subject"
+    )
     return DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=500.0,
             channel_types={"eeg": config["n_eeg"]},
             montage="standard_1020",
             hardware="actiCHamp (Brain Products)",
-            sensor_type="active",
-            reference="linked mastoids",
+            sensor_type="active wet",
+            reference="left mastoid",
+            ground="right mastoid",
+            impedance_threshold_kohm=5.0,
+            filters={"bandpass": [0.01, 50.0]},
             sensors=list(config["ch_names"]),
             line_freq=60.0,
         ),
         participants=ParticipantMetadata(
             n_subjects=config["n_subjects"],
             health_status="healthy",
-            species="human",
+            species="homo sapiens",
             **config.get("demographics", {}),
         ),
         experiment=ExperimentMetadata(
@@ -168,7 +179,7 @@ def _make_metadata(experiment):
             trial_duration=1.0,
             study_design=(
                 f"P300 BCI for {experiment} home appliance control; "
-                f"{config['n_classes']}-class oddball; LCD display"
+                f"{config['n_classes']}-class oddball; {display_env}"
             ),
             feedback_type="visual",
             stimulus_type="flash",
@@ -191,11 +202,24 @@ def _make_metadata(experiment):
                 "Laehyun Kim",
                 "Sung-Phil Kim",
             ],
+            senior_author="Sung-Phil Kim",
             institution="Ulsan National Institute of Science and Technology",
+            institution_department="Department of Biomedical Engineering; Center for Bionics",
             country="KR",
             publication_year=2024,
+            repository="GitHub",
             data_url="https://github.com/jml226/Home-Appliance-Control-Dataset",
             license="CC-BY-4.0",
+            contact_info=["laehyunk@kist.re.kr", "spkim@unist.ac.kr"],
+            ethics_approval=[
+                "Institutional Review Board at the Ulsan National Institutes of Science and Technology (IRB: UNISTIRB-18-08-A)"
+            ],
+            funding=[
+                "Alchemist Project (grant number 20012355, Fully implantable closed loop Brain to X for voice communication) funded by MOTIE, Korea",
+                "Institute of Information & Communications Technology Planning & Evaluation (IITP) grant (No. 2017-0-00432)",
+                "Basic Science Research Program through the National Research Foundation of Korea (NRF) funded by the Ministry of Education (grant number NRF-2021R1A6A3A01086784)",
+                "Brain Research Program through the National Research Foundation of Korea (NRF) funded by the Ministry of Science, ICT & Future Planning (grant number 2022M3C7A1015112)",
+            ],
         ),
         sessions_per_subject=1,
         tags=Tags(pathology=["Healthy"], modality=["ERP"], type=["P300"]),
@@ -205,11 +229,14 @@ def _make_metadata(experiment):
             online_feedback=True,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="p300", soa_ms=750.0
+            detected_paradigm="p300",
+            soa_ms=750.0,
+            isi_ms=125.0,
+            n_repetitions=10,
+            n_targets=config["n_classes"],
         ),
         data_structure=DataStructureMetadata(
-            n_trials="50 training + 30 testing blocks per subject",
-            trials_context="per_subject",
+            n_trials=n_trials_str, trials_context="per_subject"
         ),
         data_processed=False,
         file_format="MATLAB",
@@ -457,7 +484,7 @@ class Lee2024(BaseDataset):
             ]
         return cls._upstream_paths
 
-    def _subject_files(self, config, subj_str):
+    def _subject_files(self, config, subj_str, path=None):
         """One subject's files, as upstream-relative paths under the experiment.
 
         The NEMAR deposit's provenance manifest is the preferred inventory --
@@ -468,7 +495,7 @@ class Lee2024(BaseDataset):
         filename patterns silently dropped 345 files, e.g. subject 8's
         unpadded ``sub8_*`` names and every ``param.mat``).
         """
-        store = self._sourcedata_store()
+        store = self._sourcedata_store(path)
         manifest = store / "sourcedata_provenance.json" if store else None
         if manifest and manifest.is_file():
             rels = (f["file"] for f in json.loads(manifest.read_text())["files"])
@@ -490,7 +517,7 @@ class Lee2024(BaseDataset):
         config = _EXPERIMENT_CONFIGS[self._experiment]
         subj_str = self._subj_str(subject, config)
         unpadded = self._subj_str(subject, {"zero_pad": False})
-        for rel in self._subject_files(config, subj_str):
+        for rel in self._subject_files(config, subj_str, path=path):
             # The loader constructs zero-padded names; subject 8's upstream
             # files are unpadded (sub8_*), so normalize the local name.
             local = rel.replace(f"{unpadded}_", f"{subj_str}_")
@@ -508,6 +535,7 @@ class Lee2024(BaseDataset):
 class Lee2024_TV(Lee2024):
     """Television control experiment (30 subjects, 4 classes, 31 EEG ch)."""
 
+    METADATA = _make_metadata("TV")
     nemar_id = "nm000213"
     __init__ = partialmethod(Lee2024.__init__, "TV")
 
@@ -515,6 +543,7 @@ class Lee2024_TV(Lee2024):
 class Lee2024_DL(Lee2024):
     """Door lock control experiment (15 subjects, 4 classes, 31 EEG ch)."""
 
+    METADATA = _make_metadata("DL")
     nemar_id = "nm000208"
     __init__ = partialmethod(Lee2024.__init__, "DL")
 
@@ -522,6 +551,7 @@ class Lee2024_DL(Lee2024):
 class Lee2024_EL(Lee2024):
     """Electric light control experiment (15 subjects, 4 classes, 31 EEG ch)."""
 
+    METADATA = _make_metadata("EL")
     nemar_id = "nm000223"
     __init__ = partialmethod(Lee2024.__init__, "EL")
 
@@ -529,6 +559,7 @@ class Lee2024_EL(Lee2024):
 class Lee2024_BS(Lee2024):
     """Bluetooth speaker experiment (14 subjects, 6 classes, 31 EEG ch)."""
 
+    METADATA = _make_metadata("BS")
     nemar_id = "nm000204"
     __init__ = partialmethod(Lee2024.__init__, "BS")
 
@@ -536,5 +567,6 @@ class Lee2024_BS(Lee2024):
 class Lee2024_AC(Lee2024):
     """Air conditioner control experiment (10 subjects, 4 classes, 25 EEG ch)."""
 
+    METADATA = _make_metadata("AC")
     nemar_id = "nm000222"
     __init__ = partialmethod(Lee2024.__init__, "AC")

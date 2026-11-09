@@ -17,6 +17,7 @@ from . import download as dl
 from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
+    AuxiliaryChannelsMetadata,
     CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
@@ -168,6 +169,7 @@ _NGUYEN_ACQUISITION = AcquisitionMetadata(
     filters={"highpass": 8.0, "lowpass": 70.0, "notch_hz": 60.0},
     line_freq=60.0,
     sensor_type="EEG",
+    auxiliary_channels=AuxiliaryChannelsMetadata(has_eog=True, eog_channels=4),
 )
 
 _NGUYEN_PREPROCESSING = PreprocessingMetadata(
@@ -186,13 +188,30 @@ _NGUYEN_PREPROCESSING = PreprocessingMetadata(
 
 _NGUYEN_TAGS = Tags(pathology=["Healthy"], modality=["Speech"], type=["Research"])
 
+_NGUYEN_SIGNAL_PROCESSING = SignalProcessingMetadata(
+    classifiers=["mRVM", "ELM", "LDA", "SVM"],
+    feature_extraction=[
+        "Riemannian tangent space",
+        "Covariance matrix",
+        "Morlet wavelet",
+        "CSP",
+    ],
+    frequency_bands={"mu": [8.0, 13.0], "beta": [13.0, 30.0], "gamma": [30.0, 70.0]},
+    spatial_filters=["CSP", "Multi-class CSP"],
+)
 
-def _nguyen_participants(n_subjects):
+_NGUYEN_CV = CrossValidationMetadata(
+    cv_method="10-fold", cv_folds=10, evaluation_type=["within_session"]
+)
+
+
+def _nguyen_participants(n_subjects, handedness=None):
     return ParticipantMetadata(
         n_subjects=n_subjects,
         health_status="healthy",
         age_min=22,
         age_max=32,
+        handedness=handedness,
         species="human",
     )
 
@@ -210,7 +229,15 @@ def _nguyen_docs(keywords_suffix, description):
         data_url=f"https://zenodo.org/records/{_ZENODO_RECORD}",
         repository="Zenodo",
         senior_author="Panagiotis Artemiadis",
-        contact_info=["chuong.h.nguyen@asu.edu", "panagiotis.artemiadis@asu.edu"],
+        funding=[
+            "US Defense Advanced Research Projects Agency (DARPA) grant D14AP00068",
+            "US Air Force Office of Scientific Research (AFOSR) award FA9550-14-1-0149",
+        ],
+        contact_info=[
+            "chuong.h.nguyen@asu.edu",
+            "georgioskonstantinos.karavas@asu.edu",
+            "panagiotis.artemiadis@asu.edu",
+        ],
         ethics_approval=["ASU IRB (Protocols: 1309009601, STUDY00001345)"],
         associated_paper_doi=_DOI,
         keywords=[
@@ -239,7 +266,7 @@ class _Nguyen2017Base(BaseDataset):
             sessions_per_subject=1,
             events=cfg["events"],
             code=f"Nguyen2017-{self._code_suffix}",
-            interval=[0, 1.5],
+            interval=[0, 2.0],
             paradigm="imagery",
             doi=_DOI,
             selected_subjects=subjects,
@@ -252,7 +279,7 @@ class _Nguyen2017Base(BaseDataset):
         Uses the 'last_beep' variable (speech imagery period, 5s).
         Each 5s trial is split into three overlapping 2s trials:
         - Vowels/ShortWords (T=1.0s): total 4s used, split as 2s epochs with 1s overlap.
-        - LongWords/ShortLongWords (T=1.4s): total 4.5s used, split as 2s epochs with 1.25s overlap.
+        - LongWords/ShortLongWords (T=1.4s): total 4.5s used, split as 2s epochs with 0.75s overlap.
         """
         mat = loadmat(str(fpath), squeeze_me=False)
         key = "eeg_data_wrt_task_rep_no_eog_256Hz_last_beep"
@@ -272,8 +299,8 @@ class _Nguyen2017Base(BaseDataset):
             # 4s total used, 1s overlap -> starts at 0s, 1s, 2s
             offsets = [int(0 * _SFREQ), int(1.0 * _SFREQ), int(2.0 * _SFREQ)]
         else:
-            # LongWords or ShortLongWords
-            offsets = [int(0 * _SFREQ), int(1.4 * _SFREQ), int(2.8 * _SFREQ)]
+            # LongWords or ShortLongWords: 4.5s total used, 0.75s overlap -> starts at 0s, 1.25s, 2.5s
+            offsets = [int(0 * _SFREQ), int(1.25 * _SFREQ), int(2.5 * _SFREQ)]
 
         # Collect all split epochs: (n_total_trials * 3, n_ch, n_times).
         all_data = []
@@ -354,18 +381,18 @@ class Nguyen2017_V(_Nguyen2017Base):
     nemar_seed_cache = True
     METADATA = DatasetMetadata(
         acquisition=_NGUYEN_ACQUISITION,
-        participants=_nguyen_participants(8),
+        participants=_nguyen_participants(8, handedness={"right": 7, "left": 1}),
         experiment=ExperimentMetadata(
             events={"vowel_a": 1, "vowel_i": 2, "vowel_u": 3},
             paradigm="imagery",
             n_classes=3,
             class_labels=["vowel_a", "vowel_i", "vowel_u"],
-            trial_duration=2.0,
+            trial_duration=5.0,
             study_design=(
                 "Auditory beep + visual cue. 5 beeps at T=1.0s rhythm. "
                 "Subject imagines speech at each beep and continues for "
                 "3 more periods. Analyzed segment: after last beep. "
-                "Each 5s trial is split into 3 overlapping epochs of 2s."
+                "Each 5s trial is split into 3 overlapping epochs of 2s (0, 1.25, 2.5s)."
             ),
             stimulus_type="auditory + visual cue",
             stimulus_modalities=["auditory", "visual"],
@@ -392,19 +419,8 @@ class Nguyen2017_V(_Nguyen2017Base):
             cue_duration_s=7.0,
             imagery_duration_s=5.0,
         ),
-        signal_processing=SignalProcessingMetadata(
-            classifiers=["mRVM"],
-            feature_extraction=["Riemannian tangent space"],
-            frequency_bands={
-                "mu": [8.0, 13.0],
-                "beta": [13.0, 30.0],
-                "gamma": [30.0, 70.0],
-            },
-            spatial_filters=["CSP"],
-        ),
-        cross_validation=CrossValidationMetadata(
-            cv_method="10-fold", cv_folds=10, evaluation_type=["within_session"]
-        ),
+        signal_processing=_NGUYEN_SIGNAL_PROCESSING,
+        cross_validation=_NGUYEN_CV,
         data_structure=DataStructureMetadata(
             n_trials=7200,
             n_trials_per_class={"vowel_a": 2400, "vowel_i": 2400, "vowel_u": 2400},
@@ -427,16 +443,16 @@ class Nguyen2017_S(_Nguyen2017Base):
     nemar_seed_cache = True
     METADATA = DatasetMetadata(
         acquisition=_NGUYEN_ACQUISITION,
-        participants=_nguyen_participants(6),
+        participants=_nguyen_participants(6, handedness={"right": 6}),
         experiment=ExperimentMetadata(
             events={"out": 1, "in": 2, "up": 3},
             paradigm="imagery",
             n_classes=3,
             class_labels=["out", "in", "up"],
-            trial_duration=2.0,
+            trial_duration=5.0,
             study_design=(
                 "Auditory beep + visual cue. 5 beeps at T=1.0s rhythm. "
-                "Analyzed: 5s after last beep. Each 5s trial is split into 3 overlapping epochs of 2s."
+                "Analyzed: 5s after last beep. Each 5s trial is split into 3 overlapping epochs of 2s (0, 1.25, 2.5s)."
             ),
             stimulus_type="auditory + visual cue",
             stimulus_modalities=["auditory", "visual"],
@@ -463,6 +479,8 @@ class Nguyen2017_S(_Nguyen2017Base):
             cue_duration_s=7.0,
             imagery_duration_s=5.0,
         ),
+        signal_processing=_NGUYEN_SIGNAL_PROCESSING,
+        cross_validation=_NGUYEN_CV,
         data_structure=DataStructureMetadata(
             n_trials=5400,
             n_trials_per_class={"out": 1800, "in": 1800, "up": 1800},
@@ -485,16 +503,16 @@ class Nguyen2017_L(_Nguyen2017Base):
     nemar_seed_cache = True
     METADATA = DatasetMetadata(
         acquisition=_NGUYEN_ACQUISITION,
-        participants=_nguyen_participants(6),
+        participants=_nguyen_participants(6, handedness={"right": 6}),
         experiment=ExperimentMetadata(
             events={"cooperate": 1, "independent": 2},
             paradigm="imagery",
             n_classes=2,
             class_labels=["cooperate", "independent"],
-            trial_duration=2.0,
+            trial_duration=5.0,
             study_design=(
                 "Auditory beep + visual cue. 5 beeps at T=1.4s rhythm. "
-                "Analyzed: 5s after last beep. Each 5s trial is split into 3 overlapping epochs of 2s."
+                "Analyzed: 5s after last beep. Each 5s trial is split into 3 overlapping epochs of 2s (0, 1.25, 2.5s)."
             ),
             stimulus_type="auditory + visual cue",
             stimulus_modalities=["auditory", "visual"],
@@ -520,6 +538,8 @@ class Nguyen2017_L(_Nguyen2017Base):
             cue_duration_s=9.8,
             imagery_duration_s=5.0,
         ),
+        signal_processing=_NGUYEN_SIGNAL_PROCESSING,
+        cross_validation=_NGUYEN_CV,
         data_structure=DataStructureMetadata(
             n_trials=3600,
             n_trials_per_class={"cooperate": 1800, "independent": 1800},
@@ -542,16 +562,16 @@ class Nguyen2017_SL(_Nguyen2017Base):
     nemar_seed_cache = True
     METADATA = DatasetMetadata(
         acquisition=_NGUYEN_ACQUISITION,
-        participants=_nguyen_participants(6),
+        participants=_nguyen_participants(6, handedness={"right": 6}),
         experiment=ExperimentMetadata(
             events={"cooperate": 1, "in": 2},
             paradigm="imagery",
             n_classes=2,
             class_labels=["cooperate", "in"],
-            trial_duration=2.0,
+            trial_duration=5.0,
             study_design=(
                 "Auditory beep + visual cue. 5 beeps at T=1.4s rhythm. "
-                "Analyzed: 5s after last beep. Each 5s trial is split into 3 overlapping epochs of 2s."
+                "Analyzed: 5s after last beep. Each 5s trial is split into 3 overlapping epochs of 2s (0, 1.25, 2.5s)."
             ),
             stimulus_type="auditory + visual cue",
             stimulus_modalities=["auditory", "visual"],
@@ -574,6 +594,8 @@ class Nguyen2017_SL(_Nguyen2017Base):
             cue_duration_s=9.8,
             imagery_duration_s=5.0,
         ),
+        signal_processing=_NGUYEN_SIGNAL_PROCESSING,
+        cross_validation=_NGUYEN_CV,
         data_structure=DataStructureMetadata(
             n_trials=3600,
             n_trials_per_class={"cooperate": 1800, "in": 1800},

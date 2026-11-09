@@ -328,7 +328,7 @@ class BNCI2014_001(MNEBNCI):
             sampling_rate=250.0,
             channel_types={"eeg": 22, "eog": 3},
             montage="custom",
-            hardware="BrainAmp MR plus",
+            hardware=None,
             sensor_type="Ag/AgCl",
             reference="left mastoid",
             ground="right mastoid",
@@ -362,12 +362,14 @@ class BNCI2014_001(MNEBNCI):
                 "Pz",
             ],
             line_freq=50.0,
-            auxiliary_channels=AuxiliaryChannelsMetadata(has_eog=False, has_emg=False),
-            cap_manufacturer="EASYCAP GmbH",
+            auxiliary_channels=AuxiliaryChannelsMetadata(
+                has_eog=True, eog_channels=3, has_emg=False
+            ),
+            cap_manufacturer=None,
             impedance_threshold_kohm=None,
         ),
         participants=ParticipantMetadata(
-            n_subjects=9, health_status="healthy", species="human"
+            n_subjects=9, health_status="healthy", species="homo sapiens"
         ),
         experiment=ExperimentMetadata(
             paradigm="imagery",
@@ -434,16 +436,16 @@ class BNCI2014_001(MNEBNCI):
                 "Stephan Waldert",
                 "Benjamin Blankertz",
             ],
-            institution="Berlin Institute of Technology",
-            country="DE",
+            institution="Graz University of Technology",
+            country="AT",
             license="CC-BY-ND-4.0",
             repository="BNCI Horizon",
             data_url="http://www.bbci.de/competition/iv/",
             publication_year=2012,
             senior_author="Michael Tangermann",
             contact_info=["michael.tangermann@tu-berlin.de"],
-            institution_address="FR 6-9, Franklinstr. 28/29, 10587 Berlin, Germany",
-            institution_department="Machine Learning Laboratory",
+            institution_address="Inffeldgasse 16b, 8010 Graz, Austria",
+            institution_department="Institute for Knowledge Discovery, Laboratory of Brain-Computer Interfaces",
             keywords=["brain-computer interface", "BCI", "competition"],
         ),
         tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Motor"]),
@@ -477,7 +479,7 @@ class BNCI2014_001(MNEBNCI):
         cross_validation=CrossValidationMetadata(
             cv_method="train-test split", evaluation_type=["within_session"]
         ),
-        performance={"MSE": 0.382},
+        performance={"kappa": 0.57},
         bci_application=BCIApplicationMetadata(
             applications=["cursor_control", "communication"],
             environment="laboratory",
@@ -618,8 +620,8 @@ class BNCI2014_002(MNEBNCI):
             sensor_type="Ag/AgCl",
             reference="left mastoid",
             ground="right mastoid",
-            software="BCI2000",
-            filters="8th order Butterworth band-pass filters",
+            software="tools4BCI Signal Server, MATLAB/SIMULINK",
+            filters="0.1-200 Hz 8th-order Butterworth bandpass, 50 Hz notch",
             # Approximate 3x5 grid labels (see _CH_NAMES_002_2014); the data
             # ships unlabeled and the exact custom Laplacian positions are
             # undocumented.
@@ -633,10 +635,11 @@ class BNCI2014_002(MNEBNCI):
         participants=ParticipantMetadata(
             n_subjects=14,
             health_status="healthy",
+            gender={"female": 5, "male": 9},
             age_min=20.0,
             age_max=30.0,
             bci_experience="mixed",
-            species="human",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             paradigm="imagery",
@@ -646,26 +649,32 @@ class BNCI2014_002(MNEBNCI):
             study_design="Two-class motor imagery: right hand and feet. Cue-guided Graz-BCI training paradigm with recording, training, and feedback within a single session.",
             feedback_type="continuous",
             stimulus_type="bar_graph",
-            stimulus_modalities=["visual"],
+            stimulus_modalities=["visual", "auditory"],
             primary_modality="visual",
             synchronicity="synchronous",
-            mode="online",
+            mode="both",
             events={"right_hand": 1, "feet": 2},
         ),
         documentation=DocumentationMetadata(
+            senior_author="Gernot R. Müller-Putz",
+            data_url="http://bnci-horizon-2020.eu/database/data-sets",
             doi="10.1515/bmt-2014-0117",
             investigators=[
                 "David Steyrl",
                 "Reinhold Scherer",
-                "Oswin Förstner",
+                "Josef Faller",
                 "Gernot R. Müller-Putz",
             ],
             institution="Graz University of Technology",
             institution_department="Institute for Knowledge Discovery, Laboratory of Brain-Computer Interfaces",
             country="AT",
+            ethics_approval=[
+                "World Medical Association Declaration of Helsinki",
+                "local ethics committee",
+            ],
             license="CC-BY-ND-4.0",
             repository="BNCI Horizon",
-            publication_year=2014,
+            publication_year=2016,
             funding=["FP7 BackHome (No. 288566)", "FP7 ABC (No. 287774)"],
             contact_info=[
                 "david.steyrl@tugraz.at",
@@ -686,7 +695,11 @@ class BNCI2014_002(MNEBNCI):
         preprocessing=PreprocessingMetadata(
             data_state="minimally preprocessed (online filtered)",
             preprocessing_applied=True,
-            preprocessing_steps=["bandpass filtering"],
+            preprocessing_steps=["bandpass filtering", "notch filtering"],
+            highpass_hz=0.1,
+            lowpass_hz=200.0,
+            bandpass=[0.1, 200.0],
+            notch_hz=50.0,
             filter_type="Butterworth",
             filter_order=8,
             artifact_methods=None,
@@ -714,7 +727,7 @@ class BNCI2014_002(MNEBNCI):
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery",
             imagery_tasks=["right_hand", "feet"],
-            cue_duration_s=None,
+            cue_duration_s=1.0,
             imagery_duration_s=5.0,
         ),
         data_structure=DataStructureMetadata(
@@ -754,25 +767,24 @@ class BNCI2014_004(MNEBNCI):
     This dataset consists of EEG data from 9 subjects. The cue-based BCI
     paradigm consisted of two different motor imagery tasks, namely the
     imagination of movement of the left hand (class 1) and the right hand
-    (class 2). Two sessions on different days were recorded for each subject.
-    Each session is comprised of 6 runs separated by short breaks. One run
-    consists of 20 trials (10 for each of the two possible classes), yielding
-    a total of 120 trials per session.
+    (class 2). Five sessions on different days were recorded for each subject:
+    two screening sessions without feedback (6 runs of 20 trials = 120 trials
+    per session) and three online feedback sessions with smiley feedback
+    (4 runs of 40 trials = 160 trials per session).
 
-    The subjects were sitting in a comfortable chair in front of a computer
-    screen. At the beginning of a trial (t = 0 s), a fixation cross appeared
-    on the black screen. In addition, a short acoustic warning tone was
-    presented. After two seconds (t = 2 s), a cue in the form of an arrow
-    pointing either to the left or to the right appeared and stayed on the
-    screen for 1.25 s. This prompted the subjects to perform the desired
-    motor imagery task. No feedback was provided. The subjects were ask to
-    carry out the motor imagery task until the fixation cross disappeared
-    from the screen at t = 6 s.
+    In the two screening sessions, at the beginning of a trial (t = 0 s), a
+    fixation cross appeared on the black screen and a short acoustic warning
+    tone was presented at t = 2 s. At t = 3 s, a cue in the form of an arrow
+    pointing either to the left or to the right appeared for 1.25 s, prompting
+    4 s of motor imagery. In the three online feedback sessions, a gray smiley
+    was centered on the screen at t = 0 s, a warning beep was presented at
+    t = 2 s, and the cue and continuous smiley feedback ran from t = 3 s to
+    t = 7.5 s.
 
-    Three bipolar channels (C3, Cz, C4) and three EOG channels were recorded.
-    The signals were sampled at 250 Hz and bandpass-filtered between 0.5 Hz
-    and 100 Hz. The reference was the left mastoid and the ground was the right
-    mastoid. The electrode montage is a reduced version of the 10-20 system.
+    Three bipolar EEG channels (C3, Cz, C4) and three monopolar EOG channels
+    were recorded. The signals were sampled at 250 Hz and bandpass-filtered
+    between 0.5 Hz and 100 Hz with a 50 Hz notch filter. The EEG ground was
+    placed at Fz and the EOG reference was placed on the left mastoid.
 
     References
     ----------
@@ -836,7 +848,7 @@ class BNCI2014_004(MNEBNCI):
             bci_experience="naive",
             sexes=None,
             handedness_list=None,
-            species="human",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             paradigm="imagery",
@@ -845,7 +857,7 @@ class BNCI2014_004(MNEBNCI):
             n_classes=2,
             class_labels=["left_hand", "right_hand"],
             trials_per_class=None,
-            trial_duration=7.5,
+            trial_duration=4.5,
             tasks=["left_hand_imagery", "right_hand_imagery"],
             study_design="Two-class motor imagery: left hand and right hand. Screening sessions (01T, 02T) without feedback, feedback sessions (03T, 04E, 05E) with smiley feedback.",
             study_domain="brain-computer interface",
@@ -853,7 +865,7 @@ class BNCI2014_004(MNEBNCI):
             stimulus_type="arrow_cue",
             stimulus_modalities=["visual", "auditory"],
             primary_modality="visual",
-            synchronicity="cue_based",
+            synchronicity="synchronous",
             mode="both",
             has_training_test_split=True,
             instructions="Subjects selected their best motor imagery strategy (e.g., squeezing a ball or pulling a brake) and performed kinesthetic motor imagery of left or right hand movements.",
@@ -939,7 +951,7 @@ class BNCI2014_004(MNEBNCI):
             cv_folds=10,
             evaluation_type=["within_subject"],
         ),
-        performance={},
+        performance={"kappa": 0.60},
         bci_application=BCIApplicationMetadata(
             applications=["motor_control"], environment="laboratory", online_feedback=True
         ),
@@ -998,14 +1010,14 @@ class BNCI2014_008(MNEBNCI):
     **Participants**
 
     - 8 participants with amyotrophic lateral sclerosis (ALS)
-    - Gender: 6 male, 2 female
-    - Age range: 25-60 years
+    - Gender: 5 male, 3 female
+    - Age range: 40-75 years (mean 58 ± 12)
 
     **Recording Details**
 
     - Channels: 8 EEG channels
     - Sampling rate: 256 Hz
-    - Reference: Linked mastoids
+    - Reference: Right earlobe, ground on the left mastoid
 
     References
     ----------
@@ -1039,32 +1051,35 @@ class BNCI2014_008(MNEBNCI):
         participants=ParticipantMetadata(
             n_subjects=8,
             health_status="ALS patients",
-            gender={"M": 5, "F": 3},
+            gender={"male": 5, "female": 3},
             age_mean=58.0,
             age_std=12.0,
             age_min=40,
-            age_max=72,
+            age_max=75,
+            ages=[56, 59, 43, 75, 60, 40, 61, 72],
+            sexes=["male", "male", "male", "female", "female", "male", "male", "female"],
             clinical_population="amyotrophic lateral sclerosis",
             bci_experience="naive",
-            species="human",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             paradigm="p300",
             n_classes=2,
             class_labels=["Target", "NonTarget"],
-            trial_duration=None,
+            trial_duration=1.0,
             study_design="P300 speller with 6x6 matrix for copy-spelling task in ALS patients",
             feedback_type="visual",
             stimulus_type="row-column intensification",
             stimulus_modalities=["visual"],
             primary_modality="visual",
             synchronicity="synchronous",
-            mode="online",
+            mode="both",
             has_training_test_split=True,
             instructions="Copy spell seven predefined words of five characters each by focusing attention on desired letters",
             events={"Target": 2, "NonTarget": 1},
         ),
         documentation=DocumentationMetadata(
+            data_url="http://bnci-horizon-2020.eu/database/data-sets",
             doi="10.3389/fnhum.2013.00732",
             investigators=[
                 "Angela Riccio",
@@ -1145,7 +1160,7 @@ class BNCI2014_008(MNEBNCI):
             n_blocks=7,
             trials_context="per subject (7 words, 5 characters each)",
         ),
-        file_format="Unknown",
+        file_format="MAT",
         data_processed=True,
         sessions_per_subject=1,
         runs_per_session=1,
@@ -1245,9 +1260,11 @@ class BNCI2014_009(MNEBNCI):
             gender={"female": 10, "male": 0},
             age_mean=26.8,
             age_std=5.6,
+            age_min=22,
+            age_max=40,
             ages=[22, 23, 27, 23, 23, 26, 40, 23, 26, 35],
             bci_experience="experienced",
-            species="human",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             paradigm="p300",
@@ -1276,6 +1293,7 @@ class BNCI2014_009(MNEBNCI):
             },
         ),
         documentation=DocumentationMetadata(
+            data_url="http://bnci-horizon-2020.eu/database/data-sets",
             doi="10.1088/1741-2560/11/3/035008",
             description="Complete record of P300 evoked potentials recorded with BCI2000 using two different paradigms: P300 Speller (overt attention) and GeoSpell (covert attention). 10 healthy subjects focused on one out of 36 different characters.",
             investigators=[

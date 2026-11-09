@@ -25,8 +25,6 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Union
 
-import pycountry
-
 
 def validate_country_code(code: str) -> bool:
     """Validate that a string is a valid ISO 3166-1 alpha-2 country code.
@@ -52,6 +50,8 @@ def validate_country_code(code: str) -> bool:
     """
     if not isinstance(code, str) or len(code) != 2:
         return False
+    import pycountry
+
     return pycountry.countries.get(alpha_2=code.upper()) is not None
 
 

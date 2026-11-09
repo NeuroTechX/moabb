@@ -16,12 +16,14 @@ from . import download as dl
 from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
     ParadigmSpecificMetadata,
     ParticipantMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 
@@ -33,10 +35,10 @@ _SIGN = "speier2017"
 
 # fmt: off
 _CH_NAMES = [
-    "Fz", "FC1", "FCz", "FC2", "FC4", "FC6", "C4", "C6",
-    "CP4", "CP6", "FC3", "FC5", "C3", "C5", "CP3", "CP5",
-    "CP1", "P1", "Cz", "CPz", "Pz", "POz", "CP2", "P2",
-    "PO7", "PO3", "O1", "Oz", "Iz", "O2", "PO4", "PO8",
+    "Fpz", "Fz", "FC1", "FCz", "FC2", "FC4", "FC6", "C4",
+    "C6", "CP4", "CP6", "FC3", "FC5", "C3", "C5", "CP3",
+    "CP5", "CP1", "P1", "Cz", "CPz", "Pz", "POz", "CP2",
+    "P2", "PO7", "PO3", "O1", "Oz", "O2", "PO4", "PO8",
 ]
 # fmt: on
 
@@ -265,6 +267,9 @@ class Speier2017(BaseDataset):
             channel_types={"eeg": 32},
             montage="standard_1005",
             hardware="g.tec amplifier",
+            sensor_type="active",
+            filters="bandpass 0.1-60 Hz",
+            software="BCI2000",
             reference="left ear",
             ground="AFz",
             sensors=list(_CH_NAMES),
@@ -294,11 +299,20 @@ class Speier2017(BaseDataset):
             mode="online",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Nader Pouratian",
+            funding=[
+                "National Institute of Biomedical Imaging and Bioengineering Award Number K23EB014326",
+                "UCLA Scholars in Translational Medicine Program",
+            ],
+            ethics_approval=["UCLA Institutional Review Board (IRB#11-002062)"],
+            repository="Harvard Dataverse",
             doi=_DOI,
             investigators=[
                 "William Speier",
-                "Corey Arnold",
                 "Aniket Deshpande",
+                "Lucy Cui",
+                "Nand Chandravadia",
+                "Dustin Roberts",
                 "Nader Pouratian",
             ],
             institution="University of California, Los Angeles",
@@ -313,6 +327,13 @@ class Speier2017(BaseDataset):
         tags=Tags(pathology=["Healthy"], modality=["ERP"], type=["P300"]),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="p300", soa_ms=125.0, isi_ms=25.0
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["SWLDA", "Dynamic Stopping", "Particle Filtering"],
+            feature_extraction=["decimated time-domain ERP windows (0-600 ms)"],
+        ),
+        cross_validation=CrossValidationMetadata(
+            evaluation_type=["within_subject", "cross_session"]
         ),
         data_structure=DataStructureMetadata(
             n_trials="~1200 flashes per training run (10 chars x 10 seq x 12)",

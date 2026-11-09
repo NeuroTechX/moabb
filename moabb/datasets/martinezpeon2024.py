@@ -7,10 +7,15 @@ from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
+    DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
+    ParadigmSpecificMetadata,
     ParticipantMetadata,
+    PreprocessingMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 
@@ -109,6 +114,7 @@ class MartinezPeon2024(BaseDataset):
             sensor_type="wet",
             electrode_type="saline",
             reference="P3 and P4 (Emotiv EPOC reference locations)",
+            impedance_threshold_kohm=5.0,
             line_freq=60.0,
             sensors=list(MARTINEZPEON2024_CHANNELS),
         ),
@@ -120,6 +126,8 @@ class MartinezPeon2024(BaseDataset):
             age_min=24.0,
             age_max=32.0,
             gender={"male": 7, "female": 3},
+            handedness="right",
+            bci_experience="naive",
             species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
@@ -136,23 +144,49 @@ class MartinezPeon2024(BaseDataset):
                 "The force level is encoded in the file name."
             ),
             feedback_type="none",
-            synchronicity="cue-based",
+            stimulus_type="auditory beep cue",
+            stimulus_modalities=["auditory"],
+            primary_modality="auditory",
+            synchronicity="synchronous",
             mode="offline",
             events={"level_10": 1, "level_40": 2, "level_70": 3},
         ),
         documentation=DocumentationMetadata(
+            senior_author="Vicente Parra-Vega",
             doi="10.6084/m9.figshare.25773342.v1",
             description=(
                 "EEG kinesthetic motor imagery at three graded hand-grip force "
                 "levels (10/40/70% MVC) from 10 healthy subjects, Emotiv EPOC, "
                 "14 channels, 128 Hz."
             ),
-            investigators=["Dulce Martinez-Peon"],
+            investigators=[
+                "Dulce Martinez-Peon",
+                "Nadia V. Garcia-Hernandez",
+                "Francisco G. Benavides-Bravo",
+                "Vicente Parra-Vega",
+            ],
             institution=(
                 "National Technological Institute of Mexico (TecNM) - IT Nuevo "
                 "Leon; Cinvestav Saltillo"
             ),
+            institution_department=(
+                "Postgraduate and Research Department (TecNM - IT Nuevo Leon); "
+                "Robotics and Advanced Manufacturing Division (Cinvestav Saltillo)"
+            ),
             country="MX",
+            contact_info=[
+                "dulce.mp@nuevoleon.tecnm.mx",
+                "nadia.garcia@cinvestav.edu.mx",
+                "francisco.benavides@itsaltillo.edu.mx",
+                "vparra@cinvestav.edu.mx",
+            ],
+            ethics_approval=[
+                "Ethics Committee of the National Technological Institute of Mexico (TecNM) - IT Saltillo"
+            ],
+            funding=[
+                "CONAHCYT (National Council of Humanities, Sciences and Technologies, Mexico) doctoral scholarship No. 724156",
+                "Cinvestav",
+            ],
             data_url="https://doi.org/10.6084/m9.figshare.25773342",
             associated_paper_doi="10.1088/1741-2552/ad5f27",
             publication_year=2024,
@@ -169,8 +203,43 @@ class MartinezPeon2024(BaseDataset):
         ),
         sessions_per_subject=1,
         runs_per_session=6,
-        tags=Tags(modality=["Motor"], type=["Motor Imagery"]),
+        paradigm_specific=ParadigmSpecificMetadata(
+            detected_paradigm="motor_imagery",
+            imagery_tasks=["level_10", "level_40", "level_70"],
+            imagery_duration_s=5.0,
+        ),
+        data_structure=DataStructureMetadata(
+            n_trials=30,
+            n_trials_per_class={"level_10": 10, "level_40": 10, "level_70": 10},
+            n_blocks=6,
+            block_duration_s=40.0,
+            trials_context="6 runs per subject (3 force levels x 2 attempts), 5 KMI trials per 40 s run = 30 KMI trials per subject (10 per class)",
+        ),
+        preprocessing=PreprocessingMetadata(
+            data_state="raw", preprocessing_applied=False
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=[
+                "Extra Trees (ET)",
+                "Random Forest (RF)",
+                "MLP",
+                "kNN",
+                "SVM",
+                "LDA",
+            ],
+            feature_extraction=["ERD/ERS", "DWT", "EMD"],
+            frequency_bands={"mu": [8.0, 12.0], "beta": [12.0, 30.0]},
+            spatial_filters=["CAR"],
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="10-fold",
+            cv_folds=10,
+            evaluation_type=["within_subject", "cross_subject"],
+        ),
+        performance={"ExtraTrees_4class_accuracy": 0.9038},
+        tags=Tags(pathology=["Healthy"], modality=["Motor"], type=["Motor Imagery"]),
         file_format="TXT",
+        data_processed=False,
     )
 
     def __init__(self):

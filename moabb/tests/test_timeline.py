@@ -77,6 +77,117 @@ class TestExtractStimulusTimeline(unittest.TestCase):
             ("Motor Imagery", 3.25, 2.75),
         ]
 
+    def test_thapa2025_motor_execution_stimulus_protocol(self):
+        from moabb.analysis.timeline import extract_stimulus_timeline
+        from moabb.datasets import Thapa2025
+
+        result = extract_stimulus_timeline(Thapa2025())
+
+        assert result.total_duration_s == 19.0
+        labels = [p.label for p in result.phases]
+        assert "Fixation +" not in labels
+        assert "Motor Imagery" not in labels
+        assert [(p.label, p.onset_s, p.duration_s) for p in result.phases] == [
+            ("Audio 'Start'", 0.0, 1.0),
+            ("Self-Paced Motor Execution", 1.0, 11.0),
+            ("Break / Rest", 12.0, 7.0),
+        ]
+
+    def test_self_paced_and_auditory_datasets_never_have_fixation_cross(self):
+        from moabb.analysis.timeline import extract_stimulus_timeline
+        from moabb.datasets import (
+            BNCI2020_001,
+            BNCI2025_001,
+            BNCI2025_002,
+            Brandl2020,
+            Forenzo2023,
+            Kueper2024,
+            Rozado2015,
+            Thapa2025,
+            Wairagkar2018,
+        )
+
+        for cls in (
+            Thapa2025,
+            BNCI2020_001,
+            Kueper2024,
+            BNCI2025_001,
+            BNCI2025_002,
+            Wairagkar2018,
+            Forenzo2023,
+            Brandl2020,
+            Rozado2015,
+        ):
+            tl = extract_stimulus_timeline(cls())
+            labels = [p.label for p in tl.phases]
+            assert "Fixation +" not in labels, f"{cls.__name__} had Fixation +: {labels}"
+
+    def test_cued_and_cognitive_protocols_use_metadata_timings(self):
+        from moabb.analysis.timeline import extract_stimulus_timeline
+        from moabb.datasets import BNCI2024_001, HefmiIch2025, Weibo2014
+
+        weibo = extract_stimulus_timeline(Weibo2014())
+        assert [(p.label, p.onset_s, p.duration_s) for p in weibo.phases] == [
+            ("Fixation +", 0.0, 2.0),
+            ("Cue", 2.0, 1.0),
+            ("Motor Imagery", 3.0, 4.0),
+            ("Rest", 7.0, 1.0),
+        ]
+
+        hefmi = extract_stimulus_timeline(HefmiIch2025())
+        assert [(p.label, p.onset_s, p.duration_s) for p in hefmi.phases] == [
+            ("Cue", 0.0, 2.0),
+            ("Motor Imagery", 2.0, 10.0),
+            ("Rest", 12.0, 15.0),
+        ]
+
+        bnci24 = extract_stimulus_timeline(BNCI2024_001())
+        assert bnci24.paradigm == "cognitive"
+        assert [p.label for p in bnci24.phases] == [
+            "Fade-In",
+            "Letter Cue",
+            "Fade-Out",
+            "Handwriting",
+        ]
+
+    def test_non_motor_and_execution_task_labels(self):
+        from moabb.analysis.timeline import extract_stimulus_timeline
+        from moabb.datasets import (
+            BNCI2025_001,
+            BNCI2025_002,
+            AguileraRodriguez2025,
+            CastillosCVEP100,
+            Gao2026,
+            Gueho2026,
+            Kaneshiro2015,
+            Wairagkar2018,
+        )
+
+        kaneshiro = extract_stimulus_timeline(Kaneshiro2015())
+        assert [p.label for p in kaneshiro.phases] == ["Visual Stimulus"]
+
+        gao = extract_stimulus_timeline(Gao2026())
+        assert any("Visual Imagery" in p.label for p in gao.phases)
+
+        aguilera = extract_stimulus_timeline(AguileraRodriguez2025())
+        assert any("Imagined Speech" in p.label for p in aguilera.phases)
+
+        wairagkar = extract_stimulus_timeline(Wairagkar2018())
+        assert any("Motor Execution" in p.label for p in wairagkar.phases)
+        assert not any("Motor Imagery" in p.label for p in wairagkar.phases)
+
+        bnci25_1 = extract_stimulus_timeline(BNCI2025_001())
+        assert any("Motor Execution" in p.label for p in bnci25_1.phases)
+
+        bnci25_2 = extract_stimulus_timeline(BNCI2025_002())
+        assert any("Attempted Movement" in p.label for p in bnci25_2.phases)
+
+        gueho = extract_stimulus_timeline(Gueho2026())
+        assert any("Auditory Stimulus" in p.label for p in gueho.phases)
+
+        castillos = extract_stimulus_timeline(CastillosCVEP100())
+        assert "Feedback" not in [p.label for p in castillos.phases]
+
 
 class TestPlotClassBalance(unittest.TestCase):
     """Tests for plot_class_balance."""

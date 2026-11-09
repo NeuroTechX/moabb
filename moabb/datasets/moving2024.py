@@ -9,10 +9,13 @@ from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
+    DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
     ParticipantMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 from moabb.datasets.utils import extract_rar
@@ -133,6 +136,7 @@ class MOVING2024(BaseDataset):
             channel_types={"eeg": 32, "misc": 3},
             montage="10-20",
             hardware="Neuroelectrics Enobio 32 (dry electrodes, wireless)",
+            software="NIC2",
             electrode_type="dry",
             sensor_type="dry",
             reference="CMS/DRL",
@@ -143,22 +147,32 @@ class MOVING2024(BaseDataset):
             n_subjects=11, health_status="healthy", species="homo sapiens"
         ),
         experiment=ExperimentMetadata(
+            events={"rest": 1, "open_close": 2, "wrist_rotation": 3, "finger_tapping": 4},
             paradigm="imagery",
             n_classes=4,
             class_labels=["rest", "open_close", "wrist_rotation", "finger_tapping"],
+            trials_per_class={
+                "rest": 24,
+                "open_close": 8,
+                "wrist_rotation": 8,
+                "finger_tapping": 8,
+            },
             trial_duration=6.0,
             study_design=(
                 "rest -> motor imagery -> motor execution triplet for three "
                 "right-hand movements (open/close, wrist rotation, finger "
                 "tapping), 8 repetitions per subject."
             ),
+            feedback_type="none",
             stimulus_type="visual",
             stimulus_modalities=["visual"],
             synchronicity="cue-based",
             mode="offline",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Giuseppe Placidi",
             doi="10.3390/s24165207",
+            related_paper_dois=["10.5281/zenodo.12804784"],
             description=(
                 "Multi-modal dataset pairing 32-channel dry EEG with Virtual "
                 "Glove hand-kinematic tracking during motor imagery and motor "
@@ -181,6 +195,33 @@ class MOVING2024(BaseDataset):
         ),
         sessions_per_subject=1,
         runs_per_session=1,
+        data_structure=DataStructureMetadata(
+            n_trials=48,
+            n_trials_per_class={
+                "rest": 24,
+                "open_close": 8,
+                "wrist_rotation": 8,
+                "finger_tapping": 8,
+            },
+            n_blocks=8,
+            trials_context=(
+                "8 repetitions of 3 movement triplets (rest, MI, ME); 24 rest "
+                "trials and 8 MI (or 8 ME) trials per movement class per subject"
+            ),
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["EEGNetv4"],
+            feature_extraction=["PSD (Welch)"],
+            frequency_bands={
+                "delta": [1.0, 4.0],
+                "theta": [4.0, 8.0],
+                "alpha": [8.0, 12.0],
+                "beta": [12.0, 30.0],
+                "gamma": [30.0, 45.0],
+                "full": [1.0, 45.0],
+            },
+        ),
+        cross_validation=CrossValidationMetadata(cv_method="k-fold", cv_folds=5),
         tags=Tags(modality=["Motor"], type=["Motor Imagery", "Motor Execution"]),
         file_format="EDF",
     )

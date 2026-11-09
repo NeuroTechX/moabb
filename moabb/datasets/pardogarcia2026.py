@@ -10,10 +10,13 @@ from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
+    AuxiliaryChannelsMetadata,
     DatasetMetadata,
+    DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
     ParticipantMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 
@@ -146,8 +149,17 @@ class PardoGarcia2026(BaseDataset):
             ground=None,
             sensors=list(PARDOGARCIA2026_CHANNELS),
             line_freq=50.0,
+            auxiliary_channels=AuxiliaryChannelsMetadata(
+                has_eog=True, eog_channels=4, eog_type=["horizontal", "vertical"]
+            ),
         ),
         participants=ParticipantMetadata(
+            gender={"male": 7, "female": 10},
+            handedness={"right": 17},
+            age_mean=51.9,
+            age_std=18.5,
+            age_min=20.0,
+            age_max=78.0,
             n_subjects=18,
             health_status="mixed",
             clinical_population="chronic middle cerebral artery (MCA) stroke",
@@ -176,6 +188,21 @@ class PardoGarcia2026(BaseDataset):
             ),
         ),
         documentation=DocumentationMetadata(
+            senior_author="M. A. Pozo",
+            ethics_approval=[
+                "Medical Ethical Reviewing Committee of the Hospital Clínico San Carlos in Madrid, Spain (Nº22/459-E_Tesis)"
+            ],
+            funding=[
+                "Proyecto S2022/BMD-7236 MINA-CM (Comunidad de Madrid)",
+                "Proyecto IEL.GKA.100 DIANIA (FUNDETEL-UPM)",
+            ],
+            contact_info=[
+                "m.mgarciadelavega@alumnos.upm.es",
+                "g.kontaxakis@upm.es",
+                "rebeca.pardo96@gmail.com",
+                "emmoreno@pluri.ucm.es",
+                "pozo@ucm.es",
+            ],
             doi="10.5281/zenodo.19599465",
             description=(
                 "Pre-execution, two-class hand motor-imagery EEG (pinch vs fist) "
@@ -217,6 +244,15 @@ class PardoGarcia2026(BaseDataset):
         ),
         sessions_per_subject=1,
         runs_per_session=1,
+        data_structure=DataStructureMetadata(
+            n_trials=140,
+            n_trials_per_class={"pinch": 70, "fist": 70},
+            trials_context="70 trials per class in patient recordings (140 total); 50 trials per class in control recordings (100 total)",
+        ),
+        signal_processing=SignalProcessingMetadata(
+            feature_extraction=["Time-frequency Morlet wavelets", "ERD/ERS"],
+            frequency_bands={"mu": [8.0, 12.0], "beta": [12.0, 30.0]},
+        ),
         tags=Tags(
             pathology=["stroke", "healthy"], modality=["Motor"], type=["Motor Imagery"]
         ),

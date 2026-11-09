@@ -195,13 +195,13 @@ class Huebner2017(_BaseVisualMatrixSpellerDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            channel_types={"eeg": 31, "misc": 6},
+            channel_types={"eeg": 31, "eog": 1, "misc": 5},
             montage="standard_1020",
             hardware="BrainAmp DC",
             sensor_type="passive Ag/AgCl",
             reference="nose",
             ground="FCz",
-            software=None,
+            software="BBCI Toolbox",
             impedance_threshold_kohm=20.0,
             sensors=[
                 "C3",
@@ -264,7 +264,7 @@ class Huebner2017(_BaseVisualMatrixSpellerDataset):
             events={"Target": 10002, "NonTarget": 10001},
             paradigm="p300",
             n_classes=2,
-            class_labels=["target", "non-target"],
+            class_labels=["Target", "NonTarget"],
             trial_duration=25.0,
             study_design="Visual ERP speller copy-spelling task using a 6x7 grid with learning from label proportions (LLP) classifier. Two sequences with different target/non-target ratios: sequence 1 (3 targets/8 stimuli), sequence 2 (2 targets/18 stimuli). Unsupervised calibrationless approach.",
             feedback_type="visual",
@@ -297,7 +297,7 @@ class Huebner2017(_BaseVisualMatrixSpellerDataset):
                 "Michael Tangermann",
                 "Pieter-Jan Kindermans",
             ],
-            senior_author="Michael Tangermann",
+            senior_author="Pieter-Jan Kindermans",
             contact_info=[
                 "david.huebner@blbt.uni-freiburg.de",
                 "michael.tangermann@blbt.uni-freiburg.de",
@@ -365,7 +365,11 @@ class Huebner2017(_BaseVisualMatrixSpellerDataset):
             online_feedback=True,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="p300", n_targets=42, soa_ms=250.0
+            detected_paradigm="p300",
+            n_targets=42,
+            n_repetitions=68,
+            isi_ms=150.0,
+            soa_ms=250.0,
         ),
         data_structure=DataStructureMetadata(
             n_trials=12852,
@@ -373,7 +377,7 @@ class Huebner2017(_BaseVisualMatrixSpellerDataset):
         ),
         sessions_per_subject=3,
         runs_per_session=9,
-        sessions=["session_1"],
+        sessions=["0", "1", "2"],
         data_processed=False,
         file_format="BrainVision",
         abstract="Using traditional approaches, a brain-computer interface (BCI) requires the collection of calibration data for new subjects prior to online use. This work introduces learning from label proportions (LLP) to the BCI community as a new unsupervised, and easy-to-implement classification approach for ERP-based BCIs. The LLP estimates the mean target and non-target responses based on known proportions of these two classes in different groups of the data. We present a visual ERP speller to meet the requirements of LLP. For evaluation, we ran simulations on artificially created data sets and conducted an online BCI study with 13 subjects performing a copy-spelling task. Theoretical considerations show that LLP is guaranteed to minimize the loss function similar to a corresponding supervised classifier. LLP performed well in simulations and in the online application, where 84.5% of characters were spelled correctly on average without prior calibration.",
@@ -451,11 +455,12 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
     METADATA = DatasetMetadata(
         acquisition=AcquisitionMetadata(
             sampling_rate=1000.0,
-            channel_types={"eeg": 31, "misc": 6},
+            channel_types={"eeg": 31, "eog": 1, "misc": 5},
             montage="extended 10-20",
             hardware="BrainAmp DC",
             sensor_type="Ag/AgCl",
             reference="nose",
+            ground="FCz",
             software="BBCI toolbox",
             impedance_threshold_kohm=20.0,
             sensors=[
@@ -498,6 +503,12 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
                 "x_Respi",
             ],
             line_freq=50.0,
+            auxiliary_channels=AuxiliaryChannelsMetadata(
+                has_eog=True,
+                eog_channels=1,
+                eog_type=["vertical"],
+                other_physiological=["pulse", "respiration"],
+            ),
             cap_manufacturer="EasyCap",
         ),
         participants=ParticipantMetadata(
@@ -513,16 +524,17 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
         experiment=ExperimentMetadata(
             paradigm="p300",
             n_classes=2,
-            class_labels=["target", "non-target"],
+            class_labels=["Target", "NonTarget"],
             trial_duration=17.0,
-            study_design="Visual ERP copy-spelling task using a modified 6x6 grid extended with 10 # symbols as visual blanks, using flexible highlighting scheme with two interleaved sequences to enable unsupervised learning methods (EM, LLP, MIX)",
+            study_design="Visual ERP copy-spelling and free-spelling task using a 6x7 grid with 32 normal characters extended with 10 # symbols as visual blanks (total 42 symbols), using flexible highlighting scheme with two interleaved sequences to enable unsupervised learning methods (EM, LLP, MIX)",
             feedback_type="visual",
             stimulus_type="modified matrix speller with flexible highlighting",
             stimulus_modalities=["visual"],
             primary_modality="visual",
+            synchronicity="synchronous",
             mode="online",
             instructions="copy-spelling task - spell German sentence 'Franzy jagt im Taxi quer durch das'",
-            tasks=["copy-spelling"],
+            tasks=["copy-spelling", "free-spelling"],
             events={"Target": 10002, "NonTarget": 10001},
             stimulus_presentation={
                 "soa_ms": "250",
@@ -534,6 +546,7 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
             },
         ),
         documentation=DocumentationMetadata(
+            senior_author="Michael Tangermann",
             doi="10.1109/MCI.2018.2807039",
             repository="Zenodo",
             data_url="https://zenodo.org/record/5831879",
@@ -613,15 +626,19 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
             online_feedback=True,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="p300", n_targets=46, isi_ms=150.0, soa_ms=250.0
+            detected_paradigm="p300",
+            n_targets=42,
+            n_repetitions=68,
+            isi_ms=150.0,
+            soa_ms=250.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials=35,
+            n_trials=70,
             n_blocks=3,
-            trials_context="35 characters per block (one trial = spelling one character), 3 blocks per session (one block per unsupervised algorithm: EM, LLP, MIX in pseudo-randomized order)",
+            trials_context="70 characters per block (35 copy-spelling in Run1-5 + 35 free-spelling in Run6-10), 68 stimulation events per character, 3 blocks per subject",
         ),
         abstract="One of the fundamental challenges in brain-computer interfaces (BCIs) is to tune a brain signal decoder to reliably detect a user's intention. While information about the decoder can partially be transferred between subjects or sessions, optimal decoding performance can only be reached with novel data from the current session. Thus, it is preferable to learn from unlabeled data gained from the actual usage of the BCI application instead of conducting a calibration recording prior to BCI usage. We review such unsupervised machine learning methods for BCIs based on event-related potentials of the electroencephalogram. We present results of an online study with twelve healthy participants controlling a visual speller. Online performance is reported for three completely unsupervised learning methods: (1) learning from label proportions, (2) an expectation-maximization approach and (3) MIX, which combines the strengths of the two other methods. After a short ramp-up, we observed that the MIX method not only defeats its two unsupervised competitors but even performs on par with a state-of-the-art regularized linear discriminant analysis trained on the same number of data points and with full label access. With this online study, we deliver the best possible proof in BCI that an unsupervised decoding method can in practice render a supervised method unnecessary. This is possible despite skipping the calibration, without losing much performance and with the prospect of continuous improvement over a session. Thus, our findings pave the way for a transition from supervised to unsupervised learning methods in BCIs based on event-related potentials.",
-        methodology="Online study comparing three unsupervised learning methods (EM, LLP, MIX) for P300 speller. Twelve healthy volunteers (8 female, 4 male, mean age 26, range 19-31 years) participated in a single session each. Subjects spelled the German sentence 'Franzy jagt im Taxi quer durch das' (35 characters) in three blocks, each using a different unsupervised algorithm in pseudo-randomized order. Each trial (spelling one character) consisted of 68 highlighting events with 250 ms SOA and 100 ms stimulus duration (ISI=150 ms). The speller used a modified 6x6 grid with 36 normal characters extended with 10 # symbols as visual blanks (total 46 symbols). Two interleaved highlighting sequences were used: S1 highlighted only normal characters, S2 highlighted both normal characters and # symbols, creating different known target-to-non-target ratios to enable learning from label proportions. Highlighting consisted of brightness enhancement, rotation, enlargement and trichromatic grid overlay. Classifiers were randomly initialized at block start and updated after each trial. No labeled data was provided during online session. Participants sat 80 cm from a 24-inch screen. EEG was recorded from 31 passive Ag/AgCl electrodes (EasyCap) placed according to extended 10-20 system, with impedances kept below 20 kOhm. Signals were recorded and amplified by BrainAmp DC at 1 kHz sampling rate using BBCI toolbox in Matlab. Data was bandpass filtered (0.5-8 Hz, 3rd order Chebyshev Type II), downsampled to 100 Hz, epoched to [-200, 700] ms relative to stimulus onset, and baseline corrected using [-200, 0] ms interval. Features were mean amplitudes of six time intervals ([50-120], [121-200], [201-280], [281-380], [381-530], [531-700] ms post-stimulus) per channel. No artifact rejection was applied; participants were instructed to avoid artifacts. Performance metrics: spelling accuracy and AUC for target vs. non-target discrimination. Results showed MIX method achieved ~80% accuracy after ~7 characters (168 seconds, 476 epochs) and performed comparably to supervised regularized LDA trained on same amount of labeled data after 10+ characters. Ethics approval was obtained from University Medical Center Freiburg. Participants were compensated 8 Euros per hour for the ~3 hour session (including EEG setup).",
+        methodology="Online study comparing three unsupervised learning methods (EM, LLP, MIX) for P300 speller. Twelve healthy volunteers (8 female, 4 male, mean age 26, range 19-31 years) participated in a single session each. Subjects spelled the German sentence 'Franzy jagt im Taxi quer durch das' (35 characters) in three blocks, each using a different unsupervised algorithm in pseudo-randomized order. Each trial (spelling one character) consisted of 68 highlighting events with 250 ms SOA and 100 ms stimulus duration (ISI=150 ms). The speller used a 6x7 grid with 32 normal characters extended with 10 # symbols as visual blanks (total 42 symbols). Two interleaved highlighting sequences were used: S1 highlighted only normal characters, S2 highlighted both normal characters and # symbols, creating different known target-to-non-target ratios to enable learning from label proportions. Highlighting consisted of brightness enhancement, rotation, enlargement and trichromatic grid overlay. Classifiers were randomly initialized at block start and updated after each trial. No labeled data was provided during online session. Participants sat 80 cm from a 24-inch screen. EEG was recorded from 31 passive Ag/AgCl electrodes (EasyCap) placed according to extended 10-20 system, with impedances kept below 20 kOhm. Signals were recorded and amplified by BrainAmp DC at 1 kHz sampling rate using BBCI toolbox in Matlab. Data was bandpass filtered (0.5-8 Hz, 3rd order Chebyshev Type II), downsampled to 100 Hz, epoched to [-200, 700] ms relative to stimulus onset, and baseline corrected using [-200, 0] ms interval. Features were mean amplitudes of six time intervals ([50-120], [121-200], [201-280], [281-380], [381-530], [531-700] ms post-stimulus) per channel. No artifact rejection was applied; participants were instructed to avoid artifacts. Performance metrics: spelling accuracy and AUC for target vs. non-target discrimination. Results showed MIX method achieved ~80% accuracy after ~7 characters (168 seconds, 476 epochs) and performed comparably to supervised regularized LDA trained on same amount of labeled data after 10+ characters. Ethics approval was obtained from University Medical Center Freiburg. Participants were compensated 8 Euros per hour for the ~3 hour session (including EEG setup).",
     )
     nemar_id = "nm000195"
 
@@ -668,10 +685,11 @@ def _read_raw_llp_study_data(vhdr_fname, raw_slice_offset, verbose=None):
     raw_object: mne.io.Raw
         the loaded BVR raw object.
     """
-    non_scalp_channels = ["EOGvu", "x_EMGl", "x_GSR", "x_Respi", "x_Pulse", "x_Optic"]
+    misc_channels = ["x_EMGl", "x_GSR", "x_Respi", "x_Pulse", "x_Optic"]
     raw_bvr = mne.io.read_raw_brainvision(
-        vhdr_fname=vhdr_fname,  # eog='EOGvu',
-        misc=non_scalp_channels,
+        vhdr_fname=vhdr_fname,
+        eog=["EOGvu"],
+        misc=misc_channels,
         preload=True,
         verbose=verbose,
     )  # type: mne.io.Raw

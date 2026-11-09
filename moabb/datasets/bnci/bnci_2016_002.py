@@ -241,10 +241,10 @@ class BNCI2016_002(BNCIBaseDataset):
 
     **Recording Details**
 
-    - Equipment: BrainProducts actiCap system with BrainAmp amplifiers
+    - Equipment: Easycap passive Ag/AgCl electrode cap with BrainAmp amplifiers
     - Channels: 59 EEG + 2 EOG + 1 EMG + 7 driving-related signals = 69 total
     - Sampling rate: 200 Hz (downsampled from 1000 Hz)
-    - Reference: Common average reference
+    - Reference: Nose
     - EEG electrode montage: Extended 10-20 system
 
     **Additional Channels**
@@ -419,20 +419,14 @@ class BNCI2016_002(BNCIBaseDataset):
             age_std=5.4,
             handedness="right-handed",
             bci_experience="naive",
-            species="human",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
-            paradigm="emergency_braking",
-            task_type="driving_simulation",
-            events={
-                "car_brake": 1,
-                "car_hold": 2,
-                "react_emg": 3,
-                "car_accelerate": 4,
-                "car_collision": 5,
-            },
+            paradigm="p300",
+            task_type="emergency_braking",
+            events={"Target": 1, "NonTarget": 2},
             n_classes=2,
-            class_labels=["normal_driving", "emergency_braking"],
+            class_labels=["Target", "NonTarget"],
             trial_duration=3.0,
             study_design="Participants drove a virtual racing car using steering wheel and gas/brake pedals, tightly following a computer-controlled lead vehicle at 100 km/h. The lead vehicle occasionally decelerated abruptly (20-40s inter-stimulus-interval) to 60-80 km/h, requiring immediate emergency braking. Three blocks of 45 min each with 10-15 min rest between blocks.",
             feedback_type="visual (colored circle indicating distance: green <20m, yellow otherwise; brakelight flashing)",
@@ -440,7 +434,7 @@ class BNCI2016_002(BNCIBaseDataset):
             stimulus_modalities=["visual", "multisensory"],
             primary_modality="visual",
             synchronicity="asynchronous",
-            mode="online",
+            mode="offline",
             has_training_test_split=True,
             instructions="Drive a virtual racing car using steering wheel and gas/brake pedals, tightly follow the lead vehicle within 20m at 100 km/h. Perform immediate emergency braking when the lead vehicle decelerates abruptly to avoid a crash.",
             stimulus_presentation={
@@ -452,6 +446,7 @@ class BNCI2016_002(BNCIBaseDataset):
             },
         ),
         documentation=DocumentationMetadata(
+            data_url="http://doc.ml.tu-berlin.de/bbci/BNCIHorizon2020-EmergencyBraking/",
             doi="10.1088/1741-2560/8/5/056001",
             description="Emergency braking detection during simulated driving using EEG and EMG to predict driver's braking intention before behavioral response.",
             investigators=[
@@ -469,9 +464,9 @@ class BNCI2016_002(BNCIBaseDataset):
             contact_info=["stefan.haufe@tu-berlin.de"],
             associated_paper_doi="10.1088/1741-2560/8/5/056001",
             funding=[
-                "DFG grant",
-                "BMBF grant",
-                "Bernstein Focus Neurotechnology, Berlin",
+                "BMBF Grants 01GQ0850 and 01IB001A",
+                "DFG Grant MU 987/3-2",
+                "European Union ICT-2007.4.2, contract #216886 (PASCAL2)",
             ],
             institution_address="Franklinstraße 28/29, D-10587 Berlin, Germany",
             institution_department="Machine Learning Group, Department of Computer Science",
@@ -551,7 +546,7 @@ class BNCI2016_002(BNCIBaseDataset):
             cv_method="sequential temporal split", evaluation_type=["temporal_validation"]
         ),
         performance={
-            "auc": 0.5,
+            "chance_auc": 0.5,
             "braking_time_reduction_ms": 130,
             "braking_distance_reduction_m": 3.66,
         },
@@ -562,7 +557,7 @@ class BNCI2016_002(BNCIBaseDataset):
                 "neuroergonomics",
             ],
             environment="laboratory",
-            online_feedback=True,
+            online_feedback=False,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="emergency_braking_erp"

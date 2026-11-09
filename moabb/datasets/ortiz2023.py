@@ -13,10 +13,13 @@ from moabb.datasets.base import BaseDataset
 from moabb.datasets.metadata.schema import (
     AcquisitionMetadata,
     AuxiliaryChannelsMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
+    DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
     ParticipantMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 
@@ -84,10 +87,10 @@ class Ortiz2023(BaseDataset):
     References
     ----------
 
-    .. [1] Ortiz, M., de la Ossa, L., Ianez, E., Torricelli, D., Tornero, J., &
-       Azorin, J. M. (2023). An EEG database for the cognitive assessment of
-       motor imagery during walking with a lower-limb exoskeleton. Scientific
-       Data, 10, 343. https://doi.org/10.1038/s41597-023-02243-7
+    .. [1] Ortiz, M., de la Ossa, L., Juan, J., Ianez, E., Torricelli, D.,
+       Tornero, J., & Azorin, J. M. (2023). An EEG database for the cognitive
+       assessment of motor imagery during walking with a lower-limb exoskeleton.
+       Scientific Data, 10, 343. https://doi.org/10.1038/s41597-023-02243-7
 
     Notes
     -----
@@ -108,6 +111,9 @@ class Ortiz2023(BaseDataset):
             reference="left ear lobe (A1)",
             ground="right ear lobe (A2)",
             hardware="Brain Products actiCHamp",
+            cap_manufacturer="Brain Products",
+            cap_model="actiCAP",
+            software="PyCorder and custom MATLAB acquisition software",
             montage="standard_1005",
             line_freq=50.0,
             filters="0.1 Hz high-pass and 50 Hz notch (online, hardware)",
@@ -123,6 +129,7 @@ class Ortiz2023(BaseDataset):
             species="homo sapiens",
             age_mean=28.7,
             age_std=4.8,
+            handedness="right-footed",
         ),
         experiment=ExperimentMetadata(
             paradigm="imagery",
@@ -141,6 +148,14 @@ class Ortiz2023(BaseDataset):
             events={"relax": 1, "motor_imagery": 2, "regressive_count": 3},
         ),
         documentation=DocumentationMetadata(
+            senior_author="Jose M. Azorin",
+            funding=[
+                "European Union Horizon 2020 Project EUROBENCH (grant agreement No 779963, DECODED subproject)"
+            ],
+            ethics_approval=[
+                "Ethics and Integrity in Research Committee of Miguel Hernández University of Elche (Reference DIS.JAP.05.20)",
+                "Ethics Committee of CSIC, Madrid, Spain (Internal reference 091/2021)",
+            ],
             doi="10.1038/s41597-023-02243-7",
             description=(
                 "EEG database for the cognitive assessment of motor imagery "
@@ -150,11 +165,13 @@ class Ortiz2023(BaseDataset):
             investigators=[
                 "Mario Ortiz",
                 "Luis de la Ossa",
+                "Javier Juan",
                 "Eduardo Ianez",
                 "Diego Torricelli",
                 "Jesus Tornero",
                 "Jose M. Azorin",
             ],
+            contact_info=["mortiz@umh.es"],
             institution="Miguel Hernandez University of Elche",
             country="ES",
             repository="Figshare",
@@ -166,6 +183,28 @@ class Ortiz2023(BaseDataset):
         sessions_per_subject=1,
         runs_per_session=16,
         sessions=["0", "1"],
+        data_structure=DataStructureMetadata(
+            n_trials=64,
+            n_trials_per_class={"relax": 32, "motor_imagery": 16, "regressive_count": 16},
+            n_blocks=16,
+            trials_context="16 task runs per session, each containing 2 relax, 1 motor_imagery, and 1 regressive_count segment",
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["SVM"],
+            feature_extraction=["Filter Bank CSP (FBCSP)"],
+            frequency_bands={
+                "band_1": [5.0, 10.0],
+                "band_2": [10.0, 15.0],
+                "band_3": [15.0, 20.0],
+                "band_4": [20.0, 25.0],
+            },
+            spatial_filters=["CSP", "Laplacian"],
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="leave-one-trial-out (16-fold)",
+            cv_folds=16,
+            evaluation_type=["within_session"],
+        ),
         tags=Tags(pathology=["healthy"], modality=["motor"], type=["imagery"]),
         file_format="MAT",
     )

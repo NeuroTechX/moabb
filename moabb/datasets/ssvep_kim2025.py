@@ -229,6 +229,48 @@ class Kim2025BetaRange(BaseDataset):
             # fmt: on
         ),
         experiment=ExperimentMetadata(
+            class_labels=[
+                "14",
+                "15",
+                "16",
+                "17",
+                "18",
+                "19",
+                "20",
+                "21",
+                "14.2",
+                "15.2",
+                "16.2",
+                "17.2",
+                "18.2",
+                "19.2",
+                "20.2",
+                "21.2",
+                "14.4",
+                "15.4",
+                "16.4",
+                "17.4",
+                "18.4",
+                "19.4",
+                "20.4",
+                "21.4",
+                "14.6",
+                "15.6",
+                "16.6",
+                "17.6",
+                "18.6",
+                "19.6",
+                "20.6",
+                "21.6",
+                "14.8",
+                "15.8",
+                "16.8",
+                "17.8",
+                "18.8",
+                "19.8",
+                "20.8",
+                "21.8",
+            ],
             paradigm="ssvep",
             events=dict(_EVENTS),
             n_classes=40,
@@ -240,7 +282,11 @@ class Kim2025BetaRange(BaseDataset):
             mode="offline",
             task_type="speller",
             feedback_type="none",
-            has_training_test_split=True,
+            has_training_test_split=False,
+            stimulus_presentation={
+                "SoftwareName": "Psychophysics Toolbox",
+                "SoftwareVersion": "3",
+            },
         ),
         documentation=DocumentationMetadata(
             doi="10.1038/s41597-025-06032-2",
@@ -253,7 +299,14 @@ class Kim2025BetaRange(BaseDataset):
             license="CC BY 4.0",
             publication_year=2025,
             institution_department="School of Electrical Engineering and Computer Science, GIST",
-            ethics_approval=["GIST IRB, No. 20211201-HR-64-02-04"],
+            ethics_approval=[
+                "Institutional Review Board at Gwangju Institute of Science and Technology (20211201-HR-64-02-04)"
+            ],
+            funding=[
+                "National Research Foundation of Korea (No. RS-2024-00361688)",
+                "Institute of Information & communications Technology Planning & Evaluation (IITP) (No. 2019-0-01842)",
+            ],
+            contact_info=["scjun@gist.ac.kr"],
             keywords=[
                 "SSVEP",
                 "BCI",
@@ -264,7 +317,9 @@ class Kim2025BetaRange(BaseDataset):
                 "EEG",
             ],
         ),
-        preprocessing=PreprocessingMetadata(data_state="epoched"),
+        preprocessing=PreprocessingMetadata(
+            data_state="epoched", epoch_window=[-2.0, 5.0]
+        ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="ssvep",
             stimulus_frequencies_hz=[14.0 + i * 0.2 for i in range(40)],
@@ -283,7 +338,7 @@ class Kim2025BetaRange(BaseDataset):
             evaluation_type=["within_subject", "cross_subject"],
         ),
         bci_application=BCIApplicationMetadata(
-            environment="lab", online_feedback=None, applications=["speller"]
+            environment="lab", online_feedback=False, applications=["speller"]
         ),
         tags=Tags(pathology=["healthy"], modality=["visual"], type=["perception"]),
         sessions_per_subject=6,

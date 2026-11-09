@@ -76,6 +76,8 @@ def catalog_to_dataframe(catalog=None) -> pd.DataFrame:
 
         catalog = DATASET_METADATA_CATALOG
 
+    from moabb.analysis.timeline import _is_motor_execution
+
     rows = []
     for name, meta in catalog.items():
         acq = meta.acquisition
@@ -94,6 +96,7 @@ def catalog_to_dataframe(catalog=None) -> pd.DataFrame:
             # --- Core (visible by default) ---
             "dataset": name,
             "paradigm": _safe_get(exp, "paradigm", default=""),
+            "is_motor_execution": _is_motor_execution(meta),
             "n_subjects": _safe_get(par, "n_subjects", default=0),
             "n_channels": _safe_get(acq, "n_channels", default=0),
             "n_eeg_channels": (_safe_get(acq, "channel_types") or {}).get("eeg", 0),
@@ -336,11 +339,12 @@ def _build_summary_cards(df: pd.DataFrame) -> str:
     )
 
 
-def _paradigm_tag(paradigm: str | None) -> str:
+def _paradigm_tag(paradigm: str | None, row=None) -> str:
     """Render a color-coded paradigm pill."""
     if not paradigm:
         return ""
-    label = _PARADIGM_LABELS.get(paradigm, paradigm)
+    is_exec = bool(row is not None and row.get("is_motor_execution"))
+    label = "Motor Execution" if is_exec else _PARADIGM_LABELS.get(paradigm, paradigm)
     color = _PARADIGM_COLORS.get(paradigm, "#757575")
     return (
         f'<span class="mt-tag" style="--tag-color:{color}" '
@@ -501,7 +505,7 @@ def _format_cell(value, fmt: str, row=None) -> str:
     if fmt == "link":
         return _dataset_link(value)
     if fmt == "paradigm_tag":
-        return _paradigm_tag(value)
+        return _paradigm_tag(value, row)
     if fmt == "health_tag":
         return _health_tag(value)
     if fmt == "doi_link":

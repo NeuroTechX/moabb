@@ -17,11 +17,14 @@ from . import download as dl
 from .base import BaseDataset
 from .metadata.schema import (
     AcquisitionMetadata,
+    CrossValidationMetadata,
     DatasetMetadata,
     DataStructureMetadata,
     DocumentationMetadata,
     ExperimentMetadata,
     ParticipantMetadata,
+    PreprocessingMetadata,
+    SignalProcessingMetadata,
     Tags,
 )
 
@@ -82,7 +85,11 @@ class Kaneshiro2015(BaseDataset):
             channel_types={"eeg": 124},
             montage="GSN-HydroCel-128",
             hardware="EGI Net Amps 300",
+            cap_manufacturer="EGI",
+            cap_model="HCGSN 110 (128-channel HydroCel Geodesic Sensor Net)",
             sensor_type="HydroCel Geodesic Sensor Net",
+            software="EGI Net Station 4.4, Neurobehavioral Systems Presentation",
+            impedance_threshold_kohm=80.0,
             reference="average",
             line_freq=60.0,
         ),
@@ -90,10 +97,11 @@ class Kaneshiro2015(BaseDataset):
             n_subjects=10,
             health_status="healthy",
             gender={"female": 3, "male": 7},
+            age_median=30.5,
             age_min=21,
             age_max=57,
             handedness={"right": 9, "left": 1},
-            species="human",
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
             events=dict(_EVENTS),
@@ -112,6 +120,14 @@ class Kaneshiro2015(BaseDataset):
             mode="offline",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Patrick Suppes",
+            ethics_approval=["Institutional Review Board of Stanford University"],
+            funding=[
+                "National Institutes of Health (EY1, EY06579)",
+                "Patrick Suppes Gift Fund",
+            ],
+            contact_info=["blairbo@ccrma.stanford.edu"],
+            repository="Stanford Digital Repository",
             doi=_DOI,
             investigators=[
                 "Blair Kaneshiro",
@@ -121,6 +137,7 @@ class Kaneshiro2015(BaseDataset):
                 "Patrick Suppes",
             ],
             institution="Stanford University",
+            institution_department="Center for the Study of Language and Information; Department of Electrical Engineering; Department of Psychology",
             country="US",
             publication_year=2015,
             data_url="https://purl.stanford.edu/bq914sc3730",
@@ -128,8 +145,44 @@ class Kaneshiro2015(BaseDataset):
         ),
         sessions_per_subject=1,
         tags=Tags(pathology=["Healthy"], modality=["ERP"], type=["Visual ERP"]),
+        preprocessing=PreprocessingMetadata(
+            data_state="epoched",
+            preprocessing_applied=True,
+            highpass_hz=1.0,
+            lowpass_hz=25.0,
+            bandpass=[1.0, 25.0],
+            filter_type="4th-order Butterworth (high-pass) and 8th-order Chebyshev Type I (low-pass)",
+            artifact_methods=[
+                "extended Infomax ICA (EEGLAB) for VEOG/HEOG ocular artifact removal"
+            ],
+            re_reference="average",
+            downsampled_to_hz=62.5,
+            epoch_window=[0.0, 0.496],
+        ),
+        signal_processing=SignalProcessingMetadata(
+            classifiers=["LDA", "SVM"], feature_extraction=["PCA / SVD"]
+        ),
+        cross_validation=CrossValidationMetadata(
+            cv_method="10-fold cross-validation",
+            cv_folds=10,
+            evaluation_type=["within_subject"],
+        ),
+        performance={
+            "accuracy_6class_percent": 40.68,
+            "accuracy_72exemplar_percent": 14.46,
+        },
         data_structure=DataStructureMetadata(
-            n_trials=5184, trials_context="per subject (72 images x 72 repetitions)"
+            n_trials=5184,
+            n_trials_per_class={
+                "human_body": 864,
+                "human_face": 864,
+                "animal_body": 864,
+                "animal_face": 864,
+                "fruit_vegetable": 864,
+                "inanimate_object": 864,
+            },
+            n_blocks=6,
+            trials_context="per subject (72 images x 72 repetitions)",
         ),
         data_processed=True,
         file_format="MATLAB",

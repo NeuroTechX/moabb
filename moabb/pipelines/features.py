@@ -3,7 +3,6 @@ import numpy as np
 import scipy.signal as signal
 from numpy import ndarray
 from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.preprocessing import StandardScaler
 
 
 class LogVariance(BaseEstimator, TransformerMixin):
@@ -123,14 +122,11 @@ class StandardScaler_Epoch(BaseEstimator, TransformerMixin):
         return self
 
     def transform(self, X):
-        X_fin = []
-
-        for i in np.arange(X.shape[0]):
-            X_p = StandardScaler().fit_transform(X[i])
-            X_fin.append(X_p)
-        X_fin = np.array(X_fin)
-
-        return X_fin
+        X = np.asarray(X, dtype=np.float64)
+        mean = X.mean(axis=1, keepdims=True)
+        std = X.std(axis=1, keepdims=True)
+        std[std == 0.0] = 1.0
+        return (X - mean) / std
 
 
 class Resampler_Epoch(BaseEstimator, TransformerMixin):

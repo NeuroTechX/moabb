@@ -402,7 +402,11 @@ class BNCI2022_001(BNCIBaseDataset):
 
     References
     ----------
-    .. [1] Jao, P.-K., Chavarriaga, R., & Millan, J. d. R. (2021). EEG Correlates
+    .. [1] Jao, P.-K., Chavarriaga, R., & Millán, J. d. R. (2023). EEG-Based
+           Online Regulation of Difficulty in Simulated Flying. IEEE
+           Transactions on Affective Computing, 14(2), 1075-1085.
+           https://doi.org/10.1109/TAFFC.2021.3059688
+    .. [2] Jao, P.-K., Chavarriaga, R., & Millán, J. d. R. (2021). EEG Correlates
            of Difficulty Levels in Dynamical Transitions of Simulated Flying and
            Mapping Tasks. IEEE Transactions on Human-Machine Systems, 51(2), 99-108.
            https://doi.org/10.1109/THMS.2020.3038339
@@ -440,7 +444,7 @@ class BNCI2022_001(BNCIBaseDataset):
             montage="10-10",
             hardware="Biosemi ActiveTwo",
             sensor_type="active",
-            reference="car",
+            reference="CMS/DRL",
             software="EEGLAB",
             sensors=[
                 "AF3",
@@ -513,10 +517,7 @@ class BNCI2022_001(BNCIBaseDataset):
             ],
             line_freq=50.0,
             auxiliary_channels=AuxiliaryChannelsMetadata(
-                has_eog=True,
-                eog_channels=3,
-                eog_type=["horizontal", "vertical"],
-                other_physiological=["ppg"],
+                has_eog=True, eog_channels=3, eog_type=["horizontal", "vertical"]
             ),
         ),
         participants=ParticipantMetadata(
@@ -526,17 +527,13 @@ class BNCI2022_001(BNCIBaseDataset):
             age_mean=22.6,
             age_std=1.04,
             handedness={"right": 12, "left": 1},
+            species="homo sapiens",
         ),
         experiment=ExperimentMetadata(
-            events={
-                "trajectory_start": 1,
-                "waypoint_miss": 16,
-                "waypoint_hit": 48,
-                "trajectory_end": 255,
-            },
+            events={"trajectory_start": 1},
             paradigm="imagery",
-            n_classes=3,
-            class_labels=["right_hand", "left_hand", "feet"],
+            n_classes=1,
+            class_labels=["trajectory_start"],
             trial_duration=90.0,
             study_design="Subjects piloted a simulated drone through circular waypoints using a flight joystick, controlling roll and pitch while the drone maintained constant velocity. In offline session: 32 trajectories each with constant difficulty level (v-shape design from level 16 to 1 and back to 16), each trajectory had 32 waypoints and lasted ~90 seconds. In online sessions: each condition consisted of 12 trajectories with 33 waypoints and 8 decision points per trajectory.",
             feedback_type="visual",
@@ -556,6 +553,7 @@ class BNCI2022_001(BNCIBaseDataset):
             },
         ),
         documentation=DocumentationMetadata(
+            data_url="http://bnci-horizon-2020.eu/database/data-sets",
             doi="10.1109/TAFFC.2021.3059688",
             investigators=["Ping-Keng Jao", "Ricardo Chavarriaga", "Jose del R. Millan"],
             institution="Ecole Polytechnique Federale de Lausanne",
@@ -587,31 +585,16 @@ class BNCI2022_001(BNCIBaseDataset):
         runs_per_session=1,
         sessions=["0"],
         data_processed=True,
-        file_format="gdf",
+        file_format="MAT",
         tags=Tags(
             pathology=["Healthy"], modality=["EEG"], type=["Experimental/Research"]
         ),
         preprocessing=PreprocessingMetadata(
-            data_state="preprocessed",
+            data_state="downsampled",
             preprocessing_applied=True,
-            preprocessing_steps=[
-                "downsampling from 2048 Hz to 256 Hz",
-                "casual bandpass filtering between 1 and 40 Hz",
-                "SPHARA 20th order spatial low-pass filter for interpolation and artifact reduction",
-                "common-average re-referencing",
-                "ICA for EOG artifact removal",
-                "peripheral electrodes removed (25 central channels kept)",
-                "artifact rejection: windows with peak value > 50 µV rejected",
-            ],
-            highpass_hz=1.0,
-            lowpass_hz=40.0,
-            bandpass=[1.0, 40.0],
-            filter_type="Butterworth",
-            filter_order=14,
-            artifact_methods=["ICA", "SPHARA", "amplitude thresholding"],
-            re_reference="car",
+            preprocessing_steps=["downsampling from 2048 Hz to 256 Hz"],
             downsampled_to_hz=256.0,
-            notes="Out of 39 recordings, P2 was removed twice from offline or online sessions due to short-circuit with the CMS or DRL electrode. On average, 15.8 ICA components were returned and 1.07 components were removed during construction of online decoders (correlation > 0.7 with EOG).",
+            notes="Distributed MAT files contain 67-channel data (64 EEG + 3 EOG) downsampled from 2048 Hz to 256 Hz. In the paper's analysis pipeline, data were further filtered 1-40 Hz, spatially filtered with SPHARA, common-average re-referenced, ICA-cleaned, and reduced to 25 central channels.",
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=[
@@ -652,8 +635,7 @@ class BNCI2022_001(BNCIBaseDataset):
             online_feedback=True,
         ),
         paradigm_specific=ParadigmSpecificMetadata(
-            detected_paradigm="motor_imagery",
-            imagery_tasks=["right_hand", "left_hand", "feet"],
+            detected_paradigm="motor_imagery", imagery_tasks=None
         ),
         data_structure=DataStructureMetadata(
             n_trials={
@@ -678,7 +660,7 @@ class BNCI2022_001(BNCIBaseDataset):
             code="BNCI2022-001",
             interval=[0, 90],  # Approximately 90 seconds per trajectory
             paradigm="imagery",  # For compatibility
-            doi="10.1109/THMS.2020.3038339",
+            doi="10.1109/TAFFC.2021.3059688",
             load_fn=_load_data_001_2022,
             base_url=BNCI_URL,
             selected_subjects=subjects,

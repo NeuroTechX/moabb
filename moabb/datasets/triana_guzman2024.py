@@ -95,9 +95,8 @@ class TrianaGuzman2024(OpenNeuroMirrorMixin, BaseBIDSDataset):
     - **MotorImageryB**: Standing, imagining sit-down movement
     - **IdleStateB**: Standing, no imagery (idle)
 
-    Each trial consists of 4 s fixation, ~2 s action observation,
-    ~1 s preparation cue, 4 s motor imagery/idle, and 4 s rest
-    (~15 s total).
+    Each trial in the offline phase consists of 4 s fixation, 3 s action
+    observation, 4 s motor imagery/idle, and 4 s rest (15 s total).
 
     The data is hosted on OpenNeuro in BIDS format (.set files).
     Both offline and online phases are recorded in a single
@@ -137,6 +136,7 @@ class TrianaGuzman2024(OpenNeuroMirrorMixin, BaseBIDSDataset):
             sensor_type="active wet (g.LADYbird)",
             reference="right mastoid (M2)",
             ground="AFz",
+            impedance_threshold_kohm=30.0,
             filters={"bandpass": [0.01, 60]},
             sensors=list(_CH_NAMES),
             line_freq=60.0,
@@ -148,9 +148,10 @@ class TrianaGuzman2024(OpenNeuroMirrorMixin, BaseBIDSDataset):
             age_min=19.0,
             age_max=29.0,
             age_mean=22.4,
+            age_std=2.3,
             handedness={"right": 29, "left": 3},
             bci_experience="naive",
-            species="human",
+            species="homo sapiens",
             # fmt: off
             ages=[
                 22,
@@ -275,6 +276,13 @@ class TrianaGuzman2024(OpenNeuroMirrorMixin, BaseBIDSDataset):
             mode="offline",
         ),
         documentation=DocumentationMetadata(
+            senior_author="Javier M. Antelis",
+            funding=[
+                "Minciencias/Colciencias contract 594-2019 (project 80740-594-2019)",
+                "University of Illinois Chicago and Tecnologico de Monterrey (UIC-TEC) Seed funding Program 2021-2022",
+            ],
+            ethics_approval=["Ethics Committee of the Universidad Antonio Nariño"],
+            repository="OpenNeuro",
             doi="10.3389/fninf.2022.961089",
             investigators=[
                 "Nayid Triana-Guzman",
@@ -299,7 +307,7 @@ class TrianaGuzman2024(OpenNeuroMirrorMixin, BaseBIDSDataset):
         ),
         data_structure=DataStructureMetadata(
             n_trials=7680,
-            trials_context=("32 subjects x ~240 trials (offline, variable per subject)"),
+            trials_context="32 subjects x 240 trials (180 offline + 60 online)",
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=["RLDA"],

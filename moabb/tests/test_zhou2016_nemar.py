@@ -46,7 +46,7 @@ def env(monkeypatch, tmp_path):
     monkeypatch.setattr(dl.nemar, "download", _download)
     monkeypatch.setattr(Zhou2016, "get_metainfo", _zenodo)
     monkeypatch.setenv("MNE_DATA", str(tmp_path))
-    monkeypatch.delenv("MOABB_DOWNLOAD_PROVIDER", raising=False)
+    monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", "auto")
     return calls
 
 
