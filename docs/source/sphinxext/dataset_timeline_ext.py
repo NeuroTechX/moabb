@@ -2194,6 +2194,8 @@ def autodoc_process_docstring(app, what, name, obj, options, lines):
 
     cls_name = obj.__name__
     info = _get_dataset_info(obj)
+    if not info:
+        return
     source_url = _get_dataset_source_url(obj)
 
     # --- Extract description lines for teaser (before restructuring) ---
@@ -2330,6 +2332,6 @@ def setup(app):
     app.add_config_value("dataset_card_live_citations", True, "html")
     app.add_config_value("dataset_card_generate_svgs", True, "html")
     app.connect("builder-inited", _generate_all_svgs)
-    app.connect("autodoc-process-docstring", autodoc_process_docstring)
+    app.connect("autodoc-process-docstring", autodoc_process_docstring, priority=900)
     app.connect("source-read", source_read_add_inherited)
     return {"version": "1.0", "parallel_read_safe": True}

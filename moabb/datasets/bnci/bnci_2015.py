@@ -1938,7 +1938,7 @@ class BNCI2015_009(MNEBNCI):
         BNCI2015_009  21      62      Variable T/NT       0.8s            1000Hz          varies
         ============= ======= ======= =================== =============== =============== ============
 
-    Dataset from [1]_.
+    Dataset from [1]_ (using the AMUSE paradigm introduced in [2]_).
 
     **Dataset Description**
 

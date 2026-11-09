@@ -265,9 +265,9 @@ _METADATA = DatasetMetadata(
 
 
 class Wang2026(BaseDataset):
-    """Sensory-guided joint-learning MI-BCI study from Wang et al. (2026).
+    """Sensory-guided joint-learning MI-BCI study from Wang et al. (2026) [1]_.
 
-    The release contains 39 participants in four experimental groups:
+    The release [2]_ contains 39 participants in four experimental groups:
     joint-learning (15), BCI2000 control (8), tactile control (8), and an
     independently recruited EEGNet control (8). ``group`` filters these
     conditions while preserving globally unique MOABB subject IDs.

@@ -52,8 +52,8 @@ def compute_lowest_subject_scores(df, reference_pipeline, percentile=20):
     """Score pipelines on subjects selected from a reference pipeline.
 
     For every dataset, rank subjects by the score of ``reference_pipeline``
-    and keep only the ``percentile`` percent that score lowest. Every pipeline
-    is then averaged over that same cohort.
+    and keep only the ``percentile`` percent that score lowest [1]_. Every
+    pipeline is then averaged over that same cohort.
 
     The supplied session scores are first macro-averaged per subject, so every
     subject weighs the same regardless of how many sessions it contributes.

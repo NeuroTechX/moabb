@@ -103,7 +103,7 @@ class WRCC2023_MI_A(_WRCC2023):
     EEG from 9 subjects (7 healthy, 2 stroke patients) performing three-class
     motor imagery (left-hand grasping, right-hand grasping, foot hooking),
     released as the "MI-A" dataset of the BCI competition of the 2023 World
-    Robot Contest (WRCC2023). Each subject has 90 trials (30 per class) of 59
+    Robot Contest (WRCC2023) [1]_. Each subject has 90 trials (30 per class) of 59
     EEG channels recorded with a Neuracle 64-channel system at 1000 Hz; each
     stored 4 s epoch starts at the imagery cue. Amplitudes are stored in volts
     and include DC offsets removed by the paradigm band-pass filter. It shares
@@ -234,7 +234,7 @@ class WRCC2023_MI_B(_WRCC2023):
 
     EEG from 9 subjects (7 healthy, 2 stroke patients) performing cued
     three-class motor imagery (left hand, right hand, both feet), released as
-    the "MI-B" dataset of the 2023 World Robot Contest BCI competition. Each
+    the "MI-B" dataset of the 2023 World Robot Contest BCI competition [1]_. Each
     subject file holds 90 interleaved trials (30 per class) of 59-channel EEG,
     4000 samples each, stored in volts (DC-coupled).
 
@@ -361,7 +361,7 @@ class WRCC2023_MI_C(_WRCC2023):
 
     EEG from 8 participants (2 stroke patients, the rest healthy) performing
     cued three-class motor imagery (left hand, right hand, feet), released as
-    the "MI-C" dataset of the 2023 World Robot Contest BCI competition. Each
+    the "MI-C" dataset of the 2023 World Robot Contest BCI competition [1]_. Each
     subject provides 90 randomised trials (30 per class) of 59 EEG channels,
     stored as raw DC-coupled 4 s windows in volts at 1000 Hz.
 
