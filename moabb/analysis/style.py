@@ -8,10 +8,21 @@ from __future__ import annotations
 
 from itertools import cycle
 
-import matplotlib.pyplot as plt
-import seaborn as sea
-
 import moabb
+
+
+def __getattr__(name):
+    if name == "plt":
+        import matplotlib.pyplot as plt
+
+        globals()["plt"] = plt
+        return plt
+    if name == "sea":
+        import seaborn as sea
+
+        globals()["sea"] = sea
+        return sea
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 # ---------------------------------------------------------------------------
@@ -79,6 +90,8 @@ def set_moabb_defaults() -> None:
     This replaces the previous ``sea.set(font="serif", style="whitegrid", ...)``
     call at module level in ``plotting.py``.
     """
+    import seaborn as sea
+
     sea.set_theme(
         style="white",
         palette=MOABB_PALETTE,
@@ -181,6 +194,8 @@ def apply_moabb_style(
 
     # --- Accent line at top ---
     if accent_line:
+        import matplotlib.pyplot as plt
+
         # Full-width navy line
         fig.patches.append(
             plt.Rectangle(

@@ -1,3 +1,4 @@
+import functools
 import hashlib
 import importlib.util
 import os
@@ -6,11 +7,9 @@ import re
 import warnings
 from datetime import datetime
 
-import h5py
 import numpy as np
 import pandas as pd
 from mne import get_config, set_config
-from mne.datasets.utils import _get_path
 from sklearn.base import BaseEstimator
 from sklearn.pipeline import Pipeline
 
@@ -18,6 +17,20 @@ from moabb.utils import _open_lock_hdf5
 
 
 _carbonfootprint = importlib.util.find_spec("codecarbon") is not None
+
+
+def __getattr__(name):
+    if name == "h5py":
+        import h5py
+
+        globals()["h5py"] = h5py
+        return h5py
+    if name == "_get_path":
+        from mne.datasets.utils import _get_path
+
+        globals()["_get_path"] = _get_path
+        return _get_path
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 _ADDRESS_RE = re.compile(r"0x[\w]+>")
@@ -52,6 +65,7 @@ def get_digest(obj):
     return hashlib.md5(get_string_rep(obj)).hexdigest()
 
 
+@functools.lru_cache(maxsize=512)
 def get_pipeline_digest(process_pipeline, clf_pipeline):
     full_pipeline = Pipeline(steps=[("process", process_pipeline), ("clf", clf_pipeline)])
     return get_digest(full_pipeline)
@@ -100,6 +114,8 @@ class Results:
             self.additional_columns = additional_columns
 
         if hdf5_path is None:
+            from mne.datasets.utils import _get_path
+
             if get_config("MOABB_RESULTS") is None:
                 # Use MNE_DATA if configured (env var or config file),
                 # otherwise fall back to ~/mne_data
@@ -149,6 +165,9 @@ class Results:
             else:
                 return res
 
+        if not results:
+            return
+
         col_names = ["score", "time", "samples", "samples_test", "n_classes"]
         if _carbonfootprint:
             n_cols = 6
@@ -156,29 +175,34 @@ class Results:
         else:
             n_cols = 5
 
+        digests = {
+            name: get_pipeline_digest(process_pipeline, pipelines[name])
+            for name in results
+        }
+        add_cols_tuple = tuple(self.additional_columns)
+        n_add_cols = len(add_cols_tuple)
+
         with _open_lock_hdf5(self.filepath, "r+") as f:
             for name, data_dict in results.items():
-                digest = get_pipeline_digest(process_pipeline, pipelines[name])
-                if digest not in f.keys():
-                    # create pipeline main group if nonexistent
-                    f.create_group(digest)
-
-                ppline_grp = f[digest]
-                ppline_grp.attrs["name"] = name
-                ppline_grp.attrs["repr"] = repr(pipelines[name])
+                digest = digests[name]
+                if digest not in f:
+                    ppline_grp = f.create_group(digest)
+                    ppline_grp.attrs["name"] = name
+                    ppline_grp.attrs["repr"] = repr(pipelines[name])
+                else:
+                    ppline_grp = f[digest]
 
                 dlist = to_list(data_dict)
                 d1 = dlist[0]  # FIXME: handle multiple session ?
                 dname = d1["dataset"].code
-                n_add_cols = len(self.additional_columns)
-                if dname not in ppline_grp.keys():
-                    # create dataset subgroup if nonexistent
+                if dname not in ppline_grp:
+                    import h5py
+
                     dset = ppline_grp.create_group(dname)
                     dset.attrs["n_subj"] = len(d1["dataset"].subject_list)
                     dset.attrs["n_sessions"] = d1["dataset"].n_sessions
                     dt = h5py.special_dtype(vlen=str)
 
-                    # Create unique CodeCarbon task name attritbute
                     if _carbonfootprint:
                         dset.create_dataset(
                             "codecarbon_task_name", (0,), dtype=dt, maxshape=(None,)
@@ -195,91 +219,107 @@ class Results:
                     dset.attrs.create(
                         "columns", col_names + self.additional_columns, dtype=dt
                     )
-                dset = ppline_grp[dname]
-                # Backward compat: existing dataset may have fewer columns
-                n_existing = dset["data"].shape[1]
+                else:
+                    dset = ppline_grp[dname]
+
+                id_ds = dset["id"]
+                data_ds = dset["data"]
+                n_existing = data_ds.shape[1]
                 n_new = len(dlist)
-                old_len = len(dset["id"])
+                old_len = len(id_ds)
                 new_len = old_len + n_new
-                dset["id"].resize(new_len, 0)
-                dset["data"].resize(new_len, 0)
+                id_ds.resize(new_len, 0)
+                data_ds.resize(new_len, 0)
                 has_cc_task = _carbonfootprint and "codecarbon_task_name" in dset
                 if has_cc_task:
-                    dset["codecarbon_task_name"].resize(new_len, 0)
+                    cc_ds = dset["codecarbon_task_name"]
+                    cc_ds.resize(new_len, 0)
 
-                ids_batch = []
-                data_batch = []
-                cc_names_batch = []
-                for d in dlist:
-                    ids_batch.append([str(d["subject"]), str(d["session"])])
-                    try:
-                        add_cols = [d[ac] for ac in self.additional_columns]
-                    except KeyError:
-                        raise ValueError(
-                            f"Additional columns: {self.additional_columns} "
-                            f"were specified in the evaluation, but results"
-                            f" contain only these keys: {d.keys()}."
-                        ) from None
-                    cols = [
-                        d["score"],
-                        d["time"],
-                        d["n_samples"],
-                        d.get("n_samples_test", np.nan),
-                        d.get("n_classes", np.nan),
-                    ]
+                ids_batch = np.empty((n_new, 2), dtype=object)
+                total_cols = n_cols + n_add_cols
+                data_batch = np.empty((n_new, total_cols), dtype="f4")
+                cc_names_batch = np.empty(n_new, dtype=object) if has_cc_task else None
+
+                for i, d in enumerate(dlist):
+                    ids_batch[i, 0] = str(d["subject"])
+                    ids_batch[i, 1] = str(d["session"])
+                    data_batch[i, 0] = d["score"]
+                    data_batch[i, 1] = d["time"]
+                    data_batch[i, 2] = d["n_samples"]
+                    data_batch[i, 3] = d.get("n_samples_test", np.nan)
+                    data_batch[i, 4] = d.get("n_classes", np.nan)
+                    col_offset = 5
                     if _carbonfootprint:
-                        # Always add carbon_emission column if codecarbon is available
-                        if "carbon_emission" in d:
-                            if isinstance(d["carbon_emission"], tuple):
-                                cols.append(*d["carbon_emission"])
-                            else:
-                                cols.append(d["carbon_emission"])
-                        else:
-                            # Add NaN if carbon_emission is not available
-                            cols.append(np.nan)
-
+                        ce = d.get("carbon_emission", np.nan)
+                        data_batch[i, 5] = ce[0] if isinstance(ce, tuple) else ce
+                        col_offset = 6
                         if has_cc_task:
-                            cc_names_batch.append(str(d.get("codecarbon_task_name", "")))
+                            cc_names_batch[i] = str(d.get("codecarbon_task_name", ""))
+                    if n_add_cols:
+                        try:
+                            for j, ac in enumerate(add_cols_tuple):
+                                data_batch[i, col_offset + j] = d[ac]
+                        except KeyError:
+                            raise ValueError(
+                                f"Additional columns: {self.additional_columns} "
+                                f"were specified in the evaluation, but results"
+                                f" contain only these keys: {d.keys()}."
+                            ) from None
 
-                    all_cols = np.asarray([*cols, *add_cols])
-                    data_batch.append(all_cols[:n_existing])
-
-                dset["id"][old_len:new_len, :] = np.asarray(ids_batch)
-                dset["data"][old_len:new_len, :] = np.asarray(data_batch)
+                id_ds[old_len:new_len, :] = ids_batch
+                data_ds[old_len:new_len, :] = data_batch[:, :n_existing]
                 if has_cc_task:
-                    dset["codecarbon_task_name"][old_len:new_len] = np.asarray(
-                        cc_names_batch, dtype=object
-                    )
+                    cc_ds[old_len:new_len] = cc_names_batch
 
     @staticmethod
-    def _to_dataframe_from_file(f, digests=None):
+    def _to_dataframe_from_file(f, digests=None, dataset_code=None):
         df_list = []
-        allowed = set(digests) if digests is not None else None
+        if digests is not None:
+            digest_items = [(d, f[d]) for d in dict.fromkeys(digests) if d in f]
+        else:
+            digest_items = list(f.items())
 
-        for digest, p_group in f.items():
-            if (allowed is not None) and (digest not in allowed):
-                continue
-
+        for _digest, p_group in digest_items:
             name = p_group.attrs["name"]
-            for dname, dset in p_group.items():
-                array = np.array(dset["data"])
-                ids = np.array(dset["id"])
-                df = pd.DataFrame(array, columns=dset.attrs["columns"])
-                df["subject"] = [s.decode() for s in ids[:, 0]]
-                df["session"] = [s.decode() for s in ids[:, 1]]
-                df["channels"] = dset.attrs["channels"]
-                df["n_sessions"] = dset.attrs["n_sessions"]
-                df["dataset"] = dname
-                df["pipeline"] = name
+            if dataset_code is not None:
+                if dataset_code not in p_group:
+                    continue
+                dset_items = [(dataset_code, p_group[dataset_code])]
+            else:
+                dset_items = list(p_group.items())
+
+            for dname, dset in dset_items:
+                array = dset["data"][:]
+                ids = dset["id"][:]
+                cols = [
+                    c.decode() if isinstance(c, bytes) else str(c)
+                    for c in dset.attrs["columns"]
+                ]
+                data_dict = {col: array[:, idx] for idx, col in enumerate(cols)}
+                id0 = ids[:, 0]
+                id1 = ids[:, 1]
+                data_dict["subject"] = [
+                    s.decode() if isinstance(s, bytes) else str(s) for s in id0
+                ]
+                data_dict["session"] = [
+                    s.decode() if isinstance(s, bytes) else str(s) for s in id1
+                ]
+                data_dict["channels"] = dset.attrs["channels"]
+                data_dict["n_sessions"] = dset.attrs["n_sessions"]
+                data_dict["dataset"] = dname
+                data_dict["pipeline"] = name
                 if _carbonfootprint and "codecarbon_task_name" in dset:
-                    df["codecarbon_task_name"] = np.array(
-                        dset["codecarbon_task_name"]
-                    ).astype(str)
-                df_list.append(df)
+                    data_dict["codecarbon_task_name"] = [
+                        s.decode() if isinstance(s, bytes) else str(s)
+                        for s in dset["codecarbon_task_name"][:]
+                    ]
+                df_list.append(pd.DataFrame(data_dict))
 
         if not df_list:
             return pd.DataFrame()
-        result = pd.concat(df_list, ignore_index=True)
+        result = (
+            df_list[0] if len(df_list) == 1 else pd.concat(df_list, ignore_index=True)
+        )
         for col in ("samples_test", "n_classes"):
             if col not in result.columns:
                 result[col] = np.nan
@@ -318,14 +358,18 @@ class Results:
             name: get_pipeline_digest(process_pipeline, pipeline)
             for name, pipeline in pipelines.items()
         }
+        dcode = dataset.code
         with _open_lock_hdf5(self.filepath, "r") as f:
             computed_subjects = {}
             for name, digest in digests.items():
-                if digest in f.keys():
+                if digest in f:
                     pipe_grp = f[digest]
-                    if dataset.code in pipe_grp.keys():
-                        dset = pipe_grp[dataset.code]
-                        computed_subjects[name] = set(dset["id"][:, 0])
+                    if dcode in pipe_grp:
+                        dset = pipe_grp[dcode]
+                        computed_subjects[name] = {
+                            s.decode("utf-8") if isinstance(s, bytes) else str(s)
+                            for s in dset["id"][:, 0]
+                        }
                     else:
                         computed_subjects[name] = set()
                 else:
@@ -333,11 +377,11 @@ class Results:
 
             work_plan = {}
             for subject in subjects:
-                subj_encoded = str(subject).encode("utf-8")
+                subj_str = str(subject)
                 missing = {
                     name: pipelines[name]
                     for name in pipelines
-                    if subj_encoded not in computed_subjects[name]
+                    if subj_str not in computed_subjects[name]
                 }
                 if missing:
                     work_plan[subject] = missing
@@ -345,11 +389,9 @@ class Results:
             if work_plan:
                 return work_plan, None
 
-            cached_df = self._to_dataframe_from_file(f, digests=list(digests.values()))
-            # Filter to current dataset to avoid mixing rows from other datasets
-            # that share the same pipeline digest.
-            if cached_df is not None and not cached_df.empty:
-                cached_df = cached_df[cached_df["dataset"] == dataset.code]
+            cached_df = self._to_dataframe_from_file(
+                f, digests=list(digests.values()), dataset_code=dcode
+            )
             return work_plan, cached_df
 
     def batch_not_yet_computed(self, pipelines, dataset, subjects, process_pipeline):
@@ -429,6 +471,8 @@ class Results:
             True if the pipeline has already been computed for the given
             dataset and subject, False otherwise.
         """
+        import h5py
+
         with h5py.File(self.filepath, "r") as f:
             # get the digest from repr
             digest = get_pipeline_digest(process_pipeline, pipeline)

@@ -11,7 +11,7 @@ import pandas as pd
 from sklearn.metrics import check_scoring, make_scorer
 from sklearn.pipeline import Pipeline
 
-from moabb.datasets.base import BaseDataset
+from moabb.datasets.base import BaseDataset, CacheConfig
 from moabb.datasets.bids_interface import StepType
 from moabb.datasets.preprocessing import (
     EpochsToEvents,
@@ -566,21 +566,88 @@ class BaseProcessing(metaclass=MoabbMetaClass):
 
         labels_pipeline = self.make_labels_pipeline(dataset, return_epochs, return_raws)
 
-        data = [
-            dataset.get_data(
+        resolved_cache = CacheConfig.make(cache_config)
+        can_share_raw = (
+            len(process_pipelines) > 1
+            and not resolved_cache.use
+            and not any(
+                [
+                    resolved_cache.save_raw,
+                    resolved_cache.save_epochs,
+                    resolved_cache.save_array,
+                    resolved_cache.overwrite_raw,
+                    resolved_cache.overwrite_epochs,
+                    resolved_cache.overwrite_array,
+                ]
+            )
+            and all(
+                len(p.steps) >= 2
+                and isinstance(p.steps[0][1], SetRawAnnotations)
+                and p.steps[0][1].event_id == process_pipelines[0].steps[0][1].event_id
+                and p.steps[0][1].interval == process_pipelines[0].steps[0][1].interval
+                for p in process_pipelines
+            )
+        )
+        if can_share_raw:
+            raw_data = dataset.get_data(
                 subjects=subjects,
                 cache_config=cache_config,
-                process_pipeline=process_pipeline,
+                process_pipeline=FixedPipeline([process_pipelines[0].steps[0]]),
                 n_jobs=n_jobs,
             )
-            for process_pipeline in process_pipelines
-        ]
+            tail_pipelines = [FixedPipeline(p.steps[1:]) for p in process_pipelines]
+            data = [
+                {
+                    subj: {sess: {} for sess in sessions}
+                    for subj, sessions in raw_data.items()
+                }
+                for _ in tail_pipelines
+            ]
+            for subj, sessions in raw_data.items():
+                for sess, runs in sessions.items():
+                    for run_id, raw in runs.items():
+                        if raw is None:
+                            for d_i in data:
+                                d_i[subj][sess][run_id] = None
+                            continue
+                        if not getattr(raw, "preload", False):
+                            raw.load_data()
+                        orig_data = raw._data.copy()
+                        for idx, tail in enumerate(tail_pipelines):
+                            if idx > 0:
+                                raw._data[:] = orig_data
+                            r = (
+                                raw.copy()
+                                if return_raws and idx < len(tail_pipelines) - 1
+                                else raw
+                            )
+                            data[idx][subj][sess][run_id] = tail.transform(r)
+        else:
+            data = [
+                dataset.get_data(
+                    subjects=subjects,
+                    cache_config=cache_config,
+                    process_pipeline=process_pipeline,
+                    n_jobs=n_jobs,
+                )
+                for process_pipeline in process_pipelines
+            ]
 
         X = []
         labels = []
         metadata = []
+        meta_subjects = []
+        meta_sessions = []
+        meta_runs = []
+        meta_datasets = []
+        meta_devices = []
+        meta_counts = []
+        use_fast_meta = not additional_metadata and not return_epochs
+
         for subject, sessions in data[0].items():
+            src_code = dataset._source_code(subject)
             for session, runs in sessions.items():
+                dev_name = dataset._device(subject, session)
                 for run in runs.keys():
                     proc = [data_i[subject][session][run] for data_i in data]
 
@@ -624,10 +691,7 @@ class BaseProcessing(metaclass=MoabbMetaClass):
                         )  # XXX does it make sense to return labels for raws?
                         x = proc[0] if len(self.filters) == 1 else proc
                     else:  # return array
-                        assert all(
-                            np.array_equal(proc[0]["X"].shape, p["X"].shape)
-                            for p in proc[1:]
-                        )
+                        assert all(proc[0]["X"].shape == p["X"].shape for p in proc[1:])
                         assert all(
                             np.array_equal(proc[0]["events"], p["events"])
                             for p in proc[1:]
@@ -638,43 +702,68 @@ class BaseProcessing(metaclass=MoabbMetaClass):
                         x = (
                             proc[0]["X"]
                             if len(self.filters) == 1
-                            else np.array([p["X"] for p in proc]).transpose((1, 2, 3, 0))
+                            else np.stack([p["X"] for p in proc], axis=-1)
                         )
 
-                    met = pd.DataFrame(index=range(n))
-                    met["subject"] = subject
-                    met["session"] = session
-                    met["run"] = run
-                    met["dataset"] = dataset._source_code(subject)
-                    met["device"] = dataset._device(subject, session)
+                    if use_fast_meta:
+                        meta_subjects.append(subject)
+                        meta_sessions.append(session)
+                        meta_runs.append(run)
+                        meta_datasets.append(src_code)
+                        meta_devices.append(dev_name)
+                        meta_counts.append(n)
+                    else:
+                        met = pd.DataFrame(index=range(n))
+                        met["subject"] = subject
+                        met["session"] = session
+                        met["run"] = run
+                        met["dataset"] = src_code
+                        met["device"] = dev_name
 
-                    metadata.append(met)
+                        metadata.append(met)
 
-                    # overwrite if additional is required
-                    if additional_metadata:
-                        # extend the metadata according to the filters
+                        # overwrite if additional is required
+                        if additional_metadata:
+                            # extend the metadata according to the filters
 
-                        dmeta_ext = (
-                            ext_metadata[0].copy()
-                            if isinstance(ext_metadata[0], pd.DataFrame)
-                            else pd.DataFrame()
-                        )
-                        metadata[-1] = dmeta_ext
-
-                    if return_epochs:
-                        x.metadata = (
-                            metadata[-1].copy()
-                            if len(self.filters) == 1
-                            else pd.concat(
-                                [metadata[-1].copy()] * len(self.filters),
-                                ignore_index=True,
+                            dmeta_ext = (
+                                ext_metadata[0].copy()
+                                if isinstance(ext_metadata[0], pd.DataFrame)
+                                else pd.DataFrame()
                             )
-                        )
+                            metadata[-1] = dmeta_ext
+
+                        if return_epochs:
+                            x.metadata = (
+                                metadata[-1].copy()
+                                if len(self.filters) == 1
+                                else pd.concat(
+                                    [metadata[-1].copy()] * len(self.filters),
+                                    ignore_index=True,
+                                )
+                            )
 
                     X.append(x)
                     labels.append(lbs)
 
-        metadata = pd.concat(metadata, ignore_index=True)
+        if use_fast_meta:
+            if meta_counts:
+                counts = np.asarray(meta_counts, dtype=np.intp)
+                metadata = pd.DataFrame(
+                    {
+                        "subject": np.repeat(meta_subjects, counts),
+                        "session": np.repeat(meta_sessions, counts),
+                        "run": np.repeat(meta_runs, counts),
+                        "dataset": np.repeat(meta_datasets, counts),
+                        "device": np.repeat(meta_devices, counts),
+                    }
+                )
+            else:
+                metadata = pd.DataFrame(
+                    columns=["subject", "session", "run", "dataset", "device"]
+                )
+        else:
+            metadata = pd.concat(metadata, ignore_index=True)
         labels = np.concatenate(labels)
         if (
             self.resample is not None

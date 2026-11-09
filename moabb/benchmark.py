@@ -348,26 +348,22 @@ def _display_results(results):
     """Print results after computation."""
     import pandas as pd
 
+    grouped = results.groupby(["dataset", "pipeline", "evaluation"], sort=False)
+    score_means = grouped["score"].mean()
+    carbon_sums = grouped["carbon_emission"].sum() if _carbonfootprint else None
     tab = []
     for d in results["dataset"].unique():
         for p in results["pipeline"].unique():
             for e in results["evaluation"].unique():
+                key = (d, p, e)
                 r = {
                     "dataset": d,
                     "evaluation": e,
                     "pipeline": p,
-                    "avg score": results[
-                        (results["dataset"] == d)
-                        & (results["pipeline"] == p)
-                        & (results["evaluation"] == e)
-                    ]["score"].mean(),
+                    "avg score": score_means.get(key, float("nan")),
                 }
                 if _carbonfootprint:
-                    r["carbon emission"] = results[
-                        (results["dataset"] == d)
-                        & (results["pipeline"] == p)
-                        & (results["evaluation"] == e)
-                    ]["carbon_emission"].sum()
+                    r["carbon emission"] = carbon_sums.get(key, 0.0)
                 tab.append(r)
     tab = pd.DataFrame(tab)
     print(tab)

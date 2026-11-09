@@ -24,6 +24,7 @@ import warnings
 from collections import OrderedDict
 from dataclasses import dataclass
 from enum import Enum
+from functools import cached_property
 from pathlib import Path
 from typing import TYPE_CHECKING, Dict, Type
 
@@ -2261,7 +2262,7 @@ class BIDSInterfaceBase(abc.ABC):
         # TODO: add dataset kwargs
         return self.process_pipeline
 
-    @property
+    @cached_property
     def desc(self):
         """Return the description of the processing pipeline."""
         from moabb.analysis.results import get_digest
@@ -2277,7 +2278,7 @@ class BIDSInterfaceBase(abc.ABC):
             f"suffix-{self._suffix} desc-{desc_str}"
         )
 
-    @property
+    @cached_property
     def root(self):
         """Return the root path of the BIDS dataset."""
         return get_bids_root(self.dataset.code, self.path)
@@ -2400,17 +2401,12 @@ class BIDSInterfaceBase(abc.ABC):
 
         If the cache is not present, returns None.
         """
-        log.info("Attempting to retrieve cache of %s...", repr(self))
+        log.info("Attempting to retrieve cache of %s...", self)
         code_dir = self.root / "code"
-        code_dir.mkdir(parents=True, exist_ok=True)
-
-        # Ensure the legacy BIDSPath directory exists for mne_bids compatibility
-        self._legacy_lock_file.mkdir(exist_ok=True)
-
         paths = self._cache_paths()
 
         if not paths:
-            log.info("No cache found at %s.", str(code_dir))
+            log.info("No cache found at %s.", code_dir)
             return None
 
         sessions_data = {}
@@ -2419,10 +2415,15 @@ class BIDSInterfaceBase(abc.ABC):
             session = sessions_data.setdefault(session_moabb, {})
             run = self._load_file(path, preload=preload)
             session[run_bids_to_moabb(path)] = run
-        log.info("Finished reading cache of %s", repr(self))
+        log.info("Finished reading cache of %s", self)
         return sessions_data
 
     def _cache_paths(self):
+        sub_str = subject_moabb_to_bids(self.subject)
+        subject_dir = self.root / f"sub-{sub_str}"
+        if not subject_dir.is_dir():
+            return []
+
         import mne_bids
 
         legacy_lock_exists = (
@@ -2430,7 +2431,7 @@ class BIDSInterfaceBase(abc.ABC):
         )
         paths = mne_bids.find_matching_paths(
             root=self.root,
-            subjects=subject_moabb_to_bids(self.subject),
+            subjects=sub_str,
             descriptions=self.desc,
             extensions=self._extension,
             check=self._check,
@@ -2720,7 +2721,7 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
 
         # FiducialsCoordinates is RECOMMENDED in coordsystem.json — add if missing
         FIFF = mne.io.constants.FIFF
-        coordsystem_files = list(bids_path.root.rglob("*_coordsystem.json"))
+        coordsystem_files = list(bids_path.directory.glob("*_coordsystem.json"))
         for cs_path in coordsystem_files:
             with open(cs_path, encoding="utf-8") as f:
                 cs = json.load(f)

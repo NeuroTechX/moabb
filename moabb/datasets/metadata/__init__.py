@@ -474,6 +474,47 @@ def canonicalize_dataset_class_catalog(dataset_classes: dict[str, type]) -> None
         canonicalize_dataset_class_metadata(name, dataset_cls)
 
 
+def _build_single_dataset_metadata(name: str, dataset_cls) -> DatasetMetadata:
+    """Build and canonicalize DatasetMetadata for a single dataset class."""
+    try:
+        dataset = dataset_cls()
+    except Exception:
+        dataset = None
+
+    class_metadata = getattr(dataset_cls, "METADATA", None)
+    has_class_metadata = isinstance(class_metadata, DatasetMetadata)
+    metadata = class_metadata
+    # Also check instance attribute (e.g. Lee2024 sets self.METADATA in __init__)
+    if not has_class_metadata and dataset is not None:
+        metadata = getattr(dataset, "METADATA", metadata)
+    if not isinstance(metadata, DatasetMetadata):
+        if dataset is None:
+            if name == "ErpCore2021":
+                metadata = DatasetMetadata(
+                    acquisition=AcquisitionMetadata(
+                        sampling_rate=1024.0,
+                        channel_types={"eeg": 30, "eog": 3},
+                        hardware="Biosemi ActiveTwo",
+                    ),
+                    participants=ParticipantMetadata(n_subjects=40),
+                    experiment=ExperimentMetadata(paradigm="p300"),
+                    documentation=DocumentationMetadata(
+                        doi="10.1016/j.neuroimage.2020.117465"
+                    ),
+                )
+            else:
+                metadata = _build_fallback_metadata(name)
+        else:
+            metadata = _build_minimal_metadata(dataset)
+
+    metadata = _merge_with_dataset(metadata, dataset)
+    metadata = _apply_manual_overrides(name, metadata)
+    metadata = _apply_dataset_family_defaults(name, metadata)
+    if has_class_metadata:
+        dataset_cls.METADATA = metadata
+    return metadata
+
+
 def _build_dataset_metadata_catalog():
     """Build a catalog of DatasetMetadata from dataset class METADATA attributes."""
     # Import lazily to avoid heavy imports at module load time
@@ -491,45 +532,11 @@ def _build_dataset_metadata_catalog():
     for name, dataset_cls in dataset_classes.items():
         if "Fake" in name:
             continue
-        try:
-            dataset = dataset_cls()
-        except Exception:
-            dataset = None
-
-        class_metadata = getattr(dataset_cls, "METADATA", None)
-        has_class_metadata = isinstance(class_metadata, DatasetMetadata)
-        metadata = class_metadata
-        # Also check instance attribute (e.g. Lee2024 sets self.METADATA in __init__)
-        if not has_class_metadata and dataset is not None:
-            metadata = getattr(dataset, "METADATA", metadata)
-        if not isinstance(metadata, DatasetMetadata):
-            if dataset is None:
-                if name == "ErpCore2021":
-                    metadata = DatasetMetadata(
-                        acquisition=AcquisitionMetadata(
-                            sampling_rate=1024.0,
-                            channel_types={"eeg": 30, "eog": 3},
-                            hardware="Biosemi ActiveTwo",
-                        ),
-                        participants=ParticipantMetadata(n_subjects=40),
-                        experiment=ExperimentMetadata(paradigm="p300"),
-                        documentation=DocumentationMetadata(
-                            doi="10.1016/j.neuroimage.2020.117465"
-                        ),
-                    )
-                else:
-                    metadata = _build_fallback_metadata(name)
-            else:
-                metadata = _build_minimal_metadata(dataset)
-
-        metadata = _merge_with_dataset(metadata, dataset)
-        metadata = _apply_manual_overrides(name, metadata)
-        metadata = _apply_dataset_family_defaults(name, metadata)
-        if has_class_metadata:
-            dataset_cls.METADATA = metadata
-
-        catalog[name] = metadata
+        catalog[name] = _build_single_dataset_metadata(name, dataset_cls)
     return catalog
+
+
+_MISSING = object()
 
 
 class _LazyMetadataCatalog:
@@ -537,11 +544,66 @@ class _LazyMetadataCatalog:
 
     def __init__(self):
         self._catalog = None
+        self._single_cache = {}
 
     def _ensure(self):
         if self._catalog is None:
             self._catalog = _build_dataset_metadata_catalog()
+            self._single_cache.clear()
         return self._catalog
+
+    def _resolve_one(self, key):
+        if self._catalog is not None:
+            return self._catalog.get(key, _MISSING)
+        if not isinstance(key, str) or "Fake" in key:
+            return _MISSING
+        cached = self._single_cache.get(key, _MISSING)
+        if cached is not _MISSING:
+            return cached
+
+        import inspect
+
+        import moabb.datasets as ds_mod
+        from moabb.datasets.base import BaseDataset
+        from moabb.utils import aliases_list
+
+        if any(old == key for old, _, _ in aliases_list):
+            return _MISSING
+
+        if key == "ErpCore2021":
+            from moabb.datasets.erpcore2021 import ErpCore2021
+
+            dataset_cls = ErpCore2021
+        else:
+            dataset_cls = getattr(ds_mod, key, None)
+            if (
+                not inspect.isclass(dataset_cls)
+                or not issubclass(dataset_cls, BaseDataset)
+                or dataset_cls is BaseDataset
+            ):
+                return _MISSING
+            try:
+                sig = inspect.signature(dataset_cls.__init__)
+                req = [
+                    p
+                    for name_p, p in sig.parameters.items()
+                    if name_p != "self"
+                    and p.default is inspect.Parameter.empty
+                    and p.kind
+                    in (
+                        inspect.Parameter.POSITIONAL_ONLY,
+                        inspect.Parameter.POSITIONAL_OR_KEYWORD,
+                        inspect.Parameter.KEYWORD_ONLY,
+                    )
+                ]
+                if req:
+                    return _MISSING
+            except (TypeError, ValueError):
+                pass
+
+        meta = _build_single_dataset_metadata(key, dataset_cls)
+        self._single_cache[key] = meta
+        return meta
 
     def __len__(self):
         return len(self._ensure())
@@ -550,13 +612,17 @@ class _LazyMetadataCatalog:
         return iter(self._ensure())
 
     def __getitem__(self, key):
-        return self._ensure()[key]
+        val = self._resolve_one(key)
+        if val is _MISSING:
+            raise KeyError(key)
+        return val
 
     def __contains__(self, key):
-        return key in self._ensure()
+        return self._resolve_one(key) is not _MISSING
 
     def get(self, key, default=None):
-        return self._ensure().get(key, default)
+        val = self._resolve_one(key)
+        return default if val is _MISSING else val
 
     def items(self):
         return self._ensure().items()

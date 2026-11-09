@@ -41,24 +41,38 @@ class TRCSP(CSP):
         C = np.array(C)
 
         # regularize CSP
-        evals = [[], []]
-        evecs = [[], []]
-        Creg = C[1] + np.eye(C[1].shape[0]) * self.alpha
-        evals[1], evecs[1] = linalg.eigh(C[0], Creg)
-        Creg = C[0] + np.eye(C[0].shape[0]) * self.alpha
-        evals[0], evecs[0] = linalg.eigh(C[1], Creg)
-        # sort eigenvectors
+        n_half = self.nfilter // 2
+        if n_half == 0:
+            self.filters_ = np.empty((0, Ne), dtype=C.dtype)
+            self.patterns_ = np.empty((0, Ne), dtype=C.dtype)
+            return self
+
+        eye = np.eye(Ne) * self.alpha
+        Creg = (C[0] + eye, C[1] + eye)
+        subset = [Ne - n_half, Ne - 1]
         filters = []
         patterns = []
         for i in range(2):
-            ix = np.argsort(evals[i])[::-1]  # in descending order
-            # sort eigenvectors
-            evecs[i] = evecs[i][:, ix]
-            # spatial patterns
-            A = np.linalg.pinv(evecs[i].T)
-            filters.append(evecs[i][:, : (self.nfilter // 2)])
-            patterns.append(A[:, : (self.nfilter // 2)])
+            _, evec = linalg.eigh(
+                C[1 - i], Creg[i], subset_by_index=subset, check_finite=False
+            )
+            W = evec[:, ::-1]
+            filters.append(W)
+            # Since W.T @ Creg[i] @ W = I, the top columns of pinv(evecs[i].T) equal Creg[i] @ W
+            patterns.append(Creg[i] @ W)
         self.filters_ = np.concatenate(filters, axis=1).T
         self.patterns_ = np.concatenate(patterns, axis=1).T
 
         return self
+
+    def transform(self, X):
+        """Apply spatial filters."""
+        if not isinstance(X, (np.ndarray, list)):
+            raise TypeError("X must be an array.")
+        X = np.asarray(X)
+        if X.ndim != 3:
+            raise ValueError("X must be n_trials * n_channels * n_channels")
+        # Diagonal of W @ X @ W.T without computing off-diagonal entries
+        WX = self.filters_ @ X
+        out = np.einsum("tfc,fc->tf", WX, self.filters_)
+        return np.log(out) if self.log else out
