@@ -53,7 +53,7 @@ def fake_nemar(monkeypatch, tmp_path):
 
     monkeypatch.setattr(dl.nemar, "download", _download)
     monkeypatch.setenv("MNE_DATA", str(tmp_path))
-    monkeypatch.delenv("MOABB_DOWNLOAD_PROVIDER", raising=False)
+    monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", "auto")
     return calls
 
 
@@ -142,7 +142,7 @@ def test_auto_provider_reuses_a_local_upstream_copy(tmp_path, fake_nemar, no_osf
 
 def test_nemar_failure_falls_back_to_osf_under_auto(tmp_path, monkeypatch):
     monkeypatch.setenv("MNE_DATA", str(tmp_path))
-    monkeypatch.delenv("MOABB_DOWNLOAD_PROVIDER", raising=False)
+    monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", "auto")
 
     def _fail(**kwargs):
         raise OSError("data.nemar.org unreachable")
