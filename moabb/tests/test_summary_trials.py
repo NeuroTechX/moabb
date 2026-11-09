@@ -158,3 +158,165 @@ def test_total_trials_matches_trials_per_subject(paradigm):
     )
     fixed = (UNVERIFIED_TOTAL_TRIALS & set(table.index)) - set(inconsistent)
     assert not fixed, f"Now consistent, remove from UNVERIFIED_TOTAL_TRIALS: {fixed}"
+
+
+def test_generate_summary_table_from_metadata():
+    """Summary rows and tables can be generated directly from class METADATA."""
+    from moabb.analysis.plotting import _get_dataset_parameters
+    from moabb.datasets import (
+        BNCI2014_001,
+        BNCI2014_008,
+        Cattan2019_PHMD,
+        Kalunga2016,
+        Shin2017B,
+        Thielen2015,
+    )
+    from moabb.datasets.base import (
+        _SUMMARY_COLUMNS_BY_PARADIGM,
+        generate_summary_table,
+        get_summary_table,
+        summary_row_from_metadata,
+    )
+
+    for cls in (
+        BNCI2014_001,
+        BNCI2014_008,
+        Kalunga2016,
+        Thielen2015,
+        Cattan2019_PHMD,
+        Shin2017B,
+    ):
+        ds = cls()
+        row = summary_row_from_metadata(ds)
+        assert row["#Subj"] == len(ds.all_subjects)
+        assert row["#Sessions"] == ds.n_sessions
+        assert row["#Chan"] == ds.metadata.acquisition.channel_types["eeg"]
+        assert row["Freq (Hz)"] == int(ds.metadata.acquisition.sampling_rate)
+        if ds.paradigm != "rstate" and row.get("#Trials / class") != "varies":
+            n_trials = _compute_n_trials(row, ds.paradigm)
+            assert n_trials > 0
+
+    df_mi = get_summary_table("imagery", from_metadata=True)
+    assert list(df_mi.columns) == _SUMMARY_COLUMNS_BY_PARADIGM["imagery"]
+    assert "BNCI2014_001" in df_mi.index
+    assert df_mi.loc["BNCI2014_001", "#Subj"] == 9
+    assert df_mi.loc["BNCI2014_001", "#Chan"] == 22
+    assert df_mi.loc["BNCI2014_001", "#Trials / class"] == 144
+    assert df_mi.loc["BNCI2014_001", "Total_trials"] == 5184
+
+    df_sub = generate_summary_table("p300", datasets=[BNCI2014_008])
+    assert list(df_sub.index) == ["BNCI2014_008"]
+    assert df_sub.loc["BNCI2014_008", "#Subj"] == 8
+    assert _get_dataset_parameters(BNCI2014_001()) == (
+        "BNCI2014_001",
+        "imagery",
+        9,
+        2,
+        576,
+        4.0,
+    )
+
+
+def test_metaclass_synthesizes_summary_table_from_metadata():
+    """A custom BaseDataset with METADATA gets _summary_table without a CSV entry."""
+    from moabb.analysis.plotting import _get_dataset_parameters
+    from moabb.datasets.base import BaseDataset
+    from moabb.datasets.metadata.schema import (
+        AcquisitionMetadata,
+        DatasetMetadata,
+        DataStructureMetadata,
+        ExperimentMetadata,
+        ParticipantMetadata,
+    )
+
+    class CustomMetadataDataset(BaseDataset):
+        """Custom dataset docstring."""
+
+        METADATA = DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=250.0, channel_types={"eeg": 16, "eog": 2}
+            ),
+            participants=ParticipantMetadata(n_subjects=5),
+            experiment=ExperimentMetadata(
+                paradigm="imagery",
+                n_classes=2,
+                events={"left_hand": 1, "right_hand": 2},
+                trial_duration=4.0,
+            ),
+            data_structure=DataStructureMetadata(
+                n_trials_per_class={"left_hand": 60, "right_hand": 60}
+            ),
+            sessions_per_subject=2,
+            runs_per_session=3,
+        )
+
+        def __init__(self):
+            super().__init__(
+                subjects=[1, 2, 3, 4, 5],
+                sessions_per_subject=2,
+                events={"left_hand": 1, "right_hand": 2},
+                code="CustomMetadataDataset",
+                interval=[0, 4],
+                paradigm="imagery",
+            )
+
+        def _get_single_subject_data(self, subject):
+            return {}
+
+        def data_path(
+            self, subject, path=None, force_update=False, update_path=None, verbose=None
+        ):
+            return []
+
+    assert hasattr(CustomMetadataDataset, "_summary_table")
+    assert ".. admonition:: Dataset summary" in (CustomMetadataDataset.__doc__ or "")
+    st = CustomMetadataDataset._summary_table
+    assert st["#Subj"] == 5
+    assert st["#Chan"] == 16
+    assert st["#Classes"] == 2
+    assert st["#Trials / class"] == 60
+    assert st["Total_trials"] == 600
+    assert _get_dataset_parameters(CustomMetadataDataset()) == (
+        "CustomMetadataDataset",
+        "imagery",
+        5,
+        2,
+        120,
+        4.0,
+    )
+
+
+def test_summary_row_from_bids_sidecars(tmp_path):
+    """summary_row_from_bids computes exact summary stats from BIDS events & sidecars."""
+    from moabb.datasets.base import summary_row_from_bids
+
+    for sub in ("01", "02"):
+        eeg_dir = tmp_path / f"sub-{sub}" / "ses-01" / "eeg"
+        eeg_dir.mkdir(parents=True)
+        stem = f"sub-{sub}_ses-01_task-P300_run-01"
+        (eeg_dir / f"{stem}_eeg.json").write_text('{"SamplingFrequency": 512.0}')
+        (eeg_dir / f"{stem}_channels.tsv").write_text(
+            "name\ttype\tunits\nFz\tEEG\tuV\nCz\tEEG\tuV\nPz\tEEG\tuV\nVEOG\tEOG\tuV\n"
+        )
+        rows = ["onset\tduration\ttrial_type\tvalue"]
+        rows.extend(f"{i * 1.0}\t0.8\tTarget\t1" for i in range(1, 11))
+        rows.extend(f"{i * 1.0}\t0.8\tNonTarget\t2" for i in range(11, 61))
+        (eeg_dir / f"{stem}_events.tsv").write_text("\n".join(rows) + "\n")
+
+    class _DummyP300:
+        paradigm = "p300"
+        event_id = {"Target": 1, "NonTarget": 2}
+        interval = [0, 0.8]
+        all_subjects = [1, 2]
+        n_sessions = 1
+
+    row = summary_row_from_bids(tmp_path, dataset=_DummyP300())
+    assert row == {
+        "#Subj": 2,
+        "#Chan": 3,
+        "#Trials / class": "50 NT / 10 T",
+        "Trials length (s)": 0.8,
+        "Freq (Hz)": 512,
+        "#Sessions": 1,
+    }
+    assert _compute_n_trials(row, "p300") == 60
