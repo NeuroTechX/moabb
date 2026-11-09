@@ -535,7 +535,11 @@ class BaseProcessing(metaclass=MoabbMetaClass):
             By default this is a :class:`numpy.ndarray` in microvolts:
             the array from ``Epochs.get_data()`` is multiplied by
             ``dataset.unit_factor`` (``1e6`` unless the dataset sets
-            another value), because MNE stores EEG in volts.
+            another value), because MNE stores EEG in volts. Its shape
+            is ``(n_trials, n_channels, n_times)``, unless the recordings
+            have different channels or numbers of samples, in which case
+            it is an object array of shape ``(n_trials,)`` holding one
+            ``(n_channels, n_times)`` array per trial.
             If return_epochs=True, this is :class:`mne.Epochs` in volts,
             with no such scaling. If return_raws=True, this holds the
             :class:`mne.io.BaseRaw` objects in volts. Do not compare
