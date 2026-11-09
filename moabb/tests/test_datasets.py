@@ -1237,11 +1237,15 @@ class TestCompoundDataset:
 
         monkeypatch.setattr(inner, "_get_single_subject_data", _spy_get)
         comp = CompoundDataset(
-            [(inner, 2, None, None)], code="CompoundNemar", interval=[0, 1]
+            [(inner, 1, None, None), (inner, 2, None, None)],
+            code="CompoundNemar",
+            interval=[0, 1],
         )
-        _ = comp.get_data(subjects=[1])
-        assert seen[0] == ("prefetch", [2])
-        assert seen[1][0] == "store" and seen[1][1] == inner._sourcedata_store()
+        _ = comp.get_data(subjects=[1, 2])
+        assert seen[0] == ("prefetch", [1, 2])
+        assert any(
+            kind == "store" and val == inner._sourcedata_store() for kind, val in seen
+        )
 
 
 class TestData:

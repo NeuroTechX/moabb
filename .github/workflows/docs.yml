@@ -50,9 +50,10 @@ jobs:
           path: |
             mne_data
             ~/.mne
-          key: doc-${{ runner.os }}-mne-data-v3
+          key: doc-${{ runner.os }}-mne-data-v4
           restore-keys: |
-            doc-${{ runner.os }}-mne-data-v3-
+            doc-${{ runner.os }}-mne-data-v4-
+            doc-${{ runner.os }}-mne-data-v3
 
       - name: Clean up corrupted cache
         run: |
@@ -70,10 +71,7 @@ jobs:
           fi
           # Remove stale evaluation results to avoid race conditions
           # between parallel sphinx-gallery examples sharing HDF5 files
-          if [ -d ~/mne_data/results ]; then
-            echo "Removing stale evaluation results"
-            rm -rf ~/mne_data/results
-          fi
+          rm -rf ~/mne_data/results mne_data/results
 
       - name: Cache docs build
         id: cache-docs
@@ -98,6 +96,9 @@ jobs:
       - name: Configure MOABB download directory
         run: |
           python -c "
+          from pathlib import Path
+          import numpy as np
+          from scipy.io import savemat
           from moabb.utils import set_download_dir
           from mne import set_config
           import os
@@ -105,12 +106,32 @@ jobs:
           set_download_dir(mne_data)
           set_config('MOABB_RESULTS', mne_data)
           print(f'MNE_DATA set to: {mne_data}')
+          # Pre-populate synthetic ExampleDataset files (tutorial_4_adding_a_dataset.py)
+          # so dl.data_dl never needs to hit Zenodo record 14973598
+          example_dir = Path(mne_data) / 'MNE-exampledataset-data' / 'zenodo' / '14973598'
+          example_dir.mkdir(parents=True, exist_ok=True)
+          sfreq, t_rec, t_trial, intertrial, n_chan, n_trials = 256, 150, 1, 2, 8, 40
+          rep = np.linspace(0, 4 * t_trial, t_trial * sfreq)
+          sig = np.sin(2 * np.pi / t_trial * rep)
+          rng = np.random.default_rng(42)
+          for subj in (1, 2, 3):
+              mat_file = example_dir / f'subject_0{subj}.mat'
+              if not mat_file.exists():
+                  x = np.zeros((n_chan + 1, t_rec * sfreq))
+                  stim = np.zeros(t_rec * sfreq)
+                  for n in range(n_trials):
+                      label = n % 2 + 1
+                      tn = int(sfreq + n * (t_trial + intertrial) * sfreq)
+                      stim[tn] = label
+                      x[:-1, tn : tn + t_trial * sfreq] = label * sig + 0.1 * rng.standard_normal((n_chan, len(sig)))
+                  x[-1, :] = stim
+                  savemat(str(mat_file), {'x': x, 'fs': sfreq})
           "
 
-      - name: Pre-download datasets (cold cache only)
-        if: steps.cache-mne_data.outputs.cache-matched-key == ''
+      - name: Pre-download datasets (cold or upgraded cache)
+        if: steps.cache-mne_data.outputs.cache-hit != 'true'
         run: |
-          echo "Cache is cold, pre-downloading datasets with delays to avoid rate limiting..."
+          echo "Cache is cold, pre-downloading datasets from NEMAR S3..."
           python << 'EOF'
           import os
           import sys
@@ -118,7 +139,7 @@ jobs:
           from moabb.utils import set_download_dir
           set_download_dir(os.environ["MNE_DATA"])
 
-          # All datasets used in examples that download from Zenodo
+          # All datasets used in examples
           # Each entry: (module_path, class_name, subjects)
           #   subjects can be an int (first N) or a list of specific subject IDs
           datasets_to_download = [
@@ -127,7 +148,9 @@ jobs:
               ('moabb.datasets', 'Zhou2016', 4),  # All 4 subjects
               ('moabb.datasets', 'AlexMI', 1),
               ('moabb.datasets', 'Kalunga2016', 2),
-              ('moabb.datasets', 'Cattan2019_VR', 1),
+              ('moabb.datasets', 'Cattan2019_VR', [1, 2]),  # tutorial_5 uses subjects 1 and 2
+              ('moabb.datasets', 'Cattan2019_PHMD', 1),
+              ('moabb.datasets.braininvaders', 'BI2014a', [4, 7]),  # tutorial_5 uses subjects 4 and 7
               ('moabb.datasets', 'Hinss2021', 1),
               ('moabb.datasets', 'Dreyer2023A', [1, 5, 7, 35]),  # plot_dreyer example
           ]
@@ -142,7 +165,7 @@ jobs:
               print(f'Pre-downloading {class_name} ({subjects_label})...')
               print(f'{"="*60}')
               success = False
-              for attempt in range(5):  # More retries
+              for attempt in range(5):
                   try:
                       import importlib
                       module = importlib.import_module(module_path)
@@ -159,15 +182,12 @@ jobs:
                   except Exception as e:
                       print(f'Attempt {attempt + 1}/5 failed: {e}')
                       if attempt < 4:
-                          wait = 90 * (attempt + 1)  # 90s, 180s, 270s, 360s
+                          wait = 15 * (attempt + 1)
                           print(f'Waiting {wait}s before retry...')
                           time.sleep(wait)
               if not success:
                   failed.append(class_name)
                   print(f'FAILED: {class_name} after 5 attempts')
-              # Wait between datasets to avoid rate limiting
-              print('Waiting 60s before next dataset...')
-              time.sleep(60)
 
           if failed:
               print(f'\n{"="*60}')
@@ -208,6 +228,7 @@ jobs:
             out_path="$out_dir/$base.ipynb"
             python .github/scripts/convert_to_notebook.py --input "$f" --output "$out_path"
           done
+          rm -rf ~/mne_data/results mne_data/results
 
       - name: Save MNE Data Cache
         if: success() && steps.cache-mne_data.outputs.cache-hit != 'true' && github.event_name == 'push' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master')
@@ -216,7 +237,7 @@ jobs:
           path: |
             mne_data
             ~/.mne
-          key: doc-${{ runner.os }}-mne-data-v3
+          key: doc-${{ runner.os }}-mne-data-v4
 
       # Create an artifact of the html output.
       - uses: actions/upload-artifact@v4
