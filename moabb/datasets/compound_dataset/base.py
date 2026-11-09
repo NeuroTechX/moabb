@@ -1,6 +1,8 @@
 """Build a custom dataset using subjects from other datasets."""
 
+from ...utils import get_download_provider
 from ..base import BaseDataset
+from ..download import active_sourcedata_store
 
 
 class CompoundDataset(BaseDataset):
@@ -145,7 +147,11 @@ class CompoundDataset(BaseDataset):
     def _get_single_subject_data(self, shopped_subject):
         """Return data for a single subject."""
         dataset, subject, sessions, runs = self.subjects_list[shopped_subject - 1]
-        subject_data = dataset._get_single_subject_data(subject)
+        if get_download_provider() != "upstream":
+            dataset._prefetch_nemar_sourcedata([subject])
+        dataset._seed_loader_cache(subject)
+        with active_sourcedata_store(dataset._sourcedata_store()):
+            subject_data = dataset._get_single_subject_data(subject)
         if sessions is None:
             return subject_data
         elif isinstance(sessions, list):
@@ -175,10 +181,14 @@ class CompoundDataset(BaseDataset):
         verbose=None,
     ):
         dataset, subject, _, _ = self.subjects_list[shopped_subject - 1]
-        return dataset.data_path(
-            subject,
-            path=path,
-            force_update=force_update,
-            update_path=update_path,
-            verbose=verbose,
-        )
+        if get_download_provider() != "upstream":
+            dataset._prefetch_nemar_sourcedata([subject])
+        dataset._seed_loader_cache(subject)
+        with active_sourcedata_store(dataset._sourcedata_store(path)):
+            return dataset.data_path(
+                subject,
+                path=path,
+                force_update=force_update,
+                update_path=update_path,
+                verbose=verbose,
+            )
