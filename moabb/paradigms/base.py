@@ -492,10 +492,12 @@ class BaseProcessing(metaclass=MoabbMetaClass):
             List of subject number
         return_epochs: boolean
             This flag specifies whether to return only the data array or the
-            complete processed mne.Epochs
+            complete processed mne.Epochs. Epochs keep the MNE unit, volts
+            for EEG.
         return_raws: boolean
             To return raw files and events, to ensure compatibility with braindecode.
-            Mutually exclusive with return_epochs
+            Mutually exclusive with return_epochs. Raw objects keep the MNE
+            unit, volts for EEG.
         cache_config: dict | :class:`~moabb.datasets.base.CacheConfig`
             Configuration for caching of datasets. See :class:`~moabb.datasets.base.CacheConfig` for details.
         postprocess_pipeline: :class:`sklearn.pipeline.Pipeline` | None
@@ -528,10 +530,20 @@ class BaseProcessing(metaclass=MoabbMetaClass):
 
         Returns
         -------
-        X : :class:`numpy.ndarray` | :class:`mne.Epochs`
-            the data that will be used as features for the model
-            Note: if return_epochs=True, this is :class:`mne.Epochs`;
-            if return_epochs=False, this is :class:`numpy.ndarray`.
+        X : :class:`numpy.ndarray` | :class:`mne.Epochs` | list
+            The data that will be used as features for the model.
+            By default this is a :class:`numpy.ndarray` in microvolts:
+            the array from ``Epochs.get_data()`` is multiplied by
+            ``dataset.unit_factor`` (``1e6`` unless the dataset sets
+            another value), because MNE stores EEG in volts. Its shape
+            is ``(n_trials, n_channels, n_times)``, unless the recordings
+            have different channels or numbers of samples, in which case
+            it is an object array of shape ``(n_trials,)`` holding one
+            ``(n_channels, n_times)`` array per trial.
+            If return_epochs=True, this is :class:`mne.Epochs` in volts,
+            with no such scaling. If return_raws=True, this holds the
+            :class:`mne.io.BaseRaw` objects in volts. Do not compare
+            values across these return types without converting units.
         labels: :class:`numpy.ndarray`
             the labels for training / evaluating the model
         metadata: :class:`pandas.DataFrame`

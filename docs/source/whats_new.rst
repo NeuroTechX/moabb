@@ -75,6 +75,7 @@ Enhancements
 - Finish moving the BIDS conversion example to the public dataset API: it locates the original files with :meth:`~moabb.datasets.base.BaseDataset.data_path` instead of reading ``MNE_DATA`` and hard-coding the ``MNE-alexeeg-data`` folder, documents the ``format`` and ``overwrite`` options of :meth:`~moabb.datasets.base.BaseDataset.convert_to_bids`, and points to :class:`~moabb.datasets.base.LocalBIDSDataset` for loading the BIDS copy back (:gh:`1082` by `Bruno Aristimunha`_).
 - Make GitHub's "Cite this repository" export the MOABB software citation as BibTeX ``@misc`` instead of ``@software``, which many bibliography styles drop together with the DOI: ``CITATION.cff`` gains a ``preferred-citation`` of type ``generic`` that reuses the same authors, title, version and DOI, matching the ``@misc`` entries already in the README and :doc:`cite`; the BibTeX block in :doc:`cite` is re-indented with spaces (:gh:`1071` by `Bruno Aristimunha`_).
 - Explain the default 8-32 Hz band-pass of :class:`moabb.paradigms.MotorImagery` and :class:`moabb.paradigms.LeftRightImagery` in a Notes section: it keeps the mu and beta rhythms, limits muscle and ocular artifacts, and matches the MOABB benchmark, and the section shows how to change it (``fmin``/``fmax``), disable it (``fmin=None, fmax=None``) or use a filter bank. The defaults are unchanged (:gh:`533` by `Bruno Aristimunha`_).
+- State the units returned by :meth:`moabb.paradigms.base.BaseParadigm.get_data`: the default array is in microvolts (scaled by ``dataset.unit_factor``), while ``return_epochs=True`` and ``return_raws=True`` return MNE objects in volts (:gh:`1354` by `Mark Kuang`_).
 
 API changes
 ~~~~~~~~~~~
@@ -1316,6 +1317,7 @@ API changes
 .. _Anna Sokolova: https://github.com/ZyntZ
 .. _Arthur031221: https://github.com/Arthur031221
 
+.. _Mark Kuang: https://github.com/iis-MarkKuang
 .. _lindicaphxag-tech: https://github.com/lindicaphxag-tech
 
 .. _Rızgar Ozan: https://github.com/RizgarOzan
