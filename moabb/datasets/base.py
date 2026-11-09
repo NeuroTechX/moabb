@@ -1460,10 +1460,9 @@ class BaseDataset(metaclass=MetaclassDataset):
             if subject not in self.subject_list:
                 raise ValueError("Invalid subject {:d} given".format(subject))
 
-        if self.nemar_id is not None:
-            self._prefetch_nemar_sourcedata(
-                self._subjects_without_cache(subjects, cache_config, process_pipeline)
-            )
+        self._prefetch_nemar_sourcedata(
+            self._subjects_without_cache(subjects, cache_config, process_pipeline)
+        )
 
         if n_jobs in (1, None):
             results = [

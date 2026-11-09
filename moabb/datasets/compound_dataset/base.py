@@ -144,6 +144,17 @@ class CompoundDataset(BaseDataset):
         )
         return self._with_data_origin(data, shopped_subject)
 
+    def _prefetch_nemar_sourcedata(self, subjects, verbose=None):
+        """Prefetch NEMAR sourcedata for each inner dataset."""
+        if not subjects or get_download_provider() == "upstream":
+            return
+        by_dataset = {}
+        for shopped_subject in subjects:
+            dataset, subject, _, _ = self.subjects_list[shopped_subject - 1]
+            by_dataset.setdefault(id(dataset), (dataset, []))[1].append(subject)
+        for dataset, inner_subjects in by_dataset.values():
+            dataset._prefetch_nemar_sourcedata(inner_subjects, verbose=verbose)
+
     def _get_single_subject_data(self, shopped_subject):
         """Return data for a single subject."""
         dataset, subject, sessions, runs = self.subjects_list[shopped_subject - 1]
