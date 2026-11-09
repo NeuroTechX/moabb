@@ -335,7 +335,7 @@ def _convert_run_001_2022(
 class BNCI2022_001(BNCIBaseDataset):
     """BNCI 2022-001 EEG Correlates of Difficulty Level dataset.
 
-    Dataset from [1]_.
+    Dataset from [1]_ and [2]_.
 
     **Dataset Description**
 

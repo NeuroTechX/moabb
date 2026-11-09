@@ -416,7 +416,9 @@ class SpeechImagery(MotorImagery):
     fmax: float (default 100)
         cutoff frequency (Hz) for the low pass filter.
 
-    See :class:`MotorImagery` for the remaining parameters.
+    See Also
+    --------
+    MotorImagery : Base motor imagery paradigm for the remaining parameters.
     """
 
     def __init__(

@@ -41,7 +41,7 @@ class Pan2025(_PanDataverse):
     250 Hz. The deposit notes that trial counts vary across sessions and
     subjects, so the 90/90 per-class figure is nominal; in session 2 the first
     30 trials are training and the remaining trials are testing with online
-    feedback. The paradigm follows [2]_ (closed access), which the deposit
+    feedback. The paradigm follows [2]_ (closed access), which the deposit [1]_
     references. The MATLAB ``.mat`` files store epochs from -1.5 s to 4 s around
     the cue plus an ``Info`` struct (channel names, sampling rate, epoch
     period); the loader concatenates the epochs, converts microvolts to volts,

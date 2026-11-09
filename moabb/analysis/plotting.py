@@ -432,7 +432,7 @@ def plot_critical_difference(
     Notes
     -----
     The comparison uses a Friedman test followed by the Nemenyi critical
-    difference for complete blocks (the same pipelines evaluated on every
+    difference for complete blocks [1]_ (the same pipelines evaluated on every
     dataset). Incomplete dataset-by-pipeline score matrices are rejected
     rather than silently changing the set of benchmark datasets per pair.
     If an ``evaluation`` column is present, all rows must belong to the same

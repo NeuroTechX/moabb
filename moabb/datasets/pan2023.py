@@ -129,8 +129,8 @@ class Pan2023(_PanDataverse):
     microvolts to volts, places each class event at the task onset and marks
     every trial join with a non-rejecting ``EDGE boundary`` annotation. Distinct
     from :class:`Pan2025` (doi:10.7910/DVN/GH74ZG, 10 subjects, ~180 trials per
-    session). The Dataverse deposit is registered as a supplement to [2]_, which
-    names it "Pan2023".
+    session). The Dataverse deposit [1]_ is registered as a supplement to [2]_,
+    which names it "Pan2023".
 
     References
     ----------
