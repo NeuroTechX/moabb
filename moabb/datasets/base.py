@@ -75,83 +75,28 @@ def get_summary_table(
     if dir_name is None:
         dir_name = Path(__file__).parent
     path = Path(dir_name) / f"summary_{paradigm}.csv"
-    df = pd.read_csv(path, header=0, index_col="Dataset", skipinitialspace=True)
-    return df
+    return pd.read_csv(path, header=0, index_col="Dataset", skipinitialspace=True)
 
 
-_SUMMARY_COLUMNS_BY_PARADIGM: dict[str, list[str]] = {
-    "imagery": [
-        "#Subj",
-        "#Chan",
-        "#Classes",
-        "#Trials / class",
-        "Trials length (s)",
-        "Freq (Hz)",
-        "#Sessions",
-        "#Runs",
-        "Total_trials",
-    ],
-    "cognitive": [
-        "#Subj",
-        "#Chan",
-        "#Classes",
-        "#Trials / class",
-        "Trials length (s)",
-        "Freq (Hz)",
-        "#Sessions",
-        "#Runs",
-        "Total_trials",
-    ],
-    "imagined_speech": [
-        "#Subj",
-        "#Chan",
-        "#Classes",
-        "#Trials / class",
-        "Trials length (s)",
-        "Freq (Hz)",
-        "#Sessions",
-        "#Runs",
-        "Total_trials",
-    ],
-    "p300": [
-        "#Subj",
-        "#Chan",
-        "#Trials / class",
-        "Trials length (s)",
-        "Freq (Hz)",
-        "#Sessions",
-    ],
-    "ssvep": [
-        "#Subj",
-        "#Chan",
-        "#Classes",
-        "#Trials / class",
-        "Trials length (s)",
-        "Freq (Hz)",
-        "#Sessions",
-    ],
-    "rstate": [
-        "#Subj",
-        "#Chan",
-        "#Classes",
-        "#Blocks / class",
-        "Trials length (s)",
-        "Freq (Hz)",
-        "#Sessions",
-    ],
-    "cvep": [
-        "#Subj",
-        "#Sessions",
-        "Freq (Hz)",
-        "#Chan",
-        "Trials length (s)",
-        "#Trial classes",
-        "#Trials / class",
-        "#Epochs classes",
-        "#Epochs / class",
-        "Codes",
-        "Presentation rate (Hz)",
-    ],
+_SUMMARY_TABLES = {
+    p: get_summary_table(p)
+    for p in (
+        "imagery",
+        "cognitive",
+        "imagined_speech",
+        "p300",
+        "ssvep",
+        "cvep",
+        "rstate",
+    )
+}
+_SUMMARY_COLUMNS_BY_PARADIGM = {k: list(df.columns) for k, df in _SUMMARY_TABLES.items()}
+_summary_table = pd.concat(
+    [df for k, df in _SUMMARY_TABLES.items() if k != "imagined_speech"]
+)
+_summary_table_dict = {
+    idx: {col: val for col, val in zip(_summary_table.columns, row) if pd.notna(val)}
+    for idx, row in zip(_summary_table.index, _summary_table.to_numpy())
 }
 
 _TARGET_KEYS = {"target", "t", "oddball", "deviant", "rare"}
@@ -170,26 +115,90 @@ def _clean_num(val: Any) -> Any:
 def _instantiate_for_summary(dataset_or_cls: Any) -> Any:
     if isinstance(dataset_or_cls, type):
         try:
-            kwargs = {}
-            if "accept" in signature(dataset_or_cls).parameters:
-                kwargs["accept"] = True
-            return dataset_or_cls(**kwargs)
+            kw = (
+                {"accept": True}
+                if "accept" in signature(dataset_or_cls).parameters
+                else {}
+            )
+            return dataset_or_cls(**kw)
         except Exception:
             return None
     return dataset_or_cls
 
 
-def _extract_nt_t(mapping: Mapping[str, Any]) -> tuple[Any, Any]:
-    nt_val, t_val = None, None
-    for k, v in mapping.items():
-        if not isinstance(v, (int, float, np.number)) or isinstance(v, bool):
-            continue
-        norm = str(k).strip().lower().replace("-", "_").replace(" ", "_")
-        if norm in _NONTARGET_KEYS:
-            nt_val = v
-        elif norm in _TARGET_KEYS:
-            t_val = v
-    return nt_val, t_val
+def _norm_label(k: Any) -> str:
+    return str(k).strip().lower().replace("-", "_").replace(" ", "_")
+
+
+def _pack_summary_row(
+    paradigm: str,
+    n_subj: Any,
+    n_chan: Any,
+    n_classes: Any,
+    per_class: Any,
+    nt_val: Any,
+    t_val: Any,
+    trial_len: Any,
+    sfreq: Any,
+    n_sessions: Any,
+    n_runs: Any,
+    *,
+    total_trials: Any = None,
+    n_trials_raw: Any = None,
+    pspec: Any = None,
+    dstruct: Any = None,
+) -> dict[str, Any]:
+    nt_t = (
+        f"{_clean_num(nt_val)} NT / {_clean_num(t_val)} T"
+        if nt_val is not None and t_val is not None
+        else None
+    )
+    if paradigm == "p300":
+        if nt_t:
+            tpc: Any = nt_t
+        elif isinstance(n_trials_raw, str) and (
+            "NT" in n_trials_raw
+            or "All" in n_trials_raw
+            or n_trials_raw.strip().lower().startswith("varies")
+        ):
+            tpc = n_trials_raw.strip()
+        elif isinstance(per_class, (int, float)):
+            tpc = f"{_clean_num(per_class)} All"
+        else:
+            tpc = "varies NT / T"
+    else:
+        tpc = per_class
+    if total_trials is None:
+        total_trials = (
+            int(round(n_subj * n_classes * per_class))
+            if isinstance(per_class, (int, float))
+            and isinstance(n_subj, int)
+            and isinstance(n_classes, int)
+            else "varies"
+        )
+    freqs = getattr(pspec, "stimulus_frequencies_hz", None)
+    values = {
+        "#Subj": n_subj,
+        "#Chan": n_chan,
+        "#Classes": n_classes,
+        "#Trials / class": tpc,
+        "#Blocks / class": getattr(dstruct, "n_blocks", None)
+        or (per_class if isinstance(per_class, (int, float)) else 1),
+        "Trials length (s)": _clean_num(trial_len) if paradigm == "rstate" else trial_len,
+        "Freq (Hz)": _clean_num(sfreq) if sfreq is not None else None,
+        "#Sessions": n_sessions,
+        "#Runs": n_runs,
+        "Total_trials": total_trials,
+        "#Trial classes": getattr(pspec, "n_targets", None) or n_classes,
+        "#Epochs classes": n_classes or 2,
+        "#Epochs / class": nt_t or (tpc if paradigm == "cvep" else "varies"),
+        "Codes": getattr(pspec, "code_type", None) or "varies",
+        "Presentation rate (Hz)": _clean_num(freqs[0]) if freqs else "varies",
+    }
+    cols = _SUMMARY_COLUMNS_BY_PARADIGM.get(
+        paradigm, _SUMMARY_COLUMNS_BY_PARADIGM["imagery"]
+    )
+    return {c: values[c] for c in cols if values.get(c) is not None}
 
 
 def summary_row_from_metadata(
@@ -199,46 +208,47 @@ def summary_row_from_metadata(
 ) -> dict[str, Any]:
     """Build a dataset summary row from ``DatasetMetadata`` and class/instance attributes."""
     ds = _instantiate_for_summary(dataset_or_cls)
-    if metadata is None:
-        metadata = (
-            getattr(ds, "metadata", None)
-            or getattr(dataset_or_cls, "METADATA", None)
-            or (attrs or {}).get("METADATA")
+    metadata = (
+        metadata
+        or getattr(ds, "metadata", None)
+        or getattr(dataset_or_cls, "METADATA", None)
+        or (attrs or {}).get("METADATA")
+    )
+    exp, acq, part, prep, dstruct, pspec = (
+        getattr(metadata, a, None)
+        for a in (
+            "experiment",
+            "acquisition",
+            "participants",
+            "preprocessing",
+            "data_structure",
+            "paradigm_specific",
         )
-
-    exp = getattr(metadata, "experiment", None)
-    acq = getattr(metadata, "acquisition", None)
-    part = getattr(metadata, "participants", None)
-    prep = getattr(metadata, "preprocessing", None)
-    dstruct = getattr(metadata, "data_structure", None)
-    pspec = getattr(metadata, "paradigm_specific", None)
-
-    paradigm = (
+    )
+    p = (
         getattr(ds, "paradigm", None)
         or (attrs or {}).get("paradigm")
         or getattr(exp, "paradigm", None)
         or "imagery"
     )
-    if paradigm == "erp":
-        paradigm = "p300"
-
+    paradigm = "p300" if p == "erp" else p
     n_subj = (
         len(ds.all_subjects)
-        if ds is not None and getattr(ds, "all_subjects", None)
+        if getattr(ds, "all_subjects", None)
         else getattr(part, "n_subjects", None)
     )
-    n_chan = None
-    if acq is not None:
-        ch_types = getattr(acq, "channel_types", None) or {}
-        n_chan = ch_types.get("eeg", getattr(acq, "n_channels", None))
-
+    n_chan = (
+        (getattr(acq, "channel_types", None) or {}).get(
+            "eeg", getattr(acq, "n_channels", None)
+        )
+        if acq
+        else None
+    )
     sfreq = (
         getattr(acq, "sampling_rate", None)
         or getattr(prep, "downsampled_to_hz", None)
         or getattr(ds, "sfreq", None)
     )
-    freq = _clean_num(sfreq) if sfreq is not None else None
-
     n_sessions = (
         getattr(ds, "n_sessions", None)
         or getattr(metadata, "sessions_per_subject", None)
@@ -247,123 +257,75 @@ def summary_row_from_metadata(
     n_runs = (
         getattr(metadata, "runs_per_session", None) or getattr(ds, "n_runs", None) or 1
     )
-
     event_id = getattr(ds, "event_id", None) or getattr(exp, "events", None) or {}
     n_classes = (
         len(event_id)
-        if event_id
+        or getattr(exp, "n_classes", None)
+        or len(getattr(exp, "class_labels", None) or [])
+        or None
+    )
+    interval, dur = (
+        getattr(ds, "interval", None),
+        getattr(exp, "trial_duration", None)
+        or getattr(dstruct, "block_duration_s", None),
+    )
+    trial_len = (
+        round(float(dur), 6)
+        if paradigm == "cvep" and dur is not None
         else (
-            getattr(exp, "n_classes", None)
-            or len(getattr(exp, "class_labels", None) or [])
-            or None
+            round(float(interval[1] - interval[0]), 6)
+            if interval is not None and len(interval) == 2
+            else (round(float(dur), 6) if dur is not None else None)
         )
     )
-
-    interval = getattr(ds, "interval", None)
-    if paradigm == "cvep" and getattr(exp, "trial_duration", None) is not None:
-        trial_len = round(float(exp.trial_duration), 6)
-    elif interval is not None and len(interval) == 2:
-        trial_len = round(float(interval[1] - interval[0]), 6)
-    elif getattr(exp, "trial_duration", None) is not None:
-        trial_len = round(float(exp.trial_duration), 6)
-    elif getattr(dstruct, "block_duration_s", None) is not None:
-        trial_len = round(float(dstruct.block_duration_s), 6)
-    else:
-        trial_len = None
-
     tpc_dict = getattr(dstruct, "n_trials_per_class", None) or getattr(
         exp, "trials_per_class", None
     )
     n_trials_raw = getattr(dstruct, "n_trials", None)
-
-    nt_val, t_val = (
-        _extract_nt_t(tpc_dict) if isinstance(tpc_dict, Mapping) else (None, None)
-    )
+    nt_val = t_val = None
     per_class: Any = "varies"
-    if isinstance(tpc_dict, Mapping):
-        nums = [
+
+    def _num_vals(d: Mapping) -> list[float]:
+        return [
             float(v)
-            for v in tpc_dict.values()
+            for v in d.values()
             if isinstance(v, (int, float, np.number)) and not isinstance(v, bool)
         ]
+
+    if isinstance(tpc_dict, Mapping):
+        for k, v in tpc_dict.items():
+            if isinstance(v, (int, float, np.number)) and not isinstance(v, bool):
+                if _norm_label(k) in _NONTARGET_KEYS:
+                    nt_val = v
+                elif _norm_label(k) in _TARGET_KEYS:
+                    t_val = v
+        nums = _num_vals(tpc_dict)
         if nums:
             per_class = _clean_num(round(sum(nums) / len(nums), 2))
-    elif (
-        isinstance(n_trials_raw, (int, float, np.number))
-        and not isinstance(n_trials_raw, bool)
-        and isinstance(n_classes, int)
-        and n_classes > 0
-    ):
-        per_class = _clean_num(round(float(n_trials_raw) / n_classes, 2))
-    elif (
-        isinstance(n_trials_raw, Mapping) and isinstance(n_classes, int) and n_classes > 0
-    ):
-        nums = [
-            float(v)
-            for v in n_trials_raw.values()
-            if isinstance(v, (int, float, np.number)) and not isinstance(v, bool)
-        ]
-        if nums:
+    elif isinstance(n_classes, int) and n_classes > 0:
+        if isinstance(n_trials_raw, (int, float, np.number)) and not isinstance(
+            n_trials_raw, bool
+        ):
+            per_class = _clean_num(round(float(n_trials_raw) / n_classes, 2))
+        elif isinstance(n_trials_raw, Mapping) and (nums := _num_vals(n_trials_raw)):
             per_class = _clean_num(round(sum(nums) / n_classes, 2))
 
-    if paradigm == "p300":
-        if nt_val is not None and t_val is not None:
-            tpc_val: Any = f"{_clean_num(nt_val)} NT / {_clean_num(t_val)} T"
-        elif isinstance(n_trials_raw, str) and (
-            "NT" in n_trials_raw
-            or "All" in n_trials_raw
-            or n_trials_raw.strip().lower().startswith("varies")
-        ):
-            tpc_val = n_trials_raw.strip()
-        elif isinstance(per_class, (int, float)):
-            tpc_val = f"{_clean_num(per_class)} All"
-        else:
-            tpc_val = "varies NT / T"
-    else:
-        tpc_val = per_class
-
-    if (
-        isinstance(per_class, (int, float))
-        and isinstance(n_subj, int)
-        and isinstance(n_classes, int)
-    ):
-        total_trials: Any = int(round(n_subj * n_classes * per_class))
-    else:
-        total_trials = "varies"
-
-    values: dict[str, Any] = {
-        "#Subj": n_subj,
-        "#Chan": n_chan,
-        "#Classes": n_classes,
-        "#Trials / class": tpc_val,
-        "#Blocks / class": (
-            getattr(dstruct, "n_blocks", None)
-            or (per_class if isinstance(per_class, (int, float)) else 1)
-        ),
-        "Trials length (s)": _clean_num(trial_len) if paradigm == "rstate" else trial_len,
-        "Freq (Hz)": freq,
-        "#Sessions": n_sessions,
-        "#Runs": n_runs,
-        "Total_trials": total_trials,
-        "#Trial classes": getattr(pspec, "n_targets", None) or n_classes,
-        "#Epochs classes": n_classes or 2,
-        "#Epochs / class": (
-            f"{_clean_num(nt_val)} NT / {_clean_num(t_val)} T"
-            if nt_val is not None and t_val is not None
-            else "varies"
-        ),
-        "Codes": getattr(pspec, "code_type", None) or "varies",
-        "Presentation rate (Hz)": (
-            _clean_num(pspec.stimulus_frequencies_hz[0])
-            if getattr(pspec, "stimulus_frequencies_hz", None)
-            else "varies"
-        ),
-    }
-
-    cols = _SUMMARY_COLUMNS_BY_PARADIGM.get(
-        paradigm, _SUMMARY_COLUMNS_BY_PARADIGM["imagery"]
+    return _pack_summary_row(
+        paradigm,
+        n_subj,
+        n_chan,
+        n_classes,
+        per_class,
+        nt_val,
+        t_val,
+        trial_len,
+        sfreq,
+        n_sessions,
+        n_runs,
+        n_trials_raw=n_trials_raw,
+        pspec=pspec,
+        dstruct=dstruct,
     )
-    return {col: values[col] for col in cols if values.get(col) is not None}
 
 
 def summary_row_from_bids(bids_root: str | Path, dataset: Any = None) -> dict[str, Any]:
@@ -371,14 +333,13 @@ def summary_row_from_bids(bids_root: str | Path, dataset: Any = None) -> dict[st
     import mne
     import mne_bids
 
-    bids_root = Path(bids_root)
-    ds = _instantiate_for_summary(dataset)
-    paradigm = getattr(ds, "paradigm", None) or "imagery"
-    if paradigm == "erp":
-        paradigm = "p300"
-    event_id = getattr(ds, "event_id", None)
-    interval = getattr(ds, "interval", None)
-
+    bids_root, ds = Path(bids_root), _instantiate_for_summary(dataset)
+    p = getattr(ds, "paradigm", None) or "imagery"
+    paradigm, event_id, interval = (
+        ("p300" if p == "erp" else p),
+        getattr(ds, "event_id", None),
+        getattr(ds, "interval", None),
+    )
     search_params = (
         ds._get_path_search_params(None)
         if isinstance(ds, BaseBIDSDataset)
@@ -386,113 +347,91 @@ def summary_row_from_bids(bids_root: str | Path, dataset: Any = None) -> dict[st
     )
     bids_paths = mne_bids.find_matching_paths(
         root=bids_root, ignore_json=True, **search_params
+    ) or mne_bids.find_matching_paths(
+        root=bids_root, suffixes=["events"], extensions=[".tsv"], ignore_json=True
     )
-    if not bids_paths:
-        bids_paths = mne_bids.find_matching_paths(
-            root=bids_root, suffixes=["events"], extensions=[".tsv"], ignore_json=True
-        )
-
-    subjects = sorted({p.subject for p in bids_paths if p.subject is not None})
+    subjects = sorted({bp.subject for bp in bids_paths if bp.subject is not None})
     if not subjects and (bids_root / "participants.tsv").exists():
-        part_df = pd.read_csv(bids_root / "participants.tsv", sep="\t")
-        subjects = [str(s) for s in part_df.get("participant_id", [])]
+        subjects = [
+            str(s)
+            for s in pd.read_csv(bids_root / "participants.tsv", sep="\t").get(
+                "participant_id", []
+            )
+        ]
     n_subj = len(subjects) or (
-        len(ds.all_subjects)
-        if ds is not None and getattr(ds, "all_subjects", None)
-        else 0
+        len(ds.all_subjects) if getattr(ds, "all_subjects", None) else 0
     )
 
-    ses_counts = []
-    run_counts = []
+    ses_counts, run_counts = [], []
     for sub in subjects:
-        sub_paths = [p for p in bids_paths if p.subject == sub]
-        sessions = sorted({p.session or "0" for p in sub_paths})
+        sub_paths = [bp for bp in bids_paths if bp.subject == sub]
+        sessions = sorted({bp.session or "0" for bp in sub_paths})
         ses_counts.append(len(sessions))
-        for ses in sessions:
-            runs = {p.run or "0" for p in sub_paths if (p.session or "0") == ses}
-            run_counts.append(len(runs))
-
-    if ses_counts:
-        med_s = int(round(float(np.median(ses_counts))))
-        n_sessions: Any = (
-            med_s
-            if min(ses_counts) == max(ses_counts)
-            else f"{med_s} ({min(ses_counts)}-{max(ses_counts)})"
+        run_counts.extend(
+            len({bp.run or "0" for bp in sub_paths if (bp.session or "0") == ses})
+            for ses in sessions
         )
-    else:
-        n_sessions = getattr(ds, "n_sessions", 1) or 1
 
-    if run_counts:
-        med_r = int(round(float(np.median(run_counts))))
-        n_runs: Any = (
-            med_r
-            if min(run_counts) == max(run_counts)
-            else f"{med_r} ({min(run_counts)}-{max(run_counts)})"
+    def _fmt_counts(counts: list[int], default: int = 1) -> Any:
+        if not counts:
+            return default
+        med = int(round(float(np.median(counts))))
+        return (
+            med if min(counts) == max(counts) else f"{med} ({min(counts)}-{max(counts)})"
         )
-    else:
-        n_runs = 1
 
-    # Channels and sampling frequency from BIDS sidecars (*_channels.tsv, *_eeg.json)
-    n_chan = None
-    sfreq = None
-    ch_tsv = None
-    eeg_json = None
-    if bids_paths:
-        ch_tsv = bids_paths[0].find_matching_sidecar(
-            suffix="channels", extension=".tsv", on_error="ignore"
-        )
-        eeg_json = bids_paths[0].find_matching_sidecar(
-            suffix="eeg", extension=".json", on_error="ignore"
-        )
-    if ch_tsv is None:
-        ch_tsv = next(bids_root.rglob("*_channels.tsv"), None)
-    if eeg_json is None:
-        eeg_json = next(bids_root.rglob("*_eeg.json"), None)
+    n_sessions = _fmt_counts(ses_counts, getattr(ds, "n_sessions", 1) or 1)
+    n_runs = _fmt_counts(run_counts, 1)
 
+    def _sidecar(suffix: str, ext: str):
+        return (
+            bids_paths[0].find_matching_sidecar(
+                suffix=suffix, extension=ext, on_error="ignore"
+            )
+            if bids_paths
+            else None
+        ) or next(bids_root.rglob(f"*_{suffix}{ext}"), None)
+
+    ch_tsv, eeg_json = _sidecar("channels", ".tsv"), _sidecar("eeg", ".json")
+    n_chan = sfreq = None
     if ch_tsv is not None and Path(ch_tsv).exists():
         ch_df = pd.read_csv(ch_tsv, sep="\t")
         if "type" in ch_df.columns:
-            types_upper = ch_df["type"].astype(str).str.upper()
-            eeg_count = int((types_upper == "EEG").sum())
-            n_chan = eeg_count if eeg_count > 0 else int((types_upper != "STIM").sum())
+            t_up = ch_df["type"].astype(str).str.upper()
+            n_chan = int((t_up == "EEG").sum()) or int((t_up != "STIM").sum())
         else:
             n_chan = len(ch_df)
-
     if eeg_json is not None and Path(eeg_json).exists():
         info_json = json.loads(Path(eeg_json).read_text(encoding="utf-8"))
         sfreq = info_json.get("SamplingFrequency")
         if n_chan is None and "EEGChannelCount" in info_json:
             n_chan = int(info_json["EEGChannelCount"])
+    if (
+        (n_chan is None or sfreq is None)
+        and bids_paths
+        and bids_paths[0].fpath.exists()
+        and bids_paths[0].extension != ".tsv"
+    ):
+        raw = mne_bids.read_raw_bids(bids_paths[0], verbose="ERROR")
+        sfreq = sfreq or raw.info["sfreq"]
+        if n_chan is None:
+            ch_types = raw.get_channel_types()
+            # ponytail: name heuristic when _channels.tsv is absent; upgrade if BIDS sidecar is added
+            n_chan = sum(
+                1
+                for ch, t in zip(raw.ch_names, ch_types)
+                if t == "eeg" and not any(k in ch.upper() for k in ("EOG", "EMG", "ECG"))
+            ) or sum(1 for t in ch_types if t != "stim")
 
-    if (n_chan is None or sfreq is None) and bids_paths:
-        first_path = bids_paths[0]
-        if first_path.fpath.exists() and first_path.extension != ".tsv":
-            raw = mne_bids.read_raw_bids(first_path, verbose="ERROR")
-            if sfreq is None:
-                sfreq = raw.info["sfreq"]
-            if n_chan is None:
-                ch_types = raw.get_channel_types()
-                eeg_c = sum(
-                    1
-                    for ch, t in zip(raw.ch_names, ch_types)
-                    if t == "eeg"
-                    and not any(k in ch.upper() for k in ("EOG", "EMG", "ECG"))
-                )
-                n_chan = eeg_c if eeg_c > 0 else sum(1 for t in ch_types if t != "stim")
-
-    # Events from *_events.tsv sidecars (or raw annotations/events fallback)
-    code_to_label: dict[str, str] = {}
-    valid_labels: set[str] | None = None
-    if event_id:
-        valid_labels = {str(k) for k in event_id.keys()}
-        for k, v in event_id.items():
-            codes = v if isinstance(v, (list, tuple)) else [v]
-            for c in codes:
-                code_to_label[str(c)] = str(k)
-
+    valid_labels = {str(k) for k in event_id} if event_id else None
+    code_to_label = {
+        str(c): str(k)
+        for k, v in (event_id or {}).items()
+        for c in (v if isinstance(v, (list, tuple)) else [v])
+    }
     subj_counts: dict[str, dict[str, int]] = {}
     durations: list[float] = []
-    seen_event_files: set[tuple[str, Path]] = set()
+    seen: set[tuple[str, Path]] = set()
 
     for bp in bids_paths:
         sub = str(bp.subject or "1")
@@ -505,45 +444,37 @@ def summary_row_from_bids(bids_root: str | Path, dataset: Any = None) -> dict[st
         )
         if ev_fpath is not None and Path(ev_fpath).exists():
             ev_path = Path(ev_fpath).resolve()
-            if (sub, ev_path) in seen_event_files:
+            if (sub, ev_path) in seen:
                 continue
-            seen_event_files.add((sub, ev_path))
+            seen.add((sub, ev_path))
             ev_df = pd.read_csv(ev_path, sep="\t")
-            col = (
-                "trial_type"
-                if "trial_type" in ev_df.columns
-                else ("stim_type" if "stim_type" in ev_df.columns else None)
+            col = next(
+                (c for c in ("trial_type", "stim_type", "value") if c in ev_df.columns),
+                None,
             )
-            labels_series = (
-                ev_df[col].astype(str)
-                if col is not None
-                else (
-                    ev_df["value"].astype(str)
-                    if "value" in ev_df.columns
-                    else pd.Series([], dtype=str)
-                )
+            labels_s = (
+                ev_df[col].astype(str) if col is not None else pd.Series([], dtype=str)
             )
             if valid_labels is not None:
-                if not labels_series.isin(valid_labels).any():
+                if not labels_s.isin(valid_labels).any():
                     if callable(getattr(ds, "encoding", None)):
                         cats, mapping = ds.encoding(events_df=ev_df)
-                        labels_series = (
+                        labels_s = (
                             pd.Series(cats, index=ev_df.index).map(mapping).astype(str)
                         )
                     elif "value" in ev_df.columns:
                         mapped = ev_df["value"].astype(str).map(code_to_label)
-                        if len(ev_df) > 0 and (mapped.notna().sum() / len(ev_df)) >= 0.5:
-                            labels_series = mapped
-                mask = labels_series.isin(valid_labels)
+                        if len(ev_df) and (mapped.notna().sum() / len(ev_df)) >= 0.5:
+                            labels_s = mapped
+                mask = labels_s.isin(valid_labels)
             else:
                 mask = (
-                    labels_series.notna()
-                    & ~labels_series.isin(["n/a", "nan", "None", ""])
-                    & ~labels_series.str.upper().str.startswith(("BAD", "EDGE"))
+                    labels_s.notna()
+                    & ~labels_s.isin(["n/a", "nan", "None", ""])
+                    & ~labels_s.str.upper().str.startswith(("BAD", "EDGE"))
                 )
-            matched = labels_series[mask]
             sub_dict = subj_counts.setdefault(sub, {})
-            for lbl, cnt in matched.value_counts().items():
+            for lbl, cnt in labels_s[mask].value_counts().items():
                 sub_dict[str(lbl)] = sub_dict.get(str(lbl), 0) + int(cnt)
             if "duration" in ev_df.columns:
                 d_vals = pd.to_numeric(ev_df.loc[mask, "duration"], errors="coerce")
@@ -559,89 +490,60 @@ def summary_row_from_bids(bids_root: str | Path, dataset: Any = None) -> dict[st
                 lbl = inv_map.get(int(code), str(code))
                 sub_dict[lbl] = sub_dict.get(lbl, 0) + 1
 
-    observed_classes = sorted({lbl for c in subj_counts.values() for lbl in c})
-    n_classes = len(event_id) if event_id else len(observed_classes)
-    total_trials = int(sum(sum(c.values()) for c in subj_counts.values()))
+    observed = sorted({lbl for c in subj_counts.values() for lbl in c})
+    n_classes = len(event_id) if event_id else len(observed)
+    total_trials = int(sum(sum(c.values()) for c in subj_counts.values())) or "varies"
+    class_names = list(event_id.keys()) if event_id else observed
+    t_keys = [k for k in class_names if _norm_label(k) in _TARGET_KEYS]
+    nt_keys = [k for k in class_names if _norm_label(k) in _NONTARGET_KEYS]
 
-    class_names = list(event_id.keys()) if event_id else observed_classes
-    t_keys = [
-        k
-        for k in class_names
-        if str(k).strip().lower().replace("-", "_").replace(" ", "_") in _TARGET_KEYS
-    ]
-    nt_keys = [
-        k
-        for k in class_names
-        if str(k).strip().lower().replace("-", "_").replace(" ", "_") in _NONTARGET_KEYS
-    ]
-
-    per_class: Any = "varies"
-    if subj_counts and n_classes > 0:
-        per_subj = [sum(c.values()) / n_classes for c in subj_counts.values()]
-        per_class = _clean_num(round(float(np.median(per_subj)), 2))
-
-    if paradigm == "p300":
-        if t_keys and nt_keys and subj_counts:
-            nt_med = int(
+    def _med_keys(keys: list[str]):
+        return (
+            int(
                 round(
                     float(
                         np.median(
-                            [
-                                sum(c.get(k, 0) for k in nt_keys)
-                                for c in subj_counts.values()
-                            ]
+                            [sum(c.get(k, 0) for k in keys) for c in subj_counts.values()]
                         )
                     )
                 )
             )
-            t_med = int(
-                round(
-                    float(
-                        np.median(
-                            [
-                                sum(c.get(k, 0) for k in t_keys)
-                                for c in subj_counts.values()
-                            ]
-                        )
-                    )
-                )
+            if t_keys and nt_keys and subj_counts
+            else None
+        )
+
+    nt_val, t_val = _med_keys(nt_keys), _med_keys(t_keys)
+    per_class = (
+        _clean_num(
+            round(
+                float(
+                    np.median([sum(c.values()) / n_classes for c in subj_counts.values()])
+                ),
+                2,
             )
-            tpc_val: Any = f"{nt_med} NT / {t_med} T"
-        elif isinstance(per_class, (int, float)):
-            tpc_val = f"{_clean_num(per_class)} All"
-        else:
-            tpc_val = "varies NT / T"
-    else:
-        tpc_val = per_class
-
-    if interval is not None and len(interval) == 2:
-        trial_len = round(float(interval[1] - interval[0]), 6)
-    elif durations:
-        trial_len = round(float(np.median(durations)), 6)
-    else:
-        trial_len = None
-
-    values: dict[str, Any] = {
-        "#Subj": n_subj,
-        "#Chan": n_chan,
-        "#Classes": n_classes,
-        "#Trials / class": tpc_val,
-        "#Blocks / class": per_class,
-        "Trials length (s)": _clean_num(trial_len) if paradigm == "rstate" else trial_len,
-        "Freq (Hz)": _clean_num(sfreq) if sfreq is not None else None,
-        "#Sessions": n_sessions,
-        "#Runs": n_runs,
-        "Total_trials": total_trials if total_trials > 0 else "varies",
-        "#Trial classes": n_classes,
-        "#Epochs classes": n_classes or 2,
-        "#Epochs / class": tpc_val,
-        "Codes": "varies",
-        "Presentation rate (Hz)": "varies",
-    }
-    cols = _SUMMARY_COLUMNS_BY_PARADIGM.get(
-        paradigm, _SUMMARY_COLUMNS_BY_PARADIGM["imagery"]
+        )
+        if subj_counts and n_classes > 0
+        else "varies"
     )
-    return {col: values[col] for col in cols if values.get(col) is not None}
+    trial_len = (
+        round(float(interval[1] - interval[0]), 6)
+        if interval is not None and len(interval) == 2
+        else (round(float(np.median(durations)), 6) if durations else None)
+    )
+    return _pack_summary_row(
+        paradigm,
+        n_subj,
+        n_chan,
+        n_classes,
+        per_class,
+        nt_val,
+        t_val,
+        trial_len,
+        sfreq,
+        n_sessions,
+        n_runs,
+        total_trials=total_trials,
+    )
 
 
 def build_summary_row(
@@ -649,21 +551,15 @@ def build_summary_row(
 ) -> dict[str, Any]:
     """Generate a dataset summary row combining class ``METADATA`` and optional BIDS data."""
     row = summary_row_from_metadata(dataset_or_cls)
-    if bids_root is None:
-        bids_root = getattr(dataset_or_cls, "bids_root", None)
+    bids_root = bids_root or getattr(dataset_or_cls, "bids_root", None)
     if bids_root is not None and Path(bids_root).exists():
         bids_row = summary_row_from_bids(bids_root, dataset=dataset_or_cls)
-        meta_subj = row.get("#Subj")
-        bids_subj = bids_row.get("#Subj")
-        if (
-            isinstance(meta_subj, int)
-            and isinstance(bids_subj, int)
-            and 0 < bids_subj < meta_subj
-        ):
-            bids_row["#Subj"] = meta_subj
+        meta_s, bids_s = row.get("#Subj"), bids_row.get("#Subj")
+        if isinstance(meta_s, int) and isinstance(bids_s, int) and 0 < bids_s < meta_s:
+            bids_row["#Subj"] = meta_s
             if isinstance(bids_row.get("Total_trials"), int):
                 bids_row["Total_trials"] = int(
-                    round(bids_row["Total_trials"] * (meta_subj / bids_subj))
+                    round(bids_row["Total_trials"] * (meta_s / bids_s))
                 )
         row.update(bids_row)
     return row
@@ -681,9 +577,9 @@ def generate_summary_table(
 
         deprecated = {old for old, _, _ in aliases_list} if aliases_list else set()
         datasets = [
-            cls
-            for cls in dataset_list
-            if "Fake" not in cls.__name__ and cls.__name__ not in deprecated
+            c
+            for c in dataset_list
+            if "Fake" not in c.__name__ and c.__name__ not in deprecated
         ]
 
     rows: dict[str, dict[str, Any]] = {}
@@ -691,60 +587,35 @@ def generate_summary_table(
         name = item.__name__ if isinstance(item, type) else type(item).__name__
         ds = _instantiate_for_summary(item)
         meta = getattr(ds, "metadata", None) or getattr(item, "METADATA", None)
-        ds_paradigm = (
+        ds_p = (
             getattr(ds, "paradigm", None)
             or (meta.experiment.paradigm if meta and meta.experiment else None)
             or "imagery"
         )
-        if paradigm is not None:
-            if paradigm == "imagined_speech":
-                if name not in _summary_table_imagined_speech.index:
-                    continue
-            elif ds_paradigm != paradigm:
-                continue
+        if paradigm is not None and (
+            (
+                paradigm == "imagined_speech"
+                and name not in _SUMMARY_TABLES["imagined_speech"].index
+            )
+            or (paradigm != "imagined_speech" and ds_p != paradigm)
+        ):
+            continue
         b_root = (bids_roots or {}).get(name) or getattr(ds, "bids_root", None)
         row = build_summary_row(ds or item, bids_root=b_root)
-        # Preserve curated CSV values for fields that metadata alone marks as "varies"
         curated = _summary_table_dict.get(name, {})
-        for col, val in list(row.items()):
-            if (
-                b_root is None
-                and isinstance(val, str)
-                and val.startswith("varies")
-                and col in curated
-            ):
-                row[col] = curated[col]
+        if b_root is None:
+            for col, val in list(row.items()):
+                if isinstance(val, str) and val.startswith("varies") and col in curated:
+                    row[col] = curated[col]
         rows[name] = row
 
     df = pd.DataFrame.from_dict(rows, orient="index")
     df.index.name = "Dataset"
-    if paradigm is not None and paradigm in _SUMMARY_COLUMNS_BY_PARADIGM:
-        cols = [c for c in _SUMMARY_COLUMNS_BY_PARADIGM[paradigm] if c in df.columns]
-        df = df.reindex(columns=cols)
+    if paradigm in _SUMMARY_COLUMNS_BY_PARADIGM:
+        df = df.reindex(
+            columns=[c for c in _SUMMARY_COLUMNS_BY_PARADIGM[paradigm] if c in df.columns]
+        )
     return df
-
-
-_summary_table_imagery = get_summary_table("imagery")
-_summary_table_cognitive = get_summary_table("cognitive")
-_summary_table_imagined_speech = get_summary_table("imagined_speech")
-_summary_table_p300 = get_summary_table("p300")
-_summary_table_ssvep = get_summary_table("ssvep")
-_summary_table_cvep = get_summary_table("cvep")
-_summary_table_rstate = get_summary_table("rstate")
-_summary_table = pd.concat(
-    [
-        _summary_table_imagery,
-        _summary_table_cognitive,
-        _summary_table_p300,
-        _summary_table_ssvep,
-        _summary_table_cvep,
-        _summary_table_rstate,
-    ]
-)
-_summary_table_dict = {
-    idx: {col: val for col, val in zip(_summary_table.columns, row) if pd.notna(val)}
-    for idx, row in zip(_summary_table.index, _summary_table.to_numpy())
-}
 
 
 @dataclass

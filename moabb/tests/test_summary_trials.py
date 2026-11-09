@@ -188,25 +188,25 @@ def test_generate_summary_table_from_metadata():
     ):
         ds = cls()
         row = summary_row_from_metadata(ds)
-        assert row["#Subj"] == len(ds.all_subjects)
-        assert row["#Sessions"] == ds.n_sessions
-        assert row["#Chan"] == ds.metadata.acquisition.channel_types["eeg"]
-        assert row["Freq (Hz)"] == int(ds.metadata.acquisition.sampling_rate)
+        assert (row["#Subj"], row["#Sessions"], row["#Chan"], row["Freq (Hz)"]) == (
+            len(ds.all_subjects),
+            ds.n_sessions,
+            ds.metadata.acquisition.channel_types["eeg"],
+            int(ds.metadata.acquisition.sampling_rate),
+        )
         if ds.paradigm != "rstate" and row.get("#Trials / class") != "varies":
-            n_trials = _compute_n_trials(row, ds.paradigm)
-            assert n_trials > 0
+            assert _compute_n_trials(row, ds.paradigm) > 0
 
     df_mi = get_summary_table("imagery", from_metadata=True)
     assert list(df_mi.columns) == _SUMMARY_COLUMNS_BY_PARADIGM["imagery"]
-    assert "BNCI2014_001" in df_mi.index
-    assert df_mi.loc["BNCI2014_001", "#Subj"] == 9
-    assert df_mi.loc["BNCI2014_001", "#Chan"] == 22
-    assert df_mi.loc["BNCI2014_001", "#Trials / class"] == 144
-    assert df_mi.loc["BNCI2014_001", "Total_trials"] == 5184
-
+    assert tuple(
+        df_mi.loc["BNCI2014_001", ["#Subj", "#Chan", "#Trials / class", "Total_trials"]]
+    ) == (9, 22, 144, 5184)
     df_sub = generate_summary_table("p300", datasets=[BNCI2014_008])
-    assert list(df_sub.index) == ["BNCI2014_008"]
-    assert df_sub.loc["BNCI2014_008", "#Subj"] == 8
+    assert (list(df_sub.index), df_sub.loc["BNCI2014_008", "#Subj"]) == (
+        ["BNCI2014_008"],
+        8,
+    )
     assert _get_dataset_parameters(BNCI2014_001()) == (
         "BNCI2014_001",
         "imagery",
@@ -268,14 +268,15 @@ def test_metaclass_synthesizes_summary_table_from_metadata():
         ):
             return []
 
-    assert hasattr(CustomMetadataDataset, "_summary_table")
-    assert ".. admonition:: Dataset summary" in (CustomMetadataDataset.__doc__ or "")
     st = CustomMetadataDataset._summary_table
-    assert st["#Subj"] == 5
-    assert st["#Chan"] == 16
-    assert st["#Classes"] == 2
-    assert st["#Trials / class"] == 60
-    assert st["Total_trials"] == 600
+    assert ".. admonition:: Dataset summary" in (CustomMetadataDataset.__doc__ or "")
+    assert (
+        st["#Subj"],
+        st["#Chan"],
+        st["#Classes"],
+        st["#Trials / class"],
+        st["Total_trials"],
+    ) == (5, 16, 2, 60, 600)
     assert _get_dataset_parameters(CustomMetadataDataset()) == (
         "CustomMetadataDataset",
         "imagery",

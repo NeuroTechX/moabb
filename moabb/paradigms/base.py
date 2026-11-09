@@ -88,7 +88,7 @@ def _stack_trials(X):
         shapes,
     )
     trials = np.empty(sum(len(x) for x in X), dtype=object)
-    # ponytail: element-wise fill, numpy would broadcast same-shaped trials
+    # ponytail: element-wise fill, numpy would broadcast same-shaped trials; replace if numpy adds ragged array constructor
     for i, trial in enumerate(t for x in X for t in x):
         trials[i] = trial
     return trials
