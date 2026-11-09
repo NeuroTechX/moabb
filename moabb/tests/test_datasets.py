@@ -1289,6 +1289,8 @@ class TestBIDSDataset:
 
     @pytest.mark.filterwarnings("ignore:Converting data files to EDF.*:RuntimeWarning")
     def test_local_bids_dataset(self, cached_dataset_root, caplog):
+        from moabb.analysis.plotting import _get_dataset_parameters
+
         with caplog.at_level(logging.WARNING):
             dataset = LocalBIDSDataset(
                 cached_dataset_root,
@@ -1296,6 +1298,25 @@ class TestBIDSDataset:
                 interval=[0, 3],
                 paradigm="imagery",
             )
+        assert dataset._summary_table == {
+            "#Subj": 2,
+            "#Chan": 3,
+            "#Classes": 2,
+            "#Trials / class": 60,
+            "Trials length (s)": 3.0,
+            "Freq (Hz)": 128,
+            "#Sessions": 2,
+            "#Runs": 1,
+            "Total_trials": 240,
+        }
+        assert _get_dataset_parameters(dataset) == (
+            "LocalBIDSDataset",
+            "imagery",
+            2,
+            2,
+            120,
+            3.0,
+        )
         # raw data
         raw_data = dataset.get_data()
         assert raw_data.keys() == {"1", "2"}

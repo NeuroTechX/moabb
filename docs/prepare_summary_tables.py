@@ -7,9 +7,7 @@ import pandas as pd
 
 # Classes that are not exported at the top-level ``moabb.datasets`` namespace
 # and therefore need a fully-qualified module path for Sphinx cross-references.
-_FULL_PATH_CLASSES = {
-    "ErpCore2021": "moabb.datasets.erpcore2021.ErpCore2021",
-}
+_FULL_PATH_CLASSES = {"ErpCore2021": "moabb.datasets.erpcore2021.ErpCore2021"}
 
 
 def prepare_table(df: pd.DataFrame):
@@ -22,14 +20,20 @@ def prepare_table(df: pd.DataFrame):
     df["Dataset"] = df["Dataset"].apply(_class_ref)
 
 
-def main(source_dir: str, target_dir: str):
+def main(source_dir: str, target_dir: str, from_metadata: bool = False):
     target_dir = Path(target_dir)
     target_dir.mkdir(parents=True, exist_ok=True)
     files = glob.glob(str(Path(source_dir) / "*.csv"))
     for f in files:
         target_file = target_dir / Path(f).name
         print(f"Processing {f} -> {target_file}")
-        df = pd.read_csv(f, index_col=False, header=0, skipinitialspace=True)
+        if from_metadata and Path(f).stem.startswith("summary_"):
+            from moabb.datasets.base import generate_summary_table
+
+            paradigm = Path(f).stem.removeprefix("summary_")
+            df = generate_summary_table(paradigm).reset_index()
+        else:
+            df = pd.read_csv(f, index_col=False, header=0, skipinitialspace=True)
         prepare_table(df)
         df.to_csv(target_file, index=False)
 
@@ -38,6 +42,7 @@ if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("source_dir", type=str)
     parser.add_argument("target_dir", type=str)
+    parser.add_argument("--from-metadata", action="store_true")
     args = parser.parse_args()
-    main(args.source_dir, args.target_dir)
+    main(args.source_dir, args.target_dir, from_metadata=args.from_metadata)
     print(args.target_dir)

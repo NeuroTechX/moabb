@@ -61,7 +61,7 @@ def _compute_n_trials(row, paradigm):
         Number of trials per subject (all classes, sessions and runs
         together), or None if parsing fails.
     """
-    if paradigm in ("imagery", "ssvep"):
+    if paradigm in ("imagery", "ssvep", "cognitive", "imagined_speech"):
         trials_per_class = _match_int(row.get("#Trials / class", ""), default=None)
         n_classes = _match_int(row.get("#Classes", ""), default=None)
         if trials_per_class is not None and n_classes is not None:
