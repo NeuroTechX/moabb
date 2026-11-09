@@ -989,8 +989,8 @@
 <span class="sig-prename descclassname"><span class="pre">moabb.analysis.meta_analysis.</span></span><span class="sig-name descname"><span class="pre">compute_lowest_subject_scores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference_pipeline</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">percentile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/analysis/meta_analysis.py#L51-L141"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.analysis.meta_analysis.compute_lowest_subject_scores" title="Link to this definition">#</a></dt>
 <dd><p>Score pipelines on subjects selected from a reference pipeline.</p>
 <p>For every dataset, rank subjects by the score of <code class="docutils literal notranslate"><span class="pre">reference_pipeline</span></code>
-and keep only the <code class="docutils literal notranslate"><span class="pre">percentile</span></code> percent that score lowest. Every pipeline
-is then averaged over that same cohort.</p>
+and keep only the <code class="docutils literal notranslate"><span class="pre">percentile</span></code> percent that score lowest <a class="reference internal" href="#rf3649ff9461f-1" id="id1">[1]</a>. Every
+pipeline is then averaged over that same cohort.</p>
 <p>The supplied session scores are first macro-averaged per subject, so every
 subject weighs the same regardless of how many sessions it contributes.
 This helper does not recompute subject-level F1 scores from predictions.</p>
@@ -1018,7 +1018,7 @@ the retained subjects and the <code class="docutils literal notranslate"><span c
 <p class="rubric">References</p>
 <div role="list" class="citation-list">
 <div class="citation" id="rf3649ff9461f-1" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
 <p>Gnassounou, T., Collas, A., Flamary, R., and Gramfort, A. (2025).
 PSDNorm: Test-Time Temporal Normalization for Deep Learning in
 Sleep Staging.
