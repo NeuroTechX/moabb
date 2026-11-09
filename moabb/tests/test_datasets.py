@@ -1216,6 +1216,33 @@ class TestCompoundDataset:
         assert len(compound_dataset_list) == len(all_datasets)
         assert set(compound_dataset_list) == set(all_datasets)
 
+    def test_compound_dataset_activates_inner_nemar_store(self, monkeypatch, tmp_path):
+        from moabb.datasets.download import active_store
+
+        monkeypatch.setenv("MOABB_DOWNLOAD_PROVIDER", "auto")
+        inner = FakeDataset(n_subjects=2)
+        inner.nemar_id = "nm000999"
+        seen = []
+
+        monkeypatch.setattr(
+            inner,
+            "_prefetch_nemar_sourcedata",
+            lambda subjects, verbose=None: seen.append(("prefetch", list(subjects))),
+        )
+        orig_get = inner._get_single_subject_data
+
+        def _spy_get(subject):
+            seen.append(("store", active_store()))
+            return orig_get(subject)
+
+        monkeypatch.setattr(inner, "_get_single_subject_data", _spy_get)
+        comp = CompoundDataset(
+            [(inner, 2, None, None)], code="CompoundNemar", interval=[0, 1]
+        )
+        _ = comp.get_data(subjects=[1])
+        assert seen[0] == ("prefetch", [2])
+        assert seen[1][0] == "store" and seen[1][1] == inner._sourcedata_store()
+
 
 class TestData:
     @pytest.fixture
