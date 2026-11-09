@@ -734,10 +734,6 @@ transfer estimators such as <code class="xref py py-class docutils literal notra
 </span><a class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function reference internal" href="../../generated/moabb.set_log_level.html#moabb.set_log_level" title="moabb.set_log_level"><span class="n">moabb</span><span class="o">.</span><span class="n">set_log_level</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">info</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
 </span><a class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function reference external" href="https://mne.tools/stable/generated/mne.set_log_level.html#mne.set_log_level" title="mne.set_log_level"><span class="n">mne</span><span class="o">.</span><span class="n">set_log_level</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">WARNING</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># keep the gallery output readable</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/optuna/integration/sklearn.py:14: FutureWarning: `optuna.integration.sklearn` has been deprecated in v4.9.0. This feature will be removed in v6.0.0. See https://github.com/optuna/optuna/releases/tag/v4.9.0. Use `optuna_integration.sklearn` instead.
-  optuna_warn(f"{msg} Use `optuna_integration.sklearn` instead.", FutureWarning)
-</pre></div>
-</div>
 </section>
 <section id="build-the-two-pipelines">
 <h2>Build the two pipelines<a class="headerlink" href="#build-the-two-pipelines" title="Link to this heading">#</a></h2>
@@ -778,25 +774,6 @@ observed scores without prespecifying which reference policy should win.</p>
 </span><span class="p">)</span><span class="w">
 </span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">cross_results</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-moabb-evaluations-base sphx-glr-backref-type-py-method reference internal" href="../../generated/moabb.evaluations.base.BaseEvaluation.html#moabb.evaluations.base.BaseEvaluation.process" title="moabb.evaluations.base.BaseEvaluation.process"><span class="n">cross_session_eval</span><span class="o">.</span><span class="n">process</span></a><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">pipelines</span></a><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[codecarbon WARNING @ 22:24:08] Multiple instances of codecarbon are allowed to run at the same time.
-2026-11-08 22:24:10,575 INFO MainThread moabb.evaluations.base Updated test-batch reference | BNCI2014-001 | 1 | 0train: Score 0.954
-2026-11-08 22:24:10,575 INFO MainThread moabb.evaluations.base Updated test-batch reference | BNCI2014-001 | 1 | 1test: Score 0.962
-2026-11-08 22:24:10,859 INFO MainThread moabb.evaluations.base Frozen training reference | BNCI2014-001 | 1 | 0train: Score 0.952
-2026-11-08 22:24:10,859 INFO MainThread moabb.evaluations.base Frozen training reference | BNCI2014-001 | 1 | 1test: Score 0.960
-2026-11-08 22:24:11,824 INFO MainThread moabb.evaluations.base Updated test-batch reference | BNCI2014-001 | 2 | 0train: Score 0.592
-2026-11-08 22:24:11,824 INFO MainThread moabb.evaluations.base Updated test-batch reference | BNCI2014-001 | 2 | 1test: Score 0.625
-2026-11-08 22:24:12,142 INFO MainThread moabb.evaluations.base Frozen training reference | BNCI2014-001 | 2 | 0train: Score 0.610
-2026-11-08 22:24:12,142 INFO MainThread moabb.evaluations.base Frozen training reference | BNCI2014-001 | 2 | 1test: Score 0.640
-2026-11-08 22:24:13,110 INFO MainThread moabb.evaluations.base Updated test-batch reference | BNCI2014-001 | 3 | 0train: Score 0.998
-2026-11-08 22:24:13,110 INFO MainThread moabb.evaluations.base Updated test-batch reference | BNCI2014-001 | 3 | 1test: Score 0.999
-2026-11-08 22:24:13,399 INFO MainThread moabb.evaluations.base Frozen training reference | BNCI2014-001 | 3 | 0train: Score 0.998
-2026-11-08 22:24:13,400 INFO MainThread moabb.evaluations.base Frozen training reference | BNCI2014-001 | 3 | 1test: Score 0.999
-2026-11-08 22:24:14,446 INFO MainThread moabb.evaluations.base Updated test-batch reference | BNCI2014-001 | 4 | 0train: Score 0.862
-2026-11-08 22:24:14,447 INFO MainThread moabb.evaluations.base Updated test-batch reference | BNCI2014-001 | 4 | 1test: Score 0.889
-2026-11-08 22:24:14,728 INFO MainThread moabb.evaluations.base Frozen training reference | BNCI2014-001 | 4 | 0train: Score 0.860
-2026-11-08 22:24:14,728 INFO MainThread moabb.evaluations.base Frozen training reference | BNCI2014-001 | 4 | 1test: Score 0.888
-</pre></div>
-</div>
 </section>
 <section id="within-session-evaluation">
 <h2>Within-session evaluation<a class="headerlink" href="#within-session-evaluation" title="Link to this heading">#</a></h2>
@@ -812,24 +789,6 @@ same two pipeline settings; it is not a no-shift control condition.</p>
 </span><span class="p">)</span><span class="w">
 </span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">within_results</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-moabb-evaluations-base sphx-glr-backref-type-py-method reference internal" href="../../generated/moabb.evaluations.base.BaseEvaluation.html#moabb.evaluations.base.BaseEvaluation.process" title="moabb.evaluations.base.BaseEvaluation.process"><span class="n">within_session_eval</span><span class="o">.</span><span class="n">process</span></a><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">pipelines</span></a><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2026-11-08 22:24:25,397 INFO MainThread moabb.evaluations.base Updated test-batch reference | BNCI2014-001 | 2 | 1test: Score 0.687
-2026-11-08 22:24:25,397 INFO MainThread moabb.evaluations.base Updated test-batch reference | BNCI2014-001 | 2 | 0train: Score 0.687
-2026-11-08 22:24:25,635 INFO MainThread moabb.evaluations.base Frozen training reference | BNCI2014-001 | 2 | 1test: Score 0.692
-2026-11-08 22:24:25,635 INFO MainThread moabb.evaluations.base Frozen training reference | BNCI2014-001 | 2 | 0train: Score 0.684
-2026-11-08 22:24:29,514 INFO MainThread moabb.evaluations.base Updated test-batch reference | BNCI2014-001 | 4 | 0train: Score 0.829
-2026-11-08 22:24:29,514 INFO MainThread moabb.evaluations.base Updated test-batch reference | BNCI2014-001 | 4 | 1test: Score 0.923
-2026-11-08 22:24:29,712 INFO MainThread moabb.evaluations.base Frozen training reference | BNCI2014-001 | 4 | 0train: Score 0.832
-2026-11-08 22:24:29,712 INFO MainThread moabb.evaluations.base Frozen training reference | BNCI2014-001 | 4 | 1test: Score 0.923
-2026-11-08 22:24:33,875 INFO MainThread moabb.evaluations.base Updated test-batch reference | BNCI2014-001 | 1 | 1test: Score 0.970
-2026-11-08 22:24:33,875 INFO MainThread moabb.evaluations.base Updated test-batch reference | BNCI2014-001 | 1 | 0train: Score 0.975
-2026-11-08 22:24:34,081 INFO MainThread moabb.evaluations.base Frozen training reference | BNCI2014-001 | 1 | 1test: Score 0.970
-2026-11-08 22:24:34,082 INFO MainThread moabb.evaluations.base Frozen training reference | BNCI2014-001 | 1 | 0train: Score 0.974
-2026-11-08 22:24:38,118 INFO MainThread moabb.evaluations.base Updated test-batch reference | BNCI2014-001 | 3 | 1test: Score 0.998
-2026-11-08 22:24:38,118 INFO MainThread moabb.evaluations.base Updated test-batch reference | BNCI2014-001 | 3 | 0train: Score 0.995
-2026-11-08 22:24:38,352 INFO MainThread moabb.evaluations.base Frozen training reference | BNCI2014-001 | 3 | 1test: Score 0.999
-2026-11-08 22:24:38,352 INFO MainThread moabb.evaluations.base Frozen training reference | BNCI2014-001 | 3 | 0train: Score 0.995
-</pre></div>
-</div>
 </section>
 <section id="observed-scores">
 <h2>Observed scores<a class="headerlink" href="#observed-scores" title="Link to this heading">#</a></h2>
@@ -860,13 +819,13 @@ summarize this four-subject run only; no inferential statistic is computed.</p>
  pipeline
 Frozen training reference       0.883605
 Updated test-batch reference    0.882985
-Name: score, dtype: float64
+Name: score, dtype: float32
 
 Cross-session means:
  pipeline
 Frozen training reference       0.863378
-Updated test-batch reference    0.860122
-Name: score, dtype: float64
+Updated test-batch reference    0.860123
+Name: score, dtype: float32
 </pre></div>
 </div>
 </section>
@@ -915,7 +874,8 @@ applications. Neurocomputing, 112:172-178, 2013.
 doi:10.1016/j.neucom.2012.12.039.</p>
 </aside>
 </aside>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 40.949 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 42.425 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  528 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-geometry-aware-recentering-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/7f07167c843809c3041d2e173d6046ca/plot_geometry_aware_recentering.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_geometry_aware_recentering.ipynb</span></code></a></p>
