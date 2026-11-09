@@ -187,7 +187,7 @@ class Test_Datasets:
         dataset = FakeDataset(paradigm=paradigm)
 
         # Save cache:
-        with caplog.at_level(logging.INFO):
+        with caplog.at_level(logging.INFO, logger="moabb"):
             _ = dataset.get_data(
                 subjects=[1],
                 cache_config={
@@ -209,7 +209,7 @@ class Test_Datasets:
 
         # Load cache:
         caplog.clear()
-        with caplog.at_level(logging.INFO):
+        with caplog.at_level(logging.INFO, logger="moabb"):
             _ = dataset.get_data(
                 subjects=[1],
                 cache_config={
@@ -229,7 +229,7 @@ class Test_Datasets:
 
         # Overwrite cache:
         caplog.clear()
-        with caplog.at_level(logging.INFO):
+        with caplog.at_level(logging.INFO, logger="moabb"):
             _ = dataset.get_data(
                 subjects=[1],
                 cache_config={
