@@ -284,6 +284,7 @@ class BCIComp2020WalkingERP(BaseDataset):
             repository="OSF",
             contact_info=["bcicompetition2020@gmail.com"],
             associated_paper_doi="10.3389/fnhum.2022.898300",
+            related_paper_dois=["10.1038/s41597-021-01094-4"],
             keywords=[
                 "P300",
                 "ERP",

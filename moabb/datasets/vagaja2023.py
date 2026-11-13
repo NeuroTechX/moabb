@@ -183,6 +183,7 @@ class Vagaja2023(BaseDataset):
         documentation=DocumentationMetadata(
             senior_author="Athanasios Vourvopoulos",
             doi="10.5281/zenodo.8086086",
+            related_paper_dois=["10.3389/frvir.2023.1265010"],
             description=(
                 "Motor-imagery EEG plus bipolar EMG, skin temperature and "
                 "accelerometry from 26 healthy volunteers performing cued "

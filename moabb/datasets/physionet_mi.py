@@ -224,6 +224,7 @@ class PhysionetMI(BaseDataset):
         documentation=DocumentationMetadata(
             doi="10.13026/C28G6P",
             associated_paper_doi="10.1109/TBME.2004.827072",
+            related_paper_dois=["10.1023/A:1023437823106", "10.1088/1741-2560/5/2/001"],
             investigators=[
                 "Gerwin Schalk",
                 "W. A. Sarnacki",
