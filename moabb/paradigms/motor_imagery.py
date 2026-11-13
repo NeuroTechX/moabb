@@ -348,6 +348,8 @@ class MotorImagery(BaseMotorImagery):
         if self.events is None:
             for k, v in dataset.event_id.items():
                 out[k] = v
+                if self.n_classes is not None and len(out) == self.n_classes:
+                    break
             if self.n_classes is None:
                 self.n_classes = len(out)
         else:
