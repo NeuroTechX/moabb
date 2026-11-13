@@ -804,8 +804,8 @@ class BNCI2015_004(MNEBNCI):
             montage="10-20",
             hardware="g.tec",
             sensor_type="active electrode",
-            reference="left and right mastoid",
-            ground="left and right mastoid",
+            reference="left mastoid",
+            ground="right mastoid",
             software=None,
             filters="0.5-100 Hz bandpass, 50 Hz notch",
             sensors=[
@@ -952,7 +952,6 @@ class BNCI2015_004(MNEBNCI):
             bandpass={"low_cutoff_hz": 0.5, "high_cutoff_hz": 100.0},
             notch_hz=[50],
             artifact_methods=["manual artifact rejection based on EOG"],
-            re_reference="left and right mastoid",
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=["LDA"],
