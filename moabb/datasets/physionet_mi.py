@@ -81,6 +81,20 @@ class PhysionetMI(BaseDataset):
         $MNE_DATA/MNE-eegbci-data/files/eegmmidb/1.0.0/`` fills the same
         layout the loader expects.
 
+    .. note::
+        The PhysioNet record and the EDF headers state no reference or ground
+        electrode, and the BCI2000 paper [1]_ describes the recording
+        software, not this experiment, so ``reference`` and ``ground`` are
+        left unset. The Wadsworth Center's other 64-channel recordings of the
+        period were referenced to an electrode on the right ear, among them a
+        closely related movement and imagery study at 128 Hz [3]_ and a 160 Hz
+        study co-authored by W. A. Sarnacki [4]_, who collected these data.
+        The released signals agree: T10 has lower variance than T9 in 100 to
+        105 of the 109 subjects (runs 1, 2 and 4), and the right-minus-left
+        difference shrinks toward the midline, as a single reference near the
+        right ear would make it. The 64 channels are full rank, so no average
+        reference was applied before release.
+
     Parameters
     ----------
 
@@ -103,6 +117,16 @@ class PhysionetMI(BaseDataset):
            H.E. and PhysioBank, P., PhysioNet: components of a new research
            resource for complex physiologic signals Circulation 2000 Volume
            101 Issue 23 pp. E215–E220.
+
+    .. [3] McFarland, D.J., Miner, L.A., Vaughan, T.M. and Wolpaw, J.R., 2000.
+           Mu and beta rhythm topographies during motor imagery and actual
+           movements. Brain Topography, 12(3), pp.177-186.
+           https://doi.org/10.1023/A:1023437823106
+
+    .. [4] McFarland, D.J., Krusienski, D.J., Sarnacki, W.A. and Wolpaw, J.R.,
+           2008. Emulation of computer mouse control with a noninvasive
+           brain-computer interface. Journal of Neural Engineering, 5(2),
+           pp.101-110. https://doi.org/10.1088/1741-2560/5/2/001
     """
 
     METADATA = DatasetMetadata(
@@ -110,6 +134,8 @@ class PhysionetMI(BaseDataset):
             sampling_rate=_SFREQ,
             channel_types={"eeg": 64},
             software="BCI2000",
+            reference=None,
+            ground=None,
             sensors=[
                 "FC5",
                 "FC3",
