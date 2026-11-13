@@ -76,6 +76,9 @@ class Wang2025(BaseDataset):
     trials, marks each cue with a stim event and converts to volts; the interval
     ends at 4 - 1/256 s.
 
+    The dataset card states no reference or ground electrode, and the released
+    files carry no channel labels.
+
     References
     ----------
 

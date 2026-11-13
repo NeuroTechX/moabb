@@ -161,11 +161,14 @@ def _nguyen_hed(label, unit="Word"):
 
 
 # Shared metadata sections identical across all 4 Nguyen conditions.
+# Neither the paper nor the Zenodo record states the reference or ground electrode.
 _NGUYEN_ACQUISITION = AcquisitionMetadata(
     sampling_rate=256.0,
     channel_types={"eeg": 60, "eog": 4},
     montage="standard_1020",
     hardware="BrainProducts ActiCHamp",
+    reference=None,
+    ground=None,
     filters={"highpass": 8.0, "lowpass": 70.0, "notch_hz": 60.0},
     line_freq=60.0,
     sensor_type="EEG",
