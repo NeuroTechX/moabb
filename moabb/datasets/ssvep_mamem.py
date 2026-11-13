@@ -1370,6 +1370,10 @@ class MAMEM3(BaseMAMEM):
     interference, in matters of artifacts, on the recorded signal is expected
     to be high.
 
+    The PhysioNet record states no reference. The Emotiv EPOC has 14 channels
+    "plus CMS/DRL references, P3/P4 locations" (Emotiv EPOC technical
+    specifications), fixed by the headset.
+
     References
     ----------
     .. [1] Oikonomou, V. P., Liaros, G., Georgiadis, K., Chatzilari, E., Adam, K.,
@@ -1390,6 +1394,8 @@ class MAMEM3(BaseMAMEM):
             channel_types={"eeg": 14},
             montage="standard_1020",
             hardware="Emotiv EPOC (14 wireless channels)",
+            reference="CMS/DRL (P3/P4)",
+            ground="DRL",
             sensor_type="scalp electrodes",
             sensors=[
                 "AF3",
