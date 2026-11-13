@@ -640,6 +640,9 @@ class Beetl2021_B(BaseDataset):
     The data was filtered using a highpass filter with a cutoff frequency of 1 Hz and a
     lowpass filter with a cutoff frequency of 100 Hz.
 
+    The 32 channels are taken from the Weibo2014 recordings [1]_, which were
+    "referenced to nose and grounded prefrontal lobe" (Yi et al., 2014).
+
     Motor imagery tasks in the training runs:
     - Left hand (label 0)
     - Right hand (label 1)
@@ -715,6 +718,8 @@ class Beetl2021_B(BaseDataset):
             filters="Bandpass filter (1-100 Hz)",
             line_freq=50.0,
             montage="standard_1005",
+            reference="nose",
+            ground="prefrontal lobe",
         ),
         participants=ParticipantMetadata(
             n_subjects=2,  # Beetl2021_B has subjects 3-5 in leaderboard, 4-5 in final (default=final)
