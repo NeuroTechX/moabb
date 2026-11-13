@@ -199,6 +199,15 @@ class BCIComp2020WalkingERP(BaseDataset):
     loader can return labelled data for all three runs without a
     second download.
 
+    The track description names no reference or ground electrode; its
+    channel-placement figure marks Fpz and FCz, which are not among the scalp
+    channels. The same lab's walking dataset with this montage states "The
+    ground and reference electrodes were placed on Fpz and FCz" for the scalp,
+    with the ear-EEG on a separate amplifier referenced at the centre of the
+    right-ear cEEGrid (Lee et al., Sci. Data, 2021,
+    doi:10.1038/s41597-021-01094-4). One value cannot describe both amplifiers,
+    so reference and ground are left unset.
+
     References
     ----------
     .. [1] Jeong, J.-H. et al. (2022). 2020 International brain-computer
@@ -211,6 +220,8 @@ class BCIComp2020WalkingERP(BaseDataset):
         acquisition=AcquisitionMetadata(
             line_freq=60.0,
             hardware="actiCap (BrainProducts GmbH, Germany) / cEEGrid (TMSi, USA)",
+            reference=None,
+            ground=None,
             sampling_rate=_SFREQ,
             channel_types={
                 "eeg": len(_SCALP_CHANNELS) + len(_EAR_CHANNELS),
@@ -273,6 +284,7 @@ class BCIComp2020WalkingERP(BaseDataset):
             repository="OSF",
             contact_info=["bcicompetition2020@gmail.com"],
             associated_paper_doi="10.3389/fnhum.2022.898300",
+            related_paper_dois=["10.1038/s41597-021-01094-4"],
             keywords=[
                 "P300",
                 "ERP",

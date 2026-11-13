@@ -78,6 +78,9 @@ class Perdikis2018(BaseDataset):
         not exposed by this loader, which serves only the cue-based offline
         calibration runs with discrete, data-borne class labels.
 
+    Neither the paper nor the Zenodo record states the reference or ground
+    electrode; the paper's Laplacian derivation was applied online only.
+
     References
     ----------
 

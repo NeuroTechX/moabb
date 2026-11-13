@@ -96,6 +96,9 @@ class Chang2025(BaseDataset):
         Which paradigm to load. One of ``"MI"`` (default), ``"ME"``,
         ``"VR-MI"``, ``"MT"``, ``"SRG"``, ``"MG"``.
 
+    Neither the paper nor the figshare record states the reference or ground
+    electrode.
+
     References
     ----------
     .. [1] Chang, W., Kong, W., Yan, G., Lv, R., Du, K. (2025).
@@ -110,6 +113,8 @@ class Chang2025(BaseDataset):
             channel_types={"eeg": 59},
             montage="standard_1005",
             hardware="Neuracle BRK-NSW 2.0",
+            reference=None,
+            ground=None,
             sensor_type="Ag/AgCl",
             software="Neuracle BRK-NSW 2.0 acquisition software / Unity 3D (U3D)",
             impedance_threshold_kohm=20.0,

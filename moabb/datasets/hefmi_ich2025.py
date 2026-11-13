@@ -233,6 +233,9 @@ class HefmiIch2025(BaseDataset):
         1-37), ``"healthy"`` (subjects 1-17), or ``"patient"``
         (subjects 18-37).
 
+    Neither the paper, the figshare record nor its code states the reference or
+    ground electrode.
+
     References
     ----------
     .. [1] Shi, J., Chen, D., et al. (2025). HEFMI-ICH: a hybrid
@@ -249,6 +252,8 @@ class HefmiIch2025(BaseDataset):
             channel_types={"eeg": 32},
             montage="biosemi32",
             hardware="g.HIamp (g.tec medical engineering GmbH)",
+            reference=None,
+            ground=None,
             software="E-Prime 3.0",
             filters={},
             sensors=list(_CH_NAMES),

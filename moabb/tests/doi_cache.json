@@ -247,6 +247,17 @@
         "title": "Burst c-VEP Based BCI: Optimizing stimulus design for enhanced classification with minimal calibration data and improved user experience",
         "year": 2023
     },
+    "10.1023/A:1023437823106": {
+        "authors": [
+            "Dennis J. McFarland",
+            "Laurie A. Miner",
+            "Theresa M. Vaughan",
+            "Jonathan R. Wolpaw"
+        ],
+        "doi": "10.1023/A:1023437823106",
+        "title": "Mu and Beta Rhythm Topographies During Motor Imagery and Actual Movements",
+        "year": 2000
+    },
     "10.1038/s41467-026-75435-5": {
         "authors": [
             "Hanwen Wang",
@@ -941,6 +952,17 @@
         "doi": "10.1088/1741-2560/12/4/046027",
         "title": "Leveraging anatomical information to improve transfer learning in brain\u2013computer interfaces",
         "year": 2015
+    },
+    "10.1088/1741-2560/5/2/001": {
+        "authors": [
+            "Dennis J McFarland",
+            "Dean J Krusienski",
+            "William A Sarnacki",
+            "Jonathan R Wolpaw"
+        ],
+        "doi": "10.1088/1741-2560/5/2/001",
+        "title": "Emulation of computer mouse control with a noninvasive brain\u2013computer interface",
+        "year": 2008
     },
     "10.1088/1741-2560/8/5/056001": {
         "authors": [
@@ -2086,6 +2108,16 @@
         "title": "Impact of Stimulus Features on the Performance of a Gaze-Independent Brain-Computer Interface Based on Covert Spatial Attention Shifts",
         "year": 2020
     },
+    "10.3389/frvir.2023.1265010": {
+        "authors": [
+            "Katarina Vagaja",
+            "Klaus Linkenkaer-Hansen",
+            "Athanasios Vourvopoulos"
+        ],
+        "doi": "10.3389/frvir.2023.1265010",
+        "title": "Avatar embodiment prior to motor imagery training in VR does not affect the induced event-related desynchronization: a pilot study",
+        "year": 2024
+    },
     "10.3390/s20247198": {
         "authors": [
             "Juan David Chailloux Peguero",
@@ -2108,6 +2140,18 @@
         "doi": "10.3390/s24165207",
         "title": "MOVING: A Multi-Modal Dataset of EEG Signals and Virtual Glove Hand Tracking",
         "year": 2024
+    },
+    "10.3390/s25102987": {
+        "authors": [
+            "Cristina Polo-Hortig\u00fcela",
+            "Mario Ortiz",
+            "Paula Soriano-Segura",
+            "Eduardo I\u00e1\u00f1ez",
+            "Jos\u00e9 M. Azor\u00edn"
+        ],
+        "doi": "10.3390/s25102987",
+        "title": "Time-Frequency Analysis of Motor Imagery During Plantar and Dorsal Flexion Movements Using a Low-Cost Ankle Exoskeleton",
+        "year": 2025
     },
     "10.34894/Z7ZVOD": {
         "authors": [
@@ -3154,6 +3198,6 @@
         "title": "Multi-channel EEG recording during motor imagery of different joints from the same limb (dataset)"
     },
     "_metadata": {
-        "total": 262
+        "total": 266
     }
 }

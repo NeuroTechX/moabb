@@ -291,7 +291,6 @@ class Weibo2014(BaseDataset):
             bandpass={"low_cutoff_hz": 0.5, "high_cutoff_hz": 50.0},
             notch_hz=None,
             artifact_methods=None,
-            re_reference="nose",
             downsampled_to_hz=200.0,
         ),
         signal_processing=SignalProcessingMetadata(

@@ -75,8 +75,11 @@ class Han2026(OpenNeuroMirrorMixin, BaseDataset):
     only compound MO/MI sequences and are not loaded. The 24 unnamed bipolar
     ``BIP*`` channels are dropped unless ``return_all_modalities=True`` (then
     ``misc``). Demographics (20 female / 15 male, age 21.5 +/- 1.9 years) are
-    computed from the BIDS ``participants.tsv``; the reference (``CPz``) and
-    ground (``AFz``) electrodes are not stated in the OpenNeuro metadata.
+    computed from the BIDS ``participants.tsv``. The reference (``CPz``) and
+    ground (``AFz``) electrodes are stated in the raw ``*_eeg.json`` sidecars,
+    under the non-standard keys ``Reference`` and ``Ground`` rather than
+    ``EEGReference`` and ``EEGGround``; neither electrode is among the 64
+    recorded channels.
 
     References
     ----------
@@ -101,8 +104,8 @@ class Han2026(OpenNeuroMirrorMixin, BaseDataset):
             channel_types={"eeg": 64, "misc": 24},
             montage="standard_1005",
             hardware="ANT Neuro (64-channel)",
-            reference=None,
-            ground=None,
+            reference="CPz",
+            ground="AFz",
             sensors=list(_EEG_CHANNELS),
             line_freq=50.0,
         ),

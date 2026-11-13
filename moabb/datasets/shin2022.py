@@ -81,6 +81,10 @@ class Shin2022(BaseDataset):
     ``EEG7`` / ``EEG9`` as the C3 / C4 control pair. Signals are converted from
     microvolts to volts.
 
+    Neither the paper nor the figshare README states the reference or ground
+    electrode, and the BCI2000 parameter ``RefChList`` in the ``.dat`` files is
+    empty.
+
     References
     ----------
     .. [1] H. Shin, D. Suma and B. He, "Closed-loop motor imagery EEG
@@ -102,7 +106,7 @@ class Shin2022(BaseDataset):
             sensor_type="dry",
             hardware="g.tec g.Nautilus RESEARCH (16 channel)",
             software="BCI2000, g.RECORDER",
-            reference="unknown",
+            reference=None,
             line_freq=60.0,
             cap_manufacturer="g.tec medical engineering GmbH",
             cap_model="g.SAHARA dry electrode system",
