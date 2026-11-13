@@ -101,6 +101,15 @@ class Vagaja2023(BaseDataset):
     ``return_all_modalities=True`` to also keep the EMG, temperature and
     accelerometer channels.
 
+    The authors' paper on these recordings states "Ground and reference
+    electrodes were located at the central and forehead lobes, respectively"
+    (Vagaja et al., Front. Virtual Real., doi:10.3389/frvir.2023.1265010). The
+    BrainVision headers list the Ref and Gnd impedances but not their sites,
+    and the 32 channels are the actiCAP layout without FCz and Fpz. In subjects
+    3, 5 and 6 the 2-30 Hz variance is lowest at Fz, FC1, FC2 and Cz, around
+    FCz, which fits an FCz reference and suggests the paper's sentence swaps
+    the two; reference and ground are left unset until this is confirmed.
+
     References
     ----------
 

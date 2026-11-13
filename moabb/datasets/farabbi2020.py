@@ -51,6 +51,12 @@ class Farabbi2020(BaseDataset):
     subject). The Zenodo record names no institution; its ethics approval is
     from the Faculty of Medicine, University of Lisbon (reference 245/19).
 
+    Neither the Zenodo record nor the paper states the reference or ground
+    electrode. The LiveAmp actiCAP's usual reference is FCz, and in subject 1
+    the 2-30 Hz variance is lowest at Cz, FC1, FC2 and Fz, around FCz; the
+    channel names here follow Batista2022's order rather than the files, so
+    reference and ground are left unset.
+
     References
     ----------
 

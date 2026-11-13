@@ -130,6 +130,13 @@ class Beetl2021_A(BaseDataset):
     phase : str
         Either "leaderboard" or "final"
 
+    No source states the reference for these recordings. The group made them
+    "with the same hardware set up" as its Cybathlon 2016 work (Wei, Ortega and
+    Faisal, 2021, arXiv:2103.05351), which recorded "(reference 'Fpz')" on a
+    BrainVision actiCHamp (Ortega, Colas and Faisal, 2018, arXiv:1807.11752),
+    and Fpz is not among the 63 channels. The actiCHamp reference is chosen in
+    software, so it is left unset.
+
     References
     ----------
     .. [1] Wei, X., Faisal, A. A., Grosse-Wentrup, M., Gramfort, A.,
@@ -212,6 +219,8 @@ class Beetl2021_A(BaseDataset):
                 "AF8",
             ],
             montage="standard_1005",
+            reference=None,
+            ground=None,
             sensor_type="EEG",
             filters="1-100 Hz bandpass, 50 Hz notch",
             line_freq=50.0,

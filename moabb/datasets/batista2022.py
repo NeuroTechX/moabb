@@ -84,6 +84,11 @@ class Batista2022(BaseDataset):
     ``sub-p01``..``sub-p03``, exposed here as subjects 20-22, i.e. 20 subjects.
     The record does not state the institution or country of acquisition.
 
+    Neither the Zenodo record nor the thesis extended abstract states the
+    reference or ground electrode. The LiveAmp actiCAP's usual reference is
+    FCz, which is not among the 32 channels, but this is not confirmed for
+    these recordings.
+
     References
     ----------
 
