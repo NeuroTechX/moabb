@@ -80,6 +80,11 @@ class Jia2019(BaseDataset):
     interval fits the shortest. The files carry no channel labels, so channels
     are named ``Ch1`` .. ``Ch63`` and no montage is attached.
 
+    The released data are average-referenced: in every block of all 30 files
+    the 63 channels sum to nearly zero (variance of the channel sum at most
+    8e-6 of the mean channel variance). The recording reference is not stated
+    anywhere the files are described.
+
     References
     ----------
 
@@ -160,7 +165,7 @@ class Jia2019(BaseDataset):
         runs_per_session=2,
         tags=Tags(pathology=["Stroke"], modality=["Motor"], type=["Motor Imagery"]),
         preprocessing=PreprocessingMetadata(
-            data_state="epoched", preprocessing_applied=True
+            data_state="epoched", preprocessing_applied=True, re_reference="average"
         ),
         paradigm_specific=ParadigmSpecificMetadata(
             detected_paradigm="imagery", imagery_tasks=["left_hand", "right_hand"]
