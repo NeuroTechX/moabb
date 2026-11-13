@@ -318,6 +318,11 @@ class MAMEM1(BaseMAMEM):
     mimic the stimulation frequency and still be small enough for making a
     selection in the context
 
+    The arXiv report and the PhysioNet record do not state the recording
+    reference. EGI HydroCel Geodesic Sensor Nets record against the vertex
+    electrode (Cz), which is not among the 256 channels; MAMEM2 uses the same
+    system.
+
     References
     ----------
     .. [1] Oikonomou, V. P., Liaros, G., Georgiadis, K., Chatzilari, E., Adam, K.,
@@ -339,7 +344,7 @@ class MAMEM1(BaseMAMEM):
             montage="GSN-HydroCel-256",
             hardware="EGI 300 Geodesic EEG System (GES 300)",
             sensor_type=None,
-            reference=None,
+            reference="Cz",
             software=None,
             filters=None,
             sensors=[
