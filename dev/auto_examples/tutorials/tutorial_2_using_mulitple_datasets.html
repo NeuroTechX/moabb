@@ -49,7 +49,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=d694e5f0" />
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/macro-table.css?v=4c18d17a" />
@@ -73,7 +73,7 @@
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     <script>
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){ dataLayer.push(arguments); }
@@ -741,20 +741,22 @@ the evaluation from scratch if a problem occurs.</p>
 </span><a class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="sklearn.pipeline.Pipeline"><span class="n">pipeline</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline"><span class="n">make_pipeline</span></a><span class="p">(</span><a class="sphx-glr-backref-module-mne-decoding sphx-glr-backref-type-py-class reference external" href="https://mne.tools/stable/generated/mne.decoding.CSP.html#mne.decoding.CSP" title="mne.decoding.CSP"><span class="n">CSP</span></a><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span><span class="p">,</span> <a class="sphx-glr-backref-module-sklearn-discriminant_analysis sphx-glr-backref-type-py-class reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html#sklearn.discriminant_analysis.LinearDiscriminantAnalysis" title="sklearn.discriminant_analysis.LinearDiscriminantAnalysis"><span class="n">LDA</span></a><span class="p">(</span><span class="p">)</span><span class="p">)</span><span class="w">
 </span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">results</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-moabb-evaluations-base sphx-glr-backref-type-py-method reference internal" href="../../generated/moabb.evaluations.base.BaseEvaluation.html#moabb.evaluations.base.BaseEvaluation.process" title="moabb.evaluations.base.BaseEvaluation.process"><span class="n">evaluation</span><span class="o">.</span><span class="n">process</span></a><span class="p">(</span><span class="p">{</span><span class="s2">&quot;</span><span class="s2">csp+lda</span><span class="s2">&quot;</span><span class="p">:</span> <a class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="sklearn.pipeline.Pipeline"><span class="n">pipeline</span></a><span class="p">}</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[codecarbon WARNING @ 11:31:37] Multiple instances of codecarbon are allowed to run at the same time.
-2026-11-09 11:31:42,750 INFO MainThread moabb.evaluations.base csp+lda | Zhou2016 | 1 | 0: Score 0.893
-2026-11-09 11:31:42,750 INFO MainThread moabb.evaluations.base csp+lda | Zhou2016 | 1 | 2: Score 0.950
-2026-11-09 11:31:42,750 INFO MainThread moabb.evaluations.base csp+lda | Zhou2016 | 1 | 1: Score 0.900
-2026-11-09 11:31:45,922 INFO MainThread moabb.evaluations.base csp+lda | Zhou2016 | 2 | 2: Score 0.894
-2026-11-09 11:31:45,922 INFO MainThread moabb.evaluations.base csp+lda | Zhou2016 | 2 | 1: Score 0.753
-2026-11-09 11:31:45,922 INFO MainThread moabb.evaluations.base csp+lda | Zhou2016 | 2 | 0: Score 0.868
-2026-11-09 11:31:49,215 INFO MainThread moabb.evaluations.base csp+lda | Zhou2016 | 3 | 0: Score 0.988
-2026-11-09 11:31:49,215 INFO MainThread moabb.evaluations.base csp+lda | Zhou2016 | 3 | 1: Score 0.972
-2026-11-09 11:31:49,215 INFO MainThread moabb.evaluations.base csp+lda | Zhou2016 | 3 | 2: Score 0.994
-2026-11-09 11:31:55,339 INFO MainThread moabb.evaluations.base csp+lda | BNCI2014-001 | 2 | 1test: Score 0.669
-2026-11-09 11:31:55,339 INFO MainThread moabb.evaluations.base csp+lda | BNCI2014-001 | 2 | 0train: Score 0.629
-2026-11-09 11:31:58,038 INFO MainThread moabb.evaluations.base csp+lda | BNCI2014-001 | 3 | 0train: Score 0.989
-2026-11-09 11:31:58,038 INFO MainThread moabb.evaluations.base csp+lda | BNCI2014-001 | 3 | 1test: Score 0.996
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[codecarbon WARNING @ 22:09:37] Multiple instances of codecarbon are allowed to run at the same time.
+2026-11-14 22:09:41,777 INFO MainThread moabb.evaluations.base csp+lda | Zhou2016 | 1 | 0: Score 0.899
+2026-11-14 22:09:41,777 INFO MainThread moabb.evaluations.base csp+lda | Zhou2016 | 1 | 1: Score 0.916
+2026-11-14 22:09:41,777 INFO MainThread moabb.evaluations.base csp+lda | Zhou2016 | 1 | 2: Score 0.948
+2026-11-14 22:09:44,014 INFO MainThread moabb.evaluations.base csp+lda | Zhou2016 | 3 | 1: Score 0.986
+2026-11-14 22:09:44,014 INFO MainThread moabb.evaluations.base csp+lda | Zhou2016 | 3 | 2: Score 0.994
+2026-11-14 22:09:44,014 INFO MainThread moabb.evaluations.base csp+lda | Zhou2016 | 3 | 0: Score 0.988
+2026-11-14 22:09:46,220 INFO MainThread moabb.evaluations.base csp+lda | Zhou2016 | 2 | 2: Score 0.894
+2026-11-14 22:09:46,220 INFO MainThread moabb.evaluations.base csp+lda | Zhou2016 | 2 | 0: Score 0.902
+2026-11-14 22:09:46,220 INFO MainThread moabb.evaluations.base csp+lda | Zhou2016 | 2 | 1: Score 0.758
+2026-11-14 22:09:56,259 INFO MainThread moabb.evaluations.base csp+lda | BNCI2014-001 | 1 | 1test: Score 0.947
+2026-11-14 22:09:56,259 INFO MainThread moabb.evaluations.base csp+lda | BNCI2014-001 | 1 | 0train: Score 0.923
+2026-11-14 22:09:58,424 INFO MainThread moabb.evaluations.base csp+lda | BNCI2014-001 | 2 | 1test: Score 0.650
+2026-11-14 22:09:58,424 INFO MainThread moabb.evaluations.base csp+lda | BNCI2014-001 | 2 | 0train: Score 0.611
+2026-11-14 22:10:00,772 INFO MainThread moabb.evaluations.base csp+lda | BNCI2014-001 | 3 | 0train: Score 0.985
+2026-11-14 22:10:00,772 INFO MainThread moabb.evaluations.base csp+lda | BNCI2014-001 | 3 | 1test: Score 0.998
 </pre></div>
 </div>
 </section>
@@ -774,11 +776,11 @@ is to plot the results from the three datasets with just one line.</p>
 </span><span class="p">)</span><span class="w">
 </span><a class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">(</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../../_images/sphx_glr_tutorial_2_using_mulitple_datasets_001.png" srcset="../../_images/sphx_glr_tutorial_2_using_mulitple_datasets_001.png" alt="dataset = Zhou2016, dataset = BNCI2014-001" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2026-11-09 11:31:58,124 INFO MainThread matplotlib.category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
-2026-11-09 11:31:58,130 INFO MainThread matplotlib.category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+<img src="../../_images/sphx_glr_tutorial_2_using_mulitple_datasets_001.png" srcset="../../_images/sphx_glr_tutorial_2_using_mulitple_datasets_001.png" alt="dataset = Zhou2016, dataset = BNCI2014-001" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2026-11-14 22:10:00,887 INFO MainThread matplotlib.category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2026-11-14 22:10:00,894 INFO MainThread matplotlib.category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 26.787 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 31.345 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-tutorials-tutorial-2-using-mulitple-datasets-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/84cd0e0e206f46e9ff11a482df8a9b57/tutorial_2_using_mulitple_datasets.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">tutorial_2_using_mulitple_datasets.ipynb</span></code></a></p>

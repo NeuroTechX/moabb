@@ -47,7 +47,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=d694e5f0" />
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" />
     <link rel="stylesheet" type="text/css" href="../_static/css/macro-table.css?v=4c18d17a" />
@@ -71,7 +71,7 @@
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
-    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../_static/design-tabs.js?v=fcb327ea"></script>
     <script>
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){ dataLayer.push(arguments); }
@@ -1003,10 +1003,10 @@
 <h1>moabb.datasets.MAMEM1<a class="headerlink" href="#moabb-datasets-mamem1" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="moabb.datasets.MAMEM1">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">MAMEM1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/ssvep_mamem.py#L232-L770"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.MAMEM1" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">MAMEM1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/ssvep_mamem.py#L232-L775"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.MAMEM1" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="moabb.datasets.ssvep_mamem.BaseMAMEM.html#moabb.datasets.ssvep_mamem.BaseMAMEM" title="moabb.datasets.ssvep_mamem.BaseMAMEM"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseMAMEM</span></code></a></p>
 <div class="ds-card" role="region" aria-label="MAMEM1 dataset overview">
-  <a class="ds-card-source" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/ssvep_mamem.py#L232-L770" target="_blank" rel="noopener">[source]</a>
+  <a class="ds-card-source" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/ssvep_mamem.py#L232-L775" target="_blank" rel="noopener">[source]</a>
   <div class="ds-card-head">
     <p class="ds-card-kicker">Dataset Snapshot</p>
     <p class="ds-card-title">MAMEM1</p>
@@ -1040,7 +1040,8 @@
 <p><strong>Eligible signals</strong>: The EEG signal is sensitive to external factors that have to do with the environment or the configuration of the acquisition setup The research stuff was responsible for the elimination of trials that were considered faulty. As a result the following sessions were noted and excluded from further analysis: 1. S003, during session 4 the stimulation program crashed 2. S004, during session 2 the stimulation program crashed, and 3. S008, during session 4 the Stim Tracker was detuned. Furthermore, we must also note that subject S001 participated in 3 sessions and subjects S003 and S004 participated in 4 sessions, compared to all other subjects that participated in 5 sessions (NB: in fact, there is only 3 sessions for subjects 1, 3 and 8, and 4 sessions for subject 4 available to download). As a result, the utilized dataset consists of 1104 trials of 5 seconds each.</p>
 <p><strong>Flickering frequencies</strong>: Usually the refresh rate for an LCD Screen is 60 Hz creating a restriction to the number of frequencies that can be selected. Specifically, only the frequencies that when divided with the refresh rate of the screen result in an integer quotient could be selected. As a result, the frequendies that could be obtained were the following: 30.00. 20.00, 15.00, 1200, 10.00, 857. 7.50 and 6.66 Hz. In addition, it is also important to avoid using frequencies that are multiples of another frequency, for example making the choice to use 10.00Hz prohibits the use of 20.00 and 30.00 Mhz. With the previously described limitations in mind, the selected frequencies for the experiment were: 12.00, 10.00, 8.57, 7.50 and 6.66 Hz.</p>
 <p><strong>Stimuli Layout</strong>: In an effort to keep the experimental process as simple as possible, we used only one flickering box instead of more common choices, such as 4 or 5 boxes flickering simultaneously The fact that the subject could focus on one stimulus without having the distraction of other flickering sources allowed us to minimize the noise of our signals and verify the appropriateness of our acquisition setup Nevertheless, having concluded the optimal configuration for analyzing the EEG signals, the experiment will be repeated with more concurrent visual stimulus.</p>
-<p><strong>Trial duration</strong>: The duration of each trial was set to 5 seconds, as this time was considered adequate to allow the occipital part of the bran to mimic the stimulation frequency and still be small enough for making a selection in the context</p></div><div class="ds-overview-actions"><button class="ds-overview-toggle" type="button" aria-expanded="false" aria-controls="ds-overview-mamem1" onclick="var el=this.closest('.ds-overview-teaser');el.classList.toggle('ds-expanded');var exp=el.classList.contains('ds-expanded');this.setAttribute('aria-expanded',exp?'true':'false');this.textContent=exp?'Show less ▴':'Show more ▾';">Show more ▾</button><a class="ds-overview-tab-link" href="#ds-overview-mamem1" onclick="event.preventDefault();var tab=document.querySelector('.ds-doc-tabs .sd-tab-label');if(tab){tab.click();}var target=document.getElementById('ds-overview-mamem1');if(target){target.scrollIntoView({behavior:'smooth',block:'start'});}">Open in Overview tab →</a></div></div>
+<p><strong>Trial duration</strong>: The duration of each trial was set to 5 seconds, as this time was considered adequate to allow the occipital part of the bran to mimic the stimulation frequency and still be small enough for making a selection in the context</p>
+<p>The arXiv report and the PhysioNet record do not state the recording reference. EGI HydroCel Geodesic Sensor Nets record against the vertex electrode (Cz), which is not among the 256 channels; MAMEM2 uses the same system.</p></div><div class="ds-overview-actions"><button class="ds-overview-toggle" type="button" aria-expanded="false" aria-controls="ds-overview-mamem1" onclick="var el=this.closest('.ds-overview-teaser');el.classList.toggle('ds-expanded');var exp=el.classList.contains('ds-expanded');this.setAttribute('aria-expanded',exp?'true':'false');this.textContent=exp?'Show less ▴':'Show more ▾';">Show more ▾</button><a class="ds-overview-tab-link" href="#ds-overview-mamem1" onclick="event.preventDefault();var tab=document.querySelector('.ds-doc-tabs .sd-tab-label');if(tab){tab.click();}var target=document.getElementById('ds-overview-mamem1');if(target){target.scrollIntoView({behavior:'smooth',block:'start'});}">Open in Overview tab →</a></div></div>
   <div id="ds-quickstart-mamem1" class="ds-quickstart" role="region" aria-labelledby="ds-quickstart-btn-mamem1" aria-hidden="true" hidden>
   <div class="ds-quickstart-code"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">MAMEM1</span>
 
@@ -1056,7 +1057,7 @@
       <li><span>Public API</span><span class="ds-citation-links"><a href="https://api.crossref.org/works/10.48550/arXiv.1602.00904" target="_blank" rel="noopener">Crossref</a>&nbsp;|&nbsp;<a href="https://api.openalex.org/works/https%3A%2F%2Fdoi.org%2F10.48550%2FarXiv.1602.00904" target="_blank" rel="noopener">OpenAlex</a></span></li>
       <li><span>Data DOI</span><a href="https://doi.org/10.6084%2Fm9.figshare.2068677.v1" target="_blank" rel="noopener">10.6084/m9.figshare.2068677.v1</a></li>
       <li><span>MOABB tables</span><strong>1 (WithinSession)</strong></li>
-      <li class="ds-pv-row"><span>Page Views</span><div class="ds-pv-detail"><div class="ds-pv-body"><div class="ds-pv-metrics">30d: <strong>0</strong> <span class="ds-provenance-sep">·</span> all-time: <strong>310</strong></div><div class="ds-pv-rank">#31 of 152 · Top 21% most viewed</div><div class="ds-pv-updated">Updated: 2026-11-09 UTC</div></div><div class="ds-pv-spark" aria-label="Page views trend (last 12 weeks)"><svg class="ds-views-spark" viewBox="0 0 110 28" role="img" aria-label="Weekly page views over the last 12 weeks"><path class="ds-views-spark-area" d="M 2.00 26.00 L 2.00 26.00 L 11.64 26.00 L 21.27 26.00 L 30.91 26.00 L 40.55 26.00 L 50.18 26.00 L 59.82 26.00 L 69.45 26.00 L 79.09 26.00 L 88.73 26.00 L 98.36 26.00 L 108.00 26.00 L 108.00 26.00 Z"></path><polyline class="ds-views-spark-line" points="2.00,26.00 11.64,26.00 21.27,26.00 30.91,26.00 40.55,26.00 50.18,26.00 59.82,26.00 69.45,26.00 79.09,26.00 88.73,26.00 98.36,26.00 108.00,26.00"></polyline></svg></div></div></li></ul>
+      <li class="ds-pv-row"><span>Page Views</span><div class="ds-pv-detail"><div class="ds-pv-body"><div class="ds-pv-metrics">30d: <strong>0</strong> <span class="ds-provenance-sep">·</span> all-time: <strong>310</strong></div><div class="ds-pv-rank">#31 of 152 · Top 21% most viewed</div><div class="ds-pv-updated">Updated: 2026-11-14 UTC</div></div><div class="ds-pv-spark" aria-label="Page views trend (last 12 weeks)"><svg class="ds-views-spark" viewBox="0 0 110 28" role="img" aria-label="Weekly page views over the last 12 weeks"><path class="ds-views-spark-area" d="M 2.00 26.00 L 2.00 26.00 L 11.64 26.00 L 21.27 26.00 L 30.91 26.00 L 40.55 26.00 L 50.18 26.00 L 59.82 26.00 L 69.45 26.00 L 79.09 26.00 L 88.73 26.00 L 98.36 26.00 L 108.00 26.00 L 108.00 26.00 Z"></path><polyline class="ds-views-spark-line" points="2.00,26.00 11.64,26.00 21.27,26.00 30.91,26.00 40.55,26.00 50.18,26.00 59.82,26.00 69.45,26.00 79.09,26.00 88.73,26.00 98.36,26.00 108.00,26.00"></polyline></svg></div></div></li></ul>
 <script>
 (function () {
   if (window.__moabbCitationCountsInit) return;
@@ -1151,6 +1152,7 @@ Channel Summary</div>
 <div class="ds-channel-row"><span>EEG</span><strong>256</strong></div>
 <div class="ds-channel-row"><span>Montage</span><strong>GSN-HydroCel-256</strong></div>
 <div class="ds-channel-row"><span>Sampling</span><strong>250 Hz</strong></div>
+<div class="ds-channel-row"><span>Reference</span><strong>Cz</strong></div>
 <div class="ds-channel-row"><span>Notch / line</span><strong>50 Hz</strong></div></div></div>
 </div>
 </div>
@@ -1158,8 +1160,8 @@ Channel Summary</div>
 </div>
 <p class="timeline-disclaimer">This diagram is automatically generated from MOABB metadata. Please consult the original publication to confirm the experimental protocol details.</p><div class="sd-tab-set ds-doc-tabs docutils">
 <input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
-<label class="sd-tab-label" for="sd-tab-item-0">
-Overview</label><div class="sd-tab-content docutils">
+<label aria-controls="sd-tab-item-0-content" class="sd-tab-label" for="sd-tab-item-0">
+Overview</label><div class="sd-tab-content docutils" id="sd-tab-item-0-content">
 <p id="ds-overview-mamem1">SSVEP MAMEM 1 dataset.</p>
 <p>Dataset from <a class="reference internal" href="#r69782ab34f79-1" id="id1"><span>[R69782ab34f79-1]</span></a>.</p>
 <p>EEG signals with 256 channels captured from 11 subjects executing a
@@ -1241,6 +1243,10 @@ experiment will be repeated with more concurrent visual stimulus.</p>
 time was considered adequate to allow the occipital part of the bran to
 mimic the stimulation frequency and still be small enough for making a
 selection in the context</p>
+<p>The arXiv report and the PhysioNet record do not state the recording
+reference. EGI HydroCel Geodesic Sensor Nets record against the vertex
+electrode (Cz), which is not among the 256 channels; MAMEM2 uses the same
+system.</p>
 <p class="rubric">References</p>
 <div role="list" class="citation-list">
 <div class="citation" id="r69782ab34f79-1" role="doc-biblioentry">
@@ -1264,8 +1270,8 @@ arXiv:1602.00904.</p>
 </div>
 </div>
 <input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
-<label class="sd-tab-label" for="sd-tab-item-1">
-Code Examples</label><div class="sd-tab-content docutils">
+<label aria-controls="sd-tab-item-1-content" class="sd-tab-label" for="sd-tab-item-1">
+Code Examples</label><div class="sd-tab-content docutils" id="sd-tab-item-1-content">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">MAMEM1</span>
 <span class="n">dataset</span> <span class="o">=</span> <span class="n">MAMEM1</span><span class="p">()</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">subjects</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
@@ -1274,8 +1280,8 @@ Code Examples</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input id="sd-tab-item-2" name="sd-tab-set-0" type="radio">
-<label class="sd-tab-label" for="sd-tab-item-2">
-Metadata</label><div class="sd-tab-content docutils">
+<label aria-controls="sd-tab-item-2-content" class="sd-tab-label" for="sd-tab-item-2">
+Metadata</label><div class="sd-tab-content docutils" id="sd-tab-item-2-content">
 <div class="admonition-dataset-summary admonition">
 <p class="admonition-title">Dataset summary</p>
 <div class="pst-scrollable-table-container"><table class="table">
@@ -1318,6 +1324,7 @@ Metadata</label><div class="sd-tab-content docutils">
 <ul class="simple">
 <li><p><strong>Amplifier</strong>: EGI 300 Geodesic EEG System (GES 300)</p></li>
 <li><p><strong>Montage</strong>: GSN-HydroCel-256</p></li>
+<li><p><strong>Reference</strong>: Cz</p></li>
 </ul>
 </div>
 <div class="admonition-preprocessing admonition">
@@ -1346,7 +1353,7 @@ Metadata</label><div class="sd-tab-content docutils">
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.MAMEM1.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/ssvep_mamem.py#L760-L770"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.MAMEM1.__init__" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/ssvep_mamem.py#L765-L775"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.MAMEM1.__init__" title="Link to this definition">#</a></dt>
 <dd><p>Initialize function for the BaseDataset.</p>
 </dd></dl>
 

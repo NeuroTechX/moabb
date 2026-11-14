@@ -49,7 +49,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=d694e5f0" />
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/macro-table.css?v=4c18d17a" />
@@ -73,7 +73,7 @@
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     <script>
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){ dataLayer.push(arguments); }
@@ -705,14 +705,11 @@ classification is performed.</p>
 <p>The dataset provides the X y data as a single user and a single session.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Epochs count before classification 100
 Start classification ...
-/home/runner/work/moabb/moabb/moabb/analysis/results.py:65: RuntimeWarning: You are probably using a classifier with a lambda function as an attribute. Lambda functions can only be identified by memory address which MOABB does not consider. To avoid issues you can use named functions defined using the def keyword instead.
-  return hashlib.md5(get_string_rep(obj)).hexdigest()
-[codecarbon WARNING @ 11:37:49] Multiple instances of codecarbon are allowed to run at the same time.
 
 
 Results:
     score      time  samples                dataset  pipeline
-0   0.57  0.080049    100.0  DummyRawEpochsDataset  XD+TS+LR
+0   0.59  0.099591    100.0  DummyRawEpochsDataset  XD+TS+LR
 </pre></div>
 </div>
 <div class="line-block">
@@ -865,7 +862,7 @@ Results:
 </span><span class="w">
 </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="se">\n</span><span class="s2">Results:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">scores</span></a><span class="p">[</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">score</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">time</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">samples</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">dataset</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">pipeline</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">]</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 5.590 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.980 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-use-an-x-y-dataset-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/e5de6f35345558b773e3c906606d7bc4/plot_use_an_X_y_dataset.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_use_an_X_y_dataset.ipynb</span></code></a></p>

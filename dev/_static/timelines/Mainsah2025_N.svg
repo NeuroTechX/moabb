@@ -6,7 +6,7 @@
   <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:date>2026-11-09T11:42:34.182968</dc:date>
+    <dc:date>2026-11-14T22:25:15.485750</dc:date>
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
@@ -40,7 +40,7 @@ Q 37.597484 40.953812 37.597484 43.521563
 L 37.597484 91.666875 
 Q 37.597484 94.234625 40.165234 94.234625 
 z
-" clip-path="url(#pbc8665366b)" style="fill: #f8a0a0; stroke: #c0392b; stroke-width: 1.2"/>
+" clip-path="url(#p9072c790c1)" style="fill: #f8a0a0; stroke: #c0392b; stroke-width: 1.2"/>
    </g>
    <g id="patch_3">
     <path d="M 94.729922 94.234625 
@@ -53,7 +53,7 @@ Q 92.162172 40.953812 92.162172 43.521563
 L 92.162172 91.666875 
 Q 92.162172 94.234625 94.729922 94.234625 
 z
-" clip-path="url(#pbc8665366b)" style="fill: #f8a0a0; stroke: #c0392b; stroke-width: 1.2"/>
+" clip-path="url(#p9072c790c1)" style="fill: #f8a0a0; stroke: #c0392b; stroke-width: 1.2"/>
    </g>
    <g id="patch_4">
     <path d="M 149.294609 94.234625 
@@ -66,7 +66,7 @@ Q 146.726859 40.953812 146.726859 43.521563
 L 146.726859 91.666875 
 Q 146.726859 94.234625 149.294609 94.234625 
 z
-" clip-path="url(#pbc8665366b)" style="fill: #f8a0a0; stroke: #c0392b; stroke-width: 1.2"/>
+" clip-path="url(#p9072c790c1)" style="fill: #f8a0a0; stroke: #c0392b; stroke-width: 1.2"/>
    </g>
    <g id="patch_5">
     <path d="M 235.956172 94.234625 
@@ -79,7 +79,7 @@ Q 233.388422 40.953812 233.388422 43.521563
 L 233.388422 91.666875 
 Q 233.388422 94.234625 235.956172 94.234625 
 z
-" clip-path="url(#pbc8665366b)" style="fill: #d32f2f; stroke: #8b0000; stroke-width: 1.2"/>
+" clip-path="url(#p9072c790c1)" style="fill: #d32f2f; stroke: #8b0000; stroke-width: 1.2"/>
    </g>
    <g id="patch_6">
     <path d="M 290.520859 94.234625 
@@ -92,10 +92,10 @@ Q 287.953109 40.953812 287.953109 43.521563
 L 287.953109 91.666875 
 Q 287.953109 94.234625 290.520859 94.234625 
 z
-" clip-path="url(#pbc8665366b)" style="fill: #f8a0a0; stroke: #c0392b; stroke-width: 1.2"/>
+" clip-path="url(#p9072c790c1)" style="fill: #f8a0a0; stroke: #c0392b; stroke-width: 1.2"/>
    </g>
    <g id="text_1">
-    <g clip-path="url(#pbc8665366b)">
+    <g clip-path="url(#p9072c790c1)">
      <!-- Std -->
      <g style="fill: #2c3e50" transform="translate(51.140977 70.322168) scale(0.105 -0.105)">
       <defs>
@@ -194,7 +194,7 @@ z
     </g>
    </g>
    <g id="text_2">
-    <g clip-path="url(#pbc8665366b)">
+    <g clip-path="url(#p9072c790c1)">
      <!-- Std -->
      <g style="fill: #2c3e50" transform="translate(105.705664 70.322168) scale(0.105 -0.105)">
       <use xlink:href="#DejaVuSerif-Bold-36"/>
@@ -204,7 +204,7 @@ z
     </g>
    </g>
    <g id="text_3">
-    <g clip-path="url(#pbc8665366b)">
+    <g clip-path="url(#p9072c790c1)">
      <!-- Std -->
      <g style="fill: #2c3e50" transform="translate(160.270352 70.322168) scale(0.105 -0.105)">
       <use xlink:href="#DejaVuSerif-Bold-36"/>
@@ -235,7 +235,7 @@ z
     </g>
    </g>
    <g id="text_5">
-    <g clip-path="url(#pbc8665366b)">
+    <g clip-path="url(#p9072c790c1)">
      <!-- Target -->
      <g style="fill: #ffffff" transform="translate(237.810039 70.321758) scale(0.105 -0.105)">
       <defs>
@@ -393,7 +393,7 @@ z
     </g>
    </g>
    <g id="text_6">
-    <g clip-path="url(#pbc8665366b)">
+    <g clip-path="url(#p9072c790c1)">
      <!-- Std -->
      <g style="fill: #2c3e50" transform="translate(301.496602 70.322168) scale(0.105 -0.105)">
       <use xlink:href="#DejaVuSerif-Bold-36"/>
@@ -1283,7 +1283,7 @@ z
   </g>
  </g>
  <defs>
-  <clipPath id="pbc8665366b">
+  <clipPath id="p9072c790c1">
    <rect x="27.326484" y="29.077969" width="337.017187" height="102.71"/>
   </clipPath>
  </defs>

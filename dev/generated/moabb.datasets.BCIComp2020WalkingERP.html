@@ -47,7 +47,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=d694e5f0" />
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" />
     <link rel="stylesheet" type="text/css" href="../_static/css/macro-table.css?v=4c18d17a" />
@@ -71,7 +71,7 @@
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
-    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../_static/design-tabs.js?v=fcb327ea"></script>
     <script>
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){ dataLayer.push(arguments); }
@@ -1003,10 +1003,10 @@
 <h1>moabb.datasets.BCIComp2020WalkingERP<a class="headerlink" href="#moabb-datasets-bcicomp2020walkingerp" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="moabb.datasets.BCIComp2020WalkingERP">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">BCIComp2020WalkingERP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/bcicomp2020_walking_erp.py#L160-L442"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.BCIComp2020WalkingERP" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">BCIComp2020WalkingERP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/bcicomp2020_walking_erp.py#L160-L454"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.BCIComp2020WalkingERP" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDataset</span></code></a></p>
 <div class="ds-card" role="region" aria-label="BCIComp2020WalkingERP dataset overview">
-  <a class="ds-card-source" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/bcicomp2020_walking_erp.py#L160-L442" target="_blank" rel="noopener">[source]</a>
+  <a class="ds-card-source" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/bcicomp2020_walking_erp.py#L160-L454" target="_blank" rel="noopener">[source]</a>
   <div class="ds-card-head">
     <p class="ds-card-kicker">Dataset Snapshot</p>
     <p class="ds-card-title">BCIComp2020WalkingERP</p>
@@ -1034,7 +1034,8 @@
   </div>
   <div class="ds-overview-teaser"><p class="ds-overview-title">Overview</p><p class="ds-overview-text">BCI Competition 2020 Track 5 — ERP during walking (scalp + ear-EEG + IMU).</p><p class="ds-overview-text">Dataset from the 2020 International BCI Competition [Rcfaf106830de-1]_.</p><p class="ds-overview-text"><strong>Dataset Description</strong></p><p class="ds-overview-text">Fifteen subjects (S1-S15, aged 19-32, 11 male + 4 female) performed an auditory-style visual oddball ERP paradigm while walking on a treadmill at 1.6 m/s. On every trial a character stimulus was presented for 500 ms (target <code>OOO</code> vs non-target <code>XXX</code>, target ratio 0.2), followed by a 500-1500 ms jittered rest. Each subject completed 300 trials in a single recording; the organizers split them temporally into 180 training / 60 validation / 60 test trials, exposed here as three runs inside a single MOABB session.</p><p class="ds-overview-text">Data is released on OSF at 100 Hz, epoched from -190 to +800 ms around stimulus onset (100 samples per trial, 10 ms spacing — the data description PDF rounds this to &quot;-200 to 800 ms&quot;, but <code>epo.t</code> in the actual .mat files starts at -190 ms). The recording comprises 32 scalp EEG channels, 14 ear-EEG electrodes, 4 EOG channels, and a 6-axis IMU on the forehead (accelerometer XYZ + gyroscope XYZ).</p><div class="ds-overview-full"><p><strong>Channel handling</strong></p>
 <ul class="ds-overview-list"><li>- 32 scalp channels are typed <code>eeg</code> with <code>standard_1005</code> montage.</li><li>4 EOG channels (HEOGL/HEOGR/VEOGU/VEOGL) are typed <code>eog</code>.</li><li>14 ear-EEG channels (L1-L10, R1-R8 with gaps) are typed <code>eeg</code> but have no standard-montage positions; <code>set_montage</code> with <code>on_missing=&quot;ignore&quot;</code> leaves their coords as <code>NaN</code>.</li><li>6 IMU channels are typed <code>misc</code> so classification paradigms that select <code>eeg</code> channels ignore them automatically. They remain in the Raw for users who want to use them for artifact rejection during walking.</li></ul>
-<p>Test-run labels are published as a separate answer-sheet XLSX on OSF rather than stored inside the test .mat files. They are embedded in this module as :data:`_TEST_LABELS_RUN2` so the loader can return labelled data for all three runs without a second download.</p></div><div class="ds-overview-actions"><button class="ds-overview-toggle" type="button" aria-expanded="false" aria-controls="ds-overview-bcicomp2020walkingerp" onclick="var el=this.closest('.ds-overview-teaser');el.classList.toggle('ds-expanded');var exp=el.classList.contains('ds-expanded');this.setAttribute('aria-expanded',exp?'true':'false');this.textContent=exp?'Show less ▴':'Show more ▾';">Show more ▾</button><a class="ds-overview-tab-link" href="#ds-overview-bcicomp2020walkingerp" onclick="event.preventDefault();var tab=document.querySelector('.ds-doc-tabs .sd-tab-label');if(tab){tab.click();}var target=document.getElementById('ds-overview-bcicomp2020walkingerp');if(target){target.scrollIntoView({behavior:'smooth',block:'start'});}">Open in Overview tab →</a></div></div>
+<p>Test-run labels are published as a separate answer-sheet XLSX on OSF rather than stored inside the test .mat files. They are embedded in this module as :data:`_TEST_LABELS_RUN2` so the loader can return labelled data for all three runs without a second download.</p>
+<p>The track description names no reference or ground electrode; its channel-placement figure marks Fpz and FCz, which are not among the scalp channels. The same lab&#x27;s walking dataset with this montage states &quot;The ground and reference electrodes were placed on Fpz and FCz&quot; for the scalp, with the ear-EEG on a separate amplifier referenced at the centre of the right-ear cEEGrid (Lee et al., Sci. Data, 2021, doi:10.1038/s41597-021-01094-4). One value cannot describe both amplifiers, so reference and ground are left unset.</p></div><div class="ds-overview-actions"><button class="ds-overview-toggle" type="button" aria-expanded="false" aria-controls="ds-overview-bcicomp2020walkingerp" onclick="var el=this.closest('.ds-overview-teaser');el.classList.toggle('ds-expanded');var exp=el.classList.contains('ds-expanded');this.setAttribute('aria-expanded',exp?'true':'false');this.textContent=exp?'Show less ▴':'Show more ▾';">Show more ▾</button><a class="ds-overview-tab-link" href="#ds-overview-bcicomp2020walkingerp" onclick="event.preventDefault();var tab=document.querySelector('.ds-doc-tabs .sd-tab-label');if(tab){tab.click();}var target=document.getElementById('ds-overview-bcicomp2020walkingerp');if(target){target.scrollIntoView({behavior:'smooth',block:'start'});}">Open in Overview tab →</a></div></div>
   <div id="ds-quickstart-bcicomp2020walkingerp" class="ds-quickstart" role="region" aria-labelledby="ds-quickstart-btn-bcicomp2020walkingerp" aria-hidden="true" hidden>
   <div class="ds-quickstart-code"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">BCIComp2020WalkingERP</span>
 
@@ -1142,8 +1143,8 @@ Channel Summary</div>
 </div>
 <p class="timeline-disclaimer">This diagram is automatically generated from MOABB metadata. Please consult the original publication to confirm the experimental protocol details.</p><div class="sd-tab-set ds-doc-tabs docutils">
 <input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
-<label class="sd-tab-label" for="sd-tab-item-0">
-Overview</label><div class="sd-tab-content docutils">
+<label aria-controls="sd-tab-item-0-content" class="sd-tab-label" for="sd-tab-item-0">
+Overview</label><div class="sd-tab-content docutils" id="sd-tab-item-0-content">
 <p id="ds-overview-bcicomp2020walkingerp">BCI Competition 2020 Track 5 — ERP during walking (scalp + ear-EEG + IMU).</p>
 <p>Dataset from the 2020 International BCI Competition <a class="reference internal" href="#rcfaf106830de-1" id="id1"><span>[Rcfaf106830de-1]</span></a>.</p>
 <p><strong>Dataset Description</strong></p>
@@ -1179,6 +1180,14 @@ OSF rather than stored inside the test .mat files. They are
 embedded in this module as <code class="xref py py-data docutils literal notranslate"><span class="pre">_TEST_LABELS_RUN2</span></code> so the
 loader can return labelled data for all three runs without a
 second download.</p>
+<p>The track description names no reference or ground electrode; its
+channel-placement figure marks Fpz and FCz, which are not among the scalp
+channels. The same lab’s walking dataset with this montage states “The
+ground and reference electrodes were placed on Fpz and FCz” for the scalp,
+with the ear-EEG on a separate amplifier referenced at the centre of the
+right-ear cEEGrid (Lee et al., Sci. Data, 2021,
+doi:10.1038/s41597-021-01094-4). One value cannot describe both amplifiers,
+so reference and ground are left unset.</p>
 <p class="rubric">References</p>
 <div role="list" class="citation-list">
 <div class="citation" id="rcfaf106830de-1" role="doc-biblioentry">
@@ -1190,8 +1199,8 @@ interface competition: A review. Frontiers in Human Neuroscience,
 </div>
 </div>
 <input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
-<label class="sd-tab-label" for="sd-tab-item-1">
-Code Examples</label><div class="sd-tab-content docutils">
+<label aria-controls="sd-tab-item-1-content" class="sd-tab-label" for="sd-tab-item-1">
+Code Examples</label><div class="sd-tab-content docutils" id="sd-tab-item-1-content">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">BCIComp2020WalkingERP</span>
 <span class="n">dataset</span> <span class="o">=</span> <span class="n">BCIComp2020WalkingERP</span><span class="p">()</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">subjects</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
@@ -1200,8 +1209,8 @@ Code Examples</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input id="sd-tab-item-2" name="sd-tab-set-0" type="radio">
-<label class="sd-tab-label" for="sd-tab-item-2">
-Metadata</label><div class="sd-tab-content docutils">
+<label aria-controls="sd-tab-item-2-content" class="sd-tab-label" for="sd-tab-item-2">
+Metadata</label><div class="sd-tab-content docutils" id="sd-tab-item-2-content">
 <div class="admonition-dataset-summary admonition">
 <p class="admonition-title">Dataset summary</p>
 <div class="pst-scrollable-table-container"><table class="table">
@@ -1267,7 +1276,7 @@ Metadata</label><div class="sd-tab-content docutils">
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.BCIComp2020WalkingERP.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/bcicomp2020_walking_erp.py#L319-L330"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.BCIComp2020WalkingERP.__init__" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/bcicomp2020_walking_erp.py#L331-L342"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.BCIComp2020WalkingERP.__init__" title="Link to this definition">#</a></dt>
 <dd><p>Initialize function for the BaseDataset.</p>
 </dd></dl>
 
@@ -1330,7 +1339,7 @@ path.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.BCIComp2020WalkingERP.data_path">
-<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/bcicomp2020_walking_erp.py#L422-L442"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.BCIComp2020WalkingERP.data_path" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/bcicomp2020_walking_erp.py#L434-L454"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.BCIComp2020WalkingERP.data_path" title="Link to this definition">#</a></dt>
 <dd><p>Return local paths for a subject’s split files.</p>
 <p>Downloads training + validation + test files for <code class="docutils literal notranslate"><span class="pre">subject</span></code>
 via <a class="reference internal" href="moabb.datasets.download.data_dl.html#moabb.datasets.download.data_dl" title="moabb.datasets.download.data_dl"><code class="xref py py-func docutils literal notranslate"><span class="pre">moabb.datasets.download.data_dl()</span></code></a>. Returns the path

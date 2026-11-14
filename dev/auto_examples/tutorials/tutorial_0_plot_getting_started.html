@@ -49,7 +49,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=d694e5f0" />
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/macro-table.css?v=4c18d17a" />
@@ -73,7 +73,7 @@
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     <script>
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){ dataLayer.push(arguments); }
@@ -790,15 +790,15 @@ subjects. This also is the correct place to specify multiple threads.</p>
 </span><span class="p">)</span><span class="w">
 </span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">results</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-moabb-evaluations-base sphx-glr-backref-type-py-method reference internal" href="../../generated/moabb.evaluations.base.BaseEvaluation.html#moabb.evaluations.base.BaseEvaluation.process" title="moabb.evaluations.base.BaseEvaluation.process"><span class="n">evaluation</span><span class="o">.</span><span class="n">process</span></a><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">pipelines</span></a><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[codecarbon WARNING @ 11:31:38] Multiple instances of codecarbon are allowed to run at the same time.
-2026-11-09 11:31:40,048 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 1 | 0train: Score 0.729
-2026-11-09 11:31:40,048 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 1 | 1test: Score 0.715
-2026-11-09 11:31:40,418 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 1 | 0train: Score 0.743
-2026-11-09 11:31:40,419 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 1 | 1test: Score 0.715
-2026-11-09 11:31:41,310 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 2 | 0train: Score 0.597
-2026-11-09 11:31:41,310 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 2 | 1test: Score 0.521
-2026-11-09 11:31:41,753 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 2 | 0train: Score 0.500
-2026-11-09 11:31:41,754 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 2 | 1test: Score 0.500
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[codecarbon WARNING @ 22:09:38] Multiple instances of codecarbon are allowed to run at the same time.
+2026-11-14 22:09:40,487 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 1 | 0train: Score 0.729
+2026-11-14 22:09:40,487 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 1 | 1test: Score 0.715
+2026-11-14 22:09:40,831 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 1 | 0train: Score 0.743
+2026-11-14 22:09:40,831 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 1 | 1test: Score 0.715
+2026-11-14 22:09:41,603 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 2 | 0train: Score 0.597
+2026-11-14 22:09:41,603 INFO MainThread moabb.evaluations.base AM+LDA | BNCI2014-001 | 2 | 1test: Score 0.521
+2026-11-14 22:09:41,996 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 2 | 0train: Score 0.500
+2026-11-14 22:09:41,996 INFO MainThread moabb.evaluations.base AM+SVM | BNCI2014-001 | 2 | 1test: Score 0.500
 </pre></div>
 </div>
 <p>Results are returned as a pandas DataFrame. When multiple metrics are
@@ -807,16 +807,16 @@ provided, MOABB adds a primary <cite>score</cite> plus one column per metric
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span class="nb">print</span><span class="p">(</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-method reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.head.html#pandas.DataFrame.head" title="pandas.DataFrame.head"><span class="n">results</span><span class="o">.</span><span class="n">head</span></a><span class="p">(</span><span class="p">)</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>      score      time  ... pipeline                  codecarbon_task_name
-0  0.729167  0.013090  ...   AM+LDA  f844c1ed-d23f-43ff-bda7-71243d500866
-1  0.715278  0.010569  ...   AM+LDA  7b7659ed-af3e-4bc3-a5b9-cfcefca1ffc6
-2  0.597222  0.009517  ...   AM+LDA  08d116a2-3802-49fb-a72c-4b333888dffa
-3  0.520833  0.010188  ...   AM+LDA  fe11dcaa-54bc-4202-82a5-1ad496157394
-4  0.743056  0.165752  ...   AM+SVM  4c2cfe82-5672-4a79-8c31-8709edaac995
+0  0.729167  0.015963  ...   AM+LDA  03b60016-f29a-44a4-b76e-a68b7c520b8d
+1  0.715278  0.016152  ...   AM+LDA  191753d9-df00-46eb-8e10-e5f16e00d478
+2  0.597222  0.012479  ...   AM+LDA  1e94a4f8-ac7b-43ab-957d-0e7065e1daf5
+3  0.520833  0.014289  ...   AM+LDA  b42f73b4-8203-401a-826d-ea72d13eea16
+4  0.743056  0.260312  ...   AM+SVM  2f7fd8d6-f4f4-4ce4-aa7c-5fd9ce696c70
 
 [5 rows x 15 columns]
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 10.402 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 12.280 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-tutorials-tutorial-0-plot-getting-started-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/cc78b19f551dfa48627d09f644ea18ad/tutorial_0_plot_getting_started.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">tutorial_0_plot_getting_started.ipynb</span></code></a></p>

@@ -47,7 +47,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=d694e5f0" />
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" />
     <link rel="stylesheet" type="text/css" href="../_static/css/macro-table.css?v=4c18d17a" />
@@ -71,7 +71,7 @@
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
-    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../_static/design-tabs.js?v=fcb327ea"></script>
     <script>
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){ dataLayer.push(arguments); }
@@ -1003,10 +1003,10 @@
 <h1>moabb.datasets.Kodera2023<a class="headerlink" href="#moabb-datasets-kodera2023" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="moabb.datasets.Kodera2023">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">Kodera2023</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">cohort</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/kodera2023.py#L229-L442"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Kodera2023" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">Kodera2023</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">cohort</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/kodera2023.py#L229-L448"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Kodera2023" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDataset</span></code></a></p>
 <div class="ds-card" role="region" aria-label="Kodera2023 dataset overview">
-  <a class="ds-card-source" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/kodera2023.py#L229-L442" target="_blank" rel="noopener">[source]</a>
+  <a class="ds-card-source" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/kodera2023.py#L229-L448" target="_blank" rel="noopener">[source]</a>
   <div class="ds-card-head">
     <p class="ds-card-kicker">Dataset Snapshot</p>
     <p class="ds-card-title">Kodera2023</p>
@@ -1036,7 +1036,7 @@
 <ul class="ds-overview-list"><li>- <code>cohort=None</code> (default, code <code>Kodera2023</code>): all 29 subjects with the nine channels both setups share, in one order, at <strong>500 Hz</strong>. The 1000 Hz recordings are resampled to 500 Hz when loaded (the common, lowest rate); the extra scalp and auxiliary channels are dropped, never padded.</li><li><code>cohort=&quot;16ch&quot;</code> (code <code>Kodera-16ch2023</code>): the 14 subjects of the 2020-2021 setup with all 16 scalp channels at 500 Hz.</li><li><code>cohort=&quot;9ch&quot;</code> (code <code>Kodera-9ch2023</code>): the 15 subjects of the 2021-2023 setup with their nine channels at the native 1000 Hz.</li></ul>
 <p>Subject numbers are the same in every option; asking a cohort for a subject of the other setup raises a <code>ValueError</code>. Each option has its own <code>code</code> and <code>METADATA</code>, so cached epochs and results never mix channel sets or rates; downloads are shared.</p>
 <p>The Zenodo record carries only the title &quot;EEG motor imagery&quot;, the creator list and a one-line description (&quot;EEG dataset used for automatic motor imagery detection.&quot;); there is no linked paper. Subject, channel, rate and class information above is derived from the archive contents and could not be checked against a publication (paper audit, 2026-09-30).</p>
-<p>:param subjects: Subjects to load (restricted to the selected <code>cohort</code>). :type subjects: list of int | None :param sessions: Sessions to keep. :type sessions: list of int | str | None :param cohort: <code>None</code> returns all 29 subjects on the nine shared channels at 500 Hz; <code>&quot;16ch&quot;</code> the 14 subjects of the 2020-2021 setup with 16 channels at 500 Hz; <code>&quot;9ch&quot;</code> the 15 subjects of the 2021-2023 setup at 1000 Hz. :type cohort: None | &quot;16ch&quot; | &quot;9ch&quot;</p></div><div class="ds-overview-actions"><button class="ds-overview-toggle" type="button" aria-expanded="false" aria-controls="ds-overview-kodera2023" onclick="var el=this.closest('.ds-overview-teaser');el.classList.toggle('ds-expanded');var exp=el.classList.contains('ds-expanded');this.setAttribute('aria-expanded',exp?'true':'false');this.textContent=exp?'Show less ▴':'Show more ▾';">Show more ▾</button><a class="ds-overview-tab-link" href="#ds-overview-kodera2023" onclick="event.preventDefault();var tab=document.querySelector('.ds-doc-tabs .sd-tab-label');if(tab){tab.click();}var target=document.getElementById('ds-overview-kodera2023');if(target){target.scrollIntoView({behavior:'smooth',block:'start'});}">Open in Overview tab →</a></div></div>
+<p>:param subjects: Subjects to load (restricted to the selected <code>cohort</code>). :type subjects: list of int | None :param sessions: Sessions to keep. :type sessions: list of int | str | None :param cohort: <code>None</code> returns all 29 subjects on the nine shared channels at 500 Hz; <code>&quot;16ch&quot;</code> the 14 subjects of the 2020-2021 setup with 16 channels at 500 Hz; <code>&quot;9ch&quot;</code> the 15 subjects of the 2021-2023 setup at 1000 Hz. :type cohort: None | &quot;16ch&quot; | &quot;9ch&quot; :param The Zenodo record states no reference or ground electrode. A 2024 paper: :param that uses this dataset (Titkanlou: :param Monjezi and Moucek: :param HEALTHINF 2024: :param : :param citing its Zenodo DOI) says &quot;a reference electrode of the EEG cap was: :param attached to the earlobe&quot; for the 9-channel setup: :param without naming the side: :param : :param so reference and ground are left unset.:</p></div><div class="ds-overview-actions"><button class="ds-overview-toggle" type="button" aria-expanded="false" aria-controls="ds-overview-kodera2023" onclick="var el=this.closest('.ds-overview-teaser');el.classList.toggle('ds-expanded');var exp=el.classList.contains('ds-expanded');this.setAttribute('aria-expanded',exp?'true':'false');this.textContent=exp?'Show less ▴':'Show more ▾';">Show more ▾</button><a class="ds-overview-tab-link" href="#ds-overview-kodera2023" onclick="event.preventDefault();var tab=document.querySelector('.ds-doc-tabs .sd-tab-label');if(tab){tab.click();}var target=document.getElementById('ds-overview-kodera2023');if(target){target.scrollIntoView({behavior:'smooth',block:'start'});}">Open in Overview tab →</a></div></div>
   <div id="ds-quickstart-kodera2023" class="ds-quickstart" role="region" aria-labelledby="ds-quickstart-btn-kodera2023" aria-hidden="true" hidden>
   <div class="ds-quickstart-code"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">Kodera2023</span>
 
@@ -1150,8 +1150,8 @@ Channel Summary</div>
 </div>
 <p class="timeline-disclaimer">This diagram is automatically generated from MOABB metadata. Please consult the original publication to confirm the experimental protocol details.</p><div class="sd-tab-set ds-doc-tabs docutils">
 <input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
-<label class="sd-tab-label" for="sd-tab-item-0">
-Overview</label><div class="sd-tab-content docutils">
+<label aria-controls="sd-tab-item-0-content" class="sd-tab-label" for="sd-tab-item-0">
+Overview</label><div class="sd-tab-content docutils" id="sd-tab-item-0-content">
 <p id="ds-overview-kodera2023">Left/right-hand motor-imagery EEG dataset <a class="reference internal" href="#r342b758cf4e7-1" id="id1"><span>[R342b758cf4e7-1]</span></a>.</p>
 <p>EEG recorded at the University of West Bohemia (Pilsen) during cue-based left-
 versus right-hand motor imagery. Each recording holds a single class, encoded
@@ -1217,7 +1217,21 @@ at 1000 Hz.</p>
 <dt class="field-even">type cohort<span class="colon">:</span></dt>
 <dd class="field-even"><p>None | “16ch” | “9ch”</p>
 </dd>
+<dt class="field-odd">param The Zenodo record states no reference or ground electrode. A 2024 paper<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p></dd>
+<dt class="field-even">param that uses this dataset (Titkanlou<span class="colon">:</span></dt>
+<dd class="field-even"><p></p></dd>
+<dt class="field-odd">param Monjezi and Moucek<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p></dd>
+<dt class="field-even">param HEALTHINF 2024<span class="colon">:</span></dt>
+<dd class="field-even"><p></p></dd>
 </dl>
+<p>:param :
+:param citing its Zenodo DOI) says “a reference electrode of the EEG cap was:
+:param attached to the earlobe” for the 9-channel setup:
+:param without naming the side:
+:param :
+:param so reference and ground are left unset.:</p>
 <p class="rubric">References</p>
 <div role="list" class="citation-list">
 <div class="citation" id="r342b758cf4e7-1" role="doc-biblioentry">
@@ -1229,8 +1243,8 @@ imagery [Data set]. Zenodo. <a class="reference external" href="https://doi.org/
 </div>
 </div>
 <input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
-<label class="sd-tab-label" for="sd-tab-item-1">
-Code Examples</label><div class="sd-tab-content docutils">
+<label aria-controls="sd-tab-item-1-content" class="sd-tab-label" for="sd-tab-item-1">
+Code Examples</label><div class="sd-tab-content docutils" id="sd-tab-item-1-content">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">Kodera2023</span>
 <span class="n">dataset</span> <span class="o">=</span> <span class="n">Kodera2023</span><span class="p">()</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">subjects</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
@@ -1239,8 +1253,8 @@ Code Examples</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input id="sd-tab-item-2" name="sd-tab-set-0" type="radio">
-<label class="sd-tab-label" for="sd-tab-item-2">
-Metadata</label><div class="sd-tab-content docutils">
+<label aria-controls="sd-tab-item-2-content" class="sd-tab-label" for="sd-tab-item-2">
+Metadata</label><div class="sd-tab-content docutils" id="sd-tab-item-2-content">
 <div class="admonition-dataset-summary admonition">
 <p class="admonition-title">Dataset summary</p>
 <div class="pst-scrollable-table-container"><table class="table">
@@ -1306,8 +1320,8 @@ Metadata</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input id="sd-tab-item-3" name="sd-tab-set-0" type="radio">
-<label class="sd-tab-label" for="sd-tab-item-3">
-Notes</label><div class="sd-tab-content docutils">
+<label aria-controls="sd-tab-item-3-content" class="sd-tab-label" for="sd-tab-item-3">
+Notes</label><div class="sd-tab-content docutils" id="sd-tab-item-3-content">
 <div class="versionadded">
 <p><span class="versionmodified added">Added in version 1.8.0.</span></p>
 </div>
@@ -1315,7 +1329,7 @@ Notes</label><div class="sd-tab-content docutils">
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.Kodera2023.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">cohort</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/kodera2023.py#L306-L325"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Kodera2023.__init__" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">cohort</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/kodera2023.py#L312-L331"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Kodera2023.__init__" title="Link to this definition">#</a></dt>
 <dd><p>Initialize function for the BaseDataset.</p>
 </dd></dl>
 
@@ -1378,7 +1392,7 @@ path.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.Kodera2023.data_path">
-<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/kodera2023.py#L360-L388"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Kodera2023.data_path" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/kodera2023.py#L366-L394"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Kodera2023.data_path" title="Link to this definition">#</a></dt>
 <dd><p>Return the BrainVision header paths of a single subject’s labelled runs.</p>
 </dd></dl>
 
@@ -1474,7 +1488,7 @@ otherwise None.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.Kodera2023.get_data">
-<span class="sig-name descname"><span class="pre">get_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">process_pipeline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/kodera2023.py#L348-L356"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Kodera2023.get_data" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">process_pipeline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/kodera2023.py#L354-L362"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Kodera2023.get_data" title="Link to this definition">#</a></dt>
 <dd><p>Return the data corresponding to a list of subjects.</p>
 <p>The returned data is a dictionary with the following structure:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"subject_id"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"session_id"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"run_id"</span><span class="p">:</span> <span class="n">run</span><span class="p">}}}</span>

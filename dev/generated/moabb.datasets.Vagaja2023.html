@@ -47,7 +47,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=d694e5f0" />
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" />
     <link rel="stylesheet" type="text/css" href="../_static/css/macro-table.css?v=4c18d17a" />
@@ -71,7 +71,7 @@
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
-    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../_static/design-tabs.js?v=fcb327ea"></script>
     <script>
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){ dataLayer.push(arguments); }
@@ -1003,10 +1003,10 @@
 <h1>moabb.datasets.Vagaja2023<a class="headerlink" href="#moabb-datasets-vagaja2023" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="moabb.datasets.Vagaja2023">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">Vagaja2023</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_all_modalities</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/vagaja2023.py#L70-L315"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Vagaja2023" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">Vagaja2023</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_all_modalities</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/vagaja2023.py#L70-L325"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Vagaja2023" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDataset</span></code></a></p>
 <div class="ds-card" role="region" aria-label="Vagaja2023 dataset overview">
-  <a class="ds-card-source" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/vagaja2023.py#L70-L315" target="_blank" rel="noopener">[source]</a>
+  <a class="ds-card-source" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/vagaja2023.py#L70-L325" target="_blank" rel="noopener">[source]</a>
   <div class="ds-card-head">
     <p class="ds-card-kicker">Dataset Snapshot</p>
     <p class="ds-card-title">Vagaja2023</p>
@@ -1034,7 +1034,8 @@
   </div>
   <div class="ds-overview-teaser"><p class="ds-overview-title">Overview</p><p class="ds-overview-text">Motor-imagery EEG during embodiment-primed MI-BCI training in VR [R54146432f481-1]_.</p><p class="ds-overview-text"><strong>Dataset description</strong></p><p class="ds-overview-text">Twenty-six healthy volunteers (10 males, mean age 25.4 +/- 7.4; 16 females, mean age 23 +/- 3.2; all right-handed; three with prior BCI experience) performed cue-based left- vs right-hand motor imagery in an immersive virtual-reality environment (Oculus Rift CV1) during a single lab session of about 90-120 minutes (setup, 4 min resting state, 5 min embodiment induction/breaking, 15 min MI training). A between-subject design tested whether a virtual embodiment (virtual-hand-illusion) priming phase changes the subsequent motor-imagery training: participants were randomly assigned to an <code>Embodied</code> group (N=13, embodiment induced) or a <code>Control</code> group (N=13, embodiment broken). EEG was recorded with a 32-channel LiveAmp system (actiCAP active electrodes, Brain Products GmbH) at 500 Hz, together with bipolar EMG from both forearms, skin temperature (through the BIP2AUX adapter) and a 3-axis accelerometer.</p><div class="ds-overview-full"><p>Each recorded subject contributes three BrainVision runs -- a resting-state baseline, the embodiment (virtual-hand-illusion) phase and the MI training phase -- but only the <strong>MI</strong> run carries left-/right-hand class markers, so this loader exposes that run alone as a single MOABB session. Each trial is cue-locked: the class marker (S 7 left / S 8 right) starts the imagery period and the end-of-trial marker follows 10 s later (continuous feedback begins 1.25 s after the cue), so the exposed interval spans that 10 s window. Every subject provides 20 left-hand and 20 right-hand trials (40 in total).</p>
 <p>Subjects 3, 5-10, 12, 14-16, 29 and 31 are Embodied; 17-28 and 30 Control.</p>
-<p>By default only the 32 EEG channels are returned; pass <code>return_all_modalities=True</code> to also keep the EMG, temperature and accelerometer channels.</p></div><div class="ds-overview-actions"><button class="ds-overview-toggle" type="button" aria-expanded="false" aria-controls="ds-overview-vagaja2023" onclick="var el=this.closest('.ds-overview-teaser');el.classList.toggle('ds-expanded');var exp=el.classList.contains('ds-expanded');this.setAttribute('aria-expanded',exp?'true':'false');this.textContent=exp?'Show less ▴':'Show more ▾';">Show more ▾</button><a class="ds-overview-tab-link" href="#ds-overview-vagaja2023" onclick="event.preventDefault();var tab=document.querySelector('.ds-doc-tabs .sd-tab-label');if(tab){tab.click();}var target=document.getElementById('ds-overview-vagaja2023');if(target){target.scrollIntoView({behavior:'smooth',block:'start'});}">Open in Overview tab →</a></div></div>
+<p>By default only the 32 EEG channels are returned; pass <code>return_all_modalities=True</code> to also keep the EMG, temperature and accelerometer channels.</p>
+<p>The authors&#x27; paper on these recordings states &quot;Ground and reference electrodes were located at the central and forehead lobes, respectively&quot; (Vagaja et al., Front. Virtual Real., doi:10.3389/frvir.2023.1265010). The BrainVision headers list the Ref and Gnd impedances but not their sites, and the 32 channels are the actiCAP layout without FCz and Fpz. In subjects 3, 5 and 6 the 2-30 Hz variance is lowest at Fz, FC1, FC2 and Cz, around FCz, which fits an FCz reference and suggests the paper&#x27;s sentence swaps the two; reference and ground are left unset until this is confirmed.</p></div><div class="ds-overview-actions"><button class="ds-overview-toggle" type="button" aria-expanded="false" aria-controls="ds-overview-vagaja2023" onclick="var el=this.closest('.ds-overview-teaser');el.classList.toggle('ds-expanded');var exp=el.classList.contains('ds-expanded');this.setAttribute('aria-expanded',exp?'true':'false');this.textContent=exp?'Show less ▴':'Show more ▾';">Show more ▾</button><a class="ds-overview-tab-link" href="#ds-overview-vagaja2023" onclick="event.preventDefault();var tab=document.querySelector('.ds-doc-tabs .sd-tab-label');if(tab){tab.click();}var target=document.getElementById('ds-overview-vagaja2023');if(target){target.scrollIntoView({behavior:'smooth',block:'start'});}">Open in Overview tab →</a></div></div>
   <div id="ds-quickstart-vagaja2023" class="ds-quickstart" role="region" aria-labelledby="ds-quickstart-btn-vagaja2023" aria-hidden="true" hidden>
   <div class="ds-quickstart-code"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">Vagaja2023</span>
 
@@ -1150,8 +1151,8 @@ Channel Summary</div>
 </div>
 <p class="timeline-disclaimer">This diagram is automatically generated from MOABB metadata. Please consult the original publication to confirm the experimental protocol details.</p><div class="sd-tab-set ds-doc-tabs docutils">
 <input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
-<label class="sd-tab-label" for="sd-tab-item-0">
-Overview</label><div class="sd-tab-content docutils">
+<label aria-controls="sd-tab-item-0-content" class="sd-tab-label" for="sd-tab-item-0">
+Overview</label><div class="sd-tab-content docutils" id="sd-tab-item-0-content">
 <p id="ds-overview-vagaja2023">Motor-imagery EEG during embodiment-primed MI-BCI training in VR <a class="reference internal" href="#r54146432f481-1" id="id1"><span>[R54146432f481-1]</span></a>.</p>
 <p><strong>Dataset description</strong></p>
 <p>Twenty-six healthy volunteers (10 males, mean age 25.4 +/- 7.4; 16
@@ -1179,6 +1180,14 @@ subject provides 20 left-hand and 20 right-hand trials (40 in total).</p>
 <p>By default only the 32 EEG channels are returned; pass
 <code class="docutils literal notranslate"><span class="pre">return_all_modalities=True</span></code> to also keep the EMG, temperature and
 accelerometer channels.</p>
+<p>The authors’ paper on these recordings states “Ground and reference
+electrodes were located at the central and forehead lobes, respectively”
+(Vagaja et al., Front. Virtual Real., doi:10.3389/frvir.2023.1265010). The
+BrainVision headers list the Ref and Gnd impedances but not their sites,
+and the 32 channels are the actiCAP layout without FCz and Fpz. In subjects
+3, 5 and 6 the 2-30 Hz variance is lowest at Fz, FC1, FC2 and Cz, around
+FCz, which fits an FCz reference and suggests the paper’s sentence swaps
+the two; reference and ground are left unset until this is confirmed.</p>
 <p class="rubric">References</p>
 <div role="list" class="citation-list">
 <div class="citation" id="r54146432f481-1" role="doc-biblioentry">
@@ -1190,8 +1199,8 @@ DOI: <a class="reference external" href="https://doi.org/10.5281/zenodo.8086086"
 </div>
 </div>
 <input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
-<label class="sd-tab-label" for="sd-tab-item-1">
-Code Examples</label><div class="sd-tab-content docutils">
+<label aria-controls="sd-tab-item-1-content" class="sd-tab-label" for="sd-tab-item-1">
+Code Examples</label><div class="sd-tab-content docutils" id="sd-tab-item-1-content">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">Vagaja2023</span>
 <span class="n">dataset</span> <span class="o">=</span> <span class="n">Vagaja2023</span><span class="p">()</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">subjects</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
@@ -1200,8 +1209,8 @@ Code Examples</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input id="sd-tab-item-2" name="sd-tab-set-0" type="radio">
-<label class="sd-tab-label" for="sd-tab-item-2">
-Metadata</label><div class="sd-tab-content docutils">
+<label aria-controls="sd-tab-item-2-content" class="sd-tab-label" for="sd-tab-item-2">
+Metadata</label><div class="sd-tab-content docutils" id="sd-tab-item-2-content">
 <div class="admonition-dataset-summary admonition">
 <p class="admonition-title">Dataset summary</p>
 <div class="pst-scrollable-table-container"><table class="table">
@@ -1278,8 +1287,8 @@ Metadata</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input id="sd-tab-item-3" name="sd-tab-set-0" type="radio">
-<label class="sd-tab-label" for="sd-tab-item-3">
-Notes</label><div class="sd-tab-content docutils">
+<label aria-controls="sd-tab-item-3-content" class="sd-tab-label" for="sd-tab-item-3">
+Notes</label><div class="sd-tab-content docutils" id="sd-tab-item-3-content">
 <p class="rubric">Notes</p>
 <div class="versionadded">
 <p><span class="versionmodified added">Added in version 1.8.</span></p>
@@ -1288,7 +1297,7 @@ Notes</label><div class="sd-tab-content docutils">
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.Vagaja2023.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_all_modalities</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/vagaja2023.py#L240-L252"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Vagaja2023.__init__" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_all_modalities</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/vagaja2023.py#L250-L262"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Vagaja2023.__init__" title="Link to this definition">#</a></dt>
 <dd><p>Initialize function for the BaseDataset.</p>
 </dd></dl>
 
@@ -1351,7 +1360,7 @@ path.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.Vagaja2023.data_path">
-<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/vagaja2023.py#L254-L275"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Vagaja2023.data_path" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/vagaja2023.py#L264-L285"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Vagaja2023.data_path" title="Link to this definition">#</a></dt>
 <dd><p>Return <code class="docutils literal notranslate"><span class="pre">[subject_dir]</span></code>, downloading/extracting GROUPS.zip if needed.</p>
 </dd></dl>
 

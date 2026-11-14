@@ -47,7 +47,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=d694e5f0" />
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" />
     <link rel="stylesheet" type="text/css" href="../_static/css/macro-table.css?v=4c18d17a" />
@@ -71,7 +71,7 @@
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
-    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../_static/design-tabs.js?v=fcb327ea"></script>
     <script>
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){ dataLayer.push(arguments); }
@@ -1003,10 +1003,10 @@
 <h1>moabb.datasets.Wang2025<a class="headerlink" href="#moabb-datasets-wang2025" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="moabb.datasets.Wang2025">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">Wang2025</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/wang2025.py#L56-L286"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Wang2025" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">Wang2025</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/wang2025.py#L56-L289"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Wang2025" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDataset</span></code></a></p>
 <div class="ds-card" role="region" aria-label="Wang2025 dataset overview">
-  <a class="ds-card-source" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/wang2025.py#L56-L286" target="_blank" rel="noopener">[source]</a>
+  <a class="ds-card-source" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/wang2025.py#L56-L289" target="_blank" rel="noopener">[source]</a>
   <div class="ds-card-head">
     <p class="ds-card-kicker">Dataset Snapshot</p>
     <p class="ds-card-title">Wang2025</p>
@@ -1031,7 +1031,8 @@
       <a class="ds-btn" href="../dataset_summary.html#motor-imagery">Compare Similar</a>
       <a class="ds-btn" href="https://github.com/NeuroTechX/moabb/issues/new?title=%5BDataset%5D%20Issue%20with%20Wang2025&amp;body=%23%23%20Dataset%0A%0A-%20%2A%2ADataset%20ID%3A%2A%2A%20Wang2025%0A%0A%23%23%20Issue%20Description%0A%0APlease%20describe%20the%20issue%20you%20encountered%20with%20this%20dataset%3A%0A%0A%23%23%20Steps%20to%20Reproduce%0A%0A1.%20%0A2.%20%0A3.%20%0A%0A%23%23%20Expected%20Behavior%0A%0A%0A%23%23%20Additional%20Context%0A%0A&amp;labels=dataset" target="_blank" rel="noopener">Report Issue</a>
   </div>
-  <div class="ds-overview-teaser"><p class="ds-overview-title">Overview</p><p class="ds-overview-text">Four-class motor imagery dataset (ZJU-MI-EEG / MI4) [Rf62391e07d9a-1]_.</p><p class="ds-overview-text"><strong>Dataset description</strong></p><p class="ds-overview-text">15 healthy subjects performed cued four-class motor imagery (left hand, right hand, tongue, both feet) on two days, mapped to two sessions. Each day has a 240-trial calibration run and a 160-trial online feedback run (<code>MI4</code> subset of the <code>ZJU-MI-EEG</code> Hugging Face dataset; 62 channels, 256 Hz). In the paper [Rf62391e07d9a-1]_ each session consists of six calibration runs and four online feedback runs of 40 trials (10 per class); the release merges them into one calibration and one feedback file per day, which are the two runs exposed here. The paper reports a 62-channel g.USBamp amplifier (g.tec) sampled at 256 Hz and high-pass filtered above 0.1 Hz, whereas the release ships a <code>62channels_gNautilus.ced</code> montage file; the amplifier model is therefore recorded as reported by the paper. Feedback trials lasted up to 10 s online, but the release stores every trial as the -1 to 4 s window around the cue.</p><div class="ds-overview-full"><p>Each <code>.mat</code> run stores <code>EEG_data</code> <code>(62, 1280, n_trials)</code> in microvolts (-1 to 4 s around the cue) and integer <code>labels</code>. The loader concatenates the trials, marks each cue with a stim event and converts to volts; the interval ends at 4 - 1/256 s.</p></div><div class="ds-overview-actions"><button class="ds-overview-toggle" type="button" aria-expanded="false" aria-controls="ds-overview-wang2025" onclick="var el=this.closest('.ds-overview-teaser');el.classList.toggle('ds-expanded');var exp=el.classList.contains('ds-expanded');this.setAttribute('aria-expanded',exp?'true':'false');this.textContent=exp?'Show less ▴':'Show more ▾';">Show more ▾</button><a class="ds-overview-tab-link" href="#ds-overview-wang2025" onclick="event.preventDefault();var tab=document.querySelector('.ds-doc-tabs .sd-tab-label');if(tab){tab.click();}var target=document.getElementById('ds-overview-wang2025');if(target){target.scrollIntoView({behavior:'smooth',block:'start'});}">Open in Overview tab →</a></div></div>
+  <div class="ds-overview-teaser"><p class="ds-overview-title">Overview</p><p class="ds-overview-text">Four-class motor imagery dataset (ZJU-MI-EEG / MI4) [Rf62391e07d9a-1]_.</p><p class="ds-overview-text"><strong>Dataset description</strong></p><p class="ds-overview-text">15 healthy subjects performed cued four-class motor imagery (left hand, right hand, tongue, both feet) on two days, mapped to two sessions. Each day has a 240-trial calibration run and a 160-trial online feedback run (<code>MI4</code> subset of the <code>ZJU-MI-EEG</code> Hugging Face dataset; 62 channels, 256 Hz). In the paper [Rf62391e07d9a-1]_ each session consists of six calibration runs and four online feedback runs of 40 trials (10 per class); the release merges them into one calibration and one feedback file per day, which are the two runs exposed here. The paper reports a 62-channel g.USBamp amplifier (g.tec) sampled at 256 Hz and high-pass filtered above 0.1 Hz, whereas the release ships a <code>62channels_gNautilus.ced</code> montage file; the amplifier model is therefore recorded as reported by the paper. Feedback trials lasted up to 10 s online, but the release stores every trial as the -1 to 4 s window around the cue.</p><div class="ds-overview-full"><p>Each <code>.mat</code> run stores <code>EEG_data</code> <code>(62, 1280, n_trials)</code> in microvolts (-1 to 4 s around the cue) and integer <code>labels</code>. The loader concatenates the trials, marks each cue with a stim event and converts to volts; the interval ends at 4 - 1/256 s.</p>
+<p>The dataset card states no reference or ground electrode, and the released files carry no channel labels.</p></div><div class="ds-overview-actions"><button class="ds-overview-toggle" type="button" aria-expanded="false" aria-controls="ds-overview-wang2025" onclick="var el=this.closest('.ds-overview-teaser');el.classList.toggle('ds-expanded');var exp=el.classList.contains('ds-expanded');this.setAttribute('aria-expanded',exp?'true':'false');this.textContent=exp?'Show less ▴':'Show more ▾';">Show more ▾</button><a class="ds-overview-tab-link" href="#ds-overview-wang2025" onclick="event.preventDefault();var tab=document.querySelector('.ds-doc-tabs .sd-tab-label');if(tab){tab.click();}var target=document.getElementById('ds-overview-wang2025');if(target){target.scrollIntoView({behavior:'smooth',block:'start'});}">Open in Overview tab →</a></div></div>
   <div id="ds-quickstart-wang2025" class="ds-quickstart" role="region" aria-labelledby="ds-quickstart-btn-wang2025" aria-hidden="true" hidden>
   <div class="ds-quickstart-code"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">Wang2025</span>
 
@@ -1158,8 +1159,8 @@ Channel Summary</div>
 </div>
 <p class="timeline-disclaimer">This diagram is automatically generated from MOABB metadata. Please consult the original publication to confirm the experimental protocol details.</p><div class="sd-tab-set ds-doc-tabs docutils">
 <input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
-<label class="sd-tab-label" for="sd-tab-item-0">
-Overview</label><div class="sd-tab-content docutils">
+<label aria-controls="sd-tab-item-0-content" class="sd-tab-label" for="sd-tab-item-0">
+Overview</label><div class="sd-tab-content docutils" id="sd-tab-item-0-content">
 <p id="ds-overview-wang2025">Four-class motor imagery dataset (ZJU-MI-EEG / MI4) <a class="reference internal" href="#rf62391e07d9a-1" id="id1"><span>[Rf62391e07d9a-1]</span></a>.</p>
 <p><strong>Dataset description</strong></p>
 <p>15 healthy subjects performed cued four-class motor imagery (left hand, right
@@ -1178,6 +1179,8 @@ but the release stores every trial as the -1 to 4 s window around the cue.</p>
 (-1 to 4 s around the cue) and integer <code class="docutils literal notranslate"><span class="pre">labels</span></code>. The loader concatenates the
 trials, marks each cue with a stim event and converts to volts; the interval
 ends at 4 - 1/256 s.</p>
+<p>The dataset card states no reference or ground electrode, and the released
+files carry no channel labels.</p>
 <p class="rubric">References</p>
 <div role="list" class="citation-list">
 <div class="citation" id="rf62391e07d9a-1" role="doc-biblioentry">
@@ -1191,8 +1194,8 @@ DOI: 10.1109/TNSRE.2025.3591254</p>
 </div>
 </div>
 <input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
-<label class="sd-tab-label" for="sd-tab-item-1">
-Code Examples</label><div class="sd-tab-content docutils">
+<label aria-controls="sd-tab-item-1-content" class="sd-tab-label" for="sd-tab-item-1">
+Code Examples</label><div class="sd-tab-content docutils" id="sd-tab-item-1-content">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">Wang2025</span>
 <span class="n">dataset</span> <span class="o">=</span> <span class="n">Wang2025</span><span class="p">()</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">subjects</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
@@ -1201,8 +1204,8 @@ Code Examples</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input id="sd-tab-item-2" name="sd-tab-set-0" type="radio">
-<label class="sd-tab-label" for="sd-tab-item-2">
-Metadata</label><div class="sd-tab-content docutils">
+<label aria-controls="sd-tab-item-2-content" class="sd-tab-label" for="sd-tab-item-2">
+Metadata</label><div class="sd-tab-content docutils" id="sd-tab-item-2-content">
 <div class="admonition-dataset-summary admonition">
 <p class="admonition-title">Dataset summary</p>
 <div class="pst-scrollable-table-container"><table class="table">
@@ -1278,8 +1281,8 @@ Metadata</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input id="sd-tab-item-3" name="sd-tab-set-0" type="radio">
-<label class="sd-tab-label" for="sd-tab-item-3">
-Notes</label><div class="sd-tab-content docutils">
+<label aria-controls="sd-tab-item-3-content" class="sd-tab-label" for="sd-tab-item-3">
+Notes</label><div class="sd-tab-content docutils" id="sd-tab-item-3-content">
 <p class="rubric">Notes</p>
 <div class="versionadded">
 <p><span class="versionmodified added">Added in version 1.8.</span></p>
@@ -1288,7 +1291,7 @@ Notes</label><div class="sd-tab-content docutils">
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.Wang2025.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/wang2025.py#L215-L226"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Wang2025.__init__" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/wang2025.py#L218-L229"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Wang2025.__init__" title="Link to this definition">#</a></dt>
 <dd><p>Initialize function for the BaseDataset.</p>
 </dd></dl>
 
@@ -1351,7 +1354,7 @@ path.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.Wang2025.data_path">
-<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/wang2025.py#L228-L240"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Wang2025.data_path" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/wang2025.py#L231-L243"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Wang2025.data_path" title="Link to this definition">#</a></dt>
 <dd><p>Return <code class="docutils literal notranslate"><span class="pre">[s1_calibration,</span> <span class="pre">s1_feedback,</span> <span class="pre">s2_calibration,</span> <span class="pre">s2_feedback]</span></code>.</p>
 </dd></dl>
 

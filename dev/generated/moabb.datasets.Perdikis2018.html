@@ -47,7 +47,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=d694e5f0" />
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" />
     <link rel="stylesheet" type="text/css" href="../_static/css/macro-table.css?v=4c18d17a" />
@@ -71,7 +71,7 @@
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
-    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../_static/design-tabs.js?v=fcb327ea"></script>
     <script>
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){ dataLayer.push(arguments); }
@@ -1003,10 +1003,10 @@
 <h1>moabb.datasets.Perdikis2018<a class="headerlink" href="#moabb-datasets-perdikis2018" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="moabb.datasets.Perdikis2018">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">Perdikis2018</span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/perdikis2018.py#L54-L321"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Perdikis2018" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">Perdikis2018</span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/perdikis2018.py#L54-L324"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Perdikis2018" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDataset</span></code></a></p>
 <div class="ds-card" role="region" aria-label="Perdikis2018 dataset overview">
-  <a class="ds-card-source" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/perdikis2018.py#L54-L321" target="_blank" rel="noopener">[source]</a>
+  <a class="ds-card-source" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/perdikis2018.py#L54-L324" target="_blank" rel="noopener">[source]</a>
   <div class="ds-card-head">
     <p class="ds-card-kicker">Dataset Snapshot</p>
     <p class="ds-card-title">Perdikis2018</p>
@@ -1032,7 +1032,7 @@
       <a class="ds-btn" href="../dataset_summary.html#motor-imagery">Compare Similar</a>
       <a class="ds-btn" href="https://github.com/NeuroTechX/moabb/issues/new?title=%5BDataset%5D%20Issue%20with%20Perdikis2018&amp;body=%23%23%20Dataset%0A%0A-%20%2A%2ADataset%20ID%3A%2A%2A%20Perdikis2018%0A%0A%23%23%20Issue%20Description%0A%0APlease%20describe%20the%20issue%20you%20encountered%20with%20this%20dataset%3A%0A%0A%23%23%20Steps%20to%20Reproduce%0A%0A1.%20%0A2.%20%0A3.%20%0A%0A%23%23%20Expected%20Behavior%0A%0A%0A%23%23%20Additional%20Context%0A%0A&amp;labels=dataset" target="_blank" rel="noopener">Report Issue</a>
   </div>
-  <div class="ds-overview-teaser"><p class="ds-overview-title">Overview</p><p class="ds-overview-text">CNBI EPFL Cybathlon BCI-race motor-imagery dataset [R562e6499171c-1]_.</p><p class="ds-overview-text"><strong>Dataset description</strong></p><p class="ds-overview-text">BCI training and competition data of the two tetraplegic pilots (<code>MA25VE</code>, <code>AN14VE</code>) of team Brain Tweakers (CNBI, EPFL) in the BCI race of the first Cybathlon (2016) [R562e6499171c-1]_; 16 sensorimotor electrodes (g.USBamp, 512 Hz, GDF).</p><p class="ds-overview-text">Only the <strong>offline calibration runs</strong> of the both-hands / both-feet / rest family are exposed. Runs are selected by their data-borne cue codes, not by file name (taskset names are spelled inconsistently, e.g. <code>mi_bhbfrst</code> vs <code>mi_bhbfrest</code>): a run is kept when its cues lie within <code>{771, 773, 783}</code> and include at least two of them. Runs with single-limb or tongue cues (e.g. <code>mi_rlsf</code>) and the <code>incomplete</code> / <code>corrupted</code> folders are skipped. Events are the class cues (after a ~3 s fixation, code 786), followed by ~4 s of feedback (781); the interval is 1-5 s after the cue. The GDF header only has generic <code>eeg:&lt;n&gt;</code> labels, so channels are renamed positionally, and the microvolt payload (unscaled by MNE) is converted to volts.</p><div class="ds-overview-actions"><a class="ds-overview-tab-link" href="#ds-overview-perdikis2018" onclick="event.preventDefault();var tab=document.querySelector('.ds-doc-tabs .sd-tab-label');if(tab){tab.click();}var target=document.getElementById('ds-overview-perdikis2018');if(target){target.scrollIntoView({behavior:'smooth',block:'start'});}">Open in Overview tab →</a></div></div>
+  <div class="ds-overview-teaser"><p class="ds-overview-title">Overview</p><p class="ds-overview-text">CNBI EPFL Cybathlon BCI-race motor-imagery dataset [R562e6499171c-1]_.</p><p class="ds-overview-text"><strong>Dataset description</strong></p><p class="ds-overview-text">BCI training and competition data of the two tetraplegic pilots (<code>MA25VE</code>, <code>AN14VE</code>) of team Brain Tweakers (CNBI, EPFL) in the BCI race of the first Cybathlon (2016) [R562e6499171c-1]_; 16 sensorimotor electrodes (g.USBamp, 512 Hz, GDF).</p><p class="ds-overview-text">Only the <strong>offline calibration runs</strong> of the both-hands / both-feet / rest family are exposed. Runs are selected by their data-borne cue codes, not by file name (taskset names are spelled inconsistently, e.g. <code>mi_bhbfrst</code> vs <code>mi_bhbfrest</code>): a run is kept when its cues lie within <code>{771, 773, 783}</code> and include at least two of them. Runs with single-limb or tongue cues (e.g. <code>mi_rlsf</code>) and the <code>incomplete</code> / <code>corrupted</code> folders are skipped. Events are the class cues (after a ~3 s fixation, code 786), followed by ~4 s of feedback (781); the interval is 1-5 s after the cue. The GDF header only has generic <code>eeg:&lt;n&gt;</code> labels, so channels are renamed positionally, and the microvolt payload (unscaled by MNE) is converted to volts.</p><div class="ds-overview-full"><p>Neither the paper nor the Zenodo record states the reference or ground electrode; the paper&#x27;s Laplacian derivation was applied online only.</p></div><div class="ds-overview-actions"><button class="ds-overview-toggle" type="button" aria-expanded="false" aria-controls="ds-overview-perdikis2018" onclick="var el=this.closest('.ds-overview-teaser');el.classList.toggle('ds-expanded');var exp=el.classList.contains('ds-expanded');this.setAttribute('aria-expanded',exp?'true':'false');this.textContent=exp?'Show less ▴':'Show more ▾';">Show more ▾</button><a class="ds-overview-tab-link" href="#ds-overview-perdikis2018" onclick="event.preventDefault();var tab=document.querySelector('.ds-doc-tabs .sd-tab-label');if(tab){tab.click();}var target=document.getElementById('ds-overview-perdikis2018');if(target){target.scrollIntoView({behavior:'smooth',block:'start'});}">Open in Overview tab →</a></div></div>
   <div id="ds-quickstart-perdikis2018" class="ds-quickstart" role="region" aria-labelledby="ds-quickstart-btn-perdikis2018" aria-hidden="true" hidden>
   <div class="ds-quickstart-code"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">Perdikis2018</span>
 
@@ -1139,8 +1139,8 @@ Channel Summary</div>
 </div>
 <p class="timeline-disclaimer">This diagram is automatically generated from MOABB metadata. Please consult the original publication to confirm the experimental protocol details.</p><div class="sd-tab-set ds-doc-tabs docutils">
 <input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
-<label class="sd-tab-label" for="sd-tab-item-0">
-Overview</label><div class="sd-tab-content docutils">
+<label aria-controls="sd-tab-item-0-content" class="sd-tab-label" for="sd-tab-item-0">
+Overview</label><div class="sd-tab-content docutils" id="sd-tab-item-0-content">
 <p id="ds-overview-perdikis2018">CNBI EPFL Cybathlon BCI-race motor-imagery dataset <a class="reference internal" href="#r562e6499171c-1" id="id1"><span>[R562e6499171c-1]</span></a>.</p>
 <p><strong>Dataset description</strong></p>
 <p>BCI training and competition data of the two tetraplegic pilots (<code class="docutils literal notranslate"><span class="pre">MA25VE</span></code>,
@@ -1163,6 +1163,8 @@ continuous-control (BrainRunners game) recordings and are intentionally
 not exposed by this loader, which serves only the cue-based offline
 calibration runs with discrete, data-borne class labels.</p>
 </div>
+<p>Neither the paper nor the Zenodo record states the reference or ground
+electrode; the paper’s Laplacian derivation was applied online only.</p>
 <p class="rubric">References</p>
 <div role="list" class="citation-list">
 <div class="citation" id="r562e6499171c-1" role="doc-biblioentry">
@@ -1177,8 +1179,8 @@ Data: <a class="reference external" href="https://doi.org/10.5281/zenodo.841764"
 </div>
 </div>
 <input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
-<label class="sd-tab-label" for="sd-tab-item-1">
-Code Examples</label><div class="sd-tab-content docutils">
+<label aria-controls="sd-tab-item-1-content" class="sd-tab-label" for="sd-tab-item-1">
+Code Examples</label><div class="sd-tab-content docutils" id="sd-tab-item-1-content">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">Perdikis2018</span>
 <span class="n">dataset</span> <span class="o">=</span> <span class="n">Perdikis2018</span><span class="p">()</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">subjects</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
@@ -1187,8 +1189,8 @@ Code Examples</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input id="sd-tab-item-2" name="sd-tab-set-0" type="radio">
-<label class="sd-tab-label" for="sd-tab-item-2">
-Metadata</label><div class="sd-tab-content docutils">
+<label aria-controls="sd-tab-item-2-content" class="sd-tab-label" for="sd-tab-item-2">
+Metadata</label><div class="sd-tab-content docutils" id="sd-tab-item-2-content">
 <div class="admonition-dataset-summary admonition">
 <p class="admonition-title">Dataset summary</p>
 <div class="pst-scrollable-table-container"><table class="table">
@@ -1266,8 +1268,8 @@ Metadata</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input id="sd-tab-item-3" name="sd-tab-set-0" type="radio">
-<label class="sd-tab-label" for="sd-tab-item-3">
-Notes</label><div class="sd-tab-content docutils">
+<label aria-controls="sd-tab-item-3-content" class="sd-tab-label" for="sd-tab-item-3">
+Notes</label><div class="sd-tab-content docutils" id="sd-tab-item-3-content">
 <p class="rubric">Notes</p>
 <div class="versionadded">
 <p><span class="versionmodified added">Added in version 1.8.</span></p>
@@ -1276,7 +1278,7 @@ Notes</label><div class="sd-tab-content docutils">
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.Perdikis2018.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/perdikis2018.py#L214-L223"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Perdikis2018.__init__" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/perdikis2018.py#L217-L226"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Perdikis2018.__init__" title="Link to this definition">#</a></dt>
 <dd><p>Initialize function for the BaseDataset.</p>
 </dd></dl>
 
@@ -1339,7 +1341,7 @@ path.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.Perdikis2018.data_path">
-<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/perdikis2018.py#L225-L251"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Perdikis2018.data_path" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/perdikis2018.py#L228-L254"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Perdikis2018.data_path" title="Link to this definition">#</a></dt>
 <dd><p>Download/extract the pilot’s archive; return <code class="docutils literal notranslate"><span class="pre">[pilot_folder]</span></code>.</p>
 </dd></dl>
 

@@ -49,7 +49,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=d694e5f0" />
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/macro-table.css?v=4c18d17a" />
@@ -73,7 +73,7 @@
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
-    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="../../_static/design-tabs.js?v=fcb327ea"></script>
     <script>
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){ dataLayer.push(arguments); }
@@ -775,12 +775,13 @@ be overwritten if necessary.</p>
 </span><span class="w">
 </span><span class="nb">print</span><span class="p">(</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-method reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.head.html#pandas.DataFrame.head" title="pandas.DataFrame.head"><span class="n">results</span><span class="o">.</span><span class="n">head</span></a><span class="p">(</span><span class="p">)</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>      score      time  ... pipeline                  codecarbon_task_name
-0  0.880952  0.012212  ...  CSP+LDA  aec509aa-a25e-41d9-886f-3fbc42d1f000
-1  0.871429  0.019870  ...  CSP+LDA  73992a57-a457-4bf5-8c1e-038feb9eff7e
-2  0.995238  0.048380  ...  CSP+LDA  a31c718a-adfe-4ef7-9b7a-b3b1d1c4a11e
-3  0.990476  0.076750  ...  CSP+LDA  765aa18e-10cf-41e1-b731-36b090dc8dfa
-4  0.823810  0.012596  ...  CSP+LDA  97d5dff6-a245-417c-95d6-7c558d2fd0c9
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[codecarbon WARNING @ 22:24:37] Multiple instances of codecarbon are allowed to run at the same time.
+      score      time  ... pipeline                  codecarbon_task_name
+0  0.866667  0.039370  ...  CSP+LDA  956b9ee6-9784-437e-96c4-967ae61c914d
+1  0.909524  0.026620  ...  CSP+LDA  7c89ec54-e87c-4267-b05c-d821d42fad6f
+2  0.895238  0.067675  ...  CSP+LDA  0965feb5-a320-42fc-8d5d-574338d26c5e
+3  0.947619  0.112322  ...  CSP+LDA  35347b02-64b6-4cde-9537-fd4b76d4f7df
+4  0.852381  0.017531  ...  CSP+LDA  bb152cdb-60f1-4e46-b03c-0bc558a918ba
 
 [5 rows x 15 columns]
 </pre></div>
@@ -809,7 +810,7 @@ each pipeline</p>
 </span><a class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.tight_layout.html#matplotlib.figure.Figure.tight_layout" title="matplotlib.figure.Figure.tight_layout"><span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span></a><span class="p">(</span><span class="p">)</span><span class="w">
 </span><a class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">(</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../../_images/sphx_glr_plot_learning_curve_motor_imagery_001.png" srcset="../../_images/sphx_glr_plot_learning_curve_motor_imagery_001.png" alt="Errorbar shows Mean-CI across permutations" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 26.600 seconds)</p>
+<img src="../../_images/sphx_glr_plot_learning_curve_motor_imagery_001.png" srcset="../../_images/sphx_glr_plot_learning_curve_motor_imagery_001.png" alt="Errorbar shows Mean-CI across permutations" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 16.613 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-learning-curve-plot-learning-curve-motor-imagery-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/5b1f506cd53838de0dd70e569a36f198/plot_learning_curve_motor_imagery.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_learning_curve_motor_imagery.ipynb</span></code></a></p>
