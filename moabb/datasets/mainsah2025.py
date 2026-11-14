@@ -129,6 +129,8 @@ _STUDY_CONFIGS = {
         "grid": "9x8",
         "has_als": True,
         "associated_paper_doi": "10.1088/1741-2560/12/1/016013",
+        "reference": "right mastoid",
+        "ground": "left mastoid",
     },
     "G": {
         "subjects": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
@@ -153,6 +155,8 @@ _STUDY_CONFIGS = {
         "grid": "9x8",
         "has_als": False,
         "associated_paper_doi": "10.1088/1741-2552/aa7525",
+        "reference": "right mastoid",
+        "ground": "left mastoid",
     },
     "J": {
         "subjects": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
@@ -161,6 +165,8 @@ _STUDY_CONFIGS = {
         "grid": "6x6",
         "has_als": False,
         "associated_paper_doi": "10.1088/1741-2552/aa7525",
+        "reference": "right mastoid",
+        "ground": "left mastoid",
     },
     "K": {
         "subjects": [1, 2, 3, 4, 9],
@@ -362,6 +368,12 @@ class Mainsah2025(BaseDataset):
     file (e.g. 256.00008 and 256.00009 Hz). The loader relabels such runs at
     exactly 256 Hz (no resampling), so epochs of all runs and subjects can be
     concatenated.
+
+    The PhysioNet record names no reference or ground electrode. The study F
+    paper states "The left and right mastoids were used for ground and
+    reference electrodes, respectively", and the paper for studies I and J says
+    the same, so those three studies record a right mastoid reference and a
+    left mastoid ground; the other studies leave both unset.
 
     This base class is not intended to be instantiated directly.
     Use the study-specific subclasses (e.g., ``Mainsah2025_A``).
@@ -622,6 +634,8 @@ def _make_study_metadata(study):
             sampling_rate=_SFREQ,
             channel_types={"eeg": config["n_eeg"]},
             hardware="g.USBamp (g.tec)",
+            reference=config.get("reference"),
+            ground=config.get("ground"),
             software="BCI2000",
             sensor_type="passive gel-based or active dry",
             montage="standard_1020",

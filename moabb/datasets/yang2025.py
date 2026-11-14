@@ -89,6 +89,12 @@ class Yang2025(BaseDataset):
     The raw data is in Neuracle BDF format organized in an EEG-BIDS
     structure, hosted on Figshare (65.6 GB single ZIP file, CC-BY 4.0).
 
+    The paper's Fig. 3(b) marks the reference electrode at CPz and the ground
+    at AFz ("the gray dot represents ground electrodes, while the green one
+    represents reference electrodes" [1]_); neither is among the 59 EEG
+    channels of the BDF files. The paper's own analyses re-reference to Pz,
+    but the released raw files are not re-referenced.
+
     .. note::
 
        Neuracle BDF files store trial events in a separate ``evt.bdf``
@@ -118,6 +124,8 @@ class Yang2025(BaseDataset):
             channel_types={"eeg": 59, "ecg": 1, "eog": 4},
             montage="10-20",
             hardware="Neuracle NeuSen W",
+            reference="CPz",
+            ground="AFz",
             sensor_type="Ag/AgCl",
             impedance_threshold_kohm=5.0,
             filters={},

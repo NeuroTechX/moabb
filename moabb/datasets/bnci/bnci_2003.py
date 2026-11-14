@@ -147,6 +147,9 @@ class BNCI2003_004(MNEBNCI):
     both types were recorded, while from the other subjects 3 sessions
     of type (2) and 1 session of type (1) were recorded.
 
+    Neither the competition description nor Dornhege et al. (2004) states the
+    reference or ground electrode.
+
     References
     ----------
     .. [1] Guido Dornhege, Benjamin Blankertz, Gabriel Curio, and Klaus-Robert
@@ -176,6 +179,7 @@ class BNCI2003_004(MNEBNCI):
             montage="standard_1005",
             hardware="BrainAmp",
             reference=None,
+            ground=None,
             filters={"bandpass": [0.05, 200]},
             sensors=[
                 "AF3",

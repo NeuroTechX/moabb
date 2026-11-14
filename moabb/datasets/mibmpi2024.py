@@ -99,7 +99,7 @@ class MIBMPI2024(BaseDataset):
             cap_model="EPOC Flex",
             sensor_type="saline",
             electrode_type="passive",
-            reference="average (channel mean subtracted); CMS/DRL at P9/P10",
+            reference="CMS/DRL (P9/P10)",
             ground="DRL (P10)",
             software="Emotiv Pro 2.5.1.227",
             filters=(

@@ -287,6 +287,12 @@ class Kodera2023(BaseDataset):
         channels at 500 Hz; ``"9ch"`` the 15 subjects of the 2021-2023 setup
         at 1000 Hz.
 
+    The Zenodo record states no reference or ground electrode. A 2024 paper
+    that uses this dataset (Titkanlou, Monjezi and Moucek, HEALTHINF 2024,
+    citing its Zenodo DOI) says "a reference electrode of the EEG cap was
+    attached to the earlobe" for the 9-channel setup, without naming the side,
+    so reference and ground are left unset.
+
     References
     ----------
 

@@ -123,6 +123,12 @@ class Stieger2021(BaseDataset):
     the normalized control signals were used to update the position of
     the cursor every 40 ms.
 
+    The paper states no reference or ground. The MAT files' electrode positions
+    (``BCI.chaninfo.electrodes``) list a 63rd electrode, ``REF.``, that is not
+    among the data channels; in subject 1, session 1 it sits midway between Cz
+    and CPz (52% of the way from Cz, 4 mm off that line), the reference
+    position the same lab states for Forenzo2023.
+
     References
     ----------
 
@@ -145,7 +151,7 @@ class Stieger2021(BaseDataset):
             montage="10-10",
             hardware="Neuroscan SynAmps RT amplifiers",
             sensor_type="EEG",
-            reference=None,
+            reference="between Cz and CPz",
             software="Neuroscan acquisition software and BCI2000",
             filters="0.1 to 200 Hz with 60 Hz notch filter",
             sensors=[

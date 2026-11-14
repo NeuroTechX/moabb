@@ -148,6 +148,11 @@ class Gueho2026(BaseDataset):
     stim : str, optional
         Stimulus type ('Sinus', 'BrownNoise', 'Cat', 'Cicada'). Default is 'Sinus'.
 
+    The record states no reference or ground. For its standard cap layout
+    mBrainTrain gives "the reference electrode is located at the FCz location,
+    and ground electrode at the Fpz" (mBrainTrain support, Ref/Gnd locations),
+    and neither FCz nor Fpz is among the 24 recorded channels.
+
     References
     ----------
     .. [1] L. Guého, L. Bougrain, C. Plapous, P. Hénaff and R. Nicol, "An enhanced experimental paradigm for auditory BCIs by addressing both acoustic and human factors," 2026 14th International Conference on Brain-Computer Interface (BCI), Gangwon Province, Korea, Republic of, 2026, pp. 1-7, doi: 10.1109/BCI69045.2026.11435072.
@@ -158,6 +163,8 @@ class Gueho2026(BaseDataset):
             sampling_rate=500,
             channel_types={"eeg": 24, "misc": 3},
             hardware="mBrainTrain 24-channel headset with Smarting module",
+            reference="FCz",
+            ground="Fpz",
             sensor_type="EEG",
             electrode_material="Ag/AgCl",
             electrode_type="Wet - Passive",

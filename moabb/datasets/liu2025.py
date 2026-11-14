@@ -92,6 +92,14 @@ class Liu2025(BaseDataset):
         Which sessions to load. One or more of ``"pre"``, ``"mises"``,
         ``"miies"``, ``"post"``, ``"follow"``. Default: ``"pre"`` only.
 
+    The authors' BIDS sidecar gives ``"EEGGround": "AFz"`` and
+    ``"EEGReference": "average"``, but it describes their 250 Hz preprocessed
+    release, which the paper re-references to the common average. The Zenodo
+    re-host of the 1000 Hz raw files repeats "Common average", while the
+    authors' ``electrodes.tsv`` lists CPz last, after the 59 standard sites,
+    which is how an online CPz reference looks once restored. The raw files'
+    reference is therefore left unset.
+
     References
     ----------
     .. [1] Liu, Y., Gui, Z., Yan, D., Wang, Z., Gao, R., Han, N.,
@@ -108,6 +116,8 @@ class Liu2025(BaseDataset):
             channel_types={"eeg": 59, "ecg": 1, "eog": 4},
             montage="standard_1020",
             hardware="NeuSen W (Neuracle, Inc.)",
+            reference=None,
+            ground="AFz",
             sensor_type="Ag/AgCl",
             impedance_threshold_kohm=10.0,
             filters={"notch": 50.0},

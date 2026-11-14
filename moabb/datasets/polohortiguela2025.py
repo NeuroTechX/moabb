@@ -62,12 +62,22 @@ class PoloHortiguela2025(BaseDataset):
     variants, and converts EEG/EOG from microvolts to volts. Signals were
     recorded at 250 Hz with 28 EEG, 4 EOG and 3 inertial channels.
 
+    The Zenodo record names no amplifier, reference or ground. The same
+    authors' paper on six participants with this protocol and montage [2]_
+    records with a g.Nautilus PRO Flexible and states "The AFZ electrode
+    serves as the common ground (GND) and the reference electrode is placed on
+    the subject's right earlobe."
+
     References
     ----------
 
     .. [1] Polo-Hortiguela, C., Ortiz, M., Ianez, E., & Azorin, J. M. (2025).
        EEG Signal Dataset During Dorsiflexion and Plantar Flexion Movements.
        Zenodo. https://doi.org/10.5281/zenodo.14672334
+    .. [2] Polo-Hortiguela, C., Ortiz, M., Ianez, E., & Azorin, J. M. (2025).
+       Time-Frequency Analysis of Motor Imagery During Plantar and Dorsal
+       Flexion Movements Using a Low-Cost Ankle Exoskeleton. Sensors, 25(10),
+       2987. https://doi.org/10.3390/s25102987
 
     Notes
     -----
@@ -84,8 +94,9 @@ class PoloHortiguela2025(BaseDataset):
             sampling_rate=SFREQ,
             channel_types={"eeg": 28, "eog": 4, "misc": 3},
             montage="standard_1005",
-            reference=None,
-            ground=None,
+            hardware="g.Nautilus PRO Flexible (g.tec)",
+            reference="right earlobe",
+            ground="AFz",
             sensors=EEG_CHANNELS,
             line_freq=50.0,
             auxiliary_channels=AuxiliaryChannelsMetadata(
@@ -113,6 +124,7 @@ class PoloHortiguela2025(BaseDataset):
         documentation=DocumentationMetadata(
             senior_author="Jose M. Azorin",
             doi="10.5281/zenodo.14672334",
+            related_paper_dois=["10.3390/s25102987"],
             description="Open-loop EEG dataset of lower-limb (ankle dorsiflexion/plantarflexion) kinesthetic motor imagery versus relaxation from six healthy participants, recorded with a static and a motion exoskeleton model.",
             investigators=[
                 "Cristina Polo-Hortiguela",

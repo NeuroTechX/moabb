@@ -62,6 +62,10 @@ class NeuroTUMBCI2025(BaseDataset):
     (``feet``), P2 rest / left hand / right hand. Epochs start at the
     black-screen marker; the separate calibration recordings are not loaded.
 
+    Neither the Zenodo record nor the paper states the reference or ground
+    electrode; the paper's common average reference belongs to its analysis,
+    not to the released recordings.
+
     References
     ----------
     .. [1] neuroTUM e.V. (2025). neuroTUM-BCI: Cybathlon Dataset. Zenodo.

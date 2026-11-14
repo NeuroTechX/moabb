@@ -109,6 +109,8 @@ class WRCC2023_MI_A(_WRCC2023):
     and include DC offsets removed by the paradigm band-pass filter. It shares
     hardware and paradigm with, but is distinct from, :class:`Yang2025`.
 
+    The Dataverse record states no reference or ground electrode.
+
     References
     ----------
 
@@ -238,6 +240,8 @@ class WRCC2023_MI_B(_WRCC2023):
     subject file holds 90 interleaved trials (30 per class) of 59-channel EEG,
     4000 samples each, stored in volts (DC-coupled).
 
+    The Dataverse record states no reference or ground electrode.
+
     References
     ----------
 
@@ -364,6 +368,8 @@ class WRCC2023_MI_C(_WRCC2023):
     the "MI-C" dataset of the 2023 World Robot Contest BCI competition [1]_. Each
     subject provides 90 randomised trials (30 per class) of 59 EEG channels,
     stored as raw DC-coupled 4 s windows in volts at 1000 Hz.
+
+    The Dataverse record states no reference or ground electrode.
 
     References
     ----------

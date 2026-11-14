@@ -130,6 +130,13 @@ class Beetl2021_A(BaseDataset):
     phase : str
         Either "leaderboard" or "final"
 
+    No source states the reference for these recordings. The group made them
+    "with the same hardware set up" as its Cybathlon 2016 work (Wei, Ortega and
+    Faisal, 2021, arXiv:2103.05351), which recorded "(reference 'Fpz')" on a
+    BrainVision actiCHamp (Ortega, Colas and Faisal, 2018, arXiv:1807.11752),
+    and Fpz is not among the 63 channels. The actiCHamp reference is chosen in
+    software, so it is left unset.
+
     References
     ----------
     .. [1] Wei, X., Faisal, A. A., Grosse-Wentrup, M., Gramfort, A.,
@@ -212,6 +219,8 @@ class Beetl2021_A(BaseDataset):
                 "AF8",
             ],
             montage="standard_1005",
+            reference=None,
+            ground=None,
             sensor_type="EEG",
             filters="1-100 Hz bandpass, 50 Hz notch",
             line_freq=50.0,
@@ -640,6 +649,9 @@ class Beetl2021_B(BaseDataset):
     The data was filtered using a highpass filter with a cutoff frequency of 1 Hz and a
     lowpass filter with a cutoff frequency of 100 Hz.
 
+    The 32 channels are taken from the Weibo2014 recordings [1]_, which were
+    "referenced to nose and grounded prefrontal lobe" (Yi et al., 2014).
+
     Motor imagery tasks in the training runs:
     - Left hand (label 0)
     - Right hand (label 1)
@@ -715,6 +727,8 @@ class Beetl2021_B(BaseDataset):
             filters="Bandpass filter (1-100 Hz)",
             line_freq=50.0,
             montage="standard_1005",
+            reference="nose",
+            ground="prefrontal lobe",
         ),
         participants=ParticipantMetadata(
             n_subjects=2,  # Beetl2021_B has subjects 3-5 in leaderboard, 4-5 in final (default=final)
