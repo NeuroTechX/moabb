@@ -1147,8 +1147,7 @@ class TestValidateMetadataAgainstDataset:
             experiment=ExperimentMetadata(paradigm="imagery"),
             sessions_per_subject=sessions,
             data_structure=DataStructureMetadata(
-                n_trials=n_trials,
-                n_trials_per_class=n_trials_per_class,
+                n_trials=n_trials, n_trials_per_class=n_trials_per_class
             ),
         )
 
@@ -1158,10 +1157,7 @@ class TestValidateMetadataAgainstDataset:
             n_sessions=sessions,
             subject_list=list(range(1, n_subjects + 1)),
             paradigm="imagery",
-            _summary_table={
-                "#Trials / class": trials_per_class,
-                "#Classes": n_classes,
-            },
+            _summary_table={"#Trials / class": trials_per_class, "#Classes": n_classes},
         )
 
     def test_consistent_per_session_and_per_subject_no_warnings(self, recwarn):
