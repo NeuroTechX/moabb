@@ -200,7 +200,7 @@ def test_cohort_codes_subjects_and_metadata():
         assert meta.participants.n_subjects == len(subjects)
         assert meta.acquisition.channel_types == channel_types
         assert meta.acquisition.sensors == sensors
-        assert meta.data_structure.n_trials == len(subjects) * 7 * 6 * 40
+        assert meta.data_structure.n_trials == 7 * 6 * 40
         assert meta.sessions_per_subject == ds.n_sessions
         assert meta.experiment.class_labels == list(ds.event_id)
         codes.add(code)

@@ -22,6 +22,7 @@ Additional classes:
 
 from __future__ import annotations
 
+import warnings
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Union
 
@@ -285,8 +286,14 @@ class DataStructureMetadata:
     Parameters
     ----------
     n_trials : int | Dict[str, int] | str, optional
-        Total number of trials per subject.
-        Can be a single integer, split counts by subset, or a textual summary.
+        Total number of trials **per subject**, summed over sessions and runs
+        (the quantity returned by ``get_data()`` for one subject).
+        When classes are balanced across sessions and ``n_trials_per_class``
+        is reported per session, ``n_trials ≈ sum(n_trials_per_class.values())
+        * sessions_per_subject``. Dataset-wide totals across all subjects and
+        per-run/per-block counts belong in ``trials_context`` or ``n_blocks``,
+        never in ``n_trials``. Can be an integer (preferred), split counts by
+        subset, or a textual summary only for genuinely irregular designs.
     n_trials_per_class : Dict[str, int], optional
         Number of trials per class.
     n_blocks : int, optional
@@ -294,7 +301,8 @@ class DataStructureMetadata:
     block_duration_s : float, optional
         Duration of each block in seconds.
     trials_context : str, optional
-        Context description of trial structure.
+        Context description of trial structure (including dataset-wide totals
+        or per-run/per-block breakdowns).
     """
 
     n_trials: Optional[int | Dict[str, int] | str] = None
@@ -790,6 +798,55 @@ def validate_metadata_against_dataset(dataset, metadata: DatasetMetadata) -> Lis
             f"Invalid country code: {metadata.documentation.country}. "
             "Must be a valid ISO 3166-1 alpha-2 code."
         )
+
+    # Warning-level consistency checks for n_trials (per subject, across sessions)
+    ds_meta = metadata.data_structure
+    if (
+        ds_meta is not None
+        and isinstance(ds_meta.n_trials, int)
+        and not isinstance(ds_meta.n_trials, bool)
+    ):
+        n_trials = ds_meta.n_trials
+        if ds_meta.n_trials_per_class:
+            numeric_counts = [
+                v
+                for v in ds_meta.n_trials_per_class.values()
+                if isinstance(v, (int, float)) and not isinstance(v, bool)
+            ]
+            if len(numeric_counts) == len(ds_meta.n_trials_per_class) and numeric_counts:
+                per_class_sum = sum(numeric_counts)
+                sessions = metadata.sessions_per_subject or 1
+                expected_per_session = per_class_sum * sessions
+                if per_class_sum > 0 and not (
+                    abs(n_trials - per_class_sum) <= 0.1 * per_class_sum
+                    or abs(n_trials - expected_per_session) <= 0.1 * expected_per_session
+                ):
+                    warnings.warn(
+                        f"n_trials ({n_trials}) is inconsistent with "
+                        f"sum(n_trials_per_class)={per_class_sum} and "
+                        f"sum(n_trials_per_class)*sessions_per_subject="
+                        f"{expected_per_session}.",
+                        UserWarning,
+                        stacklevel=2,
+                    )
+
+        summary_table = getattr(dataset, "_summary_table", None)
+        paradigm = getattr(dataset, "paradigm", None)
+        if summary_table and paradigm:
+            from moabb.analysis._utils import _compute_n_trials
+
+            summary_n_trials = _compute_n_trials(summary_table, paradigm)
+            if (
+                summary_n_trials is not None
+                and summary_n_trials > 0
+                and abs(n_trials - summary_n_trials) > 0.2 * summary_n_trials
+            ):
+                warnings.warn(
+                    f"n_trials ({n_trials}) differs from summary table "
+                    f"per-subject trial count ({summary_n_trials}).",
+                    UserWarning,
+                    stacklevel=2,
+                )
 
     return errors
 

@@ -344,7 +344,7 @@ class Schirrmeister2017(BaseDataset):
             cue_duration_s=None,
         ),
         data_structure=DataStructureMetadata(
-            n_trials={"total_per_subject": 963, "training_set": 880, "test_set": 160},
+            n_trials=1040,
             n_trials_per_class={"per_class_per_subject": 260},
             n_blocks=13,
             trials_context="13 runs per subject, 80 trials per run (4 seconds each), 3-4 seconds inter-trial interval, pseudo-randomized presentation with all 4 classes shown every 4 trials",

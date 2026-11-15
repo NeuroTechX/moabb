@@ -634,7 +634,7 @@ class GuttmannFlury2025_MI(BaseDataset):
             imagery_duration_s=4.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials=2520,
+            n_trials=80,
             trials_context="63 sessions x 40 trials = 2520 (MI only, default)",
         ),
         signal_processing=SignalProcessingMetadata(
@@ -762,7 +762,7 @@ class GuttmannFlury2025_ME(BaseDataset):
             imagery_duration_s=4.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials=2519,
+            n_trials=80,
             trials_context="80 per subject (2,519 total across 31 subjects; initial trial of ME041 is missing in EEG)",
         ),
     )
@@ -869,7 +869,7 @@ class GuttmannFlury2025_SSVEP(BaseDataset):
             detected_paradigm="ssvep", stimulus_frequencies_hz=[10.0, 11.0, 12.0, 13.0]
         ),
         data_structure=DataStructureMetadata(
-            n_trials=2520,
+            n_trials=80,
             trials_context="63 sessions x 40 trials = 2520 (paper: 'the other tasks had 40 trials'; 10 per frequency)",
         ),
         bci_application=BCIApplicationMetadata(
@@ -1042,7 +1042,7 @@ class GuttmannFlury2025_P300(BaseDataset):
             detected_paradigm="p300", n_targets=36, n_repetitions=3
         ),
         data_structure=DataStructureMetadata(
-            n_trials=2520,
+            n_trials=80,
             trials_context="63 sessions x 40 trials = 2520 (P300-4L default)",
         ),
         bci_application=BCIApplicationMetadata(

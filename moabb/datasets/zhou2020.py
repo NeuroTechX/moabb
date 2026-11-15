@@ -294,7 +294,7 @@ def _make_metadata(cohort=None):
             imagery_duration_s=5.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials=n_trials,
+            n_trials=7 * 6 * 40,
             trials_context=(f"{which} x 7 sessions x 6 runs x 40 trials = {n_trials}"),
         ),
         signal_processing=SignalProcessingMetadata(

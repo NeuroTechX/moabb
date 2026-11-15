@@ -299,7 +299,7 @@ class Jeong2020(BaseDataset):
             imagery_duration_s=4.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials=41250,
+            n_trials=1650,
             trials_context=(
                 "25 subjects x 3 sessions x 550 trials (300 reaching + "
                 "150 grasping + 100 twisting)"

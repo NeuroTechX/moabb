@@ -492,7 +492,7 @@ class BNCI2014_001(MNEBNCI):
             imagery_duration_s=4.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials={"training": 288, "test": 288},
+            n_trials=576,
             n_blocks=6,
             trials_context="per session: 6 runs of 48 trials (12 per class) = 288 trials; 2 sessions per subject (T = training, E = evaluation)",
         ),
@@ -970,11 +970,11 @@ class BNCI2014_004(MNEBNCI):
             imagery_duration_s=4.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials={"screening": 120, "feedback": 160},
+            n_trials=720,
             n_trials_per_class=None,
             n_blocks=None,
             block_duration_s=None,
-            trials_context="per session",
+            trials_context="2 screening sessions x 120 trials + 3 feedback sessions x 160 trials = 720 trials per subject",
         ),
         abstract="BCI Competition 2008 Graz data set B. EEG data from 9 subjects performing two-class motor imagery (left hand vs right hand). Two screening sessions without feedback (120 trials each) and three feedback sessions with smiley feedback (160 trials each). Three bipolar EEG channels (C3, Cz, C4) and three EOG channels recorded at 250 Hz.",
         methodology="Subjects performed kinesthetic motor imagery of left or right hand movements. Two screening sessions (01T, 02T) without feedback: 6 runs x 20 trials = 120 trials per session. Three feedback sessions (03T, 04E, 05E) with smiley feedback: 4 runs x 40 trials (20 per class) = 160 trials per session. Screening trials: fixation cross + beep at t=0, arrow cue at ~t=2 for 1.25s, imagery for 4s, break. Feedback trials: smiley at t=0, beep at t=2, cue from t=3 to t=7.5 with continuous smiley feedback. Three bipolar EEG channels (C3, Cz, C4) plus three monopolar EOG channels recorded at 250 Hz with 0.5-100 Hz bandpass and 50 Hz notch filter. EEG ground at Fz, EOG reference at left mastoid. Amplifier: g.tec. Software: rtsBCI (MATLAB/Simulink).",

@@ -244,7 +244,7 @@ class EPFLP300(BaseDataset):
             soa_ms=400.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials={"target": 135, "non-target": 675},
+            n_trials=3240,
             n_trials_per_class={"target": 135, "non-target": 675},
             n_blocks=None,
             trials_context="per_session",

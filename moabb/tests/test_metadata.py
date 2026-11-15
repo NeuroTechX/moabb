@@ -1130,3 +1130,69 @@ class TestLoaderChannelCategorization:
         assert out.get_channel_types(
             picks=["Cz", "hEOG_L", "vEOG_U", "EMG_1", "EMG_ref"]
         ) == ["eeg", "eog", "eog", "emg", "emg"]
+
+
+class TestValidateMetadataAgainstDataset:
+    """Tests for n_trials consistency warnings in validate_metadata_against_dataset."""
+
+    @staticmethod
+    def _make_metadata(n_trials, n_trials_per_class=None, sessions=2):
+        from moabb.datasets.metadata import DataStructureMetadata
+
+        return DatasetMetadata(
+            acquisition=AcquisitionMetadata(
+                sampling_rate=250.0, channel_types={"eeg": 3}
+            ),
+            participants=ParticipantMetadata(n_subjects=10),
+            experiment=ExperimentMetadata(paradigm="imagery"),
+            sessions_per_subject=sessions,
+            data_structure=DataStructureMetadata(
+                n_trials=n_trials,
+                n_trials_per_class=n_trials_per_class,
+            ),
+        )
+
+    @staticmethod
+    def _make_dataset(sessions=2, n_subjects=10, trials_per_class="120", n_classes="2"):
+        return SimpleNamespace(
+            n_sessions=sessions,
+            subject_list=list(range(1, n_subjects + 1)),
+            paradigm="imagery",
+            _summary_table={
+                "#Trials / class": trials_per_class,
+                "#Classes": n_classes,
+            },
+        )
+
+    def test_consistent_per_session_and_per_subject_no_warnings(self, recwarn):
+        from moabb.datasets.metadata import validate_metadata_against_dataset
+
+        ds = self._make_dataset(sessions=2, trials_per_class="120", n_classes="2")
+        # per-session n_trials_per_class (60+60) * 2 sessions == 240
+        meta1 = self._make_metadata(240, {"left": 60, "right": 60}, sessions=2)
+        assert validate_metadata_against_dataset(ds, meta1) == []
+        # per-subject n_trials_per_class (120+120) == 240
+        meta2 = self._make_metadata(240, {"left": 120, "right": 120}, sessions=2)
+        assert validate_metadata_against_dataset(ds, meta2) == []
+        assert [w for w in recwarn if issubclass(w.category, UserWarning)] == []
+
+    def test_warns_on_n_trials_per_class_mismatch(self):
+        from moabb.datasets.metadata import validate_metadata_against_dataset
+
+        ds = self._make_dataset(sessions=4, trials_per_class="60", n_classes="3")
+        # Dataset total 2160 vs 180 per subject
+        meta = self._make_metadata(
+            2160, {"rest": 15, "left": 15, "right": 15}, sessions=4
+        )
+        with pytest.warns(UserWarning, match="inconsistent with"):
+            errors = validate_metadata_against_dataset(ds, meta)
+        assert errors == []
+
+    def test_warns_on_summary_table_mismatch(self):
+        from moabb.datasets.metadata import validate_metadata_against_dataset
+
+        ds = self._make_dataset(sessions=2, trials_per_class="200", n_classes="2")
+        meta = self._make_metadata(8000, None, sessions=2)
+        with pytest.warns(UserWarning, match="differs from summary table"):
+            errors = validate_metadata_against_dataset(ds, meta)
+        assert errors == []

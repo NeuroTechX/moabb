@@ -242,8 +242,8 @@ class Han2024Fatigue(BaseDataset):
         ),
         data_structure=DataStructureMetadata(
             n_blocks=30,
-            n_trials="960 total per subject (480 per frequency band: 16 targets x 30 blocks per frequency condition)",
-            trials_context="6 training + 24 fatigue blocks per frequency condition",
+            n_trials=960,
+            trials_context="480 per frequency band (16 targets x 30 blocks per frequency condition: 6 training + 24 fatigue blocks)",
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=["TRCA"],

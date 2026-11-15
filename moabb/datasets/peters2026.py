@@ -408,7 +408,7 @@ class Peters2026(OpenNeuroMirrorMixin, BaseBIDSDataset):
             detected_paradigm="p300", n_targets=28, soa_ms=237.0
         ),
         data_structure=DataStructureMetadata(
-            n_trials=66150,
+            n_trials=13230,
             n_trials_per_class={"Target": 4109, "NonTarget": 62041},
             trials_context=(
                 "88 calibration runs over 40 visits (6-10 sessions per subject: "

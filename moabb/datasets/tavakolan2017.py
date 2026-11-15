@@ -188,7 +188,7 @@ class Tavakolan2017(BaseDataset):
             imagery_duration_s=3.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials=2880,
+            n_trials=240,
             trials_context="12 subjects x 4 sessions x 60 trials (20 per class)",
             n_trials_per_class={"rest": 20, "right_hand": 20, "right_elbow_flexion": 20},
         ),
