@@ -535,6 +535,25 @@ class TestMotorImagery(unittest.TestCase):
         with pytest.raises(ValueError):
             FilterBankMotorImagery(n_classes=3, events=["hands", "feet"])
 
+    def test_MotorImagery_used_events_respects_n_classes(self):
+        # FakeDataset(paradigm="imagery") has 3 events by default; with
+        # events=None, used_events must stop at n_classes like its
+        # FilterBankMotorImagery sibling does, not collect every event.
+        dataset = FakeDataset(paradigm="imagery")
+        paradigm = MotorImagery(n_classes=2, events=None)
+        used = paradigm.used_events(dataset)
+        assert len(used) == 2, used
+
+        fb_paradigm = FilterBankMotorImagery(n_classes=2, events=None)
+        fb_used = fb_paradigm.used_events(dataset)
+        assert used == fb_used, (used, fb_used)
+
+        # n_classes filled in from a first 2-class dataset must not cut a
+        # later 3-class dataset down to 2 events.
+        auto = MotorImagery()
+        auto.used_events(FakeDataset(["a", "b"], paradigm="imagery"))
+        assert len(auto.used_events(dataset)) == 3
+
     def test_FilterBankLeftRightImagery_paradigm(self):
         # can work with filter bank
         paradigm = FilterBankLeftRightImagery()
