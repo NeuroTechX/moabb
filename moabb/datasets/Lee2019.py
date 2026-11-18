@@ -796,7 +796,7 @@ class Lee2019_ERP(Lee2019):
             soa_ms=215.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials={"training": 1980, "test": 2160},
+            n_trials=8280,
             trials_context="Training: copy-spell 'NEURAL NETWORKS AND DEEP LEARNING' (33 characters). Test: copy-spell 'PATTERN RECOGNITION MACHINE LEARNING' (36 characters). Each character received 5 sequences of 12 flashes (60 flashes total).",
         ),
         file_format="MAT",

@@ -276,7 +276,8 @@ class Thapa2025(BaseDataset):
             detected_paradigm="motor_execution", n_targets=4
         ),
         data_structure=DataStructureMetadata(
-            n_trials=6808, trials_context="6808 trials across 23 subjects and 49 sessions"
+            n_trials=296,
+            trials_context="6808 trials across 23 subjects and 49 sessions; n_trials is the mean per subject",
         ),
         signal_processing=SignalProcessingMetadata(
             classifiers=["LSVM"],

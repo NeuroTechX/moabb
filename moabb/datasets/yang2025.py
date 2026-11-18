@@ -203,7 +203,7 @@ class Yang2025(BaseDataset):
             imagery_duration_s=4.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials=39600,
+            n_trials=600,
             trials_context=(
                 "51 subjects x 3 sessions x 200 trials (2C) + "
                 "11 subjects x 3 sessions x 300 trials (3C) = 39600"

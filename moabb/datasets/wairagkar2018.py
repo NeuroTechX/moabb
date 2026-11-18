@@ -210,7 +210,7 @@ class Wairagkar2018(BaseDataset):
             imagery_tasks=["right_hand", "left_hand", "rest"],
         ),
         data_structure=DataStructureMetadata(
-            n_trials=1665,
+            n_trials=120,
             n_trials_per_class={"right_hand": 40, "left_hand": 40, "rest": 40},
             trials_context=(
                 "14 subjects x 120 trials (40 per condition), except "

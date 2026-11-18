@@ -337,7 +337,7 @@ class Wang2026Handwriting(BaseBIDSDataset):
             imagery_duration_s=_TRIAL_DURATION,
         ),
         data_structure=DataStructureMetadata(
-            n_trials=len(_SUBJECT_IDS) * 2 * (200 + 240),
+            n_trials=2 * (200 + 240),
             trials_context=(
                 "21 subjects x 2 sessions x (200 CCS-HI + 240 SV-HI trials) "
                 "= 18,480 trials at the protocol's standard counts; two "

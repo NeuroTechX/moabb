@@ -425,8 +425,8 @@ class Nguyen2017_V(_Nguyen2017Base):
         signal_processing=_NGUYEN_SIGNAL_PROCESSING,
         cross_validation=_NGUYEN_CV,
         data_structure=DataStructureMetadata(
-            n_trials=7200,
-            n_trials_per_class={"vowel_a": 2400, "vowel_i": 2400, "vowel_u": 2400},
+            n_trials=300,
+            n_trials_per_class={"vowel_a": 100, "vowel_i": 100, "vowel_u": 100},
             trials_context=(
                 "8 subjects x 300 trials (100 per class), each split into 3 epochs. T=1.0 s."
             ),
@@ -485,8 +485,8 @@ class Nguyen2017_S(_Nguyen2017Base):
         signal_processing=_NGUYEN_SIGNAL_PROCESSING,
         cross_validation=_NGUYEN_CV,
         data_structure=DataStructureMetadata(
-            n_trials=5400,
-            n_trials_per_class={"out": 1800, "in": 1800, "up": 1800},
+            n_trials=300,
+            n_trials_per_class={"out": 100, "in": 100, "up": 100},
             trials_context=(
                 "6 subjects x 300 trials, each split into 3 epochs. T=1.0 s."
             ),
@@ -544,8 +544,8 @@ class Nguyen2017_L(_Nguyen2017Base):
         signal_processing=_NGUYEN_SIGNAL_PROCESSING,
         cross_validation=_NGUYEN_CV,
         data_structure=DataStructureMetadata(
-            n_trials=3600,
-            n_trials_per_class={"cooperate": 1800, "independent": 1800},
+            n_trials=200,
+            n_trials_per_class={"cooperate": 100, "independent": 100},
             trials_context=(
                 "6 subjects x 200 trials, each split into 3 epochs. T=1.4 s."
             ),
@@ -600,8 +600,8 @@ class Nguyen2017_SL(_Nguyen2017Base):
         signal_processing=_NGUYEN_SIGNAL_PROCESSING,
         cross_validation=_NGUYEN_CV,
         data_structure=DataStructureMetadata(
-            n_trials=3600,
-            n_trials_per_class={"cooperate": 1800, "in": 1800},
+            n_trials=200,
+            n_trials_per_class={"cooperate": 100, "in": 100},
             trials_context=(
                 "6 subjects x 200 trials, each split into 3 epochs. T=1.4 s."
             ),

@@ -291,7 +291,7 @@ class Gao2026(BaseDataset):
             imagery_duration_s=4.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials=16800,
+            n_trials=800,
             trials_context=(
                 "20 subjects x 2 sessions x 400 trials + "
                 "2 subjects x 1 session x 400 trials = 16800"

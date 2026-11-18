@@ -424,7 +424,6 @@ class Wang2016(BaseDataset):
         ),
         data_structure=DataStructureMetadata(
             n_trials=240,
-            n_trials_per_class={"per_target": 6},
             n_blocks=6,
             trials_context="40 trials per block corresponding to all 40 characters in random order",
         ),

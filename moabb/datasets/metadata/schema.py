@@ -285,8 +285,14 @@ class DataStructureMetadata:
     Parameters
     ----------
     n_trials : int | Dict[str, int] | str, optional
-        Total number of trials per subject.
-        Can be a single integer, split counts by subset, or a textual summary.
+        Total number of trials **per subject**, summed over sessions and runs
+        (the quantity returned by ``get_data()`` for one subject).
+        When classes are balanced across sessions and ``n_trials_per_class``
+        is reported per session, ``n_trials ≈ sum(n_trials_per_class.values())
+        * sessions_per_subject``. Dataset-wide totals across all subjects and
+        per-run/per-block counts belong in ``trials_context`` or ``n_blocks``,
+        never in ``n_trials``. Can be an integer (preferred), split counts by
+        subset, or a textual summary only for genuinely irregular designs.
     n_trials_per_class : Dict[str, int], optional
         Number of trials per class.
     n_blocks : int, optional
@@ -294,7 +300,8 @@ class DataStructureMetadata:
     block_duration_s : float, optional
         Duration of each block in seconds.
     trials_context : str, optional
-        Context description of trial structure.
+        Context description of trial structure (including dataset-wide totals
+        or per-run/per-block breakdowns).
     """
 
     n_trials: Optional[int | Dict[str, int] | str] = None

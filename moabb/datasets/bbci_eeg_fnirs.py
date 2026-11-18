@@ -543,13 +543,10 @@ class Shin2017A(BaseShin2017):
             imagery_duration_s=10.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials={
-                "per_session": 20,
-                "per_class_per_session": 10,
-                "total_per_class": 30,
-            },
+            n_trials=60,
+            n_trials_per_class={"left_hand": 10, "right_hand": 10},
             n_blocks=10,
-            trials_context="10 blocks per session, each block containing 2 trials (one left, one right hand MI) randomized",
+            trials_context="3 sessions x 20 trials (10 per class per session, 30 total per class). 10 blocks per session, each block containing 2 trials (one left, one right hand MI) randomized",
         ),
         abstract="We provide an open access dataset for hybrid brain-computer interfaces (BCIs) using electroencephalography (EEG) and near-infrared spectroscopy (NIRS). For this, we conducted two BCI experiments (left versus right hand motor imagery; mental arithmetic versus resting state). The dataset was validated using baseline signal analysis methods, with which classification performance was evaluated for each modality and a combination of both modalities. As already shown in previous literature, the capability of discriminating different mental states can be enhanced by using a hybrid approach, when comparing to single modality analyses. This makes the provided data highly suitable for hybrid BCI investigations. Since our open access dataset also comprises motion artifacts and physiological data, we expect that it can be used in a wide range of future validation approaches in multimodal BCI research.",
         methodology="Twenty-nine right-handed and one left-handed healthy subjects participated in motor imagery and mental arithmetic tasks. EEG data was recorded at 1000 Hz using 30 active electrodes with a BrainAmp amplifier, referenced to linked mastoids. NIRS data was collected at 12.5 Hz using NIRScout with 14 sources and 16 detectors resulting in 36 channels. Three sessions were conducted for each paradigm (MI and MA). Each session included 20 trials with 10s task periods and 15-17s rest periods. For MI, subjects performed kinesthetic hand gripping imagery at 1 Hz pace. Visual instructions included arrows for MI and arithmetic problems for MA. Motion artifacts from eye/head movements were also recorded. Signal processing included CSP for spatial filtering, log-variance features, and shrinkage LDA classifier with 10x5-fold cross-validation.",
@@ -866,12 +863,9 @@ class Shin2017B(BaseShin2017):
             cue_duration_s=None,
         ),
         data_structure=DataStructureMetadata(
-            n_trials={
-                "per_session": 20,
-                "per_condition_session": 10,
-                "per_condition_total": 30,
-            },
-            trials_context="Each session: 1 min pre-experiment rest + 20 trials + 1 min post-experiment rest. Trial: 2s visual instruction + 10s task + 15-17s random rest",
+            n_trials=60,
+            n_trials_per_class={"mental_arithmetic": 10, "rest": 10},
+            trials_context="3 sessions x 20 trials (10 per condition per session, 30 total per condition). Each session: 1 min pre-experiment rest + 20 trials + 1 min post-experiment rest. Trial: 2s visual instruction + 10s task + 15-17s random rest",
         ),
         abstract="Open access dataset for hybrid brain-computer interfaces using EEG and NIRS. Includes two experiments: (1) left vs right hand motor imagery, (2) mental arithmetic vs resting state. Dataset validated using baseline signal analysis showing hybrid approach enhances discrimination of mental states. Also includes motion artifacts and physiological data for wide range of validation approaches.",
         methodology="Thirty subjects performed 6 sessions alternating between motor imagery (dataset A: left/right hand) and mental arithmetic (dataset B: MA vs rest). Each session: 20 trials with 2s cue, 10s task, 15-17s rest. EEG recorded at 1000 Hz with 30 channels, downsampled to 200 Hz. Preprocessing: CAR, 0.5-50 Hz bandpass (4th order Chebyshev II), ICA-based EOG rejection. Feature extraction: CSP with log-variance of first/last 3 components using 3s moving window (1s step). Classification: shrinkage LDA with 10x5-fold CV. Hybrid analysis combines EEG and NIRS outputs using meta-classifier.",

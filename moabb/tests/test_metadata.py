@@ -1130,3 +1130,24 @@ class TestLoaderChannelCategorization:
         assert out.get_channel_types(
             picks=["Cz", "hEOG_L", "vEOG_U", "EMG_1", "EMG_ref"]
         ) == ["eeg", "eog", "eog", "emg", "emg"]
+
+
+def test_n_trials_matches_n_trials_per_class():
+    """n_trials is per subject: about the per-class sum, per subject or per session."""
+    # Nieto2022: the per-class counts are the protocol, n_trials the release.
+    known = {"Nieto2022"}
+    bad = {}
+    for name, cls in dataset_dict.items():
+        meta = getattr(cls, "METADATA", None)
+        ds = getattr(meta, "data_structure", None)
+        if name in known or ds is None or type(ds.n_trials) is not int:
+            continue
+        counts = list((ds.n_trials_per_class or {}).values())
+        if not counts or not all(isinstance(c, int) for c in counts):
+            continue
+        per_class, sessions = sum(counts), meta.sessions_per_subject or 1
+        if not any(
+            abs(ds.n_trials - n) <= 0.1 * n for n in (per_class, per_class * sessions)
+        ):
+            bad[name] = (ds.n_trials, per_class, sessions)
+    assert not bad, bad

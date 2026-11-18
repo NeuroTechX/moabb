@@ -175,9 +175,9 @@ class Shin2022(BaseDataset):
             detected_paradigm="imagery", imagery_tasks=["right_hand", "left_hand"]
         ),
         data_structure=DataStructureMetadata(
-            n_trials=2640,
+            n_trials=264,
             trials_context="10 subjects x 11 runs x 24 trials (12 left / 12 right)",
-            n_trials_per_class={"right_hand": 12, "left_hand": 12},
+            n_trials_per_class={"right_hand": 132, "left_hand": 132},
         ),
         signal_processing=SignalProcessingMetadata(
             frequency_bands={"alpha": [8.0, 12.0]},

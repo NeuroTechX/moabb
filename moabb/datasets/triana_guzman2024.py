@@ -306,7 +306,7 @@ class TrianaGuzman2024(OpenNeuroMirrorMixin, BaseBIDSDataset):
             imagery_duration_s=4.0,
         ),
         data_structure=DataStructureMetadata(
-            n_trials=7680,
+            n_trials=240,
             trials_context="32 subjects x 240 trials (180 offline + 60 online)",
         ),
         signal_processing=SignalProcessingMetadata(

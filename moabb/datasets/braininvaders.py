@@ -636,7 +636,7 @@ class BI2012(BaseDataset):
             detected_paradigm="p300", n_repetitions=8, n_targets=None
         ),
         data_structure=DataStructureMetadata(
-            n_trials={"Target": 128, "non-Target": 640},
+            n_trials=768,
             n_trials_per_class={"Target": 128, "non-Target": 640},
             trials_context="per session (Training session); variable in Online session depending on user performance",
             n_blocks=None,
@@ -1950,7 +1950,7 @@ class Cattan2019_VR(BaseDataset):
             detected_paradigm="p300", n_targets=1, n_repetitions=5
         ),
         data_structure=DataStructureMetadata(
-            n_trials={"target": 120, "non_target": 600},
+            n_trials=1440,
             n_trials_per_class={"target": 120, "non_target": 600},
             n_blocks=12,
             trials_context="per session: 12 blocks × 5 repetitions × 12 flashes per repetition (2 target, 10 non-target)",
