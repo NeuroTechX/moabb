@@ -548,6 +548,12 @@ class TestMotorImagery(unittest.TestCase):
         fb_used = fb_paradigm.used_events(dataset)
         assert used == fb_used, (used, fb_used)
 
+        # n_classes filled in from a first 2-class dataset must not cut a
+        # later 3-class dataset down to 2 events.
+        auto = MotorImagery()
+        auto.used_events(FakeDataset(["a", "b"], paradigm="imagery"))
+        assert len(auto.used_events(dataset)) == 3
+
     def test_FilterBankLeftRightImagery_paradigm(self):
         # can work with filter bank
         paradigm = FilterBankLeftRightImagery()

@@ -1541,7 +1541,7 @@ def _get_paradigm_instance(paradigm_name: str, dataset=None):
     )
 
     _paradigm_factories = {
-        "imagery": lambda _ds: MotorImagery(n_classes=2, fmin=1, fmax=45, resample=128),
+        "imagery": lambda _ds: MotorImagery(fmin=1, fmax=45, resample=128),
         "cognitive": lambda _ds: CognitiveTask(
             n_classes=2, fmin=1, fmax=45, resample=128
         ),
