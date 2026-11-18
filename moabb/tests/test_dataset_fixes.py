@@ -6,6 +6,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
+import mne
 import numpy as np
 import pytest
 
@@ -13,6 +14,7 @@ from moabb.datasets import download as _dl
 from moabb.datasets import schirrmeister2017
 from moabb.datasets.bnci.bnci_2020 import _convert_attention_shift
 from moabb.datasets.braininvaders import BI2015b
+from moabb.datasets.brandl2020 import _BERLIN_TO_1005, Brandl2020
 from moabb.datasets.fake import FakeDataset
 from moabb.datasets.gao2026 import Gao2026
 from moabb.datasets.kaneshiro2015 import Kaneshiro2015
@@ -540,3 +542,26 @@ def test_gao2026_keeps_bdf_header_amplitude_scale(tmp_path: Path, monkeypatch):
         raw.get_data(picks=labels) * 1e6, data_uv, rtol=1e-3, atol=step_uv
     )
     assert len(raw.annotations) == 3
+
+
+def test_brandl2020_places_berlin_labels_at_their_1005_sites():
+    """Brandl2020 (#1364): CFC1-CFC8 and CCP1-CCP8 are Berlin labels for 10-5 sites.
+
+    CFC1-CFC8, CCP7 and CCP8 had no position, and CCP1-CCP6 sat at the
+    same-named 10-5 sites about 2 cm from their own (CCP1h-CCP6h).
+    """
+    labels = Brandl2020.METADATA.acquisition.sensors
+    raw = Brandl2020()._make_raw(
+        np.zeros((len(labels), 10)), labels, 1000.0, np.array([]), np.array([])
+    )
+    sites = [_BERLIN_TO_1005.get(ch, ch) for ch in labels]
+    ref = mne.io.RawArray(
+        np.zeros((len(sites), 10)), mne.create_info(sites, 1000.0, "eeg"), verbose=False
+    )
+    ref.set_montage("colin27_1005")
+
+    placed = raw.get_montage().get_positions()["ch_pos"]
+    expected = ref.get_montage().get_positions()["ch_pos"]
+    assert sorted(placed) == sorted(labels)
+    for ch, site in zip(labels, sites):
+        np.testing.assert_allclose(placed[ch], expected[site], err_msg=ch)
