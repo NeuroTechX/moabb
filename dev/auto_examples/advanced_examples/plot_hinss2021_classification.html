@@ -814,18 +814,21 @@ select electrodes based on the covariance information</p>
 </span><span class="w">
 </span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">results</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-moabb-evaluations-base sphx-glr-backref-type-py-method reference internal" href="../../generated/moabb.evaluations.base.BaseEvaluation.html#moabb.evaluations.base.BaseEvaluation.process" title="moabb.evaluations.base.BaseEvaluation.process"><span class="n">evaluation</span><span class="o">.</span><span class="n">process</span></a><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">pipelines</span></a><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2026-11-14 22:15:44,258 INFO MainThread moabb.evaluations.base Xdawn+Cov+TS+LDA | Hinss2021 | 1 | 1: Score 0.565
-2026-11-14 22:15:44,258 INFO MainThread moabb.evaluations.base Xdawn+Cov+TS+LDA | Hinss2021 | 1 | 2: Score 0.590
-2026-11-14 22:15:47,472 INFO MainThread moabb.evaluations.base Cov+ElSel+TS+LDA | Hinss2021 | 1 | 1: Score 0.678
-2026-11-14 22:15:47,472 INFO MainThread moabb.evaluations.base Cov+ElSel+TS+LDA | Hinss2021 | 1 | 2: Score 0.765
-2026-11-14 22:15:48,278 INFO MainThread moabb.evaluations.base ElSel+Cov+TS+LDA | Hinss2021 | 1 | 1: Score 0.793
-2026-11-14 22:15:48,278 INFO MainThread moabb.evaluations.base ElSel+Cov+TS+LDA | Hinss2021 | 1 | 2: Score 0.718
-2026-11-14 22:15:53,650 INFO MainThread moabb.evaluations.base Xdawn+Cov+TS+LDA | Hinss2021 | 2 | 1: Score 0.815
-2026-11-14 22:15:53,650 INFO MainThread moabb.evaluations.base Xdawn+Cov+TS+LDA | Hinss2021 | 2 | 2: Score 0.697
-2026-11-14 22:15:57,026 INFO MainThread moabb.evaluations.base Cov+ElSel+TS+LDA | Hinss2021 | 2 | 1: Score 0.950
-2026-11-14 22:15:57,026 INFO MainThread moabb.evaluations.base Cov+ElSel+TS+LDA | Hinss2021 | 2 | 2: Score 0.967
-2026-11-14 22:15:57,912 INFO MainThread moabb.evaluations.base ElSel+Cov+TS+LDA | Hinss2021 | 2 | 1: Score 0.701
-2026-11-14 22:15:57,912 INFO MainThread moabb.evaluations.base ElSel+Cov+TS+LDA | Hinss2021 | 2 | 2: Score 0.799
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>This is nemar-py 0.3.3.
+Preparing to download nm000343 from https://data.nemar.org/
+Retrieving 21 of 492 manifest files (16 concurrent downloads).
+
+S3:   0%|          | 0.00/193M [00:00&lt;?, ?B/s]
+S3:   1%|          | 1.00M/193M [00:00&lt;00:56, 3.53MB/s]
+S3:  22%|██▏       | 42.6M/193M [00:00&lt;00:01, 144MB/s]
+S3:  63%|██████▎   | 121M/193M [00:00&lt;00:00, 347MB/s]
+S3:  87%|████████▋ | 168M/193M [00:00&lt;00:00, 365MB/s]
+S3: 100%|██████████| 193M/193M [00:00&lt;00:00, 236MB/s]
+
+Overall:   0%|          | 0.00/7.26k [00:00&lt;?, ?B/s]
+Overall:  14%|█▍        | 1.05k/7.26k [00:00&lt;00:01, 5.79kB/s]
+Overall:  47%|████▋     | 3.40k/7.26k [00:00&lt;00:00, 15.3kB/s]
+Finished downloading nm000343 v1.1.0.
 </pre></div>
 </div>
 <p>Here, with the ElSel+Cov+TS+LDA pipeline, we reduce the computation time
@@ -836,9 +839,9 @@ in approximately 8 times to the Cov+ElSel+TS+LDA pipeline.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Averaging the session performance:
                      score      time
 pipeline
-Cov+ElSel+TS+LDA  0.840030  3.038595
-ElSel+Cov+TS+LDA  0.752849  0.593987
-Xdawn+Cov+TS+LDA  0.666693  0.322281
+Cov+ElSel+TS+LDA  0.840030  1.497959
+ElSel+Cov+TS+LDA  0.752849  0.203181
+Xdawn+Cov+TS+LDA  0.666693  0.180814
 </pre></div>
 </div>
 </section>
@@ -874,7 +877,8 @@ Xdawn+Cov+TS+LDA  0.666693  0.322281
 <li><p>Electrode selection strategy based on covariance matrices demonstrates less variability and typically yields better performance.</p></li>
 <li><p>However, this strategy is more time-consuming compared to the simpler electrode selection based on time epoch data.</p></li>
 </ul>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 33.604 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 18.050 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  525 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-hinss2021-classification-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/5abf5216139378fc86b18e340a1f77b5/plot_hinss2021_classification.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_hinss2021_classification.ipynb</span></code></a></p>

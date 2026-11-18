@@ -801,34 +801,15 @@ ROC-AUC metric.</p>
 </span><span class="p">)</span><span class="w">
 </span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">mne_res</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-moabb-evaluations-base sphx-glr-backref-type-py-method reference internal" href="../../generated/moabb.evaluations.base.BaseEvaluation.html#moabb.evaluations.base.BaseEvaluation.process" title="moabb.evaluations.base.BaseEvaluation.process"><span class="n">mne_eval</span><span class="o">.</span><span class="n">process</span></a><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">mne_ppl</span></a><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[codecarbon WARNING @ 22:15:58] Multiple instances of codecarbon are allowed to run at the same time.
-/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/sklearn/linear_model/_sag.py:348: ConvergenceWarning: The max_iter was reached which means the coef_ did not converge
-  warnings.warn(
-/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/sklearn/linear_model/_sag.py:348: ConvergenceWarning: The max_iter was reached which means the coef_ did not converge
-  warnings.warn(
-/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/sklearn/linear_model/_sag.py:348: ConvergenceWarning: The max_iter was reached which means the coef_ did not converge
-  warnings.warn(
-2026-11-14 22:16:21,394 INFO MainThread moabb.evaluations.base MNE LR | BNCI2014-009 | 1 | 0: Score 0.923
-2026-11-14 22:16:21,394 INFO MainThread moabb.evaluations.base MNE LR | BNCI2014-009 | 1 | 1: Score 0.936
-2026-11-14 22:16:21,394 INFO MainThread moabb.evaluations.base MNE LR | BNCI2014-009 | 1 | 2: Score 0.912
-/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/sklearn/linear_model/_sag.py:348: ConvergenceWarning: The max_iter was reached which means the coef_ did not converge
-  warnings.warn(
-/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/sklearn/linear_model/_sag.py:348: ConvergenceWarning: The max_iter was reached which means the coef_ did not converge
-  warnings.warn(
-/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/sklearn/linear_model/_sag.py:348: ConvergenceWarning: The max_iter was reached which means the coef_ did not converge
-  warnings.warn(
-2026-11-14 22:16:43,113 INFO MainThread moabb.evaluations.base MNE LR | BNCI2014-009 | 2 | 0: Score 0.983
-2026-11-14 22:16:43,113 INFO MainThread moabb.evaluations.base MNE LR | BNCI2014-009 | 2 | 1: Score 0.972
-2026-11-14 22:16:43,113 INFO MainThread moabb.evaluations.base MNE LR | BNCI2014-009 | 2 | 2: Score 0.962
-/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/sklearn/linear_model/_sag.py:348: ConvergenceWarning: The max_iter was reached which means the coef_ did not converge
-  warnings.warn(
-/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/sklearn/linear_model/_sag.py:348: ConvergenceWarning: The max_iter was reached which means the coef_ did not converge
-  warnings.warn(
-/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/sklearn/linear_model/_sag.py:348: ConvergenceWarning: The max_iter was reached which means the coef_ did not converge
-  warnings.warn(
-2026-11-14 22:17:05,069 INFO MainThread moabb.evaluations.base MNE LR | BNCI2014-009 | 3 | 0: Score 0.709
-2026-11-14 22:17:05,069 INFO MainThread moabb.evaluations.base MNE LR | BNCI2014-009 | 3 | 1: Score 0.955
-2026-11-14 22:17:05,069 INFO MainThread moabb.evaluations.base MNE LR | BNCI2014-009 | 3 | 2: Score 0.898
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>This is nemar-py 0.3.3.
+Preparing to download nm000188 from https://data.nemar.org/
+Retrieving 5 of 351 manifest files (16 concurrent downloads).
+
+S3:   0%|          | 0.00/17.7M [00:00&lt;?, ?B/s]
+S3:   6%|▌         | 1.00M/17.7M [00:00&lt;00:07, 2.19MB/s]
+S3:  57%|█████▋    | 10.0M/17.7M [00:00&lt;00:00, 22.4MB/s]
+S3: 100%|██████████| 17.7M/17.7M [00:00&lt;00:00, 27.2MB/s]
+Finished downloading nm000188 v1.0.3.
 </pre></div>
 </div>
 </section>
@@ -856,35 +837,6 @@ then apply a logistic regression.</p>
 </span><span class="p">)</span><span class="w">
 </span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">adv_res</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-moabb-evaluations-base sphx-glr-backref-type-py-method reference internal" href="../../generated/moabb.evaluations.base.BaseEvaluation.html#moabb.evaluations.base.BaseEvaluation.process" title="moabb.evaluations.base.BaseEvaluation.process"><span class="n">mne_eval</span><span class="o">.</span><span class="n">process</span></a><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">mne_adv</span></a><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/sklearn/linear_model/_sag.py:348: ConvergenceWarning: The max_iter was reached which means the coef_ did not converge
-  warnings.warn(
-/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/sklearn/linear_model/_sag.py:348: ConvergenceWarning: The max_iter was reached which means the coef_ did not converge
-  warnings.warn(
-/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/sklearn/linear_model/_sag.py:348: ConvergenceWarning: The max_iter was reached which means the coef_ did not converge
-  warnings.warn(
-2026-11-14 22:17:21,187 INFO MainThread moabb.evaluations.base XDAWN LR | BNCI2014-009 | 1 | 0: Score 0.918
-2026-11-14 22:17:21,187 INFO MainThread moabb.evaluations.base XDAWN LR | BNCI2014-009 | 1 | 1: Score 0.897
-2026-11-14 22:17:21,187 INFO MainThread moabb.evaluations.base XDAWN LR | BNCI2014-009 | 1 | 2: Score 0.880
-/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/sklearn/linear_model/_sag.py:348: ConvergenceWarning: The max_iter was reached which means the coef_ did not converge
-  warnings.warn(
-/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/sklearn/linear_model/_sag.py:348: ConvergenceWarning: The max_iter was reached which means the coef_ did not converge
-  warnings.warn(
-/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/sklearn/linear_model/_sag.py:348: ConvergenceWarning: The max_iter was reached which means the coef_ did not converge
-  warnings.warn(
-2026-11-14 22:17:35,631 INFO MainThread moabb.evaluations.base XDAWN LR | BNCI2014-009 | 2 | 0: Score 0.953
-2026-11-14 22:17:35,631 INFO MainThread moabb.evaluations.base XDAWN LR | BNCI2014-009 | 2 | 1: Score 0.951
-2026-11-14 22:17:35,631 INFO MainThread moabb.evaluations.base XDAWN LR | BNCI2014-009 | 2 | 2: Score 0.932
-/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/sklearn/linear_model/_sag.py:348: ConvergenceWarning: The max_iter was reached which means the coef_ did not converge
-  warnings.warn(
-/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/sklearn/linear_model/_sag.py:348: ConvergenceWarning: The max_iter was reached which means the coef_ did not converge
-  warnings.warn(
-/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/sklearn/linear_model/_sag.py:348: ConvergenceWarning: The max_iter was reached which means the coef_ did not converge
-  warnings.warn(
-2026-11-14 22:17:50,350 INFO MainThread moabb.evaluations.base XDAWN LR | BNCI2014-009 | 3 | 0: Score 0.690
-2026-11-14 22:17:50,351 INFO MainThread moabb.evaluations.base XDAWN LR | BNCI2014-009 | 3 | 1: Score 0.884
-2026-11-14 22:17:50,351 INFO MainThread moabb.evaluations.base XDAWN LR | BNCI2014-009 | 3 | 2: Score 0.833
-</pre></div>
-</div>
 </section>
 <section id="numpy-based-pipeline">
 <h2>Numpy-based Pipeline<a class="headerlink" href="#numpy-based-pipeline" title="Link to this heading">#</a></h2>
@@ -902,35 +854,6 @@ on the tangent space and classified with a logistic regression.</p>
 </span><span class="p">)</span><span class="w">
 </span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">sk_res</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-moabb-evaluations-base sphx-glr-backref-type-py-method reference internal" href="../../generated/moabb.evaluations.base.BaseEvaluation.html#moabb.evaluations.base.BaseEvaluation.process" title="moabb.evaluations.base.BaseEvaluation.process"><span class="n">sk_eval</span><span class="o">.</span><span class="n">process</span></a><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">sk_ppl</span></a><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/sklearn/linear_model/_sag.py:348: ConvergenceWarning: The max_iter was reached which means the coef_ did not converge
-  warnings.warn(
-/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/sklearn/linear_model/_sag.py:348: ConvergenceWarning: The max_iter was reached which means the coef_ did not converge
-  warnings.warn(
-/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/sklearn/linear_model/_sag.py:348: ConvergenceWarning: The max_iter was reached which means the coef_ did not converge
-  warnings.warn(
-2026-11-14 22:18:00,593 INFO MainThread moabb.evaluations.base RG LR | BNCI2014-009 | 1 | 0: Score 0.948
-2026-11-14 22:18:00,594 INFO MainThread moabb.evaluations.base RG LR | BNCI2014-009 | 1 | 1: Score 0.939
-2026-11-14 22:18:00,594 INFO MainThread moabb.evaluations.base RG LR | BNCI2014-009 | 1 | 2: Score 0.945
-/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/sklearn/linear_model/_sag.py:348: ConvergenceWarning: The max_iter was reached which means the coef_ did not converge
-  warnings.warn(
-/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/sklearn/linear_model/_sag.py:348: ConvergenceWarning: The max_iter was reached which means the coef_ did not converge
-  warnings.warn(
-/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/sklearn/linear_model/_sag.py:348: ConvergenceWarning: The max_iter was reached which means the coef_ did not converge
-  warnings.warn(
-2026-11-14 22:18:08,631 INFO MainThread moabb.evaluations.base RG LR | BNCI2014-009 | 2 | 0: Score 0.970
-2026-11-14 22:18:08,631 INFO MainThread moabb.evaluations.base RG LR | BNCI2014-009 | 2 | 1: Score 0.976
-2026-11-14 22:18:08,631 INFO MainThread moabb.evaluations.base RG LR | BNCI2014-009 | 2 | 2: Score 0.967
-/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/sklearn/linear_model/_sag.py:348: ConvergenceWarning: The max_iter was reached which means the coef_ did not converge
-  warnings.warn(
-/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/sklearn/linear_model/_sag.py:348: ConvergenceWarning: The max_iter was reached which means the coef_ did not converge
-  warnings.warn(
-/home/runner/work/moabb/moabb/.venv/lib/python3.11/site-packages/sklearn/linear_model/_sag.py:348: ConvergenceWarning: The max_iter was reached which means the coef_ did not converge
-  warnings.warn(
-2026-11-14 22:18:15,697 INFO MainThread moabb.evaluations.base RG LR | BNCI2014-009 | 3 | 0: Score 0.743
-2026-11-14 22:18:15,697 INFO MainThread moabb.evaluations.base RG LR | BNCI2014-009 | 3 | 1: Score 0.950
-2026-11-14 22:18:15,697 INFO MainThread moabb.evaluations.base RG LR | BNCI2014-009 | 3 | 2: Score 0.906
-</pre></div>
-</div>
 </section>
 <section id="combining-results">
 <h2>Combining Results<a class="headerlink" href="#combining-results" title="Link to this heading">#</a></h2>
@@ -954,7 +877,8 @@ differences between pipelines.</p>
 </span><a class="sphx-glr-backref-module-moabb-analysis-plotting sphx-glr-backref-type-py-function reference internal" href="../../generated/moabb.analysis.plotting.summary_plot.html#moabb.analysis.plotting.summary_plot" title="moabb.analysis.plotting.summary_plot"><span class="n">summary_plot</span></a><span class="p">(</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">P</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">T</span></a><span class="p">)</span><span class="w">
 </span><a class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">(</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../../_images/sphx_glr_plot_mne_and_scikit_estimators_002.png" srcset="../../_images/sphx_glr_plot_mne_and_scikit_estimators_002.png" alt="plot mne and scikit estimators" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (2 minutes 26.241 seconds)</p>
+<img src="../../_images/sphx_glr_plot_mne_and_scikit_estimators_002.png" srcset="../../_images/sphx_glr_plot_mne_and_scikit_estimators_002.png" alt="plot mne and scikit estimators" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 4.304 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  514 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-mne-and-scikit-estimators-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/b9f56e19f2500dad10214cc29a2a24e4/plot_mne_and_scikit_estimators.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_mne_and_scikit_estimators.ipynb</span></code></a></p>
