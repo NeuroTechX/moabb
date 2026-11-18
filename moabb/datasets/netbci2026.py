@@ -322,7 +322,7 @@ class NETBCI2026(BaseBIDSDataset):
         ),
         data_structure=DataStructureMetadata(
             n_trials=768,
-            n_trials_per_class={"right_hand": 7224, "rest": 7207},
+            n_trials_per_class={"right_hand": 384, "rest": 384},
             trials_context=(
                 "6 online feedback runs per session x 4 sessions; the protocol has "
                 "32 trials per run (16 per class); the released events hold the "

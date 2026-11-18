@@ -2116,7 +2116,6 @@ class BNCI2015_009(MNEBNCI):
         ),
         data_structure=DataStructureMetadata(
             n_trials=48,
-            n_trials_per_class={"calibration_per_direction": 8},
             trials_context="calibration phase of Session 1 (48 trials, 8 per direction, 15 iterations each); online spelling trials vary per subject",
         ),
         abstract="This online study introduces an auditory spelling interface that eliminates the necessity for visual representation. In up to two sessions, a group of healthy subjects (N = 21) was asked to use a text entry application, utilizing the spatial cues of the AMUSE paradigm (Auditory Multi-class Spatial ERP). The speller relies on the auditory sense both for stimulation and the core feedback. Without prior BCI experience, 76% of the participants were able to write a full sentence during the first session. By exploiting the advantages of a newly introduced dynamic stopping method, a maximum writing speed of 1.41 char/min (7.55 bits/min) could be reached during the second session (average: 0.94 char/min, 5.26 bits/min).",

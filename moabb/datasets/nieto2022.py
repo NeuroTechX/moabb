@@ -185,7 +185,7 @@ class Nieto2022(OpenNeuroMirrorMixin, BaseDataset):
             ),
         ),
         data_structure=DataStructureMetadata(
-            n_trials=5640,
+            n_trials=564,
             n_trials_per_class={
                 "pronounced/up": 30,
                 "pronounced/down": 30,
@@ -200,7 +200,7 @@ class Nieto2022(OpenNeuroMirrorMixin, BaseDataset):
                 "visualized/right": 30,
                 "visualized/left": 30,
             },
-            trials_context="More than 5600 total trials across all subjects and sessions.",
+            trials_context="5640 trials over 10 subjects and 3 sessions (564 per subject); n_trials_per_class is the protocol",
         ),
         tags=Tags(pathology=["Healthy"], modality=["Speech"], type=["Research"]),
         preprocessing=PreprocessingMetadata(

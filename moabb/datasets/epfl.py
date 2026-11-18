@@ -247,7 +247,7 @@ class EPFLP300(BaseDataset):
             n_trials=3240,
             n_trials_per_class={"target": 135, "non-target": 675},
             n_blocks=None,
-            trials_context="per_session",
+            trials_context="per session: 135 target and 675 non-target flashes; 4 sessions",
         ),
         data_processed=False,
         file_format="MATLAB",
