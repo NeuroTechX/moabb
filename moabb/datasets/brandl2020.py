@@ -9,7 +9,7 @@ from pathlib import Path
 
 import mne
 import numpy as np
-from mne.channels import make_standard_montage
+from mne.channels import make_dig_montage, make_standard_montage
 from mne.io import RawArray
 from pymatreader import read_mat
 from requests.exceptions import HTTPError
@@ -34,6 +34,48 @@ from .metadata.schema import (
 
 
 log = logging.getLogger(__name__)
+
+# The Berlin lab's labels for intermediate sites, at the 10-5 electrodes where
+# the release's mnt.mat places them. CFC1-CFC8, CCP7 and CCP8 are absent from
+# MNE's montages; CCP1-CCP6 exist there but name sites about 2 cm away.
+_BERLIN_TO_1005 = {
+    "CFC7": "FTT7h",
+    "CFC5": "FCC5h",
+    "CFC3": "FCC3h",
+    "CFC1": "FCC1h",
+    "CFC2": "FCC2h",
+    "CFC4": "FCC4h",
+    "CFC6": "FCC6h",
+    "CFC8": "FTT8h",
+    "CCP7": "TTP7h",
+    "CCP5": "CCP5h",
+    "CCP3": "CCP3h",
+    "CCP1": "CCP1h",
+    "CCP2": "CCP2h",
+    "CCP4": "CCP4h",
+    "CCP6": "CCP6h",
+    "CCP8": "TTP8h",
+}
+
+
+def _montage(ch_names):
+    """colin27_1005 positions for ``ch_names``, Berlin labels at their 10-5 sites."""
+    std = make_standard_montage("colin27_1005").get_positions()
+    ch_pos = {
+        ch: std["ch_pos"][site]
+        for ch in ch_names
+        if (site := _BERLIN_TO_1005.get(ch, ch)) in std["ch_pos"]
+    }
+    # Keep the fiducials and frame, so set_montage moves every channel into head
+    # coordinates exactly as it does with the standard montage.
+    return make_dig_montage(
+        ch_pos=ch_pos,
+        nasion=std["nasion"],
+        lpa=std["lpa"],
+        rpa=std["rpa"],
+        coord_frame=std["coord_frame"],
+    )
+
 
 # DepositOnce bitstream endpoint.
 #
@@ -205,15 +247,28 @@ class Brandl2020(BaseDataset):
             sensors=[
                 "AF3",
                 "AF4",
-                "AF7",
-                "AF8",
-                "AFz",
                 "C1",
                 "C2",
                 "C3",
                 "C4",
                 "C5",
                 "C6",
+                "CCP1",
+                "CCP2",
+                "CCP3",
+                "CCP4",
+                "CCP5",
+                "CCP6",
+                "CCP7",
+                "CCP8",
+                "CFC1",
+                "CFC2",
+                "CFC3",
+                "CFC4",
+                "CFC5",
+                "CFC6",
+                "CFC7",
+                "CFC8",
                 "CP1",
                 "CP2",
                 "CP3",
@@ -223,13 +278,13 @@ class Brandl2020(BaseDataset):
                 "CPz",
                 "Cz",
                 "F1",
+                "F10",
                 "F2",
                 "F3",
                 "F4",
                 "F5",
                 "F6",
-                "F7",
-                "F8",
+                "F9",
                 "FC1",
                 "FC2",
                 "FC3",
@@ -237,35 +292,22 @@ class Brandl2020(BaseDataset):
                 "FC5",
                 "FC6",
                 "FCz",
-                "FT7",
-                "FT8",
                 "Fp1",
                 "Fp2",
-                "Fpz",
                 "Fz",
                 "O1",
                 "O2",
-                "Oz",
                 "P1",
                 "P2",
                 "P3",
                 "P4",
                 "P5",
                 "P6",
-                "P7",
-                "P8",
                 "PO3",
                 "PO4",
-                "PO7",
-                "PO8",
-                "POz",
                 "Pz",
                 "T7",
                 "T8",
-                "TP10",
-                "TP7",
-                "TP8",
-                "TP9",
             ],
             line_freq=50.0,
             montage="standard_1005",
@@ -604,9 +646,5 @@ class Brandl2020(BaseDataset):
         ch_types = ["eeg"] * n_channels + ["stim"]
         info = mne.create_info(ch_names_full, sfreq, ch_types)
         raw = RawArray(data=full_data, info=info, verbose=False)
-
-        # Set montage
-        montage = make_standard_montage("colin27_1005")
-        raw.set_montage(montage, on_missing="ignore")
-
+        raw.set_montage(_montage(ch_names), on_missing="warn")
         return raw
