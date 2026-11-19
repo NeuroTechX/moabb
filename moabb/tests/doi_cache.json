@@ -1022,6 +1022,18 @@
         "title": "Multimodal signal dataset for 11 intuitive movement tasks from single upper extremity during multiple recording sessions",
         "year": 2020
     },
+    "10.1093/gigascience/giac015": {
+        "authors": [
+            "Patrycja Dzianok",
+            "Ingrida Antonova",
+            "Jakub Wojciechowski",
+            "Joanna Dreszer",
+            "Ewa Kublik"
+        ],
+        "doi": "10.1093/gigascience/giac015",
+        "title": "The Nencki-Symfonia electroencephalography/event-related potential dataset: Multiple cognitive tasks and resting-state data collected in a sample of healthy adults",
+        "year": 2022
+    },
     "10.1093/gigascience/gix034": {
         "authors": [
             "Hohyun Cho",
@@ -1698,6 +1710,18 @@
         "doi": "10.18112/openneuro.ds004444.v1.0.0",
         "title": "The BMI-HDEEG dataset 1",
         "year": 2023
+    },
+    "10.18112/openneuro.ds004621.v1.0.4": {
+        "authors": [
+            "",
+            "",
+            "",
+            "",
+            ""
+        ],
+        "doi": "10.18112/openneuro.ds004621.v1.0.4",
+        "title": "The Nencki-Symfonia EEG/ERP dataset",
+        "year": 2025
     },
     "10.18112/openneuro.ds007327.v1.1.0": {
         "authors": [
@@ -3198,6 +3222,6 @@
         "title": "Multi-channel EEG recording during motor imagery of different joints from the same limb (dataset)"
     },
     "_metadata": {
-        "total": 266
+        "total": 268
     }
 }
