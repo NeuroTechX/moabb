@@ -752,7 +752,7 @@ class RawToEvents(FixedTransformer):
     Parameters
     ----------
     event_id : dict
-        Mapping of event names to codes.
+        Mapping of event names to a code or a list of codes.
     interval : tuple of (float, float)
         Dataset interval.
     overlap : float | None
@@ -763,7 +763,7 @@ class RawToEvents(FixedTransformer):
 
     def __init__(
         self,
-        event_id: dict[str, int],
+        event_id: dict[str, Union[int, List[int]]],
         interval: Tuple[float, float],
         overlap=None,
         window_length=None,
@@ -823,7 +823,7 @@ class RawToEvents(FixedTransformer):
 
     def transform(self, raw, y=None):
         events = self._find_events(raw)
-        events = _unsafe_pick_events(events, list(self.event_id.values()))
+        events = _unsafe_pick_events(events, _get_event_id_values(self.event_id))
         if self.overlap is not None and len(events) >= 1:
             sfreq = raw.info["sfreq"]
             events = _generate_sliding_window_events(
@@ -834,7 +834,7 @@ class RawToEvents(FixedTransformer):
                 self.interval,
                 tmin=self.tmin,
             )
-            events = _unsafe_pick_events(events, list(self.event_id.values()))
+            events = _unsafe_pick_events(events, _get_event_id_values(self.event_id))
         return events
 
 
@@ -951,7 +951,7 @@ class RawToEpochs(FixedTransformer):
 
     def __init__(
         self,
-        event_id: Dict[str, int],
+        event_id: Dict[str, Union[int, List[int]]],
         tmin: float,
         tmax: float,
         baseline: Tuple[float, float],
