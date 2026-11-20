@@ -1028,6 +1028,23 @@ class TestSSVEP:
         epochs, _, _ = paradigm.get_data(dataset, subjects=[1], return_epochs=True)
         assert isinstance(epochs, BaseEpochs)
 
+    def test_FilterBankSSVEP_filters_follow_each_dataset(self):
+        # With filters=None, the bands come from the events of each dataset,
+        # not from the first dataset the paradigm was used on.
+        paradigm = FilterBankSSVEP()
+        first = FakeDataset(
+            event_list=["13", "15"], paradigm="ssvep", n_subjects=1, code="FakeA"
+        )
+        second = FakeDataset(
+            event_list=["9", "11", "21"], paradigm="ssvep", n_subjects=1, code="FakeB"
+        )
+        X, _, _ = paradigm.get_data(first, subjects=[1])
+        assert X.shape[-1] == 2
+        assert paradigm.filters == [[12.5, 13.5], [14.5, 15.5]]
+        X, _, _ = paradigm.get_data(second, subjects=[1])
+        assert X.shape[-1] == 3
+        assert paradigm.filters == [[8.5, 9.5], [10.5, 11.5], [20.5, 21.5]]
+
     def test_FilterBankSSVEP_filters(self):
         # can work with filter bank
         paradigm = FilterBankSSVEP(filters=[(10.5, 11.5), (12.5, 13.5)])

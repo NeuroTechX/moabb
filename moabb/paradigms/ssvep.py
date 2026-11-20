@@ -50,6 +50,9 @@ class BaseSSVEP(BaseParadigm):
         )
 
         self.n_classes = n_classes
+        # With filters=None, prepare_process derives the bands from the event
+        # frequencies of each dataset, so they must not be reused for the next one.
+        self._filters_from_events = filters is None
         if self.events is None:
             log.warning(
                 "Choosing the first "
@@ -114,7 +117,7 @@ class BaseSSVEP(BaseParadigm):
         event_id = self.used_events(dataset)
 
         # get filters
-        if self.filters is None:
+        if self._filters_from_events:
             self.filters = [
                 [float(f) - 0.5, float(f) + 0.5]
                 for f in event_id.keys()
