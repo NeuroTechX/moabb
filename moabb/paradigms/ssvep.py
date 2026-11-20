@@ -57,7 +57,7 @@ class BaseSSVEP(BaseParadigm):
                 + " classes"
                 + " from all possible events"
             )
-        else:
+        elif n_classes is not None:
             if n_classes > len(self.events):  # was assert, now raises properly
                 raise ValueError(
                     f"n_classes ({n_classes}) exceeds number of events ({len(self.events)})"

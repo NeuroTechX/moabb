@@ -73,7 +73,7 @@ class BaseCVEP(BaseParadigm):
             log.warning(
                 f"Choosing the first {n_classes} classes from all possible events."
             )
-        else:
+        elif n_classes is not None:
             assert n_classes <= len(self.events), "More classes than events specified"
 
     def is_valid(self, dataset):

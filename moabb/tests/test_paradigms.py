@@ -935,6 +935,16 @@ class TestSSVEP:
         with pytest.raises(ValueError):
             BaseSSVEP(n_classes=3, events=["13.", "14."])
 
+    def test_BaseSSVEP_events_without_n_classes(self):
+        # n_classes=None keeps every requested event
+        paradigm = BaseSSVEP(events=["13", "15"])
+        dataset = FakeDataset(
+            event_list=["13", "15", "17"], paradigm="ssvep", n_subjects=1
+        )
+        assert paradigm.used_events(dataset) == {"13": 1, "15": 2}
+        X, labels, _ = paradigm.get_data(dataset, subjects=[1])
+        assert set(labels) == {"13", "15"}
+
     def test_BaseSSVEP_droppedevent(self):
         dataset = FakeDataset(paradigm="ssvep")
         tmax = dataset.interval[1]
@@ -1151,6 +1161,11 @@ class Test_CVEP:
         # Test with more classes than events (should raise an exception)
         with pytest.raises(AssertionError):
             _ = BaseCVEP(events=["event1"], n_classes=2)
+
+    def test_base_cvep_events_without_n_classes(self, fix_fake_dataset):
+        # n_classes=None keeps every requested event
+        base_cvep = BaseCVEP(events=["1.0", "0.0"])
+        assert set(base_cvep.used_events(fix_fake_dataset)) == {"1.0", "0.0"}
 
     def test_base_cvep_is_valid(self, fix_fake_dataset) -> None:
         base_cvep = BaseCVEP()
