@@ -70,11 +70,10 @@ def analyze(results, out_path, name="analysis", plot=False):
         fig.savefig(os.path.join(analysis_path, "ordering.pdf"))
 
 
-# ``plotting`` applies a seaborn theme to the global matplotlib rcParams at
-# import time. Re-exporting its names lazily keeps that off the path of anyone
-# who reaches this package for something else -- ``moabb.datasets`` imports
-# ``moabb.analysis.results`` for ``get_digest``, so an eager import here
-# restyled the figures of every caller who merely imported a dataset.
+# ``plotting`` imports matplotlib and seaborn. Re-exporting its names lazily
+# keeps that cost off the path of anyone who reaches this package for something
+# else -- ``moabb.datasets`` imports ``moabb.analysis.results`` for
+# ``get_digest``.
 _LAZY_IMPORTS = {
     "adjusted_chance_level": ".chance_level",
     "chance_by_chance": ".chance_level",

@@ -6,6 +6,7 @@ inspired by Economist-style design principles and the MOABB logo color scheme.
 
 from __future__ import annotations
 
+import functools
 from itertools import cycle
 
 import moabb
@@ -84,45 +85,80 @@ def get_moabb_palette(n: int) -> list[str]:
     return [c for _, c in zip(range(n), cycle(MOABB_PALETTE))]
 
 
-def set_moabb_defaults() -> None:
-    """Configure seaborn/matplotlib defaults for the MOABB brand style.
+# rcParams on top of seaborn's "white" style and "notebook" context.
+_MOABB_RC = {
+    "figure.dpi": 100,
+    "savefig.dpi": 150,
+    # Grid
+    "axes.grid": True,
+    "grid.color": GRID_COLOR,
+    "grid.alpha": 0.3,
+    "grid.linewidth": 0.6,
+    "axes.axisbelow": True,
+    # Spines
+    "axes.spines.top": False,
+    "axes.spines.right": False,
+    "axes.spines.left": False,
+    "axes.spines.bottom": True,
+    # Text colors
+    "text.color": MOABB_DARK_TEXT,
+    "axes.labelcolor": MOABB_DARK_TEXT,
+    "xtick.color": MOABB_DARK_TEXT,
+    "ytick.color": MOABB_DARK_TEXT,
+    # Font sizes
+    "axes.titlesize": FONT_SIZES["title"],
+    "axes.labelsize": FONT_SIZES["axis_label"],
+    "xtick.labelsize": FONT_SIZES["tick_label"],
+    "ytick.labelsize": FONT_SIZES["tick_label"],
+    "legend.fontsize": FONT_SIZES["legend"],
+}
 
-    This replaces the previous ``sea.set(font="serif", style="whitegrid", ...)``
-    call at module level in ``plotting.py``.
+
+def moabb_rc() -> dict:
+    """Return the matplotlib rcParams of the MOABB brand style.
+
+    These are the values ``seaborn.set_theme(style="white",
+    palette=MOABB_PALETTE, font="serif", rc=_MOABB_RC)`` writes, built without
+    touching the global ``matplotlib.rcParams``.
     """
     import seaborn as sea
+    from cycler import cycler
 
-    sea.set_theme(
-        style="white",
-        palette=MOABB_PALETTE,
-        font="serif",
-        rc={
-            "figure.dpi": 100,
-            "savefig.dpi": 150,
-            # Grid
-            "axes.grid": True,
-            "grid.color": GRID_COLOR,
-            "grid.alpha": 0.3,
-            "grid.linewidth": 0.6,
-            "axes.axisbelow": True,
-            # Spines
-            "axes.spines.top": False,
-            "axes.spines.right": False,
-            "axes.spines.left": False,
-            "axes.spines.bottom": True,
-            # Text colors
-            "text.color": MOABB_DARK_TEXT,
-            "axes.labelcolor": MOABB_DARK_TEXT,
-            "xtick.color": MOABB_DARK_TEXT,
-            "ytick.color": MOABB_DARK_TEXT,
-            # Font sizes
-            "axes.titlesize": FONT_SIZES["title"],
-            "axes.labelsize": FONT_SIZES["axis_label"],
-            "xtick.labelsize": FONT_SIZES["tick_label"],
-            "ytick.labelsize": FONT_SIZES["tick_label"],
-            "legend.fontsize": FONT_SIZES["legend"],
-        },
-    )
+    return {
+        **sea.plotting_context("notebook"),
+        **sea.axes_style("white", rc={"font.family": "serif"}),
+        "axes.prop_cycle": cycler("color", sea.color_palette(MOABB_PALETTE)),
+        **_MOABB_RC,
+    }
+
+
+def moabb_style(func):
+    """Decorate a plotting function to draw it in the MOABB style.
+
+    The style is applied with :func:`matplotlib.pyplot.rc_context` for the
+    duration of the call only, so the caller's rcParams are left untouched.
+    """
+
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        import matplotlib.pyplot as plt
+
+        with plt.rc_context(moabb_rc()):
+            return func(*args, **kwargs)
+
+    return wrapper
+
+
+def set_moabb_defaults() -> None:
+    """Apply the MOABB brand style to the global matplotlib rcParams.
+
+    MOABB's own plotting functions no longer call this; they apply the style
+    only while they draw (see :func:`moabb_style`). Call it to opt in to the
+    MOABB look for your own figures.
+    """
+    import matplotlib.pyplot as plt
+
+    plt.rcParams.update(moabb_rc())
 
 
 _DEFAULT_SOURCE = (
