@@ -735,6 +735,9 @@ the data and we keep only the first 3 classes, that is stimulation
 frequency of 13Hz, 17Hz and 21Hz.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../generated/moabb.paradigms.SSVEP.html#moabb.paradigms.SSVEP" title="moabb.paradigms.SSVEP"><span class="n">paradigm</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class reference internal" href="../../generated/moabb.paradigms.SSVEP.html#moabb.paradigms.SSVEP" title="moabb.paradigms.SSVEP"><span class="n">SSVEP</span></a><span class="p">(</span><span class="n">fmin</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">n_classes</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2026-11-23 13:59:18,213 WARNING MainThread moabb.paradigms.ssvep Choosing the first 3 classes from all possible events
+</pre></div>
+</div>
 </section>
 <section id="create-pipelines">
 <h2>Create Pipelines<a class="headerlink" href="#create-pipelines" title="Link to this heading">#</a></h2>
@@ -772,9 +775,12 @@ each subject and pipeline.</p>
 </span><span class="w">
 </span><span class="nb">print</span><span class="p">(</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-method reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.head.html#pandas.DataFrame.head" title="pandas.DataFrame.head"><span class="n">results</span><span class="o">.</span><span class="n">head</span></a><span class="p">(</span><span class="p">)</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>      score      time  samples  ...      dataset pipeline codecarbon_task_name
-0  0.333333  0.002881     48.0  ...  Kalunga2016      CCA
-1  0.333333  0.002398     48.0  ...  Kalunga2016      CCA
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[codecarbon WARNING @ 13:59:19] Multiple instances of codecarbon are allowed to run at the same time.
+2026-11-23 13:59:21,119 INFO MainThread moabb.evaluations.base CCA | Kalunga2016 | 3 | 0: Score 0.336
+2026-11-23 13:59:21,460 INFO MainThread moabb.evaluations.base CCA | Kalunga2016 | 1 | 0: Score 0.333
+      score      time  samples  ...      dataset pipeline codecarbon_task_name
+0  0.335556  0.002786     48.0  ...  Kalunga2016      CCA
+1  0.333333  0.003273     48.0  ...  Kalunga2016      CCA
 
 [2 rows x 13 columns]
 </pre></div>
@@ -786,7 +792,10 @@ each subject and pipeline.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.figure.html#matplotlib.pyplot.figure" title="matplotlib.pyplot.figure"><span class="n">plt</span><span class="o">.</span><span class="n">figure</span></a><span class="p">(</span><span class="p">)</span><span class="w">
 </span><span class="n">sns</span><span class="o">.</span><span class="n">barplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">results</span></a><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">score</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">session</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">subject</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">viridis</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../../_images/sphx_glr_plot_within_session_ssvep_001.png" srcset="../../_images/sphx_glr_plot_within_session_ssvep_001.png" alt="plot within session ssvep" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Axes: xlabel='session', ylabel='score'&gt;
+<img src="../../_images/sphx_glr_plot_within_session_ssvep_001.png" srcset="../../_images/sphx_glr_plot_within_session_ssvep_001.png" alt="plot within session ssvep" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2026-11-23 13:59:21,495 INFO MainThread matplotlib.category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2026-11-23 13:59:21,501 INFO MainThread matplotlib.category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+
+&lt;Axes: xlabel='session', ylabel='score'&gt;
 </pre></div>
 </div>
 <p>And the computation time in seconds</p>
@@ -795,7 +804,11 @@ each subject and pipeline.</p>
 </span><a class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_ylabel.html#matplotlib.axes.Axes.set_ylabel" title="matplotlib.axes.Axes.set_ylabel"><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span></a><span class="p">(</span><span class="s2">&quot;</span><span class="s2">Time (s)</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
 </span><a class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">(</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<img src="../../_images/sphx_glr_plot_within_session_ssvep_002.png" srcset="../../_images/sphx_glr_plot_within_session_ssvep_002.png" alt="plot within session ssvep" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.860 seconds)</p>
+<img src="../../_images/sphx_glr_plot_within_session_ssvep_002.png" srcset="../../_images/sphx_glr_plot_within_session_ssvep_002.png" alt="plot within session ssvep" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2026-11-23 13:59:21,604 INFO MainThread matplotlib.category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2026-11-23 13:59:21,609 INFO MainThread matplotlib.category Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 7.705 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-paradigm-examples-plot-within-session-ssvep-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/ddb95468daccb0c135f3c3e8fc36749c/plot_within_session_ssvep.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_within_session_ssvep.ipynb</span></code></a></p>
