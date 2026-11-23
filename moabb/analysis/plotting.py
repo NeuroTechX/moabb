@@ -30,13 +30,12 @@ from moabb.analysis.style import (
     MOABB_SKY,
     MOABB_TEAL,
     apply_moabb_style,
-    set_moabb_defaults,
+    moabb_style,
     style_legend,
 )
 
 
 PIPELINE_PALETTE = MOABB_PALETTE  # backward-compat alias
-set_moabb_defaults()
 
 log = logging.getLogger(__name__)
 
@@ -393,6 +392,7 @@ def _nemenyi_critical_difference(n_pipelines, n_datasets, alpha):
     return q_alpha * np.sqrt(n_pipelines * (n_pipelines + 1) / (6 * n_datasets))
 
 
+@moabb_style
 def plot_critical_difference(
     data, pipelines=None, alpha=0.05, higher_is_better=True, figsize=None
 ):
@@ -766,6 +766,7 @@ def plot_critical_difference(
     return fig
 
 
+@moabb_style
 def score_plot(data, pipelines=None, orientation="vertical", chance_level=None):
     """Plot scores for all pipelines and all datasets.
 
@@ -849,6 +850,7 @@ def score_plot(data, pipelines=None, orientation="vertical", chance_level=None):
     return fig, color_dict
 
 
+@moabb_style
 def distribution_plot(
     data, pipelines=None, orientation="vertical", chance_level=None, figsize=None
 ):
@@ -970,6 +972,7 @@ def distribution_plot(
     return fig, color_dict
 
 
+@moabb_style
 def codecarbon_plot(
     data,
     order_list=None,
@@ -1348,6 +1351,7 @@ def _draw_paired_chance_region(ax, theoretical, adjusted, min_chance):
         )
 
 
+@moabb_style
 def paired_plot(data, alg1, alg2, chance_level=None):
     """Generate a figure with a paired plot.
 
@@ -1412,6 +1416,7 @@ def paired_plot(data, alg1, alg2, chance_level=None):
     return fig
 
 
+@moabb_style
 def summary_plot(sig_df, effect_df, p_threshold=0.05, simplify=True):
     """Significance matrix to compare pipelines.
 
@@ -1483,6 +1488,7 @@ def summary_plot(sig_df, effect_df, p_threshold=0.05, simplify=True):
     return fig
 
 
+@moabb_style
 def meta_analysis_plot(stats_df, alg1, alg2):  # noqa: C901
     """Meta-analysis to compare two algorithms across several datasets.
 
@@ -1848,6 +1854,7 @@ def get_dataset_area(
     return n_subjects * 3 * 3**0.5 / 8 * diameter**2  # area of hexagons
 
 
+@moabb_style
 def dataset_bubble_plot(
     dataset=None,
     center: tuple[float, float] = (0.0, 0.0),

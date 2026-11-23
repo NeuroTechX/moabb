@@ -1,35 +1,34 @@
 """Importing moabb must not restyle the caller's matplotlib.
 
-``moabb.analysis.plotting`` themes the global rcParams at import time. That is
-fine for someone who asked for plotting, but it used to reach anyone who merely
-imported a dataset, via ``moabb.datasets.bids_interface`` -> ``analysis.results``.
+``moabb.analysis.plotting`` used to call ``seaborn.set_theme`` at import time,
+which gave every figure of any program importing it (braindecode does, through
+``moabb.datasets``) a serif font, grids and zero-length ticks. MOABB's plotting
+functions now apply that style only while they draw.
 """
 
 import json
 import subprocess
 import sys
 
+import pandas as pd
 import pytest
 
-
-# Read at axes creation, so a caller cannot undo them afterwards.
-_WATCHED = ("font.family", "axes.grid", "axes.spines.left")
 
 _PROBE = """
 import json, sys, matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-before = {{k: repr(plt.rcParams[k]) for k in {watched!r}}}
+before = {{k: repr(v) for k, v in plt.rcParams.items()}}
 import {module}  # noqa: F401
-after = {{k: repr(plt.rcParams[k]) for k in {watched!r}}}
-json.dump([before, after], sys.stdout)
+after = {{k: repr(v) for k, v in plt.rcParams.items()}}
+json.dump({{k: [before[k], after[k]] for k in before if before[k] != after[k]}}, sys.stdout)
 """
 
 
-def _around_import(module):
-    """rcParams before and after importing ``module`` in a fresh interpreter."""
+def _changed_by_import(module):
+    """rcParams changed by importing ``module`` in a fresh interpreter."""
     out = subprocess.run(
-        [sys.executable, "-c", _PROBE.format(module=module, watched=_WATCHED)],
+        [sys.executable, "-c", _PROBE.format(module=module)],
         capture_output=True,
         text=True,
         check=True,
@@ -37,14 +36,31 @@ def _around_import(module):
     return json.loads(out.stdout)
 
 
-def test_importing_moabb_does_not_restyle_matplotlib():
-    for module in ("moabb", "moabb.datasets", "moabb.analysis"):
-        before, after = _around_import(module)
-        assert before == after, f"import {module} mutated rcParams: {before} -> {after}"
+@pytest.mark.parametrize(
+    "module", ["moabb", "moabb.datasets", "moabb.analysis", "moabb.analysis.plotting"]
+)
+def test_importing_moabb_does_not_restyle_matplotlib(module):
+    changed = _changed_by_import(module)
+    assert changed == {}, f"import {module} changed rcParams: {sorted(changed)}"
 
-    # The theme must be kept, not lost -- only stopped from leaking.
-    before, after = _around_import("moabb.analysis.plotting")
-    assert before != after
+
+def test_plotting_draws_in_moabb_style_without_leaking():
+    import matplotlib.pyplot as plt
+
+    from moabb.analysis.plotting import summary_plot
+
+    names = ["A", "B"]
+    sig = pd.DataFrame([[1.0, 0.01], [0.01, 1.0]], index=names, columns=names)
+    effect = pd.DataFrame([[0.0, 0.5], [-0.5, 0.0]], index=names, columns=names)
+    before = dict(plt.rcParams)
+    fig = summary_plot(sig, effect)
+    try:
+        assert dict(plt.rcParams) == before
+        # The style is kept for MOABB's own figure, not lost.
+        label = fig.axes[0].get_xticklabels()[0]
+        assert label.get_fontfamily() == ["serif"]
+    finally:
+        plt.close(fig)
 
 
 def test_lazily_exported_names_still_resolve():

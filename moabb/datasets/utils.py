@@ -890,9 +890,8 @@ class _BubbleChart:
 
 class _BaseDatasetPlotter:
     def __init__(self, datasets, meta_gap, kwargs, n_col=None):
-        # Imported here: moabb.analysis.plotting applies a seaborn theme to the
-        # global matplotlib rcParams at import time, which would restyle anyone
-        # who merely imports moabb.datasets.
+        # Imported here: moabb.analysis.plotting pulls in matplotlib and
+        # seaborn, which anyone who merely imports moabb.datasets should not pay.
 
         from moabb.analysis.plotting import _get_dataset_parameters, get_dataset_area
 
@@ -940,9 +939,13 @@ class _BaseDatasetPlotter:
         pass
 
     def plot(self):
-        # Imported here: moabb.analysis.plotting applies a seaborn theme to the
-        # global matplotlib rcParams at import time, which would restyle anyone
-        # who merely imports moabb.datasets.
+        # Imported here: moabb.analysis.plotting pulls in matplotlib and
+        # seaborn, which anyone who merely imports moabb.datasets should not pay.
+        from moabb.analysis.style import moabb_style
+
+        return moabb_style(self._plot)()
+
+    def _plot(self):
         import matplotlib.pyplot as plt
 
         from moabb.analysis.plotting import dataset_bubble_plot
