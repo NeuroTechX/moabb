@@ -68,6 +68,7 @@ _LAZY_IMPORTS = {
     "Dreyer2023A": ".dreyer2023",
     "Dreyer2023B": ".dreyer2023",
     "Dreyer2023C": ".dreyer2023",
+    "Dzianok2022": ".dzianok2022",
     "EPFLP300": ".epfl",
     "ErpCore2021_ERN": ".erpcore2021",
     "ErpCore2021_LRP": ".erpcore2021",
