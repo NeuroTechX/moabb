@@ -500,8 +500,10 @@ def test_raw_to_events_valid_overlap():
         ([(500, 1), (1500, 2)], {"l": 1, "r": 2}, False, 2),
         ([(500, 99)], {"l": 1}, False, 0),
         ([(500, 1), (1500, 2)], {"l": 1, "r": 2}, True, 2),
+        ([(500, 1), (1500, 3), (2000, 2)], {"l": [1, 3]}, False, 2),
+        ([(500, 1), (1500, 3)], {"l": [1, 3]}, True, 2),
     ],
-    ids=["stim-match", "stim-no-match", "with-overlap"],
+    ids=["stim-match", "stim-no-match", "with-overlap", "list-codes", "list-overlap"],
 )
 def test_raw_to_events_stim(stim, event_id, use_overlap, min_events):
     raw = _raw(stim_events=stim)
