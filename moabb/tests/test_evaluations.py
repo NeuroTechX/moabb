@@ -1028,6 +1028,25 @@ def test_cross_subject_top_level_splitter_type_is_validated(tmp_path):
         )
 
 
+def test_cross_subject_n_splits_accepts_random_state(tmp_path):
+    ds = FakeDataset(["left_hand", "right_hand"], n_subjects=4, n_sessions=1, seed=18)
+    kwargs = {
+        "paradigm": FakeImageryParadigm(),
+        "datasets": [ds],
+        "hdf5_path": tmp_path,
+        "n_splits": 2,
+    }
+    _, _, metadata = kwargs["paradigm"].get_data(ds, return_epochs=True)
+
+    seeded = ev.CrossSubjectEvaluation(random_state=42, **kwargs)
+    folds = list(seeded._create_splitter().split(np.zeros(len(metadata)), metadata))
+    reference = ev.CrossSubjectEvaluation(**kwargs)
+    expected = list(reference._create_splitter().split(np.zeros(len(metadata)), metadata))
+
+    assert len(folds) == 2
+    _assert_same_folds(folds, expected)
+
+
 def test_cross_subject_top_level_splitter_runs_end_to_end(tmp_path):
     ds = FakeDataset(["left_hand", "right_hand"], n_subjects=3, n_sessions=2, seed=18)
     splitter = HeldOutSubjectSplitter(subject=3)

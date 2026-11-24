@@ -880,7 +880,15 @@ class CrossSubjectSplitter(BaseCrossValidator):
         )
 
         random_state_capability = _cv_keyword_capability(self.cv_class, "random_state")
-        if random_state_capability is True and "random_state" not in self._cv_kwargs:
+        # GroupKFold accepts ``random_state`` but rejects it while ``shuffle`` is False.
+        unshuffled = _cv_keyword_capability(cv_class, "shuffle") is True and not (
+            self._cv_kwargs.get("shuffle", False)
+        )
+        if (
+            random_state_capability is True
+            and "random_state" not in self._cv_kwargs
+            and not unshuffled
+        ):
             self._cv_kwargs["random_state"] = random_state
         elif (
             resolved_cv is None
