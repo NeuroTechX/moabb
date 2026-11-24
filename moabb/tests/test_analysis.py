@@ -131,6 +131,14 @@ class TestStats:
             f"P-values should be equal to 1 - 1/n_perms {pvals}"
         )
 
+    def test_perm_exhaustive_counts_tied_permutations(self):
+        # Accuracy-like scores are multiples of 1/20, so many permuted sums
+        # equal the observed sum exactly and must count towards the p-value.
+        a = np.array([16, 20, 17, 13, 20, 16, 17, 15]) / 20
+        b = np.array([13, 19, 10, 10, 12, 14, 14, 18]) / 20
+        pvals = ma.compute_pvals_perm(pd.DataFrame({"a": a, "b": b}))
+        assert pvals[0, 1] == 8 / 256
+
     def test_perm_random(self):
         rng = np.random.RandomState(12)
         data = (
