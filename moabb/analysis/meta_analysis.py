@@ -222,6 +222,8 @@ def _pairedttest_exact(data):
     """
     n_subj = data.shape[0]
     true = data.sum(axis=0)
+    # Permuted sums that tie with `true` differ from it by rounding error.
+    tol = 1e-9 * np.abs(data).sum(axis=0)
     nperms = 1 << n_subj
     bits = (
         np.arange(nperms, dtype=np.uint32)[:, None]
@@ -229,7 +231,7 @@ def _pairedttest_exact(data):
     ) & 1
     perms = np.where(bits, 1.0, -1.0).astype(data.dtype, copy=False)
     randperms = (perms @ data.reshape(n_subj, -1)).reshape(nperms, *data.shape[1:])
-    out = (randperms >= true).sum(axis=0, dtype=np.int32)
+    out = (randperms >= true - tol).sum(axis=0, dtype=np.int32)
 
     # Correct for p-values equal to 1
     # as they are invalid p-values for Stouffer's method.
@@ -260,11 +262,13 @@ def _pairedttest_random(data, nperms, seed=None):
     rng = check_random_state(seed)
     n_subj = data.shape[0]
     true = data.sum(axis=0)
+    # Permuted sums that tie with `true` differ from it by rounding error.
+    tol = 1e-9 * np.abs(data).sum(axis=0)
     perms = rng.choice(
         np.array([1, -1], dtype=data.dtype), size=(nperms, n_subj), replace=True
     )
     randperms = (perms @ data.reshape(n_subj, -1)).reshape(nperms, *data.shape[1:])
-    out = 1 + (randperms >= true).sum(axis=0, dtype=np.int32)
+    out = 1 + (randperms >= true - tol).sum(axis=0, dtype=np.int32)
 
     # Correct p-values >= 1
     # as they are invalid p-values for Stouffer's method.
