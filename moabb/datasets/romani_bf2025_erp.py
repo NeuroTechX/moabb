@@ -8,6 +8,7 @@ from typing import List, Optional
 import mne
 import numpy as np
 from mne.datasets import fetch_dataset
+from pooch import Unzip
 
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.download import get_dataset_path
@@ -395,7 +396,7 @@ class RomaniBF2025ERP(BaseDataset):
         path_root = fetch_dataset(
             dataset_params=BRAINFORM_dataset_params,
             path=path,
-            processor="unzip",
+            processor=Unzip(),  # Extract to BIDS.zip.unzip for _correct_path.
             force_update=force_update,
             update_path=False,
         )

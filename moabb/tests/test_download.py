@@ -373,6 +373,22 @@ def test_romani_follows_download_dir_changes(tmp_path, monkeypatch, _isolated_mn
     assert all("config_key" not in call["dataset_params"] for call in calls)
 
 
+def test_romani_extracts_into_dataset_directory(tmp_path, monkeypatch):
+    """The archive's BIDS directory belongs inside the dataset cache."""
+    archive_path = tmp_path / romani.BF_archive_name
+    with zipfile.ZipFile(archive_path, "w") as archive:
+        archive.writestr("BIDS/dataset_description.json", "{}")
+        archive.writestr("BIDS/sub-P01/", "")
+    monkeypatch.setitem(
+        romani.BRAINFORM_dataset_params, "hash", dl.file_hash(archive_path)
+    )
+
+    root = Path(romani.RomaniBF2025ERP().data_path(0, path=tmp_path))
+
+    assert root == tmp_path / romani.BF_folder_name / "BIDS"
+    assert (root / "sub-P01").is_dir()
+
+
 # --------------------------------------------------------------------------
 # sourcedata/: NEMAR as a provider for the ORIGINAL, pre-BIDS distribution
 # --------------------------------------------------------------------------
