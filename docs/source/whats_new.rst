@@ -100,6 +100,7 @@ Requirements
 
 Bugs
 ~~~~
+- Fix :class:`moabb.datasets.RomaniBF2025ERP` unpacking ``BIDS.zip`` outside its own cache folder, which left the loader unable to find subjects (:gh:`1372` by `Don Yin`_).
 - Importing :mod:`moabb.analysis.plotting` no longer changes the global matplotlib style of the whole process. It used to call ``seaborn.set_theme`` at import time, so every figure of a program that imported it got a serif font, grid lines and zero-length ticks (39 ``rcParams`` changed), which forced downstream tutorials, e.g. braindecode's, to call ``plt.rcdefaults()``. MOABB's plotting functions now apply the MOABB style only while they draw, through ``plt.rc_context``, and their figures are pixel-identical to before; ``moabb.analysis.style.set_moabb_defaults()`` still applies the style globally for anyone who wants it (:gh:`1370` by `Bruno Aristimunha`_).
 - Fix :class:`moabb.paradigms.MotorImagery` ignoring ``n_classes`` when ``events=None``: it returned every event of the dataset, so ``MotorImagery(n_classes=2)`` on a 4-class dataset gave 4 classes. It now keeps the first ``n_classes`` events, as :class:`moabb.paradigms.FilterBankMotorImagery` does. A paradigm created without ``n_classes`` still takes every event of each dataset; the neural-signature figures keep plotting every class (:gh:`1361` by `SID-6921`_).
 - Place the 16 :class:`moabb.datasets.Brandl2020` channels that carry the Berlin lab's labels for intermediate sites at the 10-5 electrodes where the release's ``mnt.mat`` puts them, keeping their labels: ``CFC1``-``CFC8``, ``CCP7`` and ``CCP8``, which MNE's montages lack, had NaN positions, and ``CCP1``-``CCP6`` were placed at the same-named 10-5 sites about 2 cm from their own (``CCP1h``-``CCP6h``). ``METADATA.acquisition.sensors`` now lists the 63 recorded labels: it listed 18 sites the cap does not have (e.g. ``AF7``, ``TP9``, ``Oz``) and missed ``F9``, ``F10`` and the 16 Berlin labels (:gh:`1364` by `Bhargav Kowshik`_).
@@ -1331,3 +1332,4 @@ API changes
 .. _Yiheng Li: https://github.com/YihengLi-1
 .. _Niklas Kueper: https://github.com/nkueper
 .. _SID-6921: https://github.com/SID-6921
+.. _Don Yin: https://github.com/Don-Yin
