@@ -496,19 +496,6 @@ class RomaniBF2025ERP(BaseDataset):
 
         For local datasets, return empty list.
 
-        Parameters
-        ----------
-        subject : str
-            Subject identifier
-        path : str
-            Path to store data
-        force_update : bool
-            Whether to force update
-        update_path : bool
-            Whether to update path
-        verbose : bool
-            Whether to be verbose
-
         Returns:
         --------
         List[str]
